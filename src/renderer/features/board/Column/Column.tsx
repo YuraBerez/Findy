@@ -32,13 +32,8 @@ export function Column({ stage, applications }: Props) {
         <h2 id={headingId} className={styles.title} title={t(`stages.${stage}`)}>
           {t(`stages.${stage}`)}
         </h2>
-        <span
-          className={styles.count}
-          aria-label={t('column.count', { count: applications.length })}
-        >
-          {applications.length}
-        </span>
-        {/* Spec 002 FR-001: the last visible column cannot be hidden */}
+        {/* Spec 002 FR-001: the last visible column cannot be hidden. Before the
+            count, so the count stays on the right edge when the button is hidden */}
         {board.visible.length > 1 && (
           <IconButton
             label={t('column.hide', { stage: t(`stages.${stage}`) })}
@@ -47,6 +42,12 @@ export function Column({ stage, applications }: Props) {
             onClick={() => board.hide(stage)}
           />
         )}
+        <span
+          className={styles.count}
+          aria-label={t('column.count', { count: applications.length })}
+        >
+          {applications.length}
+        </span>
       </header>
       <SortableContext
         id={stage}
