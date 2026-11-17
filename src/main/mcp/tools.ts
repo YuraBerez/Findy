@@ -1,7 +1,14 @@
 // MCP tools over the same Repository and zod schemas as the app (spec 004 FR-002, FR-003).
 // Pure definitions: server.ts registers them with the SDK; tests call `run` directly.
 import { z } from 'zod'
-import { ApplicationPatchSchema, IdSchema, LIMITS, NoteTextSchema, StageSchema, UrlSchema } from '../../domain/schema'
+import {
+  ApplicationPatchSchema,
+  IdSchema,
+  LIMITS,
+  NoteTextSchema,
+  StageSchema,
+  UrlSchema,
+} from '../../domain/schema'
 import { matchesQuery } from '../../domain/search'
 import { STAGES, type StageId } from '../../domain/stages'
 import { enteredStageAt } from '../../domain/time'
@@ -44,7 +51,8 @@ export interface ToolDefinition<Shape extends z.ZodRawShape = z.ZodRawShape> {
   run(args: z.output<z.ZodObject<Shape>>): Record<string, unknown>
 }
 
-const define = <Shape extends z.ZodRawShape>(tool: ToolDefinition<Shape>) => tool as unknown as ToolDefinition
+const define = <Shape extends z.ZodRawShape>(tool: ToolDefinition<Shape>) =>
+  tool as unknown as ToolDefinition
 
 const stageList = STAGES.map((stage) => `${stage} (${STAGE_NAMES[stage]})`).join(', ')
 
@@ -67,7 +75,10 @@ function details(application: Application) {
   return {
     ...summary(application),
     notes: application.notes,
-    stageHistory: application.stageHistory.map((change) => ({ ...change, stageName: STAGE_NAMES[change.stage] })),
+    stageHistory: application.stageHistory.map((change) => ({
+      ...change,
+      stageName: STAGE_NAMES[change.stage],
+    })),
   }
 }
 
@@ -93,7 +104,13 @@ export function createTools(repository: Repository): ToolDefinition[] {
       annotations: { readOnlyHint: true },
       run: () => {
         const { hiddenStages } = repository.getSettings()
-        return { stages: STAGES.map((id) => ({ id, name: STAGE_NAMES[id], hidden: hiddenStages.includes(id) })) }
+        return {
+          stages: STAGES.map((id) => ({
+            id,
+            name: STAGE_NAMES[id],
+            hidden: hiddenStages.includes(id),
+          })),
+        }
       },
     }),
     define({
@@ -110,14 +127,18 @@ export function createTools(repository: Repository): ToolDefinition[] {
       run: ({ stage, query }) => ({
         applications: repository
           .listApplications()
-          .filter((application) => (!stage || application.stage === stage) && matchesQuery(application, query ?? ''))
+          .filter(
+            (application) =>
+              (!stage || application.stage === stage) && matchesQuery(application, query ?? ''),
+          )
           .map(summary),
       }),
     }),
     define({
       name: 'get_application',
       title: 'Get a job application',
-      description: 'One application with all its notes and its stage history. Use an id from list_applications.',
+      description:
+        'One application with all its notes and its stage history. Use an id from list_applications.',
       inputSchema: { id: IdSchema },
       annotations: { readOnlyHint: true },
       run: ({ id }) => ({ application: details(repository.getApplication(id)) }),
@@ -128,37 +149,53 @@ export function createTools(repository: Repository): ToolDefinition[] {
       description:
         'Adds an application the user applied to. It goes on top of its column. Hidden stages are not allowed.',
       inputSchema: {
-        title: z.string().trim().min(1).max(LIMITS.title).describe('Job title, e.g. "Frontend Developer"'),
+        title: z
+          .string()
+          .trim()
+          .min(1)
+          .max(LIMITS.title)
+          .describe('Job title, e.g. "Frontend Developer"'),
         company: z.string().trim().min(1).max(LIMITS.company).describe('Company name'),
         url: UrlSchema.optional().describe('Link to the vacancy (http or https)'),
         stage: StageSchema.optional().describe(`Default: applied. One of: ${stageList}`),
       },
       annotations: {},
       run: ({ title, company, url, stage }) => ({
-        application: details(repository.createApplication({ title, company, url: url ?? null, stage })),
+        application: details(
+          repository.createApplication({ title, company, url: url ?? null, stage }),
+        ),
       }),
     }),
     define({
       name: 'update_application',
       title: 'Update a job application',
-      description: 'Changes the title, the company or the vacancy link. Use move_application to change the stage.',
+      description:
+        'Changes the title, the company or the vacancy link. Use move_application to change the stage.',
       inputSchema: { id: IdSchema, ...ApplicationPatchSchema.shape },
       annotations: { idempotentHint: true },
-      run: ({ id, ...patch }) => ({ application: details(repository.updateApplication(id, patch)) }),
+      run: ({ id, ...patch }) => ({
+        application: details(repository.updateApplication(id, patch)),
+      }),
     }),
     define({
       name: 'move_application',
       title: 'Move a job application to a stage',
-      description: 'Moves the application to the top of another stage and records the change in its history.',
+      description:
+        'Moves the application to the top of another stage and records the change in its history.',
       inputSchema: { id: IdSchema, stage: StageSchema.describe(`One of: ${stageList}`) },
       annotations: { idempotentHint: true },
-      run: ({ id, stage }) => ({ application: details(repository.moveApplication(id, { stage, index: 0 })) }),
+      run: ({ id, stage }) => ({
+        application: details(repository.moveApplication(id, { stage, index: 0 })),
+      }),
     }),
     define({
       name: 'add_note',
       title: 'Add a note to a job application',
       description: 'Adds a note, e.g. who the user talked to, salary discussed, next steps.',
-      inputSchema: { id: IdSchema, text: NoteTextSchema.describe('The note; line breaks are kept') },
+      inputSchema: {
+        id: IdSchema,
+        text: NoteTextSchema.describe('The note; line breaks are kept'),
+      },
       annotations: {},
       run: ({ id, text }) => {
         repository.addNote(id, text)

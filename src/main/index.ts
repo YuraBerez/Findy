@@ -5,6 +5,7 @@ import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
 import { resolveLanguage } from '../domain/language'
 import { createHandlers } from './ipc'
+import { runMcpServer } from './mcp/server'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
@@ -95,12 +96,34 @@ function start(): void {
   createWindow()
 }
 
-if (process.env.FINDY_SMOKE_TEST === '1') {
+/**
+ * Spec 004: `Findy --mcp` serves MCP tools over stdio for an AI assistant. No
+ * window, no Dock icon, no single-instance lock (it runs next to the open app).
+ * stdout carries the protocol, so every log goes to stderr.
+ */
+async function startMcp(): Promise<void> {
+  console.log = console.info = console.debug = console.error
+  app.dock?.hide()
+  const opened = openDatabase(app.getPath('userData'))
+  const repository = opened.status === 'ok' ? new Repository(opened.db) : null
+  await runMcpServer(
+    repository,
+    app.getVersion(),
+    `Findy cannot open its database (${opened.dataFilePath}). Open the Findy app to see what is wrong.`,
+  )
+  if (opened.status === 'ok') opened.db.close()
+  app.exit(0)
+}
+
+if (process.argv.includes('--mcp')) {
+  app.disableHardwareAcceleration()
+  void startMcp()
+} else if (process.env.FINDY_SMOKE_TEST === '1') {
   process.exit(runSmokeTest())
 }
 
-// One instance only: two writers would race on the database (spec 001, edge cases)
-if (!app.requestSingleInstanceLock()) {
+// One window instance only: two app windows would race on the database (spec 001, edge cases)
+else if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   app.on('second-instance', () => {

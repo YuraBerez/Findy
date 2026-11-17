@@ -1,0 +1,71 @@
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { HiddenStageError, NotFoundError, type Repository } from '../db/repository'
+import { createTools, McpAccessDisabledError } from './tools'
+
+/** Message an assistant can act on; never a stack trace (spec 004 FR-008) */
+export function toolErrorMessage(error: unknown): string {
+  if (error instanceof McpAccessDisabledError || error instanceof HiddenStageError)
+    return error.message
+  if (error instanceof NotFoundError)
+    return `${error.message}. Use list_applications to get current ids.`
+  return `Findy could not do this: ${error instanceof Error ? error.message : String(error)}`
+}
+
+/**
+ * Serves the tools over stdio until the client closes the connection (FR-001).
+ * `repository` is null when the database cannot be opened: every tool then
+ * explains that, and the file is not touched (001 FR-054).
+ */
+export async function runMcpServer(
+  repository: Repository | null,
+  version: string,
+  storageProblem: string,
+): Promise<void> {
+  const server = new McpServer({ name: 'findy', title: 'Findy job-search board', version })
+
+  if (repository) {
+    for (const tool of createTools(repository)) {
+      server.registerTool(
+        tool.name,
+        {
+          title: tool.title,
+          description: tool.description,
+          inputSchema: tool.inputSchema,
+          annotations: tool.annotations,
+        },
+        async (args: Record<string, unknown>) => {
+          try {
+            const result = tool.run(args as never)
+            return {
+              content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+              structuredContent: result,
+            }
+          } catch (error) {
+            return {
+              isError: true,
+              content: [{ type: 'text' as const, text: toolErrorMessage(error) }],
+            }
+          }
+        },
+      )
+    }
+  } else {
+    server.registerTool(
+      'list_stages',
+      {
+        title: 'List stages',
+        description: 'Findy cannot open its database.',
+        annotations: { readOnlyHint: true },
+      },
+      async () => ({ isError: true, content: [{ type: 'text' as const, text: storageProblem }] }),
+    )
+  }
+
+  const transport = new StdioServerTransport()
+  const closed = new Promise<void>((resolve) => {
+    transport.onclose = () => resolve()
+  })
+  await server.connect(transport)
+  await closed
+}
