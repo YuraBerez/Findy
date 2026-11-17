@@ -38,7 +38,7 @@ describe('IPC handlers', () => {
 
   it('returns the full state', async () => {
     expect(await state(ctx.handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system', hiddenStages: [] },
+      settings: { language: null, theme: 'system', hiddenStages: [], mcpEnabled: false },
       applications: [],
       storage: okStorage,
     })
@@ -70,7 +70,12 @@ describe('IPC handlers', () => {
   it('saves settings and applies the theme (FR-082)', async () => {
     await state(ctx.handlers.setLanguage('uk'))
     const s = await state(ctx.handlers.setTheme('dark'))
-    expect(s.settings).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
+    expect(s.settings).toEqual({
+      language: 'uk',
+      theme: 'dark',
+      hiddenStages: [],
+      mcpEnabled: false,
+    })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
   })
@@ -195,7 +200,7 @@ describe('IPC handlers without storage (FR-054)', () => {
   it('returns an empty state with the storage error', async () => {
     const { handlers } = setup({ repository: null, storage })
     expect(await state(handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system', hiddenStages: [] },
+      settings: { language: null, theme: 'system', hiddenStages: [], mcpEnabled: false },
       applications: [],
       storage,
     })

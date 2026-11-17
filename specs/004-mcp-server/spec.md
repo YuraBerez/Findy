@@ -1,8 +1,9 @@
 # Feature Spec: MCP server — manage the board from Claude
 
 - **ID:** 004-mcp-server
-- **Status:** Draft
+- **Status:** Approved
 - **Created:** 2026-11-17
+- **Approved:** 2026-11-17 (owner)
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md), [002-hidden-columns](../002-hidden-columns/spec.md)
 
 ## Summary
