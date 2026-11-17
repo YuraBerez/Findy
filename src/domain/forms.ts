@@ -3,6 +3,7 @@
 // them to messages next to each field.
 import { isHttpUrl, LIMITS } from './limits'
 import { DEFAULT_STAGE, type StageId } from './stages'
+import type { Application } from './types'
 
 export interface ApplicationFormValues {
   title: string
@@ -59,4 +60,19 @@ export function validateApplicationForm(
       stage: values.stage,
     },
   }
+}
+
+/** The form filled with an existing application, for editing (FR-012). */
+export function formValuesOf(application: Application): ApplicationFormValues {
+  return {
+    title: application.title,
+    company: application.company,
+    url: application.url ?? '',
+    stage: application.stage,
+  }
+}
+
+/** FR-030: a note is 1–10 000 characters after trimming. `null` means valid. */
+export function validateNote(text: string): FieldError | null {
+  return requiredText(text, LIMITS.note) ?? null
 }

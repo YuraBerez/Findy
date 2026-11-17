@@ -192,3 +192,20 @@ describe('transactions (FR-052)', () => {
     expect(repo.listApplications()[0]?.order).toBe(0)
   })
 })
+
+describe('resetBoard (FR-093)', () => {
+  it('deletes every application with notes and history, and keeps the settings', () => {
+    const a = repo.createApplication(input('A'))
+    repo.createApplication(input('B', { stage: 'offered' }))
+    repo.addNote(a.id, 'x')
+    repo.setLanguage('uk')
+    repo.setTheme('dark')
+
+    repo.resetBoard()
+
+    expect(repo.listApplications()).toEqual([])
+    expect(db.prepare('SELECT COUNT(*) AS n FROM notes').get()).toEqual({ n: 0 })
+    expect(db.prepare('SELECT COUNT(*) AS n FROM stage_changes').get()).toEqual({ n: 0 })
+    expect(repo.getSettings()).toEqual({ language: 'uk', theme: 'dark' })
+  })
+})

@@ -174,6 +174,13 @@ export class Repository {
     })()
   }
 
+  /** FR-093: delete every application; notes and history go by ON DELETE CASCADE. */
+  resetBoard(): void {
+    this.db.transaction(() => {
+      this.db.prepare('DELETE FROM applications').run()
+    })()
+  }
+
   // ── Notes ────────────────────────────────────────────────────────────────
 
   addNote(applicationId: string, text: string): Note {

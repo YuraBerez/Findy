@@ -47,6 +47,15 @@ export class ApplicationDialogScreen extends BaseComponent {
     await this.cancelButton.click()
   }
 
+  async closeWithCross(): Promise<void> {
+    await this.dialog.getByRole('button', { name: 'Close' }).click()
+  }
+
+  /** A click on the dimmed backdrop above the dialog */
+  async closeByClickingOutside(): Promise<void> {
+    await this.dialog.click({ position: { x: 20, y: -20 } })
+  }
+
   async dismissWithEscape(): Promise<void> {
     await this.fields.title.press('Escape')
   }

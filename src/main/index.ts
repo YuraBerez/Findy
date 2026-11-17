@@ -1,7 +1,7 @@
 import { join } from 'node:path'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
-import { openDatabase } from './db/connection'
+import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
 import { createHandlers } from './ipc'
 import { isAllowedNavigation } from './security'
@@ -73,6 +73,9 @@ function start(): void {
     openExternal: (url) => shell.openExternal(url),
     applyTheme: (theme) => {
       nativeTheme.themeSource = theme
+    },
+    backup: (label) => {
+      if (opened.status === 'ok') backupDatabase(opened.db, app.getPath('userData'), label)
     },
   })
   for (const method of IPC_METHODS) {

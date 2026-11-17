@@ -21,6 +21,8 @@ export interface IpcDeps {
   getSystemLocale(): string
   openExternal(url: string): Promise<void>
   applyTheme(theme: Theme): void
+  /** Saves a copy of the database before a destructive action (FR-092) */
+  backup(label: string): void
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -72,6 +74,12 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     deleteApplication: handle(z.tuple([IdSchema]), (id) => {
       repo().deleteApplication(id)
+      return state()
+    }),
+    resetBoard: handle(none, () => {
+      const repository = repo()
+      deps.backup('reset') // a failed backup throws, and nothing is deleted
+      repository.resetBoard()
       return state()
     }),
     addNote: handle(z.tuple([IdSchema, NoteTextSchema]), (applicationId, text) => {

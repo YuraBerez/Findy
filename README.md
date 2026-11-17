@@ -13,6 +13,10 @@ Sending dozens of applications and losing track of which company is at which
 stage? Findy keeps every application on a single board, from the moment you
 apply until you get an offer.
 
+![Findy board: applications in stage columns](docs/screenshots/board-en.png)
+
+![Application details with notes, fields and stage history](docs/screenshots/details-en.png)
+
 ## Features
 
 - **Kanban board of your job search.** Every application is a card; columns are
@@ -24,8 +28,11 @@ apply until you get an offer.
 - **Quick add.** Job title, company and a link to the vacancy, and that's it.
 - **Drag and drop** cards between stages (keyboard works too).
 - **Notes on every application.** Who you talked to, salary discussed, next steps.
-- **Stage history.** Each card shows when it moved between stages.
-- **English and Ukrainian** interface.
+- **One click to the vacancy.** Cards with a link open it in your browser.
+- **Details panel.** Edit an application and see its stage history as a timeline.
+- **Stage history.** Each card shows how long it has been in its stage.
+- **English and Ukrainian** interface, **light and dark** theme.
+- **Start over.** Reset the board in one step; Findy keeps a backup first.
 - **Private by design.** Works offline, no account, no telemetry. Your data lives in a
   local SQLite database on your computer.
 - **Windows, macOS and Linux.**

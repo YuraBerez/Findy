@@ -44,3 +44,23 @@
   background: var(--primary);
   color: var(--on-primary);
 }
+
+.item:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.item:disabled:hover {
+  background: transparent;
+  color: var(--fg);
+}
+
+.item[data-danger] {
+  color: var(--danger);
+}
+
+.item[data-danger]:hover:not(:disabled),
+.item[data-danger]:focus-visible {
+  background: var(--danger);
+  color: var(--surface);
+}

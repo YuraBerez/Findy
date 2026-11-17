@@ -110,6 +110,9 @@ vacancy page, or delete it.
    vacancy opens in my default web browser (not inside the app).
 4. **Given** an open card, **When** I choose "Delete" and confirm, **Then** the
    application and its notes are removed. **When** I cancel, nothing changes.
+5. **Given** a card with a vacancy URL on the board, **When** I click its link
+   button, **Then** the vacancy opens in my default web browser. A card without a
+   URL shows no link button.
 
 ### US-5 — Switch interface language (P1)
 
@@ -169,6 +172,22 @@ comfortable to use in any lighting.
    keeps my choice.
 4. **Given** I used the toggle, **When** I restart the app, **Then** my choice is kept.
 
+### US-10 — Reset the board (P2)
+
+As a user, I want to delete all applications at once so that I can start a new
+job search from an empty board.
+
+**Acceptance scenarios**
+
+1. **Given** a board with applications, **When** I choose "Reset board" in the
+   app menu, **Then** a confirmation shows how many applications will be deleted.
+2. **Given** the confirmation, **When** I cancel, **Then** nothing changes.
+3. **Given** the confirmation, **When** I confirm, **Then** all applications, their
+   notes and stage history are deleted and the empty board shows.
+4. **Given** I confirmed, **Then** a backup copy of the database was saved first,
+   and my language and theme did not change.
+5. **Given** an empty board, **Then** "Reset board" is disabled.
+
 ### US-8 — Find applications quickly (P2)
 
 As a user with many applications, I want to filter the board by text so that I
@@ -205,6 +224,8 @@ can find a specific company fast.
   application.
 - **FR-015** Clicking the vacancy URL MUST open it in the system default
   browser. Non-`http(s)` URLs MUST never be opened.
+- **FR-016** A card with a vacancy URL MUST show a link button on the board that
+  opens the URL as in FR-015. The button MUST NOT start a drag.
 
 ### Stages & ordering
 - **FR-020** The user MUST be able to move a card to any stage by drag-and-drop.
@@ -216,6 +237,8 @@ can find a specific company fast.
   column.
 - **FR-024** Every stage change MUST append an entry (stage, timestamp) to the
   application's stage history; history is shown in the card details.
+- **FR-025** Clicking a card or pressing Enter on it MUST open its details.
+  Space picks the card up for keyboard drag-and-drop (FR-021).
 
 ### Notes
 - **FR-030** The user MUST be able to add a note (1–10 000 chars) to an application.
@@ -256,6 +279,16 @@ can find a specific company fast.
   accessible name, and expose its on/off state to assistive technology.
 - **FR-082** A theme change MUST apply to the whole window at once, without restart.
 - **FR-083** The choice MUST persist across restarts.
+
+### Reset (P2)
+- **FR-090** The app menu in the toolbar MUST offer "Reset board", disabled when
+  the board is empty.
+- **FR-091** Reset MUST ask for confirmation, name the number of applications,
+  and have Cancel as the default action.
+- **FR-092** Before deleting, the app MUST save a backup copy of the database next
+  to it (`findy.backup-reset-<timestamp>.db`).
+- **FR-093** Reset MUST delete all applications with their notes and stage history
+  in one transaction, and MUST keep the settings (language, theme).
 
 ### Search (P2)
 - **FR-060** The board MUST offer a text filter matching title or company,
@@ -327,3 +360,8 @@ Resolved clarifications (2026-11-17):
   light and dark themes with a sun/moon toggle (US-9, FR-080…083). The theme
   follows the OS until the first use of the toggle. There is no control to go
   back to "follow the OS" in the MVP.
+- **D-5** (added 2026-11-17 at the owner's request) Cards with a vacancy URL show a
+  link button that opens it in the browser (FR-016). Enter opens a card's details,
+  Space starts a keyboard drag (FR-025).
+- **D-6** (added 2026-11-17 at the owner's request) Users can reset the board
+  (US-10, FR-090…093): confirmation with a count, automatic backup, settings kept.

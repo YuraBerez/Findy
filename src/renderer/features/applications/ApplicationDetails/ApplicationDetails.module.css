@@ -1,0 +1,40 @@
+.subtitle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Title and company side by side; link and stage full width */
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--space-4);
+}
+
+.form > :nth-child(n + 3) {
+  grid-column: 1 / -1;
+}
+
+.saveRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.saved {
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.dates {
+  margin: var(--space-2) 0 0;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+/* Destructive action stays apart from Close */
+.delete {
+  margin-right: auto;
+}
