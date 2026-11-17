@@ -6,8 +6,9 @@
 
 [Українською](README.uk.md)
 
-> 🚧 **Status: pre-alpha.** The MVP is being specified — see
-> [specs/001-mvp-board](specs/001-mvp-board/spec.md). No release yet.
+> **Status: 0.1.0, the first release.** Download it from
+> [Releases](https://github.com/YuraBerez/findy/releases). Feedback is welcome: use the
+> *Found an issue?* button in the app.
 
 Sending dozens of applications and losing track of which company is at which
 stage? Findy keeps every application on a single board, from the moment you
@@ -39,8 +40,7 @@ apply until you get an offer.
 
 ## Download
 
-Installers will be published on the
-[Releases](../../releases) page:
+Installers are on the [Releases](https://github.com/YuraBerez/findy/releases) page:
 
 | OS | File |
 |----|------|

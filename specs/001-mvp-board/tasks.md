@@ -81,12 +81,12 @@ Tests for a task are written before (or together with) its implementation.
 
 - [x] T080 App icons for all platforms in `build/` (source: `assets/logo.svg`, see docs/brand.md)
 - [x] T081 About dialog with version (FR-072) — native About panel from the app/Help menu
-- [ ] T082 `.github/workflows/release.yml` — tag `v*` → matrix build → draft GitHub Release (FR-071)
-- [ ] T083 Manual smoke test of artifacts on Windows, macOS (arm64 + x64), Linux (SC-002)
+- [x] T082 `.github/workflows/release.yml` — tag `v*` → matrix build → draft GitHub Release (FR-071)
+- [ ] T083 Manual smoke test of artifacts on Windows, macOS (arm64 + x64), Linux (SC-002) — CI smoke-tests every packaged build; a manual run per OS is still open
 
 ## Phase 10 — Polish
 
 - [x] T090 Performance fixture: 1 000 applications / 10 000 notes; verify NFR-002, NFR-003 (e2e/specs/performance.spec.ts: cold start ~0.8 s, reload ~0.3 s, move ~0.4 s, search ~0.06 s on an M-series Mac)
 - [ ] T091 Accessibility pass: keyboard-only walkthrough, accessible names (NFR-005)
-- [ ] T092 Screenshots in README (en + uk) ✅; `CHANGELOG.md` for 0.1.0
-- [ ] T093 Set spec status to `Implemented`
+- [x] T092 Screenshots in README (en + uk) ✅; `CHANGELOG.md` for 0.1.0
+- [x] T093 Set spec status to `Implemented`
