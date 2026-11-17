@@ -19,6 +19,8 @@ export const IPC_METHODS = [
   'setLanguage',
   'setTheme',
   'setHiddenStages',
+  'setMcpEnabled',
+  'getMcpConnection',
   'getSystemLocale',
   'openExternal',
   'getAppInfo',
@@ -26,7 +28,7 @@ export const IPC_METHODS = [
 
 export type IpcMethod = (typeof IPC_METHODS)[number]
 
-export const IPC_EVENTS = ['languageChanged', 'storageError'] as const
+export const IPC_EVENTS = ['languageChanged', 'storageError', 'stateChanged'] as const
 export type IpcEvent = (typeof IPC_EVENTS)[number]
 
 export type IpcErrorCode = 'VALIDATION' | 'NOT_FOUND' | 'STORAGE'
@@ -92,6 +94,11 @@ export interface AppState {
   storage: StorageStatus
 }
 
+export interface McpConnection {
+  command: string
+  args: string[]
+}
+
 export interface AppInfo {
   version: string
   dataFilePath: string
@@ -125,6 +132,10 @@ export interface FindyApi {
   setTheme(theme: Theme): Promise<AppState>
   /** Spec 002: columns hidden on the board */
   setHiddenStages(stages: StageId[]): Promise<AppState>
+  /** Spec 004: allow AI assistants (MCP) to use the board */
+  setMcpEnabled(enabled: boolean): Promise<AppState>
+  /** Spec 004 FR-009: how an MCP client starts Findy's server */
+  getMcpConnection(): Promise<McpConnection>
   getSystemLocale(): Promise<string>
   openExternal(url: string): Promise<void>
   getAppInfo(): Promise<AppInfo>

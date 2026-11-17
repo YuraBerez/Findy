@@ -10,7 +10,14 @@ import {
   ThemeSchema,
 } from '../domain/schema'
 import type { Language, Theme } from '../domain/types'
-import type { AppInfo, AppState, IpcErrorPayload, IpcMethod, IpcResult } from '../shared/ipc'
+import type {
+  AppInfo,
+  AppState,
+  IpcErrorPayload,
+  IpcMethod,
+  IpcResult,
+  McpConnection,
+} from '../shared/ipc'
 import { HiddenStageError, NotFoundError, type Repository } from './db/repository'
 import { isSafeExternalUrl } from './security'
 
@@ -26,6 +33,8 @@ export interface IpcDeps {
   applyLanguage(language: Language): void
   /** Saves a copy of the database before a destructive action (FR-092) */
   backup(label: string): void
+  /** Spec 004 FR-009: the command an MCP client runs */
+  mcpConnection(): McpConnection
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -111,6 +120,11 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       repo().setHiddenStages(stages)
       return state()
     }),
+    setMcpEnabled: handle(z.tuple([z.boolean()]), (enabled) => {
+      repo().setMcpEnabled(enabled)
+      return state()
+    }),
+    getMcpConnection: handle(none, () => deps.mcpConnection()),
     setTheme: handle(z.tuple([ThemeSchema]), (theme) => {
       repo().setTheme(theme)
       deps.applyTheme(theme)

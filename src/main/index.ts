@@ -6,6 +6,7 @@ import { Repository } from './db/repository'
 import { resolveLanguage } from '../domain/language'
 import { createHandlers } from './ipc'
 import { runMcpServer } from './mcp/server'
+import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
@@ -79,6 +80,11 @@ function start(): void {
       nativeTheme.themeSource = theme
     },
     applyLanguage: applyMenu,
+    mcpConnection: () => ({
+      command: process.execPath,
+      // In development the Electron binary needs the app folder first
+      args: app.isPackaged ? ['--mcp'] : [app.getAppPath(), '--mcp'],
+    }),
     backup: (label) => {
       if (opened.status === 'ok') backupDatabase(opened.db, app.getPath('userData'), label)
     },
@@ -87,6 +93,18 @@ function start(): void {
     ipcMain.handle(CHANNEL_PREFIX + method, (_event, ...args: unknown[]) =>
       handlers[method](...args),
     )
+  }
+
+  // Spec 004 FR-006: show changes made by the MCP server in the open window
+  if (opened.status === 'ok') {
+    const stop = watchExternalChanges(
+      () => opened.db.pragma('data_version', { simple: true }) as number,
+      () => {
+        for (const win of BrowserWindow.getAllWindows())
+          win.webContents.send(CHANNEL_PREFIX + 'stateChanged')
+      },
+    )
+    app.on('will-quit', stop)
   }
 
   app.on('will-quit', () => {

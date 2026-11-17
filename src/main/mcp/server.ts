@@ -1,5 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 import { HiddenStageError, NotFoundError, type Repository } from '../db/repository'
 import { createTools, McpAccessDisabledError } from './tools'
 
@@ -21,6 +22,8 @@ export async function runMcpServer(
   repository: Repository | null,
   version: string,
   storageProblem: string,
+  /** stdio for real clients; an in-memory transport in tests */
+  transport: Transport = new StdioServerTransport(),
 ): Promise<void> {
   const server = new McpServer({ name: 'findy', title: 'Findy job-search board', version })
 
@@ -62,7 +65,6 @@ export async function runMcpServer(
     )
   }
 
-  const transport = new StdioServerTransport()
   const closed = new Promise<void>((resolve) => {
     transport.onclose = () => resolve()
   })

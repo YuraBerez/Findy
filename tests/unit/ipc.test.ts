@@ -23,6 +23,10 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     applyTheme: vi.fn(),
     applyLanguage: vi.fn(),
     backup: vi.fn(),
+    mcpConnection: () => ({
+      command: '/Applications/Findy.app/Contents/MacOS/Findy',
+      args: ['--mcp'],
+    }),
     ...overrides,
   }
   return { deps, handlers: createHandlers(deps) }
@@ -162,6 +166,22 @@ describe('hidden stages (spec 002)', () => {
     // a visible stage still works
     expect(await ctx.handlers.moveApplication(id, { stage: 'rejected', index: 0 })).toMatchObject({
       ok: true,
+    })
+  })
+})
+
+describe('MCP settings (spec 004)', () => {
+  it('turns access on and off and gives the connection command', async () => {
+    const ctx = setup()
+    expect((await state(ctx.handlers.setMcpEnabled(true))).settings.mcpEnabled).toBe(true)
+    expect((await state(ctx.handlers.setMcpEnabled(false))).settings.mcpEnabled).toBe(false)
+    expect(await ctx.handlers.setMcpEnabled('yes')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+    expect(unwrap(await ctx.handlers.getMcpConnection())).toEqual({
+      command: '/Applications/Findy.app/Contents/MacOS/Findy',
+      args: ['--mcp'],
     })
   })
 })

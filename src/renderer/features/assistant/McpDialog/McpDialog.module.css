@@ -1,0 +1,32 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.label {
+  flex: 1;
+  font-weight: 600;
+}
+
+.hint {
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.heading {
+  margin: var(--space-4) 0 0;
+  font-size: 14px;
+}
+
+.code {
+  margin: var(--space-2) 0;
+  padding: var(--space-2) 12px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  white-space: pre;
+}
