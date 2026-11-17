@@ -58,3 +58,18 @@ npm run dist       # installer for current OS
 Before finishing a task: `npm run lint && npm run test:coverage` must pass
 (coverage ≥ 80 %, see docs/release.md → CI). New code in `src/domain`,
 `src/main`, `src/shared` needs unit tests.
+
+## Skills
+
+Project skills live in `.claude/skills/`. Use them for these steps:
+
+| Step | Skill |
+|------|-------|
+| Raw idea → approved `spec.md` | `/refine-requirements` |
+| Approved spec → plan, tasks, code, PR | `/deliver-feature` |
+| Open or finish a PR | `/pr-submission` |
+| Screenshots of changed UI (only on request) | `/pr-ui-screenshots` |
+| Review a contributor's PR | `/review-pr` |
+| Any user-visible text, dates, plurals | `/localization` |
+| Any English documentation | `/writing-style` |
+| End of a substantive task | `/learn` |

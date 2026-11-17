@@ -54,7 +54,7 @@ Early builds are not code-signed:
 Requirements: [Node.js](https://nodejs.org/) 22 LTS or newer, npm, Git.
 
 ```bash
-git clone https://github.com/<owner>/findy.git
+git clone https://github.com/YuraBerez/findy.git
 cd findy
 npm install
 npm run dev          # start the app with hot reload
