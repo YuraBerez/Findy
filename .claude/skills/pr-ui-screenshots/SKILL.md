@@ -29,7 +29,8 @@ Only if the user asked **and** the diff touches one of these:
 
 ## 3. Capture
 
-Use a script outside the test suite, in the scratchpad directory. Launch the built app with
+Use a temporary `e2e/self-tests/*.test.ts` (delete it afterwards). Its `findy` fixture
+already launches the built app with an isolated database; seed with `findy.api`. Launch the built app with
 an isolated user-data directory (`FINDY_USER_DATA_DIR`), so that the real database is
 never touched. The e2e tests use the same variable.
 

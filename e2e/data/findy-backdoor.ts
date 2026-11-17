@@ -1,0 +1,83 @@
+import type { Page } from '@playwright/test'
+import type { AppState, Language, NewApplication, StageId, Theme } from '../../src/shared/ipc'
+
+export interface SeedApplication {
+  title: string
+  company?: string
+  url?: string | null
+  stage?: StageId
+}
+
+/**
+ * Back door into the app for test data and checks that the UI cannot show:
+ * it calls the same `window.findy` IPC API that the renderer uses.
+ */
+export class FindyBackdoor {
+  constructor(private readonly page: Page) {}
+
+  /** Creates applications so that the first item ends on top of its column (FR-023). */
+  async seed(items: SeedApplication[]): Promise<void> {
+    await this.page.evaluate(async (list) => {
+      for (const item of [...list].reverse()) {
+        await window.findy.createApplication({
+          title: item.title,
+          company: item.company ?? 'Acme',
+          url: item.url ?? null,
+          stage: item.stage,
+        })
+      }
+    }, items)
+  }
+
+  async addNote(title: string, text: string): Promise<void> {
+    await this.page.evaluate(
+      async ({ title, text }) => {
+        const state = await window.findy.getState()
+        const application = state.applications.find((item) => item.title === title)
+        if (!application) throw new Error(`No application "${title}"`)
+        await window.findy.addNote(application.id, text)
+      },
+      { title, text },
+    )
+  }
+
+  async setTheme(theme: Theme): Promise<void> {
+    await this.page.evaluate((value) => window.findy.setTheme(value), theme)
+  }
+
+  async setLanguage(language: Language): Promise<void> {
+    await this.page.evaluate((value) => window.findy.setLanguage(value), language)
+  }
+
+  state(): Promise<AppState> {
+    return this.page.evaluate(() => window.findy.getState())
+  }
+
+  /** Message of the rejected IPC call, or "saved". */
+  tryCreate(input: NewApplication): Promise<string> {
+    return this.page.evaluate(
+      (value) =>
+        window.findy.createApplication(value).then(
+          () => 'saved',
+          (error: Error) => error.message,
+        ),
+      input,
+    )
+  }
+
+  /** Constitution §III: Node.js must not leak into the renderer. */
+  rendererHasRequire(): Promise<boolean> {
+    return this.page.evaluate(
+      () => typeof (globalThis as { require?: unknown }).require !== 'undefined',
+    )
+  }
+
+  /** `window.open` must be denied (docs/security.md). */
+  windowOpenWorks(): Promise<boolean> {
+    return this.page.evaluate(() => window.open('https://example.com') !== null)
+  }
+
+  osPrefersDark(): Promise<boolean> {
+    return this.page.evaluate(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
+  }
+}

@@ -1,0 +1,161 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createHandlers, type IpcDeps } from '../../src/main/ipc'
+import {
+  getIpcErrorCode,
+  IpcError,
+  type AppState,
+  type IpcResult,
+  unwrap,
+} from '../../src/shared/ipc'
+import { memoryRepository } from './helpers/db'
+
+const okStorage = { status: 'ok' as const, dataFilePath: '/data/findy.db' }
+
+function setup(overrides: Partial<IpcDeps> = {}) {
+  const { repository } = memoryRepository()
+  const deps: IpcDeps = {
+    repository,
+    storage: okStorage,
+    appVersion: '0.1.0',
+    getSystemLocale: () => 'uk-UA',
+    openExternal: vi.fn(async () => {}),
+    applyTheme: vi.fn(),
+    ...overrides,
+  }
+  return { deps, handlers: createHandlers(deps) }
+}
+
+const state = async (result: Promise<IpcResult<unknown>>) => unwrap(await result) as AppState
+
+describe('IPC handlers', () => {
+  let ctx: ReturnType<typeof setup>
+  beforeEach(() => {
+    ctx = setup()
+  })
+
+  it('returns the full state', async () => {
+    expect(await state(ctx.handlers.getState())).toEqual({
+      settings: { language: null, theme: 'system' },
+      applications: [],
+      storage: okStorage,
+    })
+  })
+
+  it('runs the whole application and note lifecycle', async () => {
+    const h = ctx.handlers
+    let s = await state(h.createApplication({ title: ' Dev ', company: 'Acme', url: '' }))
+    const id = s.applications[0]!.id
+    expect(s.applications[0]).toMatchObject({ title: 'Dev', url: null })
+
+    s = await state(h.updateApplication(id, { company: 'Globex' }))
+    expect(s.applications[0]?.company).toBe('Globex')
+
+    s = await state(h.moveApplication(id, { stage: 'offered', index: 0 }))
+    expect(s.applications[0]?.stage).toBe('offered')
+
+    s = await state(h.addNote(id, 'call'))
+    const noteId = s.applications[0]!.notes[0]!.id
+    s = await state(h.updateNote(id, noteId, 'call done'))
+    expect(s.applications[0]?.notes[0]?.text).toBe('call done')
+    s = await state(h.deleteNote(id, noteId))
+    expect(s.applications[0]?.notes).toEqual([])
+
+    s = await state(h.deleteApplication(id))
+    expect(s.applications).toEqual([])
+  })
+
+  it('saves settings and applies the theme (FR-082)', async () => {
+    await state(ctx.handlers.setLanguage('uk'))
+    const s = await state(ctx.handlers.setTheme('dark'))
+    expect(s.settings).toEqual({ language: 'uk', theme: 'dark' })
+    expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
+  })
+
+  it.each([
+    ['createApplication', [{ title: '', company: 'x' }]],
+    ['createApplication', [{ title: 'a', company: 'b', url: 'ftp://x' }]],
+    ['createApplication', []],
+    ['updateApplication', ['not-a-uuid', {}]],
+    ['moveApplication', ['00000000-0000-4000-8000-000000000001', { stage: 'nope', index: 0 }]],
+    ['addNote', ['00000000-0000-4000-8000-000000000001', '']],
+    ['setLanguage', ['de']],
+    ['setTheme', ['neon']],
+    ['openExternal', ['file:///etc/passwd']],
+    ['openExternal', ['javascript:alert(1)']],
+  ] as const)('%s rejects invalid input %j with VALIDATION', async (method, args) => {
+    const result = await ctx.handlers[method](...args)
+    expect(result).toMatchObject({ ok: false, error: { code: 'VALIDATION' } })
+  })
+
+  it('maps unknown ids to NOT_FOUND', async () => {
+    const result = await ctx.handlers.deleteApplication('00000000-0000-4000-8000-000000000099')
+    expect(result).toMatchObject({ ok: false, error: { code: 'NOT_FOUND' } })
+  })
+
+  it('opens only http(s) links in the system browser (FR-015)', async () => {
+    unwrap(await ctx.handlers.openExternal('https://acme.com/jobs/1'))
+    expect(ctx.deps.openExternal).toHaveBeenCalledWith('https://acme.com/jobs/1')
+  })
+
+  it('reports system locale and app info', async () => {
+    expect(unwrap(await ctx.handlers.getSystemLocale())).toBe('uk-UA')
+    expect(unwrap(await ctx.handlers.getAppInfo())).toEqual({
+      version: '0.1.0',
+      dataFilePath: '/data/findy.db',
+    })
+  })
+})
+
+describe('IPC handlers without storage (FR-054)', () => {
+  const storage = {
+    status: 'error' as const,
+    error: 'corrupt' as const,
+    dataFilePath: '/data/findy.db',
+    backupPath: '/data/findy.corrupt.db',
+  }
+
+  it('returns an empty state with the storage error', async () => {
+    const { handlers } = setup({ repository: null, storage })
+    expect(await state(handlers.getState())).toEqual({
+      settings: { language: null, theme: 'system' },
+      applications: [],
+      storage,
+    })
+  })
+
+  it('rejects every mutation with STORAGE', async () => {
+    const { handlers } = setup({ repository: null, storage })
+    const result = await handlers.createApplication({ title: 'a', company: 'b' })
+    expect(result).toMatchObject({ ok: false, error: { code: 'STORAGE' } })
+    expect(await handlers.setTheme('dark')).toMatchObject({ ok: false })
+  })
+})
+
+describe('unwrap', () => {
+  it('throws an IpcError with the code', () => {
+    expect(() => unwrap({ ok: false, error: { code: 'NOT_FOUND', message: 'gone' } })).toThrow(
+      expect.objectContaining({ name: 'IpcError', code: 'NOT_FOUND', message: 'NOT_FOUND: gone' }),
+    )
+    expect(new IpcError({ code: 'STORAGE', message: 'x' })).toBeInstanceOf(Error)
+  })
+
+  it('recovers the code from a message that crossed contextBridge', () => {
+    expect(getIpcErrorCode(new Error('Error invoking remote method: VALIDATION: bad'))).toBe(
+      'VALIDATION',
+    )
+    expect(getIpcErrorCode(new IpcError({ code: 'STORAGE', message: 'x' }))).toBe('STORAGE')
+    expect(getIpcErrorCode('plain failure')).toBeNull()
+  })
+
+  it('maps non-Error throws to STORAGE', async () => {
+    const { repository } = memoryRepository()
+    vi.spyOn(repository, 'listApplications').mockImplementation(() => {
+      throw 'disk on fire'
+    })
+    const { handlers } = setup({ repository })
+    expect(await handlers.getState()).toEqual({
+      ok: false,
+      error: { code: 'STORAGE', message: 'disk on fire' },
+    })
+  })
+})

@@ -35,6 +35,9 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
 ## Code rules
 
 - TypeScript strict. Business logic goes in `src/domain` (pure, no Electron/React/fs).
+- Renderer: `app/` → `features/*` → `ui/` (docs/architecture.md D-7). One folder per
+  component (`Name/Name.tsx`, `Name.module.css`, `index.ts`). Never duplicate a control,
+  dialog, menu, icon or style: reuse or extend `@ui` first. All IPC goes through `useAppState`.
 - Renderer never imports Node/Electron; it uses only `window.findy`
   (see docs/contracts/ipc.md). Validate all IPC input with zod in main.
 - Every user-visible string goes into **both** `locales/en.json` and
@@ -43,18 +46,23 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
   new migration file + test; never edit a released migration
   (docs/contracts/database.md). Each IPC mutation runs in one transaction.
 - Follow docs/security.md for anything in `src/main` or `src/preload`.
+- E2E: `e2e/` follows playwright-e2e-kit layers (specs → steps → screens, data via fixtures);
+  ESLint enforces them. No locators or raw `page` in specs. See docs/architecture.md D-6.
 
 ## Commands
 
 ```bash
 npm run dev        # run app
 npm test           # unit tests (Vitest)
-npm run test:e2e   # e2e (Playwright + Electron)
+npm run test:coverage  # unit tests + 80 % coverage gate (same as CI)
+npm run test:e2e   # e2e (Playwright + Electron, playwright-e2e-kit layers in e2e/)
 npm run lint       # eslint + tsc
 npm run dist       # installer for current OS
 ```
 
-Before finishing a task: `npm run lint && npm test` must pass.
+Before finishing a task: `npm run lint && npm run test:coverage` must pass
+(coverage ≥ 80 %, see docs/release.md → CI). New code in `src/domain`,
+`src/main`, `src/shared` needs unit tests.
 
 ## Skills
 

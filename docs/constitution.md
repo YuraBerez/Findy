@@ -67,6 +67,9 @@ No production code is written without an approved spec.
 2. Domain logic (board, items, notes, persistence) is pure and unit-tested
    independently of Electron and React.
 3. `main` is always releasable: lint, type-check and tests pass in CI.
+4. **Quality gate:** every PR must keep unit-test coverage at **≥ 80 %**
+   (lines, branches, functions, statements). Lowering the threshold requires a
+   constitution change.
 
 ## VII. Simplicity
 

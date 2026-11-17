@@ -45,8 +45,9 @@ publishes Windows/macOS/Linux builds. It establishes everything described in
 | FR-020…024 | `domain/board.ts#moveApplication`, dnd-kit in `Board`, `Card` menu |
 | FR-030…033 | `domain/notes.ts`, `NotesPanel` |
 | FR-040…044 | `locales/*.json`, `renderer/i18n.ts`, `main/i18n.ts`, `main/menu.ts` |
-| FR-050…054 | `main/db/*` (connection, migrate, migrations/001-init.sql, repositories) |
+| FR-050…054 | `main/db/*` (connection, migrate, migrations/001-init.ts, repositories) |
 | FR-060 | `domain/search.ts`, `SearchBox` |
+| FR-080…083 | `settings` row `theme`, `setTheme` IPC → `nativeTheme.themeSource`, sun/moon `ThemeToggle` in toolbar, CSS tokens under `prefers-color-scheme` |
 | FR-070…072 | `electron-builder.yml`, `.github/workflows/release.yml`, About dialog |
 
 ## UI sketch
@@ -70,6 +71,6 @@ the vacancy link and notes.
 | Risk | Mitigation |
 |------|-----------|
 | Unsigned macOS builds blocked by Gatekeeper | Documented workaround; signing as a follow-up spec |
-| Native module build fails on a platform/arch | `install-app-deps` on postinstall; CI `--dir` build on all 3 OSes on every PR; test packaged app launches |
+| Native module fails to load on a platform/arch | Node-API prebuilds (no rebuild); CI packages on all 3 OSes and runs `smoke:packaged` on every PR |
 | Performance at large volume (NFR-002) | Indexes on `(stage, position)` and `application_id`; measure with 1 000-item fixture |
 | Ukrainian plural forms wrong | Unit tests for 1/2/5/11/21 counts |

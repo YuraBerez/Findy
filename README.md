@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" width="128" height="128" alt="Findy logo"></p>
+
 # Findy
 
 **A free, open-source desktop app to track your job search.**
@@ -65,6 +67,7 @@ Other commands:
 | `npm run build` | Production build of the app code |
 | `npm run dist` | Build an installer for your current OS into `dist/` |
 | `npm test` | Unit tests |
+| `npm run test:coverage` | Unit tests with the 80 % coverage gate |
 | `npm run test:e2e` | End-to-end tests against the real app |
 | `npm run lint` | Lint and type-check |
 
