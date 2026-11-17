@@ -123,15 +123,23 @@ export class BoardScreen extends BaseComponent {
    */
   async moveWithKeyboard(
     title: string,
+    from: StageId,
     steps: { key: 'ArrowLeft' | 'ArrowRight'; reaches: StageId }[],
   ): Promise<void> {
     const card = this.card(title)
     await card.press('Space')
     // dnd-kit marks the picked-up card; arrows before that are ignored
     await expect(card).toHaveAttribute('aria-pressed', 'true')
+    let current = from
     for (const step of steps) {
-      await card.press(step.key)
-      await expect(this.card(title, this.column(step.reaches))).toHaveCount(1)
+      // dnd-kit attaches its key listener in a timeout after pick-up, so on a busy
+      // machine the first arrow can be lost. Press again only while the card is
+      // still in the previous column: it can never move twice.
+      await expect(async () => {
+        if ((await this.card(title, this.column(current)).count()) > 0) await card.press(step.key)
+        await expect(this.card(title, this.column(step.reaches))).toHaveCount(1, { timeout: 1_000 })
+      }).toPass()
+      current = step.reaches
     }
     await card.press('Space')
     await expect(card).not.toHaveAttribute('aria-pressed', 'true')

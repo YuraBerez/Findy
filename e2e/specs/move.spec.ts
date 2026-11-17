@@ -52,7 +52,9 @@ test.describe('move applications (US-2)', () => {
       await board.verifyCards('hr_interview', ['Rejected card'])
     })
     await test.step('keyboard: HR interview → Applied', async () => {
-      await board.moveWithKeyboard('Rejected card', [{ key: 'ArrowLeft', reaches: 'applied' }])
+      await board.moveWithKeyboard('Rejected card', 'hr_interview', [
+        { key: 'ArrowLeft', reaches: 'applied' },
+      ])
       await board.verifyCards('hr_interview', [])
       await board.verifyCardFocused('applied', 'Rejected card')
     })
@@ -117,7 +119,7 @@ test.describe('move applications (US-2)', () => {
     await findy.api.seed([{ title: 'Designer' }])
     await findy.refresh()
 
-    await board.moveWithKeyboard('Designer', [
+    await board.moveWithKeyboard('Designer', 'applied', [
       { key: 'ArrowRight', reaches: 'hr_interview' },
       { key: 'ArrowRight', reaches: 'test_task' },
     ])
