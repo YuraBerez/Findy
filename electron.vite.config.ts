@@ -1,3 +1,4 @@
+import { resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'electron-vite'
 import type { Plugin } from 'vite'
@@ -18,6 +19,14 @@ export default defineConfig({
   main: {},
   preload: {},
   renderer: {
+    // Keep in sync with `paths` in tsconfig.web.json
+    resolve: {
+      alias: {
+        '@domain': resolve('src/domain'),
+        '@shared': resolve('src/shared'),
+        '@ui': resolve('src/renderer/ui'),
+      },
+    },
     plugins: [react(), devCsp()],
   },
 })

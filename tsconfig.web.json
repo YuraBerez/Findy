@@ -4,7 +4,12 @@
     "composite": true,
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "paths": {
+      "@domain/*": ["./src/domain/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@ui": ["./src/renderer/ui"]
+    }
   },
   "include": ["src/renderer/**/*", "src/shared/**/*", "src/domain/**/*"]
 }

@@ -1,4 +1,4 @@
-import { elapsed } from '../domain/time'
+import { elapsed } from '@domain/time'
 
 /** "3 days ago" / "3 дні тому" (FR-003, FR-043). */
 export function formatSince(iso: string, language: string, now = new Date()): string {

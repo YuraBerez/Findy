@@ -80,12 +80,17 @@ src/
 │   └── i18n.ts          # main-process strings (menu, dialogs)
 ├── preload/
 │   └── index.ts
-└── renderer/
-    ├── index.html
-    ├── main.tsx
-    ├── i18n.ts
-    ├── components/
-    └── styles/
+└── renderer/            # component architecture (D-7)
+    ├── index.html, main.tsx, i18n.ts, format.ts
+    ├── app/             # App, Toolbar, useAppState (all IPC calls)
+    ├── features/        # one folder per feature, one folder per component
+    │   ├── board/       # Board/, Column/, Card/, CardActions/, dnd.ts, useBoardDnd.ts
+    │   ├── applications/# ApplicationDialog/
+    │   ├── settings/    # ThemeToggle/, LanguageSelect/
+    │   └── storage/     # StorageError/
+    ├── ui/              # design-system primitives: Button, IconButton, Field,
+    │                    # TextField, Select, Dialog, Menu, Switch, icons, styles/
+    └── styles/          # global.css: tokens and reset only
 locales/
 ├── en.json              # single source for main + renderer strings
 └── uk.json
@@ -156,6 +161,21 @@ build/                   # icons, entitlements for electron-builder
   mode opens a new page and Electron cannot. Formatting and exclusions come from the kit.
 - **Rule:** the renderer must not trigger CSP violations; zod stays out of the renderer
   (`domain/limits.ts`), because zod v4 probes `new Function()` on load.
+
+### D-7 — Renderer: components in folders, primitives in `ui/`, no duplication
+
+- **Layers** (imports go down only): `app/` → `features/*` → `ui/`.
+  `ui/` has no business logic, no IPC and no i18n keys: it takes text as props.
+  Features never import each other's internals, only a feature's `index.ts`.
+- **One folder per component:** `Name/Name.tsx`, `Name.module.css`, `index.ts`
+  (later its tests and stories too). Import a folder, not its files.
+- **No duplication:** a control, dialog, menu, icon or style that a second place needs
+  moves to `ui/` first. Form controls compose `ui/styles/control.module.css`;
+  `Field` owns label/hint/error and their ARIA wiring for every control.
+- **One place per concern:** `Dialog` opens native dialogs; `Menu` owns the menu-button
+  keyboard pattern; `useAppState` owns all IPC calls; `features/board/dnd.ts` and
+  `useBoardDnd` own drag-and-drop, `Board` only renders.
+- **Aliases:** `@domain/*`, `@shared/*`, `@ui` (tsconfig.web.json + electron.vite.config.ts).
 
 ## Cross-cutting docs
 

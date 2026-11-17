@@ -14,6 +14,10 @@ if (process.env.FINDY_USER_DATA_DIR) {
 
 const devServerUrl = process.env.ELECTRON_RENDERER_URL
 
+// A packaged app takes its icon from the bundle; an unpacked run (npm run dev, e2e)
+// would show Electron's default icon in the Dock / taskbar, so set Findy's
+const devIcon = app.isPackaged ? undefined : join(app.getAppPath(), 'build', 'icon.png')
+
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1280,
@@ -22,6 +26,7 @@ function createWindow(): BrowserWindow {
     minHeight: 600,
     show: false,
     title: 'Findy',
+    icon: devIcon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       contextIsolation: true,
@@ -45,6 +50,7 @@ function createWindow(): BrowserWindow {
 }
 
 function start(): void {
+  if (devIcon && process.platform === 'darwin') app.dock?.setIcon(devIcon)
   const opened = openDatabase(app.getPath('userData'))
   const repository = opened.status === 'ok' ? new Repository(opened.db) : null
   const storage =
