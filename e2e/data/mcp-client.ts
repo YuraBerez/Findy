@@ -26,8 +26,15 @@ export class McpTestClient {
       command: electronBinary,
       args,
       env: { ...(process.env as Record<string, string>), FINDY_USER_DATA_DIR: userDataDir },
-      stderr: 'ignore',
+      stderr: 'pipe',
     })
+    // Findy logs to stderr in MCP mode; show it when the connection fails
+    let log = ''
+    transport.stderr?.on('data', (chunk) => (log += String(chunk)))
+    client.onclose = () => {
+      if (log && !closing.has(client))
+        console.log(`Findy --mcp closed the connection. Its stderr:\n${log}`)
+    }
     await client.connect(transport)
     return new McpTestClient(client, transport)
   }
@@ -49,6 +56,7 @@ export class McpTestClient {
   /** Closes the connection and waits until `Findy --mcp` has exited (it holds the database) */
   async close(): Promise<void> {
     const pid = this.transport.pid
+    closing.add(this.client)
     await this.client.close()
     if (pid === null) return
     const deadline = Date.now() + 5_000
@@ -56,6 +64,9 @@ export class McpTestClient {
       await new Promise((resolve) => setTimeout(resolve, 50))
   }
 }
+
+/** Clients closed by the test, not by Findy */
+const closing = new WeakSet<Client>()
 
 function isRunning(pid: number): boolean {
   try {

@@ -23,7 +23,14 @@ export function stdioTransport(
   stdout: NodeJS.WritableStream = process.stdout,
 ): Transport {
   const transport = new StdioServerTransport(stdin as never, stdout as never)
-  stdin.once('end', () => void transport.close())
+  let received = 0
+  stdin.on('data', () => received++)
+  stdin.once('end', () => {
+    // Electron on Windows can report the end of stdin before the client writes
+    // anything; only a session that has started is closed
+    console.error(`Findy MCP: stdin ended after ${received} chunk(s)`)
+    if (received > 0) void transport.close()
+  })
   return transport
 }
 
