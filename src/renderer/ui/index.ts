@@ -1,10 +1,13 @@
 // Design-system primitives: no business logic, no IPC, no i18n keys.
+export * from './Badge'
 export * from './Button'
+export * from './ConfirmDialog'
 export * from './Dialog'
 export * from './Field'
 export * from './IconButton'
 export * from './icons'
 export * from './Menu'
+export * from './Section'
 export * from './Select'
 export * from './Switch'
 export * from './TextField'

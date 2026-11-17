@@ -63,6 +63,13 @@ Column ↔ entity mapping is in [data-model.md](../data-model.md)
   database is never left half-updated.
 - Changes are committed immediately; there is no "Save" step.
 
+## Reset (FR-092, FR-093)
+
+`resetBoard` first copies the database with `VACUUM INTO
+'findy.backup-reset-<timestamp>.db'`, then deletes all rows of `applications` in
+one transaction (`notes` and `stage_changes` go by `ON DELETE CASCADE`).
+`settings` is not touched.
+
 ## Migrations (FR-053)
 
 - Schema version is stored in `PRAGMA user_version`.

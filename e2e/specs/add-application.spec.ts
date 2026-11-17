@@ -64,12 +64,20 @@ test.describe('add an application (US-1)', () => {
     await board.verifyCards('applied', [])
   })
 
-  test('Esc and Cancel close the dialog without saving', async ({ findy }) => {
+  test('Esc, ×, a click outside and Cancel close the dialog without saving', async ({ findy }) => {
     const { board, dialog } = findy.pages
     await test.step('Escape', async () => {
       await board.startAdding()
       await dialog.fill({ title: 'Draft' })
       await dialog.dismissWithEscape()
+      await dialog.verifyClosed()
+    })
+    await test.step('the × and a click outside close it too', async () => {
+      await board.startAdding()
+      await dialog.closeWithCross()
+      await dialog.verifyClosed()
+      await board.startAdding()
+      await dialog.closeByClickingOutside()
       await dialog.verifyClosed()
     })
     await test.step('Cancel, and the form starts empty again', async () => {

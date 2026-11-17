@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { ElectronApplication, Page } from '@playwright/test'
 import type { AppState, Language, NewApplication, StageId, Theme } from '../../src/shared/ipc'
 
 export interface SeedApplication {
@@ -13,7 +13,25 @@ export interface SeedApplication {
  * it calls the same `window.findy` IPC API that the renderer uses.
  */
 export class FindyBackdoor {
-  constructor(private readonly page: Page) {}
+  constructor(
+    private readonly page: Page,
+    private readonly app: ElectronApplication,
+  ) {}
+
+  /** Replaces shell.openExternal in main, so a test can see links without a browser. */
+  async captureExternalLinks(): Promise<void> {
+    await this.app.evaluate(({ shell }) => {
+      const store = globalThis as { openedLinks?: string[] }
+      store.openedLinks = []
+      shell.openExternal = async (url: string) => {
+        store.openedLinks!.push(url)
+      }
+    })
+  }
+
+  openedLinks(): Promise<string[]> {
+    return this.app.evaluate(() => (globalThis as { openedLinks?: string[] }).openedLinks ?? [])
+  }
 
   /** Creates applications so that the first item ends on top of its column (FR-023). */
   async seed(items: SeedApplication[]): Promise<void> {

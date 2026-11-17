@@ -6,14 +6,19 @@ export interface MenuItem {
   key: string
   label: string
   onSelect(): void
+  disabled?: boolean
+  /** Destructive action: shown in the danger colour */
+  danger?: boolean
 }
 
 interface Props {
   /** Accessible name of the trigger button */
   triggerLabel: string
   triggerIcon: ReactNode
-  /** Accessible name and visible heading of the menu */
+  /** Accessible name of the menu */
   label: string
+  /** Show the label as a small heading above the items */
+  showLabel?: boolean
   items: MenuItem[]
 }
 
@@ -21,7 +26,7 @@ interface Props {
  * Menu button (WAI-ARIA pattern): Enter/Space opens and focuses the first item,
  * ↑/↓/Home/End move, Enter picks, Escape/Tab close and return focus to the trigger.
  */
-export function Menu({ triggerLabel, triggerIcon, label, items }: Props) {
+export function Menu({ triggerLabel, triggerIcon, label, items, showLabel = true }: Props) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -30,7 +35,7 @@ export function Menu({ triggerLabel, triggerIcon, label, items }: Props) {
 
   useEffect(() => {
     if (!open) return
-    listRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]')?.focus()
+    listRef.current?.querySelector<HTMLButtonElement>('[role="menuitem"]:not(:disabled)')?.focus()
     const closeOnOutside = (event: PointerEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) setOpen(false)
     }
@@ -45,7 +50,9 @@ export function Menu({ triggerLabel, triggerIcon, label, items }: Props) {
 
   const onKeyDown = (event: KeyboardEvent) => {
     const all = [
-      ...(listRef.current?.querySelectorAll<HTMLButtonElement>('[role="menuitem"]') ?? []),
+      ...(listRef.current?.querySelectorAll<HTMLButtonElement>(
+        '[role="menuitem"]:not(:disabled)',
+      ) ?? []),
     ]
     const index = all.indexOf(document.activeElement as HTMLButtonElement)
     const focus = (i: number) => all[(i + all.length) % all.length]?.focus()
@@ -78,15 +85,19 @@ export function Menu({ triggerLabel, triggerIcon, label, items }: Props) {
           className={styles.menu}
           onKeyDown={onKeyDown}
         >
-          <p className={styles.heading} aria-hidden="true">
-            {label}
-          </p>
+          {showLabel && (
+            <p className={styles.heading} aria-hidden="true">
+              {label}
+            </p>
+          )}
           {items.map((item) => (
             <button
               key={item.key}
               type="button"
               role="menuitem"
               className={styles.item}
+              disabled={item.disabled}
+              data-danger={item.danger || undefined}
               onClick={() => {
                 close()
                 item.onSelect()

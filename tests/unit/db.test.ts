@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import Database from 'better-sqlite3'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { DB_FILE_NAME, fileStamp, openDatabase } from '../../src/main/db/connection'
+import { backupDatabase, DB_FILE_NAME, fileStamp, openDatabase } from '../../src/main/db/connection'
 import { getUserVersion, migrate } from '../../src/main/db/migrate'
 import { MIGRATIONS, SCHEMA_VERSION } from '../../src/main/db/migrations'
 import { tempDir } from './helpers/db'
@@ -140,5 +140,23 @@ describe('openDatabase (FR-051, FR-054)', () => {
   it('reports open_failed when the directory does not exist', () => {
     const result = openDatabase(join(dir, 'missing', 'nested'), { now: fixedNow })
     expect(result).toMatchObject({ status: 'error', error: 'open_failed', backupPath: null })
+  })
+})
+
+describe('backupDatabase (FR-092)', () => {
+  it('copies the open database with a label and time', () => {
+    const { dir, cleanup } = tempDir()
+    const opened = openDatabase(dir, { now: fixedNow })
+    if (opened.status !== 'ok') throw new Error('expected ok')
+    opened.db.prepare("INSERT INTO settings VALUES ('theme', 'dark')").run()
+
+    const path = backupDatabase(opened.db, dir, 'reset', fixedNow)
+
+    expect(path).toBe(join(dir, `findy.backup-reset-${fileStamp(fixedNow())}.db`))
+    const copy = new Database(path, { readonly: true })
+    expect(copy.prepare('SELECT value FROM settings').get()).toEqual({ value: 'dark' })
+    copy.close()
+    opened.db.close()
+    cleanup()
   })
 })

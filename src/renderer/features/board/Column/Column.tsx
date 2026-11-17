@@ -4,19 +4,14 @@ import { useTranslation } from 'react-i18next'
 import type { Application, StageId } from '@shared/ipc'
 import { SortableCard } from '../Card'
 import { COLUMN_PREFIX } from '../dnd'
-import type { MoveHandler } from '../useBoardDnd'
 import styles from './Column.module.css'
 
 interface Props {
   stage: StageId
   applications: Application[]
-  onMove: MoveHandler
-  /** Card to focus after it moved (it remounts in its new column) */
-  focusId: string | null
-  onFocused(): void
 }
 
-export function Column({ stage, applications, onMove, focusId, onFocused }: Props) {
+export function Column({ stage, applications }: Props) {
   const { t } = useTranslation()
   // The whole column is a drop target, so empty columns accept cards too
   const { setNodeRef, isOver } = useDroppable({ id: COLUMN_PREFIX + stage })
@@ -49,12 +44,7 @@ export function Column({ stage, applications, onMove, focusId, onFocused }: Prop
         <ul className={styles.cards}>
           {applications.map((application) => (
             <li key={application.id}>
-              <SortableCard
-                application={application}
-                onMove={onMove}
-                focus={focusId === application.id}
-                onFocused={onFocused}
-              />
+              <SortableCard application={application} />
             </li>
           ))}
         </ul>

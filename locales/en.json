@@ -5,7 +5,8 @@
   },
   "toolbar": {
     "label": "Main toolbar",
-    "addApplication": "Add application"
+    "addApplication": "Add application",
+    "menu": "App menu"
   },
   "theme": {
     "dark": "Dark theme",
@@ -42,7 +43,8 @@
     "notes_other": "{{count}} notes",
     "inStage": "In this stage since {{date}}",
     "actions": "Actions for {{title}}",
-    "moveTo": "Move to"
+    "moveTo": "Move to",
+    "openVacancy": "Open the vacancy for {{title}}"
   },
   "form": {
     "createTitle": "New application",
@@ -61,7 +63,7 @@
     }
   },
   "dnd": {
-    "instructions": "To pick up a card, press Space or Enter. Use the arrow keys to move it. Press Space or Enter again to drop it, or Escape to cancel.",
+    "instructions": "Press Enter to open a card. To move it, press Space, use the arrow keys, then press Space again to drop it or Escape to cancel.",
     "picked": "Picked up {{title}}.",
     "over": "{{title}} is over {{stage}}.",
     "dropped": "{{title}} was moved to {{stage}}.",
@@ -69,5 +71,44 @@
   },
   "language": {
     "label": "Language"
+  },
+  "details": {
+    "openVacancy": "Open vacancy",
+    "save": "Save changes",
+    "saved": "Saved",
+    "history": "Stage history",
+    "created": "Created {{date}}",
+    "updated": "Updated {{date}}",
+    "delete": "Delete application",
+    "deleteTitle": "Delete this application?",
+    "deleteMessage": "“{{title}}” and all its notes will be deleted. This cannot be undone.",
+    "fields": "Details",
+    "showAll": "Show all ({{count}})",
+    "showLess": "Show less"
+  },
+  "notes": {
+    "title": "Notes",
+    "new": "New note",
+    "add": "Add note",
+    "empty": "No notes yet. Write the first one: who you talked to, salary, next steps…",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edited": "edited",
+    "editLabel": "Note text",
+    "deleteTitle": "Delete this note?",
+    "deleteMessage": "This cannot be undone.",
+    "placeholder": "Write a note…"
+  },
+  "common": {
+    "close": "Close"
+  },
+  "reset": {
+    "menuItem": "Reset board…",
+    "title": "Reset the board?",
+    "confirm": "Reset board",
+    "message_one": "{{count}} application will be deleted with its notes and stage history. Findy saves a backup copy of your data first.",
+    "message_other": "{{count}} applications will be deleted with their notes and stage history. Findy saves a backup copy of your data first."
   }
 }

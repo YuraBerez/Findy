@@ -75,19 +75,93 @@ export class BoardScreen extends BaseComponent {
     await this.languageSelect.selectOption({ label: name })
   }
 
+  private appMenuItem(name: string): Locator {
+    return this.menu.getByRole('menuitem', { name })
+  }
+
+  async openAppMenu(): Promise<void> {
+    await this.toolbar.getByRole('button', { name: 'App menu' }).click()
+    await expect(this.menu).toBeVisible()
+  }
+
+  /** US-10: app menu → Reset board… → confirm or cancel */
+  async resetBoard(answer: 'confirm' | 'cancel'): Promise<void> {
+    if ((await this.page.getByRole('alertdialog').count()) === 0) await this.startReset()
+    const confirm = this.page.getByRole('alertdialog', { name: 'Reset the board?' })
+    await confirm
+      .getByRole('button', { name: answer === 'confirm' ? 'Reset board' : 'Cancel' })
+      .click()
+    await expect(confirm).toBeHidden()
+  }
+
+  /** Opens the confirmation and leaves it open */
+  async startReset(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem('Reset board…').click()
+  }
+
+  async verifyResetConfirmation(message: string): Promise<void> {
+    const confirm = this.page.getByRole('alertdialog', { name: 'Reset the board?' })
+    await expect(confirm).toContainText(message)
+    // FR-091: Cancel is the default action
+    await expect(confirm.getByRole('button', { name: 'Cancel' })).toBeFocused()
+  }
+
+  async verifyResetDisabled(): Promise<void> {
+    await this.openAppMenu()
+    await expect(this.appMenuItem('Reset board…')).toBeDisabled()
+    await this.toolbar.getByRole('button', { name: 'App menu' }).click() // close it again
+    await expect(this.menu).toBeHidden()
+  }
+
   // ── Cards ──────────────────────────────────────────────────────────────
 
-  /** Drags a card onto a column (its free space) or onto another card. */
-  async dragCard(title: string, target: { stage: StageId } | { onto: string }): Promise<void> {
-    const destination = 'stage' in target ? this.column(target.stage) : this.card(target.onto)
-    const box = await destination.boundingBox()
-    if (!box) throw new Error('Drop target is not visible')
-    await this.card(title).dragTo(destination, {
+  /**
+   * Drags a card onto a column (its free space) or in front of another card.
+   * "In front of" drops into the gap just above that card: cards shift while the
+   * drag runs, but the card below the gap stays the closest one.
+   */
+  async dragCard(
+    title: string,
+    target: { stage: StageId } | { before: string; in: StageId },
+  ): Promise<void> {
+    const column = this.column('stage' in target ? target.stage : target.in)
+    const columnBox = await column.boundingBox()
+    if (!columnBox) throw new Error('Drop column is not visible')
+    let y = columnBox.height * 0.6
+    if ('before' in target) {
+      const cardBox = await this.card(target.before).boundingBox()
+      if (!cardBox) throw new Error('Drop card is not visible')
+      y = cardBox.y - columnBox.y - 4
+    }
+    await this.card(title).dragTo(column, {
       steps: 20,
-      // Free space of a column is below its cards; the upper part of a card means "before it"
-      targetPosition:
-        'stage' in target ? { x: box.width / 2, y: box.height * 0.6 } : { x: box.width / 2, y: 4 },
+      targetPosition: { x: columnBox.width / 2, y },
     })
+  }
+
+  /** FR-025: a click on the card opens its details */
+  async openCard(title: string): Promise<void> {
+    await this.card(title).click()
+  }
+
+  async openCardWithEnter(title: string): Promise<void> {
+    await this.card(title).press('Enter')
+  }
+
+  /** FR-016 */
+  async openVacancyFromCard(title: string): Promise<void> {
+    await this.page.getByRole('button', { name: `Open the vacancy for ${title}` }).click()
+  }
+
+  async verifyVacancyButton(title: string, shown: boolean): Promise<void> {
+    const button = this.page.getByRole('button', { name: `Open the vacancy for ${title}` })
+    if (shown) await expect(button).toBeVisible()
+    else await expect(button).toBeHidden()
+  }
+
+  async verifyCardFocusedAnywhere(title: string): Promise<void> {
+    await expect(this.card(title)).toBeFocused()
   }
 
   async moveWithMenu(title: string, stageName: string): Promise<void> {

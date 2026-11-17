@@ -15,11 +15,13 @@ interface Props {
   /** Message under the control; marks it invalid */
   error?: string
   id?: string
+  /** Keep the label for assistive technology only, when the context already says it */
+  hideLabel?: boolean
   children(control: ControlProps): ReactNode
 }
 
 /** Label, hint and error around any control, with the ARIA wiring done once. */
-export function Field({ label, hint, error, id: givenId, children }: Props) {
+export function Field({ label, hint, error, id: givenId, hideLabel = false, children }: Props) {
   const generated = useId()
   const id = givenId ?? generated
   const hintId = hint ? `${id}-hint` : undefined
@@ -28,7 +30,7 @@ export function Field({ label, hint, error, id: givenId, children }: Props) {
 
   return (
     <div className={styles.field}>
-      <label htmlFor={id} className={styles.label}>
+      <label htmlFor={id} className={hideLabel ? styles.hidden : styles.label}>
         {label}
         {hint && (
           <span id={hintId} className={styles.hint}>

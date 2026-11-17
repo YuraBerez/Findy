@@ -20,6 +20,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     getSystemLocale: () => 'uk-UA',
     openExternal: vi.fn(async () => {}),
     applyTheme: vi.fn(),
+    backup: vi.fn(),
     ...overrides,
   }
   return { deps, handlers: createHandlers(deps) }
@@ -103,6 +104,29 @@ describe('IPC handlers', () => {
       version: '0.1.0',
       dataFilePath: '/data/findy.db',
     })
+  })
+})
+
+describe('resetBoard (FR-090…093)', () => {
+  it('backs up first, then deletes all applications', async () => {
+    const order: string[] = []
+    const ctx = setup({ backup: vi.fn(() => order.push('backup')) })
+    await state(ctx.handlers.createApplication({ title: 'a', company: 'b' }))
+    const s = await state(ctx.handlers.resetBoard())
+    expect(order).toEqual(['backup'])
+    expect(ctx.deps.backup).toHaveBeenCalledWith('reset')
+    expect(s.applications).toEqual([])
+  })
+
+  it('deletes nothing when the backup fails', async () => {
+    const ctx = setup({
+      backup: vi.fn(() => {
+        throw new Error('disk full')
+      }),
+    })
+    await state(ctx.handlers.createApplication({ title: 'a', company: 'b' }))
+    expect(await ctx.handlers.resetBoard()).toMatchObject({ ok: false, error: { code: 'STORAGE' } })
+    expect((await state(ctx.handlers.getState())).applications).toHaveLength(1)
   })
 })
 

@@ -43,8 +43,8 @@
 }
 
 .title {
-  /* Room for the ⋯ button in the top-right corner */
-  padding-right: 28px;
+  /* Room for the link and ⋯ buttons in the top-right corner */
+  padding-right: 56px;
   font-size: 14px;
   font-weight: 600;
 }

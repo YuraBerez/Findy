@@ -29,6 +29,7 @@ interface FindyApi {
   }): Promise<AppState>;
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>;
   deleteApplication(id: string): Promise<AppState>;
+  resetBoard(): Promise<AppState>;                    // backup first, then delete all applications (FR-090…093)
 
   // Notes
   addNote(applicationId: string, text: string): Promise<AppState>;

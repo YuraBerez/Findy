@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -10,6 +10,7 @@ import {
 } from '@playwright/test'
 import { errorGuardFixture, type ErrorGuard } from 'playwright-e2e-kit'
 import { FindyBackdoor } from '../data/findy-backdoor'
+import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { BoardScreen } from '../screens/board.screen'
 import { ElectronA11ySteps } from '../steps/a11y.steps'
@@ -20,6 +21,7 @@ export { expect } from '@playwright/test'
 export interface FindyPages {
   board: BoardScreen
   dialog: ApplicationDialogScreen
+  details: ApplicationDetailsScreen
   applications: ApplicationSteps
   a11y: ElectronA11ySteps
 }
@@ -30,6 +32,8 @@ export interface Findy {
   api: FindyBackdoor
   /** Reload the window, e.g. to show data seeded through the back door. */
   refresh(): Promise<void>
+  /** File names in the app's data directory (database, backups) */
+  dataFiles(): string[]
   /** Close the app and start it again on the same database (US-6). Use the new pages. */
   restart(): Promise<FindyPages>
 }
@@ -68,6 +72,7 @@ function pagesFor(page: Page): FindyPages {
   return {
     board,
     dialog,
+    details: new ApplicationDetailsScreen(page),
     applications: new ApplicationSteps({ board, dialog }),
     a11y: new ElectronA11ySteps(page),
   }
@@ -107,7 +112,8 @@ export const test = base.extend<Fixtures>({
     let window = page
     const findy: Findy = {
       pages: pagesFor(page),
-      api: new FindyBackdoor(page),
+      api: new FindyBackdoor(page, electronApp),
+      dataFiles: () => readdirSync(userDataDir),
       refresh: async () => {
         await window.reload()
         await window.getByTestId('app').waitFor()
@@ -118,7 +124,7 @@ export const test = base.extend<Fixtures>({
         await errorGuard.watch(app.context())
         window = await firstWindow(app)
         findy.pages = pagesFor(window)
-        findy.api = new FindyBackdoor(window)
+        findy.api = new FindyBackdoor(window, app)
         return findy.pages
       },
     }
