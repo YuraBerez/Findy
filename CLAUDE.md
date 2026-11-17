@@ -49,9 +49,12 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
 ```bash
 npm run dev        # run app
 npm test           # unit tests (Vitest)
+npm run test:coverage  # unit tests + 80 % coverage gate (same as CI)
 npm run test:e2e   # e2e (Playwright + Electron)
 npm run lint       # eslint + tsc
 npm run dist       # installer for current OS
 ```
 
-Before finishing a task: `npm run lint && npm test` must pass.
+Before finishing a task: `npm run lint && npm run test:coverage` must pass
+(coverage ≥ 80 %, see docs/release.md → CI). New code in `src/domain`,
+`src/main`, `src/shared` needs unit tests.

@@ -70,6 +70,6 @@ the vacancy link and notes.
 | Risk | Mitigation |
 |------|-----------|
 | Unsigned macOS builds blocked by Gatekeeper | Documented workaround; signing as a follow-up spec |
-| Native module build fails on a platform/arch | `install-app-deps` on postinstall; CI `--dir` build on all 3 OSes on every PR; test packaged app launches |
+| Native module fails to load on a platform/arch | Node-API prebuilds (no rebuild); CI packages on all 3 OSes and runs `smoke:packaged` on every PR |
 | Performance at large volume (NFR-002) | Indexes on `(stage, position)` and `application_id`; measure with 1 000-item fixture |
 | Ukrainian plural forms wrong | Unit tests for 1/2/5/11/21 counts |

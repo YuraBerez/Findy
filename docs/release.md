@@ -15,15 +15,28 @@ is in progress (`0.x.y`).
 
 ## Native modules
 
-`better-sqlite3` is a native module. `postinstall` runs
-`electron-builder install-app-deps` to rebuild it for Electron. Each OS is built
-on its own runner; macOS builds arm64 and x64 separately so each `.dmg` gets the
-right binary. Cross-compiling Windows/Linux builds from macOS is not supported.
+`better-sqlite3` is the only native module. It ships Node-API prebuilds for
+every target platform/arch, so nothing is compiled or rebuilt
+(`npmRebuild: false`, architecture D-2). Each OS is still packaged on its own CI
+runner, and `npm run smoke:packaged` launches the unpacked build with
+`FINDY_SMOKE_TEST=1` to prove it can open a SQLite database.
 
 ## CI — `.github/workflows/ci.yml`
 
-On every push and PR: `npm ci` → lint → type-check → unit tests → e2e tests
-(Linux under `xvfb-run`) → `electron-builder --dir` smoke build on all three OSes.
+On every push to `main` and every PR:
+
+1. **Quality gate** (Ubuntu): `format:check` → `lint` (ESLint + tsc) →
+   `test:coverage`. Coverage thresholds are **80 %** for lines, branches,
+   functions and statements (`vitest.config.ts`); below that the job fails.
+   A coverage table is published in the job summary.
+2. **E2E + package** (Windows, macOS, Linux; runs after the gate):
+   `test:e2e` (Linux under `xvfb-run`) → `dist:dir` → `smoke:packaged`.
+
+Coverage scope: `src/domain`, `src/main` (except the Electron bootstrap
+`src/main/index.ts`) and `src/shared`. UI and preload are covered by e2e tests.
+
+To make the gate block merges, mark the `Quality gate …` and `E2E + package …`
+checks as **required** in GitHub → Settings → Branches → branch protection for `main`.
 
 ## Release — `.github/workflows/release.yml`
 

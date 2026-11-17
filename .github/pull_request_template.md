@@ -14,4 +14,4 @@
 - [ ] Tasks ticked in `tasks.md`
 - [ ] Tests cover the acceptance scenarios
 - [ ] New strings added to both `en` and `uk` locales
-- [ ] `npm run lint && npm test` pass
+- [ ] `npm run lint && npm run test:coverage` pass (coverage ≥ 80 %)

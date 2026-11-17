@@ -20,7 +20,7 @@ must be motivated by a spec and land in the same PR.
 | Validation | **zod** | One schema → TS types + runtime validation in main |
 | Database | **SQLite** via **better-sqlite3** | Local embedded DB, transactions, migrations (see D-2) |
 | Packaging | **electron-builder** | Win/mac/Linux targets from CI |
-| Unit tests | **Vitest** | Native to Vite |
+| Unit tests | **Vitest** + `@vitest/coverage-v8` | Native to Vite; coverage gate ≥ 80 % |
 | E2E tests | **Playwright** (`_electron`) | Drives the real packaged-like app |
 | Lint/format | ESLint + Prettier | |
 | Package manager | npm | Zero extra tooling for contributors |
@@ -116,10 +116,13 @@ build/                   # icons, entitlements for electron-builder
   `better-sqlite3` is mature, fast and synchronous (simple code in main).
   `node:sqlite` is still experimental; `sql.js` keeps the DB in memory and
   needs manual flushing; IndexedDB lives in the renderer and breaks D-3.
-- **Cost:** native module. Must be rebuilt for Electron's ABI and for each
-  platform/arch: handled by `electron-builder install-app-deps` (postinstall)
-  and by building each OS on its own CI runner (release.md). macOS arm64 and
-  x64 are built separately with `--arm64` / `--x64`.
+- **Cost:** native module. Since v13, `better-sqlite3` ships Node-API
+  prebuilds for win/mac/linux × x64/arm64 inside the npm package; Node-API is
+  ABI-stable, so the same binary works in Node (unit tests) and Electron
+  without rebuilding. Therefore: its implicit `node-gyp rebuild` install script
+  is denied in `package.json` → `allowScripts`, and electron-builder runs with
+  `npmRebuild: false`. CI verifies every packaged build loads it
+  (`npm run smoke:packaged`).
 - **No ORM:** plain SQL in `repositories.ts` keeps the dependency count low
   (§VII); revisit if queries become complex.
 

@@ -7,17 +7,17 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 1 — Setup
 
-- [ ] T001 Scaffold electron-vite + React + TypeScript (strict) project with the structure from architecture.md
-- [ ] T002 [P] ESLint + Prettier + `npm run lint` / `typecheck` scripts
-- [ ] T003 [P] Vitest config + `npm test`; Playwright `_electron` config + `npm run test:e2e`
-- [ ] T004 [P] `electron-builder.yml` with targets from release.md; app id `io.github.findy`, product name `Findy` (FR-070)
-- [ ] T005 [P] `.github/workflows/ci.yml` — lint, typecheck, unit, e2e, `--dir` build on 3 OSes
+- [x] T001 Scaffold electron-vite + React + TypeScript (strict) project with the structure from architecture.md
+- [x] T002 [P] ESLint + Prettier + `npm run lint` / `typecheck` scripts
+- [x] T003 [P] Vitest config + `npm test`; coverage gate ≥ 80 % (`npm run test:coverage`); Playwright `_electron` config + `npm run test:e2e`
+- [x] T004 [P] `electron-builder.yml` with targets from release.md; app id `io.github.findy`, product name `Findy` (FR-070)
+- [x] T005 [P] `.github/workflows/ci.yml` — quality gate (format, lint, typecheck, unit + coverage ≥ 80 %) on every PR; e2e + `--dir` build + packaged smoke test on 3 OSes
 
 ## Phase 2 — Foundations (blocks all user stories)
 
 - [ ] T010 [P] `domain/stages.ts` — `STAGES` constant and `StageId` (FR-001)
 - [ ] T011 [P] `domain/schema.ts` — zod schemas for entities and IPC input (data-model.md)
-- [ ] T012 Add `better-sqlite3`; `postinstall: electron-builder install-app-deps`; verify packaged app loads it on all 3 OSes in CI (architecture D-2)
+- [x] T012 Add `better-sqlite3` (Node-API prebuilds, no rebuild); verify packaged app loads it on all 3 OSes in CI via `smoke:packaged` (architecture D-2)
 - [ ] T013 Tests + `main/db/connection.ts` + `migrate.ts` + `migrations/001-init.sql` — pragmas, `user_version`, backup before migrate, corrupt/newer-version handling (FR-051, FR-053, FR-054, US-6)
 - [ ] T014 Tests + `main/db/repositories.ts` — CRUD for applications/notes/settings, each mutation in one transaction (FR-050, FR-052)
 - [ ] T015 Secure `BrowserWindow`, CSP, single-instance lock, navigation guards (security.md, NFR-004)
