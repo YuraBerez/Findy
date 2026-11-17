@@ -160,5 +160,8 @@
     "label": "Search applications",
     "placeholder": "Title or company",
     "noResults": "No applications match “{{query}}”."
+  },
+  "feedback": {
+    "reportIssue": "Found an issue?"
   }
 }

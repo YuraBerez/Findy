@@ -298,6 +298,9 @@ can find a specific company fast.
 - **FR-071** Builds MUST be produced by CI from a version tag and attached to a
   GitHub Release.
 - **FR-072** The app MUST show its version in an "About" dialog.
+- **FR-074** A small "Found an issue?" button in the bottom-right corner MUST open
+  the project's new-issue page (`https://github.com/YuraBerez/findy/issues/new/choose`)
+  in the system browser. Notifications appear above it.
 
 ## Non-functional requirements
 
@@ -365,3 +368,5 @@ Resolved clarifications (2026-11-17):
   Space starts a keyboard drag (FR-025).
 - **D-6** (added 2026-11-17 at the owner's request) Users can reset the board
   (US-10, FR-090…093): confirmation with a count, automatic backup, settings kept.
+- **D-7** (added 2026-11-17 at the owner's request) A "Found an issue?" button
+  links to GitHub issues (FR-074), so users can report problems from the app.
