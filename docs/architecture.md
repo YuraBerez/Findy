@@ -74,7 +74,7 @@ src/
 │   ├── db/
 │   │   ├── connection.ts    # open findy.db, pragmas, integrity check
 │   │   ├── migrate.ts       # PRAGMA user_version + backups
-│   │   ├── migrations/      # 001-init.sql, …
+│   │   ├── migrations/      # 001-init.ts, … (append-only)
 │   │   └── repository.ts  # applications / notes / settings queries
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
