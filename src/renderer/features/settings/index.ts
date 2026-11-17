@@ -1,3 +1,2 @@
 export * from './ColumnsDialog'
-export * from './LanguageSelect'
-export * from './ThemeToggle'
+export * from './useSettingsMenu'

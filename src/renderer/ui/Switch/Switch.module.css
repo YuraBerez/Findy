@@ -1,12 +1,32 @@
+/* The button around the visual (Switch); the visual itself is .track */
+.button {
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  cursor: pointer;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .track {
   position: relative;
-  width: 52px;
-  height: 28px;
-  padding: 0;
+  display: inline-block;
+  flex-shrink: 0;
+  width: 44px;
+  height: 24px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--toggle-track);
-  cursor: pointer;
 }
 
 .thumb {
@@ -15,8 +35,8 @@
   left: 2px;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background: var(--toggle-knob);
   color: var(--toggle-icon);
@@ -24,32 +44,20 @@
   transition: transform 200ms ease;
 }
 
-.track[aria-checked='true'] .thumb {
-  transform: translateX(24px);
+/* On = primary colour, knob to the right */
+.track[data-checked] {
+  border-color: var(--primary);
+  background: var(--primary);
 }
 
-.track:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
-.track:disabled {
-  opacity: 0.5;
-  cursor: default;
+.track[data-checked] .thumb {
+  background: #ffffff;
+  color: var(--primary);
+  transform: translateX(20px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .thumb {
     transition: none;
   }
-}
-
-/* On = primary colour; the knob stays white for contrast */
-.primary[aria-checked='true'] {
-  border-color: var(--primary);
-  background: var(--primary);
-}
-
-.primary[aria-checked='true'] .thumb {
-  background: #ffffff;
 }

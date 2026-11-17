@@ -164,13 +164,12 @@ comfortable to use in any lighting.
 **Acceptance scenarios**
 
 1. **Given** first launch, **Then** the theme follows the OS light/dark setting,
-   and the toggle shows the sun (light) or the moon (dark) to match.
-2. **Given** the light theme, **When** I click the sun/moon toggle, **Then** the
-   whole UI switches to the dark theme at once, without restart. Clicking again
-   switches back to light.
-3. **Given** I used the toggle, **When** the OS theme changes, **Then** the app
+   and the "Dark theme" switch in the app menu shows the sun or the moon to match.
+2. **Given** the light theme, **When** I turn on "Dark theme" in the app menu,
+   **Then** the whole UI switches to the dark theme at once, without restart.
+3. **Given** I chose a theme, **When** the OS theme changes, **Then** the app
    keeps my choice.
-4. **Given** I used the toggle, **When** I restart the app, **Then** my choice is kept.
+4. **Given** I chose a theme, **When** I restart the app, **Then** my choice is kept.
 
 ### US-10 — Reset the board (P2)
 
@@ -272,11 +271,10 @@ can find a specific company fast.
   timestamped backup, and MUST inform the user where the file is.
 
 ### Appearance
-- **FR-080** The toolbar MUST have a sun/moon toggle that switches between the
-  **light** and **dark** theme. Until the user uses it, the theme follows the OS
-  (and follows OS changes while the app runs).
-- **FR-081** The toggle MUST work with the keyboard (Tab, Space, Enter), have an
-  accessible name, and expose its on/off state to assistive technology.
+- **FR-080** The app menu (⋯) MUST have a "Dark theme" sun/moon switch. Until the
+  user uses it, the theme follows the OS (and follows OS changes while the app runs).
+- **FR-081** The switch MUST work with the keyboard and expose its on/off state to
+  assistive technology (menu item checkbox).
 - **FR-082** A theme change MUST apply to the whole window at once, without restart.
 - **FR-083** The choice MUST persist across restarts.
 
@@ -357,9 +355,11 @@ Resolved clarifications (2026-11-17):
 - **D-3** MVP builds are unsigned; README documents how to open them on macOS
   (Gatekeeper) and Windows (SmartScreen).
 - **D-4** (added 2026-11-17 at the owner's request) Users can switch between
-  light and dark themes with a sun/moon toggle (US-9, FR-080…083). The theme
-  follows the OS until the first use of the toggle. There is no control to go
-  back to "follow the OS" in the MVP.
+  light and dark themes (US-9, FR-080…083). The theme follows the OS until the
+  user picks one. There is no control to go back to "follow the OS" in the MVP.
+  Revised 2026-11-17 (owner): language (a submenu, so more languages do not make
+  the menu longer) and the theme switch moved from the toolbar into the app menu;
+  the toolbar keeps search, Add and the menu.
 - **D-5** (added 2026-11-17 at the owner's request) Cards with a vacancy URL show a
   link button that opens it in the browser (FR-016). Enter opens a card's details,
   Space starts a keyboard drag (FR-025).

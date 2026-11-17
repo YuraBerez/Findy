@@ -28,6 +28,7 @@ export function CardActions({ application }: { application: Application }) {
         triggerLabel={t('card.actions', { title: application.title })}
         triggerIcon={<MoreIcon />}
         label={t('card.moveTo')}
+        heading={t('card.moveTo')}
         items={board.visible
           .filter((stage) => stage !== application.stage)
           .map((stage) => ({

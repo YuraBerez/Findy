@@ -9,9 +9,8 @@
     "menu": "App menu"
   },
   "theme": {
-    "dark": "Dark theme",
-    "switchToDark": "Switch to dark theme",
-    "switchToLight": "Switch to light theme"
+    "label": "Theme",
+    "dark": "Dark theme"
   },
   "stages": {
     "applied": "Applied",
@@ -102,7 +101,8 @@
     "placeholder": "Write a note…"
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "back": "Back"
   },
   "reset": {
     "menuItem": "Reset board…",

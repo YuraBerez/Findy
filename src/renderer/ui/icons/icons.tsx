@@ -102,3 +102,29 @@ export const SearchIcon = (props: IconProps) => (
     <path d="M16 16l4.5 4.5" />
   </Icon>
 )
+
+export const CheckIcon = (props: IconProps) => (
+  <Icon
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M5 12.5l4.5 4.5L19 7" />
+  </Icon>
+)
+
+export const ChevronIcon = (props: IconProps) => (
+  <Icon
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M9 6l6 6-6 6" />
+  </Icon>
+)
