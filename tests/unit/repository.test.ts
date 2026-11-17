@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { NotFoundError, type Repository } from '../../src/main/db/repository'
+import { HiddenStageError, NotFoundError, type Repository } from '../../src/main/db/repository'
 import { memoryRepository } from './helpers/db'
 
 let repo: Repository
@@ -168,19 +168,34 @@ describe('notes (FR-030…033)', () => {
 
 describe('settings', () => {
   it('defaults to no language and the system theme', () => {
-    expect(repo.getSettings()).toEqual({ language: null, theme: 'system', hiddenStages: [] })
+    expect(repo.getSettings()).toEqual({
+      language: null,
+      theme: 'system',
+      hiddenStages: [],
+      mcpEnabled: false,
+    })
   })
 
   it('stores language and theme (FR-042, FR-083)', () => {
     repo.setLanguage('uk')
     repo.setTheme('dark')
-    expect(repo.getSettings()).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
+    expect(repo.getSettings()).toEqual({
+      language: 'uk',
+      theme: 'dark',
+      hiddenStages: [],
+      mcpEnabled: false,
+    })
     expect(repo.setTheme('light').theme).toBe('light')
   })
 
   it('ignores unknown stored values', () => {
     db.prepare("INSERT INTO settings VALUES ('language', 'de'), ('theme', 'neon')").run()
-    expect(repo.getSettings()).toEqual({ language: null, theme: 'system', hiddenStages: [] })
+    expect(repo.getSettings()).toEqual({
+      language: null,
+      theme: 'system',
+      hiddenStages: [],
+      mcpEnabled: false,
+    })
   })
 })
 
@@ -206,7 +221,12 @@ describe('resetBoard (FR-093)', () => {
     expect(repo.listApplications()).toEqual([])
     expect(db.prepare('SELECT COUNT(*) AS n FROM notes').get()).toEqual({ n: 0 })
     expect(db.prepare('SELECT COUNT(*) AS n FROM stage_changes').get()).toEqual({ n: 0 })
-    expect(repo.getSettings()).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
+    expect(repo.getSettings()).toEqual({
+      language: 'uk',
+      theme: 'dark',
+      hiddenStages: [],
+      mcpEnabled: false,
+    })
   })
 })
 
@@ -226,5 +246,27 @@ describe('hidden stages (spec 002)', () => {
     expect(repo.getSettings().hiddenStages).toEqual([])
     db.prepare("UPDATE settings SET value = '[\"nope\"]' WHERE key = 'hiddenStages'").run()
     expect(repo.getSettings().hiddenStages).toEqual([])
+  })
+})
+
+describe('shared rules and MCP settings (spec 004)', () => {
+  it('the repository itself refuses hidden stages (FR-003)', () => {
+    const a = repo.createApplication(input('A'))
+    repo.setHiddenStages(['offered'])
+    expect(() => repo.moveApplication(a.id, { stage: 'offered', index: 0 })).toThrow(
+      HiddenStageError,
+    )
+    expect(() => repo.createApplication(input('B', { stage: 'offered' }))).toThrow(HiddenStageError)
+    expect(repo.getApplication(a.id).stage).toBe('applied')
+  })
+
+  it('MCP access is off by default and can be turned on (FR-005)', () => {
+    expect(repo.getSettings().mcpEnabled).toBe(false)
+    expect(repo.setMcpEnabled(true).mcpEnabled).toBe(true)
+    expect(repo.setMcpEnabled(false).mcpEnabled).toBe(false)
+  })
+
+  it('getApplication throws NotFoundError for an unknown id', () => {
+    expect(() => repo.getApplication('missing')).toThrow(NotFoundError)
   })
 })

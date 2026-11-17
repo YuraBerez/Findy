@@ -23,6 +23,11 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     applyTheme: vi.fn(),
     applyLanguage: vi.fn(),
     backup: vi.fn(),
+    mcpConnection: () => ({
+      command: '/Applications/Findy.app/Contents/MacOS/Findy',
+      args: ['--mcp'],
+      env: {},
+    }),
     ...overrides,
   }
   return { deps, handlers: createHandlers(deps) }
@@ -38,7 +43,7 @@ describe('IPC handlers', () => {
 
   it('returns the full state', async () => {
     expect(await state(ctx.handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system', hiddenStages: [] },
+      settings: { language: null, theme: 'system', hiddenStages: [], mcpEnabled: false },
       applications: [],
       storage: okStorage,
     })
@@ -70,7 +75,12 @@ describe('IPC handlers', () => {
   it('saves settings and applies the theme (FR-082)', async () => {
     await state(ctx.handlers.setLanguage('uk'))
     const s = await state(ctx.handlers.setTheme('dark'))
-    expect(s.settings).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
+    expect(s.settings).toEqual({
+      language: 'uk',
+      theme: 'dark',
+      hiddenStages: [],
+      mcpEnabled: false,
+    })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
   })
@@ -161,6 +171,23 @@ describe('hidden stages (spec 002)', () => {
   })
 })
 
+describe('MCP settings (spec 004)', () => {
+  it('turns access on and off and gives the connection command', async () => {
+    const ctx = setup()
+    expect((await state(ctx.handlers.setMcpEnabled(true))).settings.mcpEnabled).toBe(true)
+    expect((await state(ctx.handlers.setMcpEnabled(false))).settings.mcpEnabled).toBe(false)
+    expect(await ctx.handlers.setMcpEnabled('yes')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+    expect(unwrap(await ctx.handlers.getMcpConnection())).toEqual({
+      command: '/Applications/Findy.app/Contents/MacOS/Findy',
+      args: ['--mcp'],
+      env: {},
+    })
+  })
+})
+
 describe('resetBoard (FR-090…093)', () => {
   it('backs up first, then deletes all applications', async () => {
     const order: string[] = []
@@ -195,7 +222,7 @@ describe('IPC handlers without storage (FR-054)', () => {
   it('returns an empty state with the storage error', async () => {
     const { handlers } = setup({ repository: null, storage })
     expect(await state(handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system', hiddenStages: [] },
+      settings: { language: null, theme: 'system', hiddenStages: [], mcpEnabled: false },
       applications: [],
       storage,
     })

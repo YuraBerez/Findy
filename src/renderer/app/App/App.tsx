@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { AppState } from '@shared/ipc'
 import { ConfirmDialog } from '@ui'
 import { ApplicationDetails, ApplicationDialog } from '../../features/applications'
+import { McpDialog } from '../../features/assistant'
 import { Board } from '../../features/board'
 import { ReportIssueButton } from '../../features/feedback'
 import { ColumnsDialog } from '../../features/settings'
@@ -19,6 +20,7 @@ export function App({ initialState }: { initialState: AppState }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
   const [editingColumns, setEditingColumns] = useState(false)
+  const [assistant, setAssistant] = useState(false)
   const [query, setQuery] = useState('')
   const { hiddenStages } = state.settings
   const { t } = useTranslation()
@@ -36,6 +38,7 @@ export function App({ initialState }: { initialState: AppState }) {
         applicationCount={count}
         onReset={() => setResetting(true)}
         onColumns={() => setEditingColumns(true)}
+        onAssistant={() => setAssistant(true)}
         query={query}
         onQueryChange={setQuery}
       />
@@ -63,6 +66,13 @@ export function App({ initialState }: { initialState: AppState }) {
             // Spec 003 US-2: on failure the dialog stays open with the input
             if (await actions.createApplication(application)) setAdding(false)
           }}
+        />
+      )}
+      {assistant && (
+        <McpDialog
+          enabled={state.settings.mcpEnabled}
+          onChange={actions.setMcpEnabled}
+          onClose={() => setAssistant(false)}
         />
       )}
       {editingColumns && (

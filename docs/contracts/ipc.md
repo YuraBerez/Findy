@@ -41,7 +41,9 @@ interface FindyApi {
   // Settings & system
   setLanguage(language: 'en' | 'uk'): Promise<AppState>;
   setTheme(theme: 'system' | 'light' | 'dark'): Promise<AppState>;  // sets nativeTheme.themeSource
-  setHiddenStages(stages: StageId[]): Promise<AppState>;  // spec 002; rejects all-hidden and duplicates
+  setHiddenStages(stages: StageId[]): Promise<AppState>;
+  setMcpEnabled(enabled: boolean): Promise<AppState>;    // spec 004
+  getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009  // spec 002; rejects all-hidden and duplicates
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
   getSystemLocale(): Promise<string>;
   openExternal(url: string): Promise<void>;            // http/https only, else rejects
@@ -69,6 +71,7 @@ interface AppState {
 |-------|---------|------|
 | `findy:languageChanged` | `'en' \| 'uk'` | Language changed from the native app menu |
 | `findy:storageError` | `{ message }` | Background save failed |
+| `findy:stateChanged` | — | Another process (the MCP server) changed the database; reload (spec 004) |
 
 Renderer subscribes via `window.findy.on(event, handler)` which returns an
 unsubscribe function.

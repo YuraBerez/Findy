@@ -182,6 +182,25 @@ build/                   # icons, entitlements for electron-builder
   `unhandledrejection` listeners and an `ErrorBoundary` catch the rest. Never
   call `window.findy` outside `useAppState`.
 
+### D-8 — MCP server inside the app (spec 004)
+
+- The MCP server is a second entry, `out/main/mcp.js` (`src/main/mcp/cli.ts`). The
+  client starts Findy's own binary in **Node mode** (`ELECTRON_RUN_AS_NODE=1`)
+  with that script: no Chromium, no window, no helper processes, and stdio that
+  works on Windows (an Electron GUI process does not read stdin pipes reliably
+  there). It never imports Electron; `main/paths.ts` computes the same data
+  folder as `app.getPath('userData')`. Tools are served over **stdio only**.
+- `Findy --mcp` forwards to the same Node-mode server with inherited stdio. The
+  AppImage uses it, because its mount path changes on every start.
+- The `RunAsNode` Electron fuse must stay on; packaging does not change fuses. Gated by the `mcpEnabled` setting, off by default
+  (constitution §II.5).
+- **One rule set:** tools use the same `Repository` and zod schemas as IPC; the
+  hidden-stage rule lives in `Repository` (`HiddenStageError`).
+- **Two processes, one database:** SQLite WAL + busy timeout; every tool call is
+  one transaction. The open app polls `PRAGMA data_version` (`main/watch.ts`) and
+  sends `findy:stateChanged`, so the window shows MCP changes within a second.
+- In MCP mode stdout is the protocol: logs go to stderr.
+
 ## Cross-cutting docs
 
 - [constitution.md](constitution.md) — project principles

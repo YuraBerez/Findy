@@ -34,4 +34,6 @@ export interface Settings {
   theme: Theme
   /** Columns hidden on the board (spec 002); never all of them */
   hiddenStages: StageId[]
+  /** AI assistants may use the board through the MCP server (spec 004); off by default */
+  mcpEnabled: boolean
 }

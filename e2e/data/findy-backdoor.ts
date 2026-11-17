@@ -1,5 +1,12 @@
 import type { ElectronApplication, Page } from '@playwright/test'
-import type { AppState, Language, NewApplication, StageId, Theme } from '../../src/shared/ipc'
+import type {
+  AppState,
+  Language,
+  McpConnection,
+  NewApplication,
+  StageId,
+  Theme,
+} from '../../src/shared/ipc'
 
 export interface SeedApplication {
   title: string
@@ -118,6 +125,15 @@ export class FindyBackdoor {
       },
       { title, stage },
     )
+  }
+
+  /** The connection the app shows the user (spec 004 FR-009) */
+  mcpConnection(): Promise<McpConnection> {
+    return this.page.evaluate(() => window.findy.getMcpConnection())
+  }
+
+  async setMcpEnabled(enabled: boolean): Promise<void> {
+    await this.page.evaluate((value) => window.findy.setMcpEnabled(value), enabled)
   }
 
   async setLanguage(language: Language): Promise<void> {

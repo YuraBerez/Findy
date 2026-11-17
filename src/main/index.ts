@@ -1,3 +1,4 @@
+import { spawn } from 'node:child_process'
 import { join } from 'node:path'
 import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
@@ -5,14 +6,18 @@ import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
 import { resolveLanguage } from '../domain/language'
 import { createHandlers } from './ipc'
+import { userDataDir } from './paths'
+import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
 
-// Isolated data dir for e2e tests and screenshots; must run before `ready`.
-if (process.env.FINDY_USER_DATA_DIR) {
-  app.setPath('userData', process.env.FINDY_USER_DATA_DIR)
-}
+// The same folder the MCP server computes without Electron (paths.ts); must run
+// before `ready`. FINDY_USER_DATA_DIR isolates e2e tests and screenshots.
+app.setPath('userData', userDataDir())
+
+/** Spec 004 FR-009: the MCP server runs this binary in Node mode (architecture D-8) */
+const MCP_SCRIPT = join(__dirname, 'mcp.js')
 
 const devServerUrl = process.env.ELECTRON_RENDERER_URL
 
@@ -78,6 +83,12 @@ function start(): void {
       nativeTheme.themeSource = theme
     },
     applyLanguage: applyMenu,
+    mcpConnection: () =>
+      // An AppImage is mounted at a new path on every start: point at the file
+      // itself, which forwards `--mcp` to Node mode
+      process.env.APPIMAGE
+        ? { command: process.env.APPIMAGE, args: ['--mcp'], env: {} as Record<string, string> }
+        : { command: process.execPath, args: [MCP_SCRIPT], env: { ELECTRON_RUN_AS_NODE: '1' } },
     backup: (label) => {
       if (opened.status === 'ok') backupDatabase(opened.db, app.getPath('userData'), label)
     },
@@ -88,6 +99,18 @@ function start(): void {
     )
   }
 
+  // Spec 004 FR-006: show changes made by the MCP server in the open window
+  if (opened.status === 'ok') {
+    const stop = watchExternalChanges(
+      () => opened.db.pragma('data_version', { simple: true }) as number,
+      () => {
+        for (const win of BrowserWindow.getAllWindows())
+          win.webContents.send(CHANNEL_PREFIX + 'stateChanged')
+      },
+    )
+    app.on('will-quit', stop)
+  }
+
   app.on('will-quit', () => {
     if (opened.status === 'ok') opened.db.close()
   })
@@ -95,12 +118,27 @@ function start(): void {
   createWindow()
 }
 
-if (process.env.FINDY_SMOKE_TEST === '1') {
+/**
+ * Spec 004: `Findy --mcp` starts the MCP server in Node mode with the same stdio,
+ * for clients configured with the short command, and for the AppImage.
+ */
+function forwardToMcp(): void {
+  const child = spawn(process.execPath, [MCP_SCRIPT], {
+    env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
+    stdio: 'inherit',
+  })
+  child.on('exit', (code) => app.exit(code ?? 0))
+}
+
+if (process.argv.includes('--mcp')) {
+  app.dock?.hide()
+  forwardToMcp()
+} else if (process.env.FINDY_SMOKE_TEST === '1') {
   process.exit(runSmokeTest())
 }
 
-// One instance only: two writers would race on the database (spec 001, edge cases)
-if (!app.requestSingleInstanceLock()) {
+// One window instance only: two app windows would race on the database (spec 001, edge cases)
+else if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   app.on('second-instance', () => {

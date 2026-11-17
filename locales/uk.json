@@ -169,5 +169,18 @@
   },
   "feedback": {
     "reportIssue": "Знайшли проблему?"
+  },
+  "mcp": {
+    "menuItem": "Доступ для AI-асистентів (MCP)…",
+    "title": "Доступ для AI-асистентів",
+    "allow": "Дозволити AI-асистентам працювати з моєю дошкою",
+    "privacy": "Коли це увімкнено, підключений асистент (Claude Desktop, Cowork, Claude Code) може читати й змінювати ваші заявки на ваше прохання. Сам Findy нічого нікуди не надсилає; прочитане асистент передає своєму AI-провайдеру.",
+    "desktopTitle": "Claude Desktop і Cowork",
+    "desktopHint": "Додайте це в claude_desktop_config.json (Settings → Developer → Edit Config) і перезапустіть Claude.",
+    "codeTitle": "Claude Code",
+    "copy": "Копіювати",
+    "copied": "Скопійовано",
+    "otherTitle": "Інші MCP-клієнти",
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, розділ \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI та інші застосунки з локальними (stdio) MCP-серверами використовують цю команду."
   }
 }

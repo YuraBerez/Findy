@@ -16,7 +16,14 @@ function devCsp(): Plugin {
 }
 
 export default defineConfig({
-  main: {},
+  main: {
+    build: {
+      rollupOptions: {
+        // mcp.js runs in Node mode for AI assistants (spec 004, architecture D-8)
+        input: { index: resolve('src/main/index.ts'), mcp: resolve('src/main/mcp/cli.ts') },
+      },
+    },
+  },
   preload: {},
   renderer: {
     // Keep in sync with `paths` in tsconfig.web.json

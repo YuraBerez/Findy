@@ -11,6 +11,7 @@ import {
 import { errorGuardFixture, type ErrorGuard } from 'playwright-e2e-kit'
 import { writeBulkDatabase, type BulkData } from '../data/bulk-database'
 import { FindyBackdoor } from '../data/findy-backdoor'
+import { McpTestClient } from '../data/mcp-client'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { BoardScreen } from '../screens/board.screen'
@@ -38,6 +39,8 @@ export interface Findy {
   dataFiles(): string[]
   /** Close the app and start it again on the same database (US-6). Use the new pages. */
   restart(): Promise<FindyPages>
+  /** Start `Findy --mcp` on the same database and connect an MCP client (spec 004) */
+  connectMcp(): Promise<McpTestClient>
 }
 
 interface Options {
@@ -93,7 +96,8 @@ export const test = base.extend<Fixtures>({
     if (databaseFile !== undefined) writeFileSync(join(dir, 'findy.db'), databaseFile)
     if (bulkData) writeBulkDatabase(join(dir, 'findy.db'), bulkData)
     await use(dir)
-    rmSync(dir, { recursive: true, force: true })
+    // Windows keeps files locked for a moment after a child process exits
+    rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 })
   },
 
   electronApp: async ({ userDataDir, systemLocale }, use) => {
@@ -116,10 +120,16 @@ export const test = base.extend<Fixtures>({
   findy: async ({ electronApp, page, userDataDir, systemLocale, errorGuard }, use) => {
     let app = electronApp
     let window = page
+    const mcpClients: McpTestClient[] = []
     const findy: Findy = {
       pages: pagesFor(page),
       api: new FindyBackdoor(page, electronApp),
       dataFiles: () => readdirSync(userDataDir),
+      connectMcp: async () => {
+        const client = await McpTestClient.start(await findy.api.mcpConnection(), userDataDir)
+        mcpClients.push(client)
+        return client
+      },
       refresh: async () => {
         await window.reload()
         await window.getByTestId('app').waitFor()
@@ -135,6 +145,7 @@ export const test = base.extend<Fixtures>({
       },
     }
     await use(findy)
+    for (const client of mcpClients) await client.close().catch(() => {})
     if (app !== electronApp) await app.close().catch(() => {})
   },
 })
