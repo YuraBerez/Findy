@@ -4,7 +4,7 @@ The non-negotiable principles of the project. Every spec, plan, task and pull
 request must comply. Changing this document requires its own PR with the
 `constitution` label and a short rationale.
 
-**Version:** 1.0.0 · **Ratified:** 2026-11-17
+**Version:** 1.1.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5)
 
 ---
 
@@ -32,6 +32,11 @@ No production code is written without an approved spec.
 3. The app is fully functional offline.
 4. User data is stored in a local database in an open, documented format
    (SQLite) so users are never locked in.
+5. **Exception — user-initiated sharing with an AI assistant.** A local MCP
+   server (stdio, no network listener) may give the user's data to an MCP client
+   such as Claude, only after the user turns this on in the app (off by default)
+   and only for the calls the user's assistant makes. Findy itself still makes no
+   network requests. See spec 004.
 
 ## III. Secure Electron by default
 
