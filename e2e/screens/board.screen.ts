@@ -127,11 +127,14 @@ export class BoardScreen extends BaseComponent {
   ): Promise<void> {
     const card = this.card(title)
     await card.press('Space')
+    // dnd-kit marks the picked-up card; arrows before that are ignored
+    await expect(card).toHaveAttribute('aria-pressed', 'true')
     for (const step of steps) {
       await card.press(step.key)
       await expect(this.card(title, this.column(step.reaches))).toHaveCount(1)
     }
     await card.press('Space')
+    await expect(card).not.toHaveAttribute('aria-pressed', 'true')
   }
 
   // ── Checks ─────────────────────────────────────────────────────────────

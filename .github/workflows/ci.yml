@@ -46,6 +46,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # Electron downloads its binary on first use; parallel test workers would race on it
+      - name: Download Electron binary
+        run: node -e "require('electron')"
       - name: E2E tests (Linux, virtual display)
         if: runner.os == 'Linux'
         run: xvfb-run --auto-servernum npm run test:e2e
