@@ -2,7 +2,8 @@
   position: fixed;
   z-index: 100;
   right: var(--space-4);
-  bottom: var(--space-4);
+  /* Above the "Found an issue?" button in the same corner */
+  bottom: 60px;
   display: flex;
   flex-direction: column-reverse;
   gap: var(--space-2);

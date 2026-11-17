@@ -23,7 +23,8 @@ runner, and `npm run smoke:packaged` launches the unpacked build with
 
 ## CI — `.github/workflows/ci.yml`
 
-On every push to `main` and every PR:
+On every pull request (opened, or a new push to it). Not after a merge to `main`:
+branch protection lets only PRs that passed these checks in.
 
 1. **Quality gate** (Ubuntu): `format:check` → `lint` (ESLint + tsc) →
    `test:coverage`. Coverage thresholds are **80 %** for lines, branches,

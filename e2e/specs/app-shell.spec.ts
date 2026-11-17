@@ -27,4 +27,12 @@ test.describe('app shell', () => {
       'Rejected',
     ])
   })
+
+  test('FR-074: "Found an issue?" opens the GitHub new-issue page', async ({ findy }) => {
+    await findy.api.captureExternalLinks()
+    await findy.pages.board.reportIssue()
+    await expect
+      .poll(() => findy.api.openedLinks())
+      .toEqual(['https://github.com/YuraBerez/findy/issues/new/choose'])
+  })
 })
