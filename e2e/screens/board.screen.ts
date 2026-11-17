@@ -21,6 +21,7 @@ export class BoardScreen extends BaseComponent {
   private readonly menu: Locator
   private readonly columnsDialog: Locator
   private readonly searchInput: Locator
+  private readonly assistantDialog: Locator
 
   constructor(
     page: Page,
@@ -36,6 +37,7 @@ export class BoardScreen extends BaseComponent {
     this.storageError = page.getByTestId('storage-error')
     this.menu = page.getByRole('menu')
     this.columnsDialog = page.getByRole('dialog', { name: 'Columns' })
+    this.assistantDialog = page.getByRole('dialog', { name: 'AI assistant access' })
     this.searchInput = this.toolbar.getByRole('searchbox', { name: 'Search applications' })
   }
 
@@ -149,6 +151,33 @@ export class BoardScreen extends BaseComponent {
   /** FR-074 */
   async reportIssue(): Promise<void> {
     await this.page.getByRole('button', { name: /^(Found an issue\?|Знайшли проблему\?)$/ }).click()
+  }
+
+  // ── AI assistant access (spec 004) ──────────────────────────────────────
+
+  async openAssistantDialog(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem('AI assistant access (MCP)…').click()
+    await expect(this.assistantDialog).toBeVisible()
+  }
+
+  async setAssistantAccess(on: boolean): Promise<void> {
+    const toggle = this.assistantDialog.getByRole('switch', {
+      name: 'Allow AI assistants to use my board',
+    })
+    if ((await toggle.getAttribute('aria-checked')) !== String(on)) await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', String(on))
+  }
+
+  async closeAssistantDialog(): Promise<void> {
+    await this.assistantDialog.getByRole('button', { name: 'Close' }).click()
+    await expect(this.assistantDialog).toBeHidden()
+  }
+
+  /** FR-009: ready-to-copy client configuration */
+  async verifyAssistantInstructions(): Promise<void> {
+    await expect(this.assistantDialog.getByTestId('mcp-desktop-config')).toContainText('"--mcp"')
+    await expect(this.assistantDialog).toContainText('claude mcp add findy')
   }
 
   // ── Notifications (spec 003) ───────────────────────────────────────────

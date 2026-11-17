@@ -182,6 +182,19 @@ build/                   # icons, entitlements for electron-builder
   `unhandledrejection` listeners and an `ErrorBoundary` catch the rest. Never
   call `window.findy` outside `useAppState`.
 
+### D-8 — MCP server inside the app (spec 004)
+
+- `Findy --mcp` runs the same binary headless (no window, no Dock icon, no
+  single-instance lock) and serves MCP tools over **stdio only**
+  (`src/main/mcp/`). Gated by the `mcpEnabled` setting, off by default
+  (constitution §II.5).
+- **One rule set:** tools use the same `Repository` and zod schemas as IPC; the
+  hidden-stage rule lives in `Repository` (`HiddenStageError`).
+- **Two processes, one database:** SQLite WAL + busy timeout; every tool call is
+  one transaction. The open app polls `PRAGMA data_version` (`main/watch.ts`) and
+  sends `findy:stateChanged`, so the window shows MCP changes within a second.
+- In MCP mode stdout is the protocol: logs go to stderr.
+
 ## Cross-cutting docs
 
 - [constitution.md](constitution.md) — project principles

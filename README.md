@@ -81,6 +81,25 @@ Other commands:
 On Linux you may need the usual Electron system libraries
 (`libgtk-3-0 libnss3 libasound2`); for building `.deb` packages also `fakeroot` and `dpkg`.
 
+## Use Findy from Claude or another AI assistant (MCP)
+
+Findy has a built-in [MCP](https://modelcontextprotocol.io) server, so an assistant can
+add, move and annotate applications when you ask it to ("I applied to Acme as a
+frontend developer", "move Globex to the technical interview").
+
+1. In Findy open **⋯ → AI assistant access (MCP)…** and turn it on (it is off by default).
+2. Copy the configuration it shows into your client:
+   - **Claude Desktop / Cowork:** `claude_desktop_config.json` (Settings → Developer → Edit Config).
+   - **Claude Code:** `claude mcp add findy -- /Applications/Findy.app/Contents/MacOS/Findy --mcp`
+   - **Gemini CLI, Cursor, VS Code, Windsurf, Zed, Codex CLI…:** command `<Findy> --mcp`, transport stdio.
+
+Tools: list and get applications, list stages, add, update, move, add a note,
+delete (the assistant asks you first). The same rules apply as in the app, and an
+open Findy window shows the changes within a second.
+
+**Privacy:** Findy itself makes no network requests. The assistant you connect sends
+what it reads to its AI provider, and only when you ask it to work with your board.
+
 ## Where is my data?
 
 | OS | Path |

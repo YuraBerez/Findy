@@ -175,6 +175,6 @@
     "copy": "Copy",
     "copied": "Copied",
     "otherTitle": "Other MCP clients",
-    "otherHint": "Cursor, VS Code, Windsurf, Zed, Gemini CLI, Codex CLI and other apps that run local (stdio) MCP servers use this command."
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI and other apps that run local (stdio) MCP servers use this command."
   }
 }

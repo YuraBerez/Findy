@@ -181,6 +181,6 @@
     "copy": "Копіювати",
     "copied": "Скопійовано",
     "otherTitle": "Інші MCP-клієнти",
-    "otherHint": "Cursor, VS Code, Windsurf, Zed, Gemini CLI, Codex CLI та інші застосунки з локальними (stdio) MCP-серверами використовують цю команду."
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, розділ \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI та інші застосунки з локальними (stdio) MCP-серверами використовують цю команду."
   }
 }

@@ -120,6 +120,10 @@ export class FindyBackdoor {
     )
   }
 
+  async setMcpEnabled(enabled: boolean): Promise<void> {
+    await this.page.evaluate((value) => window.findy.setMcpEnabled(value), enabled)
+  }
+
   async setLanguage(language: Language): Promise<void> {
     await this.page.evaluate((value) => window.findy.setLanguage(value), language)
   }
