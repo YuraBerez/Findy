@@ -18,19 +18,20 @@ type Demo = {
   notes?: string[]
 }
 
+// Made-up companies only: screenshots go to the README and social posts
 const DATA: Record<'en' | 'uk', Demo[]> = {
   en: [
     {
       title: 'Frontend Developer',
-      company: 'Brightwave',
+      company: 'Example Company 1',
       stage: 'applied',
       days: 1,
       url: 'https://example.com/jobs/1',
     },
-    { title: 'React Engineer', company: 'Pixelforge', stage: 'applied', days: 2 },
+    { title: 'React Engineer', company: 'Example Company 2', stage: 'applied', days: 2 },
     {
       title: 'Full-stack Developer',
-      company: 'Nordlight',
+      company: 'Example Company 3',
       stage: 'hr_interview',
       days: 4,
       url: 'https://example.com/jobs/2',
@@ -41,41 +42,41 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
     },
     {
       title: 'Senior TypeScript Developer',
-      company: 'Datacraft',
+      company: 'Example Company 4',
       stage: 'test_task',
       days: 6,
       url: 'https://example.com/jobs/3',
       notes: ['Take-home: small kanban app, 3 days.'],
     },
-    { title: 'Frontend Lead', company: 'Bluepeak', stage: 'technical_interview', days: 9 },
+    { title: 'Frontend Lead', company: 'Example Company 5', stage: 'technical_interview', days: 9 },
     {
       title: 'Software Engineer',
-      company: 'Cloudnest',
+      company: 'Example Company 6',
       stage: 'c_level_interview',
       days: 12,
       notes: ['Talk with the CTO about the team and roadmap.'],
     },
     {
       title: 'UI Engineer',
-      company: 'Greenfield',
+      company: 'Example Company 7',
       stage: 'offered',
       days: 15,
       url: 'https://example.com/jobs/4',
     },
-    { title: 'JavaScript Developer', company: 'Quanta Labs', stage: 'rejected', days: 20 },
+    { title: 'JavaScript Developer', company: 'Example Company 8', stage: 'rejected', days: 20 },
   ],
   uk: [
     {
       title: 'Frontend-розробник',
-      company: 'Brightwave',
+      company: 'Компанія-приклад 1',
       stage: 'applied',
       days: 1,
       url: 'https://example.com/jobs/1',
     },
-    { title: 'React-інженер', company: 'Pixelforge', stage: 'applied', days: 2 },
+    { title: 'React-інженер', company: 'Компанія-приклад 2', stage: 'applied', days: 2 },
     {
       title: 'Full-stack розробник',
-      company: 'Nordlight',
+      company: 'Компанія-приклад 3',
       stage: 'hr_interview',
       days: 4,
       url: 'https://example.com/jobs/2',
@@ -86,28 +87,33 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
     },
     {
       title: 'Senior TypeScript-розробник',
-      company: 'Datacraft',
+      company: 'Компанія-приклад 4',
       stage: 'test_task',
       days: 6,
       url: 'https://example.com/jobs/3',
       notes: ['Тестове: маленький канбан-застосунок, 3 дні.'],
     },
-    { title: 'Frontend Lead', company: 'Bluepeak', stage: 'technical_interview', days: 9 },
+    {
+      title: 'Frontend Lead',
+      company: 'Компанія-приклад 5',
+      stage: 'technical_interview',
+      days: 9,
+    },
     {
       title: 'Software Engineer',
-      company: 'Cloudnest',
+      company: 'Компанія-приклад 6',
       stage: 'c_level_interview',
       days: 12,
       notes: ['Розмова з CTO про команду й плани.'],
     },
     {
       title: 'UI-інженер',
-      company: 'Greenfield',
+      company: 'Компанія-приклад 7',
       stage: 'offered',
       days: 15,
       url: 'https://example.com/jobs/4',
     },
-    { title: 'JavaScript-розробник', company: 'Quanta Labs', stage: 'rejected', days: 20 },
+    { title: 'JavaScript-розробник', company: 'Компанія-приклад 8', stage: 'rejected', days: 20 },
   ],
 }
 
