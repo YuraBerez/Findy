@@ -27,7 +27,11 @@ export type MoveTarget = { stage: StageId; index: number }
 export type MoveHandler = (id: string, target: MoveTarget) => void
 
 /** Drag-and-drop state of the board: preview layout, handlers, sensors, announcements. */
-export function useBoardDnd(applications: Application[], onMove: MoveHandler) {
+export function useBoardDnd(
+  applications: Application[],
+  visible: readonly StageId[],
+  onMove: MoveHandler,
+) {
   const { t } = useTranslation()
   const byId = useMemo(
     () => new Map(applications.map((application) => [application.id, application])),
@@ -95,6 +99,7 @@ export function useBoardDnd(applications: Application[], onMove: MoveHandler) {
     if (!from) return
     dragSession.layout = initial
     dragSession.keyboard = activatorEvent instanceof KeyboardEvent
+    dragSession.visible = visible
     setPreview(initial)
     setStart({ id: String(active.id), from, index: initial[from].indexOf(String(active.id)) })
   }

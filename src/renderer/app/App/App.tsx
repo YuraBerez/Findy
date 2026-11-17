@@ -4,6 +4,7 @@ import type { AppState } from '@shared/ipc'
 import { ConfirmDialog } from '@ui'
 import { ApplicationDetails, ApplicationDialog } from '../../features/applications'
 import { Board } from '../../features/board'
+import { ColumnsDialog } from '../../features/settings'
 import { StorageError } from '../../features/storage'
 import { Toolbar } from '../Toolbar'
 import { useAppState } from '../useAppState'
@@ -14,6 +15,8 @@ export function App({ initialState }: { initialState: AppState }) {
   const [adding, setAdding] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
+  const [editingColumns, setEditingColumns] = useState(false)
+  const { hiddenStages } = state.settings
   const { t } = useTranslation()
   const count = state.applications.length
   const opened = state.applications.find((application) => application.id === openId)
@@ -28,6 +31,7 @@ export function App({ initialState }: { initialState: AppState }) {
         onLanguageChange={actions.setLanguage}
         applicationCount={count}
         onReset={() => setResetting(true)}
+        onColumns={() => setEditingColumns(true)}
       />
       <main className={styles.content}>
         {state.storage.status === 'error' ? (
@@ -39,16 +43,27 @@ export function App({ initialState }: { initialState: AppState }) {
             onMove={actions.moveApplication}
             onOpen={setOpenId}
             onOpenLink={actions.openLink}
+            hiddenStages={hiddenStages}
+            onHide={(stage) => actions.setHiddenStages([...hiddenStages, stage])}
           />
         )}
       </main>
       {adding && (
         <ApplicationDialog
+          hiddenStages={hiddenStages}
           onClose={() => setAdding(false)}
           onSubmit={async (application) => {
             await actions.createApplication(application)
             setAdding(false)
           }}
+        />
+      )}
+      {editingColumns && (
+        <ColumnsDialog
+          hiddenStages={hiddenStages}
+          applications={state.applications}
+          onChange={actions.setHiddenStages}
+          onClose={() => setEditingColumns(false)}
         />
       )}
       {resetting && (
@@ -77,6 +92,7 @@ export function App({ initialState }: { initialState: AppState }) {
             await actions.deleteApplication(opened.id)
           }}
           onOpenLink={actions.openLink}
+          hiddenStages={hiddenStages}
           notes={{
             add: (text) => actions.addNote(opened.id, text),
             update: (noteId, text) => actions.updateNote(opened.id, noteId, text),

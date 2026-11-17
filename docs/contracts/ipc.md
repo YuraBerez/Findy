@@ -9,6 +9,8 @@ The main process owns the state and the file. Every mutating call is validated
 in main (schema + invariants from [data-model.md](../data-model.md)), applied,
 persisted, and returns the new full state. Invalid input rejects with an
 `IpcError` (`{ code: 'VALIDATION' | 'NOT_FOUND' | 'STORAGE', message }`).
+`createApplication` and `moveApplication` into a hidden stage (spec 002) reject
+with `VALIDATION`.
 
 Handlers resolve with an envelope `{ ok: true, data } | { ok: false, error }`; the
 preload unwraps it and throws `IpcError`. `contextBridge` keeps only an error's
@@ -39,6 +41,7 @@ interface FindyApi {
   // Settings & system
   setLanguage(language: 'en' | 'uk'): Promise<AppState>;
   setTheme(theme: 'system' | 'light' | 'dark'): Promise<AppState>;  // sets nativeTheme.themeSource
+  setHiddenStages(stages: StageId[]): Promise<AppState>;  // spec 002; rejects all-hidden and duplicates
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
   getSystemLocale(): Promise<string>;
   openExternal(url: string): Promise<void>;            // http/https only, else rejects
@@ -46,7 +49,7 @@ interface FindyApi {
 }
 
 interface AppState {
-  settings: { language: 'en' | 'uk' | null; theme: 'system' | 'light' | 'dark' };
+  settings: { language: 'en' | 'uk' | null; theme: 'system' | 'light' | 'dark'; hiddenStages: StageId[] };
   applications: Application[];
   storage:
     | { status: 'ok'; dataFilePath: string }

@@ -7,7 +7,13 @@ import {
   MoveTargetSchema,
   NoteTextSchema,
 } from '../../src/domain/schema'
-import { DEFAULT_STAGE, isStageId, STAGES } from '../../src/domain/stages'
+import {
+  DEFAULT_STAGE,
+  firstVisibleStage,
+  isStageId,
+  STAGES,
+  visibleStages,
+} from '../../src/domain/stages'
 
 describe('stages (FR-001)', () => {
   it('has the seven stages in board order', () => {
@@ -103,5 +109,23 @@ describe('resolveLanguage (FR-041)', () => {
     ['uk', 'en-US', 'uk'],
   ] as const)('saved=%s, system=%s → %s', (saved, system, expected) => {
     expect(resolveLanguage(saved, system)).toBe(expected)
+  })
+})
+
+describe('visible stages (spec 002)', () => {
+  it('keeps board order and drops hidden stages', () => {
+    expect(visibleStages(['test_task', 'rejected'])).toEqual([
+      'applied',
+      'hr_interview',
+      'technical_interview',
+      'c_level_interview',
+      'offered',
+    ])
+    expect(visibleStages([])).toEqual(STAGES)
+  })
+
+  it('picks the first visible stage for new applications (FR-007)', () => {
+    expect(firstVisibleStage([])).toBe('applied')
+    expect(firstVisibleStage(['applied', 'hr_interview'])).toBe('test_task')
   })
 })

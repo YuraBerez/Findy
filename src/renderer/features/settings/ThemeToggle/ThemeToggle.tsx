@@ -14,6 +14,7 @@ export function ThemeToggle({ disabled = false, onChange }: Props) {
   const dark = usePrefersDark()
   return (
     <Switch
+      variant="neutral"
       checked={dark}
       label={t('theme.dark')}
       title={t(dark ? 'theme.switchToLight' : 'theme.switchToDark')}
