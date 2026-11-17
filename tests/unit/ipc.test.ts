@@ -21,6 +21,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     getSystemLocale: () => 'uk-UA',
     openExternal: vi.fn(async () => {}),
     applyTheme: vi.fn(),
+    applyLanguage: vi.fn(),
     backup: vi.fn(),
     ...overrides,
   }
@@ -71,6 +72,7 @@ describe('IPC handlers', () => {
     const s = await state(ctx.handlers.setTheme('dark'))
     expect(s.settings).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
+    expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
   })
 
   it.each([

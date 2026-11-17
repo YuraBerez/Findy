@@ -18,6 +18,7 @@ export function App({ initialState }: { initialState: AppState }) {
   const [openId, setOpenId] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
   const [editingColumns, setEditingColumns] = useState(false)
+  const [query, setQuery] = useState('')
   const { hiddenStages } = state.settings
   const { t } = useTranslation()
   const count = state.applications.length
@@ -34,6 +35,8 @@ export function App({ initialState }: { initialState: AppState }) {
         applicationCount={count}
         onReset={() => setResetting(true)}
         onColumns={() => setEditingColumns(true)}
+        query={query}
+        onQueryChange={setQuery}
       />
       <main className={styles.content}>
         {state.storage.status === 'error' ? (
@@ -47,6 +50,7 @@ export function App({ initialState }: { initialState: AppState }) {
             onOpenLink={actions.openLink}
             hiddenStages={hiddenStages}
             onHide={(stage) => actions.setHiddenStages([...hiddenStages, stage])}
+            query={query}
           />
         )}
       </main>

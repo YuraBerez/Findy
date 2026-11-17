@@ -1,4 +1,4 @@
-import { test } from '../fixtures/app'
+import { expect, test } from '../fixtures/app'
 
 test.describe('language (US-5)', () => {
   test(
@@ -17,6 +17,9 @@ test.describe('language (US-5)', () => {
           'Офер',
           'Відмова',
         ])
+      })
+      await test.step('FR-044: the native menu follows at once', async () => {
+        await expect.poll(() => findy.api.menuLabels()).toContain('Редагування')
       })
       await test.step('restart', async () => {
         const { board } = await findy.restart()

@@ -10,7 +10,7 @@ import {
   ThemeSchema,
 } from '../domain/schema'
 import type { StageId } from '../domain/stages'
-import type { Theme } from '../domain/types'
+import type { Language, Theme } from '../domain/types'
 import type { AppInfo, AppState, IpcErrorPayload, IpcMethod, IpcResult } from '../shared/ipc'
 import { NotFoundError, type Repository } from './db/repository'
 import { isSafeExternalUrl } from './security'
@@ -23,6 +23,8 @@ export interface IpcDeps {
   getSystemLocale(): string
   openExternal(url: string): Promise<void>
   applyTheme(theme: Theme): void
+  /** Rebuilds the native menu in the new language (FR-044) */
+  applyLanguage(language: Language): void
   /** Saves a copy of the database before a destructive action (FR-092) */
   backup(label: string): void
 }
@@ -113,6 +115,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     setLanguage: handle(z.tuple([LanguageSchema]), (language) => {
       repo().setLanguage(language)
+      deps.applyLanguage(language)
       return state()
     }),
     setHiddenStages: handle(z.tuple([HiddenStagesSchema]), (stages) => {

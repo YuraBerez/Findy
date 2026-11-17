@@ -30,7 +30,8 @@
     "dist:dir": "npm run build && electron-builder --dir",
     "smoke:packaged": "node scripts/smoke-packaged.mjs",
     "test:coverage": "vitest run --coverage",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "screenshots": "npm run build && UPDATE_SCREENSHOTS=1 playwright test self-tests/readme-screenshots --workers=1"
   },
   "dependencies": {
     "better-sqlite3": "^13.2.0"

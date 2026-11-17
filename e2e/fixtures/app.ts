@@ -9,6 +9,7 @@ import {
   type Page,
 } from '@playwright/test'
 import { errorGuardFixture, type ErrorGuard } from 'playwright-e2e-kit'
+import { writeBulkDatabase, type BulkData } from '../data/bulk-database'
 import { FindyBackdoor } from '../data/findy-backdoor'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
@@ -43,6 +44,8 @@ interface Options {
   systemLocale: string
   /** Bytes written to findy.db before the first launch (US-6.3) */
   databaseFile: string | undefined
+  /** Many applications and notes written to findy.db before the first launch (NFR-002) */
+  bulkData: BulkData | undefined
 }
 
 interface Fixtures extends Options {
@@ -82,10 +85,12 @@ function pagesFor(page: Page): FindyPages {
 export const test = base.extend<Fixtures>({
   systemLocale: ['en-US', { option: true }],
   databaseFile: [undefined, { option: true }],
+  bulkData: [undefined, { option: true }],
 
-  userDataDir: async ({ databaseFile }, use) => {
+  userDataDir: async ({ databaseFile, bulkData }, use) => {
     const dir = mkdtempSync(join(tmpdir(), 'findy-e2e-'))
     if (databaseFile !== undefined) writeFileSync(join(dir, 'findy.db'), databaseFile)
+    if (bulkData) writeBulkDatabase(join(dir, 'findy.db'), bulkData)
     await use(dir)
     rmSync(dir, { recursive: true, force: true })
   },

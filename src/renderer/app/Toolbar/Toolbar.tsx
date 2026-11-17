@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import logo from '../../../../assets/logo.svg'
-import { LanguageSelect, ThemeToggle } from '../../features/settings'
+import { SearchBox } from '../../features/search'
+import { useSettingsMenu } from '../../features/settings'
 import type { Language, Theme } from '@shared/ipc'
 import { Button, Menu, MoreIcon } from '@ui'
 import styles from './Toolbar.module.css'
@@ -14,6 +15,8 @@ interface Props {
   applicationCount: number
   onReset(): void
   onColumns(): void
+  query: string
+  onQueryChange(query: string): void
 }
 
 export function Toolbar({
@@ -24,8 +27,11 @@ export function Toolbar({
   applicationCount,
   onReset,
   onColumns,
+  query,
+  onQueryChange,
 }: Props) {
   const { t } = useTranslation()
+  const settings = useSettingsMenu({ onLanguageChange, onThemeChange })
   return (
     <header className={styles.toolbar} aria-label={t('toolbar.label')}>
       <div className={styles.brand}>
@@ -33,17 +39,18 @@ export function Toolbar({
         <span className={styles.name}>{t('app.name')}</span>
       </div>
       <div className={styles.actions}>
+        <SearchBox value={query} onChange={onQueryChange} />
         <Button variant="primary" onClick={onAdd} disabled={!storageReady}>
           {t('toolbar.addApplication')}
         </Button>
-        <LanguageSelect disabled={!storageReady} onChange={onLanguageChange} />
-        <ThemeToggle disabled={!storageReady} onChange={onThemeChange} />
         <Menu
           triggerLabel={t('toolbar.menu')}
           triggerIcon={<MoreIcon size={18} />}
           label={t('toolbar.menu')}
-          showLabel={false}
           items={[
+            // Language and theme live in the menu, so the toolbar stays calm
+            ...(storageReady ? settings : []),
+            { key: 'settings-end', separator: true },
             {
               key: 'columns',
               label: t('columns.menuItem'),
