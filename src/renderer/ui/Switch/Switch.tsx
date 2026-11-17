@@ -10,10 +10,20 @@ interface Props {
   disabled?: boolean
   /** Content of the moving knob (an icon) */
   thumb?: ReactNode
+  /** `primary`: on = primary colour (settings). `neutral`: both states equal (sun/moon) */
+  variant?: 'primary' | 'neutral'
   onToggle(): void
 }
 
-export function Switch({ checked, label, title, disabled = false, thumb, onToggle }: Props) {
+export function Switch({
+  checked,
+  label,
+  title,
+  disabled = false,
+  thumb,
+  onToggle,
+  variant = 'primary',
+}: Props) {
   return (
     <button
       type="button"
@@ -21,7 +31,7 @@ export function Switch({ checked, label, title, disabled = false, thumb, onToggl
       aria-checked={checked}
       aria-label={label}
       title={title}
-      className={styles.track}
+      className={[styles.track, styles[variant]].join(' ')}
       disabled={disabled}
       onClick={onToggle}
     >

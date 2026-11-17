@@ -1,19 +1,22 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EMPTY_FORM, type ValidApplication } from '@domain/forms'
+import { firstVisibleStage, visibleStages, type StageId } from '@domain/stages'
 import { Button, Dialog } from '@ui'
 import { ApplicationFields } from '../ApplicationFields'
 import { useApplicationForm } from '../useApplicationForm'
 
 interface Props {
+  hiddenStages: StageId[]
   onClose(): void
   onSubmit(application: ValidApplication): Promise<void>
 }
 
 /** US-1: create an application. Mount it to open it; the form starts empty each time. */
-export function ApplicationDialog({ onClose, onSubmit }: Props) {
+export function ApplicationDialog({ hiddenStages, onClose, onSubmit }: Props) {
   const { t } = useTranslation()
-  const form = useApplicationForm(EMPTY_FORM)
+  // FR-007: start in the first visible column
+  const form = useApplicationForm({ ...EMPTY_FORM, stage: firstVisibleStage(hiddenStages) })
   const [saving, setSaving] = useState(false)
   const [saveFailed, setSaveFailed] = useState(false)
 
@@ -47,7 +50,7 @@ export function ApplicationDialog({ onClose, onSubmit }: Props) {
         </>
       }
     >
-      <ApplicationFields form={form} />
+      <ApplicationFields form={form} stages={visibleStages(hiddenStages)} />
       {saveFailed && <p role="alert">{t('form.errors.saveFailed')}</p>}
     </Dialog>
   )

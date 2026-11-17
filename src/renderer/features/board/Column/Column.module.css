@@ -16,6 +16,7 @@
 }
 
 .title {
+  flex: 1;
   margin: 0;
   overflow: hidden;
   font-size: 13px;
@@ -51,4 +52,14 @@
   padding: 0 var(--space-2) var(--space-2);
   overflow-y: auto;
   list-style: none;
+}
+
+/* Shown on hover and keyboard focus, so it does not crowd every header */
+.hide {
+  opacity: 0;
+}
+
+.column:hover .hide,
+.hide:focus-visible {
+  opacity: 1;
 }

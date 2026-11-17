@@ -43,3 +43,13 @@
     transition: none;
   }
 }
+
+/* On = primary colour; the knob stays white for contrast */
+.primary[aria-checked='true'] {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.primary[aria-checked='true'] .thumb {
+  background: #ffffff;
+}

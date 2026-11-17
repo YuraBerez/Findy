@@ -54,9 +54,15 @@ export function moveInLayout(layout: Layout, id: string, to: StageId, overId: st
  * because a fast drop can arrive before React renders the last drag-over.
  * Module level is fine: there is one board, and one drag at a time.
  */
-export const dragSession: { layout: Layout | null; keyboard: boolean } = {
+export const dragSession: {
+  layout: Layout | null
+  keyboard: boolean
+  visible: readonly StageId[]
+} = {
   layout: null,
   keyboard: false,
+  /** Columns on the board; the keyboard moves between these only (spec 002) */
+  visible: STAGES,
 }
 
 /**
@@ -86,7 +92,8 @@ export const columnKeyboardCoordinates: KeyboardCoordinateGetter = (event, args)
   event.preventDefault()
   const { active, droppableContainers, collisionRect } = args.context
   const from = active && dragSession.layout ? stageIn(active.id, dragSession.layout) : undefined
-  const to = from ? STAGES[STAGES.indexOf(from) + step] : undefined
+  const { visible } = dragSession
+  const to = from ? visible[visible.indexOf(from) + step] : undefined
   const column = to ? droppableContainers.get(COLUMN_PREFIX + to)?.node.current : undefined
   if (!column || !collisionRect) return args.currentCoordinates
   // On a small window the next column can be off screen: show it first, then aim at

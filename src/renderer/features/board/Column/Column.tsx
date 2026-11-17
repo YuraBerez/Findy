@@ -2,6 +2,8 @@ import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { useTranslation } from 'react-i18next'
 import type { Application, StageId } from '@shared/ipc'
+import { EyeOffIcon, IconButton } from '@ui'
+import { useBoardActions } from '../BoardActions'
 import { SortableCard } from '../Card'
 import { COLUMN_PREFIX } from '../dnd'
 import styles from './Column.module.css'
@@ -13,6 +15,7 @@ interface Props {
 
 export function Column({ stage, applications }: Props) {
   const { t } = useTranslation()
+  const board = useBoardActions()
   // The whole column is a drop target, so empty columns accept cards too
   const { setNodeRef, isOver } = useDroppable({ id: COLUMN_PREFIX + stage })
   const headingId = `column-${stage}`
@@ -35,6 +38,15 @@ export function Column({ stage, applications }: Props) {
         >
           {applications.length}
         </span>
+        {/* Spec 002 FR-001: the last visible column cannot be hidden */}
+        {board.visible.length > 1 && (
+          <IconButton
+            label={t('column.hide', { stage: t(`stages.${stage}`) })}
+            icon={<EyeOffIcon size={15} />}
+            className={styles.hide}
+            onClick={() => board.hide(stage)}
+          />
+        )}
       </header>
       <SortableContext
         id={stage}

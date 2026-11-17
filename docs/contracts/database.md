@@ -47,7 +47,7 @@ CREATE TABLE notes (
 CREATE INDEX idx_notes_app ON notes(application_id, created_at DESC);
 
 CREATE TABLE settings (
-  key    TEXT PRIMARY KEY,                             -- 'language' | 'theme'
+  key    TEXT PRIMARY KEY,                             -- 'language' | 'theme' | 'hiddenStages' (JSON)
   value  TEXT NOT NULL
 );
 ```

@@ -168,19 +168,19 @@ describe('notes (FR-030…033)', () => {
 
 describe('settings', () => {
   it('defaults to no language and the system theme', () => {
-    expect(repo.getSettings()).toEqual({ language: null, theme: 'system' })
+    expect(repo.getSettings()).toEqual({ language: null, theme: 'system', hiddenStages: [] })
   })
 
   it('stores language and theme (FR-042, FR-083)', () => {
     repo.setLanguage('uk')
     repo.setTheme('dark')
-    expect(repo.getSettings()).toEqual({ language: 'uk', theme: 'dark' })
+    expect(repo.getSettings()).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
     expect(repo.setTheme('light').theme).toBe('light')
   })
 
   it('ignores unknown stored values', () => {
     db.prepare("INSERT INTO settings VALUES ('language', 'de'), ('theme', 'neon')").run()
-    expect(repo.getSettings()).toEqual({ language: null, theme: 'system' })
+    expect(repo.getSettings()).toEqual({ language: null, theme: 'system', hiddenStages: [] })
   })
 })
 
@@ -206,6 +206,25 @@ describe('resetBoard (FR-093)', () => {
     expect(repo.listApplications()).toEqual([])
     expect(db.prepare('SELECT COUNT(*) AS n FROM notes').get()).toEqual({ n: 0 })
     expect(db.prepare('SELECT COUNT(*) AS n FROM stage_changes').get()).toEqual({ n: 0 })
-    expect(repo.getSettings()).toEqual({ language: 'uk', theme: 'dark' })
+    expect(repo.getSettings()).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
+  })
+})
+
+describe('hidden stages (spec 002)', () => {
+  it('stores the hidden stages and keeps applications (FR-003, FR-004)', () => {
+    repo.createApplication(input('A', { stage: 'rejected' }))
+    expect(repo.setHiddenStages(['rejected', 'c_level_interview']).hiddenStages).toEqual([
+      'rejected',
+      'c_level_interview',
+    ])
+    expect(repo.listApplications().map((app) => app.stage)).toEqual(['rejected'])
+    expect(repo.setHiddenStages([]).hiddenStages).toEqual([])
+  })
+
+  it('reads a damaged value as "nothing hidden"', () => {
+    db.prepare("INSERT INTO settings VALUES ('hiddenStages', 'not json')").run()
+    expect(repo.getSettings().hiddenStages).toEqual([])
+    db.prepare("UPDATE settings SET value = '[\"nope\"]' WHERE key = 'hiddenStages'").run()
+    expect(repo.getSettings().hiddenStages).toEqual([])
   })
 })
