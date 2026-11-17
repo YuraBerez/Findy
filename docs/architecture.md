@@ -176,6 +176,11 @@ build/                   # icons, entitlements for electron-builder
   keyboard pattern; `useAppState` owns all IPC calls; `features/board/dnd.ts` and
   `useBoardDnd` own drag-and-drop, `Board` only renders.
 - **Aliases:** `@domain/*`, `@shared/*`, `@ui` (tsconfig.web.json + electron.vite.config.ts).
+- **Errors (spec 003):** every IPC call goes through `useAppState.run()`: a failure
+  becomes a notification (`app/notifications`, message by error code), the board
+  reloads the saved state, and the action resolves to `false`. Global `error` /
+  `unhandledrejection` listeners and an `ErrorBoundary` catch the rest. Never
+  call `window.findy` outside `useAppState`.
 
 ## Cross-cutting docs
 

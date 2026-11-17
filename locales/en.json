@@ -59,8 +59,7 @@
     "errors": {
       "required": "Fill in this field.",
       "tooLong": "Use {{max}} characters or fewer.",
-      "invalidUrl": "Enter a link that starts with http:// or https://.",
-      "saveFailed": "Could not save the application. Try again."
+      "invalidUrl": "Enter a link that starts with http:// or https://."
     }
   },
   "dnd": {
@@ -118,5 +117,14 @@
     "show": "Show {{stage}}",
     "lastVisible": "At least one column stays visible",
     "hint": "Hidden columns are not shown on the board, and no application can be moved into them. Their applications are kept."
+  },
+  "errors": {
+    "validation": "This was not saved: check the data you entered.",
+    "notFound": "This item no longer exists. The board now shows the saved data.",
+    "storage": "Findy could not save this change. Your saved data did not change.",
+    "unknown": "Something went wrong. The board now shows the saved data.",
+    "crashTitle": "Something went wrong",
+    "crashText": "The window could not show this screen. Your data is safe in the database.",
+    "reload": "Reload"
   }
 }

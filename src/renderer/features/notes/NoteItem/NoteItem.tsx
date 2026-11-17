@@ -8,8 +8,8 @@ import styles from './NoteItem.module.css'
 
 interface Props {
   note: Note
-  onSave(text: string): Promise<void>
-  onDelete(): Promise<void>
+  onSave(text: string): Promise<boolean>
+  onDelete(): Promise<boolean>
 }
 
 /** One note: text with line breaks, date, "edited" marker; edit and delete (FR-031…033). */
@@ -25,8 +25,7 @@ export function NoteItem({ note, onSave, onDelete }: Props) {
         <form
           noValidate
           onSubmit={edit.submit(async (text) => {
-            await onSave(text)
-            setEditing(false)
+            if (await onSave(text)) setEditing(false)
           })}
         >
           <TextField

@@ -7,11 +7,13 @@ import { Board } from '../../features/board'
 import { ColumnsDialog } from '../../features/settings'
 import { StorageError } from '../../features/storage'
 import { Toolbar } from '../Toolbar'
+import { useNotifications } from '../notifications'
 import { useAppState } from '../useAppState'
 import styles from './App.module.css'
 
 export function App({ initialState }: { initialState: AppState }) {
-  const { state, storageReady, actions } = useAppState(initialState)
+  const { notifyError } = useNotifications()
+  const { state, storageReady, actions } = useAppState(initialState, notifyError)
   const [adding, setAdding] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
@@ -53,8 +55,8 @@ export function App({ initialState }: { initialState: AppState }) {
           hiddenStages={hiddenStages}
           onClose={() => setAdding(false)}
           onSubmit={async (application) => {
-            await actions.createApplication(application)
-            setAdding(false)
+            // Spec 003 US-2: on failure the dialog stays open with the input
+            if (await actions.createApplication(application)) setAdding(false)
           }}
         />
       )}
