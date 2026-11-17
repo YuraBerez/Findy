@@ -184,9 +184,15 @@ build/                   # icons, entitlements for electron-builder
 
 ### D-8 — MCP server inside the app (spec 004)
 
-- `Findy --mcp` runs the same binary headless (no window, no Dock icon, no
-  single-instance lock) and serves MCP tools over **stdio only**
-  (`src/main/mcp/`). Gated by the `mcpEnabled` setting, off by default
+- The MCP server is a second entry, `out/main/mcp.js` (`src/main/mcp/cli.ts`). The
+  client starts Findy's own binary in **Node mode** (`ELECTRON_RUN_AS_NODE=1`)
+  with that script: no Chromium, no window, no helper processes, and stdio that
+  works on Windows (an Electron GUI process does not read stdin pipes reliably
+  there). It never imports Electron; `main/paths.ts` computes the same data
+  folder as `app.getPath('userData')`. Tools are served over **stdio only**.
+- `Findy --mcp` forwards to the same Node-mode server with inherited stdio. The
+  AppImage uses it, because its mount path changes on every start.
+- The `RunAsNode` Electron fuse must stay on; packaging does not change fuses. Gated by the `mcpEnabled` setting, off by default
   (constitution §II.5).
 - **One rule set:** tools use the same `Repository` and zod schemas as IPC; the
   hidden-stage rule lives in `Repository` (`HiddenStageError`).

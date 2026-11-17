@@ -20,7 +20,7 @@ the open app shows the changes at once, and access is off until the user turns i
 | Term | Meaning |
 |------|---------|
 | **MCP client** | An AI app that calls MCP tools: Claude Desktop, Cowork, Claude Code. |
-| **MCP server** | Findy started with `--mcp`; talks to one client over stdio. |
+| **MCP server** | Findy's binary in Node mode with `mcp.js` (or `Findy --mcp`); talks to one client over stdio. |
 | **Tool** | One action the client can call, e.g. `add_application`. |
 
 ## User stories
@@ -81,8 +81,9 @@ not have to copy it into the board by hand.
 
 ## Functional requirements
 
-- **FR-001** `Findy --mcp` MUST start an MCP server over stdio only, with no network
-  listener and no window. It MUST exit by itself when the client closes the connection
+- **FR-001** Findy's binary MUST start an MCP server over stdio only, with no network
+  listener and no window: in Node mode (`ELECTRON_RUN_AS_NODE=1` + the bundled
+  `mcp.js`), or with `Findy --mcp`, which forwards to it. It MUST exit by itself when the client closes the connection
   (end of stdin), so no Findy process stays behind after the assistant quits.
 - **FR-002** Tools: `list_applications`, `get_application`, `list_stages`,
   `add_application`, `update_application`, `move_application`, `add_note`,

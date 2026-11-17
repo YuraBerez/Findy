@@ -97,6 +97,8 @@ export interface AppState {
 export interface McpConnection {
   command: string
   args: string[]
+  /** Environment for the command, e.g. ELECTRON_RUN_AS_NODE=1 */
+  env: Record<string, string>
 }
 
 export interface AppInfo {

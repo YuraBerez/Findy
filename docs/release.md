@@ -42,8 +42,8 @@ the failed tests run once more (`playwright test --last-failed`).
   it, `E2E_QUARANTINE=include` runs it) until it is fixed.
 - A test that fails again is a real failure: the job is red.
 
-Coverage scope: `src/domain`, `src/main` (except the Electron bootstrap
-`src/main/index.ts`) and `src/shared`. UI and preload are covered by e2e tests.
+Coverage scope: `src/domain`, `src/main` (except the entry points
+`src/main/index.ts` and `src/main/mcp/cli.ts`) and `src/shared`. UI and preload are covered by e2e tests.
 
 Branch protection on `main` requires all four checks (`Quality gate …` and
 `E2E + package` on Ubuntu, Windows and macOS), linear history, and forbids force

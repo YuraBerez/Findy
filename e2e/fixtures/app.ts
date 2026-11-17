@@ -126,7 +126,7 @@ export const test = base.extend<Fixtures>({
       api: new FindyBackdoor(page, electronApp),
       dataFiles: () => readdirSync(userDataDir),
       connectMcp: async () => {
-        const client = await McpTestClient.start(userDataDir)
+        const client = await McpTestClient.start(await findy.api.mcpConnection(), userDataDir)
         mcpClients.push(client)
         return client
       },

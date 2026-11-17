@@ -9,7 +9,7 @@ export default defineConfig({
       // Unit-testable code. Electron bootstrap, preload and React UI are covered by e2e.
       include: ['src/domain/**', 'src/main/**', 'src/shared/**'],
       // Electron glue, covered by e2e: app bootstrap and installing the native menu
-      exclude: ['src/main/index.ts', 'src/main/menu.ts', '**/*.d.ts'],
+      exclude: ['src/main/index.ts', 'src/main/mcp/cli.ts', 'src/main/menu.ts', '**/*.d.ts'],
       reporter: ['text', 'json-summary', 'lcov'],
       // Quality gate (constitution §VI): CI fails below 80 %
       thresholds: {

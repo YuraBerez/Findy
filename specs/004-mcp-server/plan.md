@@ -5,6 +5,10 @@
 
 ## Summary
 
+Update (CI on Windows): the server runs Findy's binary in Node mode
+(`ELECTRON_RUN_AS_NODE=1` + `out/main/mcp.js`); `Findy --mcp` forwards to it. See
+architecture D-8. The original design below started the Electron main process:
+
 `Findy --mcp` starts the same Electron binary in a headless mode: no window, no
 Dock icon, no single-instance lock. It opens the same database with the same
 `Repository` and serves MCP tools over stdio with `@modelcontextprotocol/sdk`.

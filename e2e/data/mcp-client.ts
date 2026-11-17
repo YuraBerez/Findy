@@ -1,10 +1,6 @@
-import { spawnSync } from 'node:child_process'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
-import electron from 'electron'
-
-// Outside Electron, the `electron` package exports the path to its binary
-const electronBinary = electron as unknown as string
+import type { McpConnection } from '../../src/shared/ipc'
 
 export interface ToolResult {
   isError: boolean
@@ -19,23 +15,24 @@ export class McpTestClient {
     private readonly transport: StdioClientTransport,
   ) {}
 
-  static async start(userDataDir: string): Promise<McpTestClient> {
-    const args = ['.', '--mcp']
-    if (process.env.CI && process.platform === 'linux') args.push('--no-sandbox')
+  /** `connection` is what the app shows the user to copy (FR-009) */
+  static async start(connection: McpConnection, userDataDir: string): Promise<McpTestClient> {
     const client = new Client({ name: 'findy-e2e', version: '1.0.0' })
     const transport = new StdioClientTransport({
-      command: electronBinary,
-      args,
-      env: { ...(process.env as Record<string, string>), FINDY_USER_DATA_DIR: userDataDir },
+      command: connection.command,
+      args: connection.args,
+      env: {
+        ...(process.env as Record<string, string>),
+        ...connection.env,
+        FINDY_USER_DATA_DIR: userDataDir,
+      },
       stderr: 'pipe',
     })
     // Findy logs to stderr in MCP mode; show it when the connection fails
     let log = ''
     transport.stderr?.on('data', (chunk) => (log += String(chunk)))
     client.onclose = () => {
-      // Always on Windows CI, to see how Findy ends there (spec 004 FR-001)
-      const windowsCi = process.platform === 'win32' && !!process.env.CI
-      if (log && (windowsCi || !closing.has(client)))
+      if (log && !closing.has(client))
         console.log(`Findy --mcp closed the connection. Its stderr:\n${log}`)
     }
     await client.connect(transport)
@@ -60,10 +57,6 @@ export class McpTestClient {
   async close(): Promise<void> {
     const pid = this.transport.pid
     closing.add(this.client)
-    // Windows: a killed Electron leaves helper processes that lock the data folder,
-    // so end the whole process tree while its root is still known
-    if (process.platform === 'win32' && pid !== null && isRunning(pid))
-      spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'ignore' })
     await this.client.close()
     if (pid === null) return
     const deadline = Date.now() + 5_000

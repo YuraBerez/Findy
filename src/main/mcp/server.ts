@@ -15,22 +15,14 @@ export function toolErrorMessage(error: unknown): string {
 
 /**
  * stdio transport that also closes when the client closes our stdin. The SDK one
- * waits for data only, so `Findy --mcp` would stay alive until the client kills it,
- * and a killed Electron leaves helper processes that lock the data folder (FR-001).
+ * waits for data only, so the server would stay alive until the client kills it (FR-001).
  */
 export function stdioTransport(
   stdin: NodeJS.ReadableStream = process.stdin,
   stdout: NodeJS.WritableStream = process.stdout,
 ): Transport {
   const transport = new StdioServerTransport(stdin as never, stdout as never)
-  let received = 0
-  stdin.on('data', () => received++)
-  stdin.once('end', () => {
-    // Electron on Windows can report the end of stdin before the client writes
-    // anything; only a session that has started is closed
-    console.error(`Findy MCP: stdin ended after ${received} chunk(s)`)
-    if (received > 0) void transport.close()
-  })
+  stdin.once('end', () => void transport.close())
   return transport
 }
 

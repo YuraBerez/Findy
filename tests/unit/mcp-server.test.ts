@@ -108,18 +108,6 @@ describe('stdioTransport (FR-001)', () => {
     stdin.end()
     await expect(running).resolves.toBeUndefined()
   })
-
-  it('ignores an end of stdin before the session starts', async () => {
-    const stdin = new PassThrough()
-    const transport = stdioTransport(stdin, new PassThrough())
-    let closed = false
-    transport.onclose = () => (closed = true)
-    await transport.start()
-    stdin.end()
-    await new Promise((resolve) => setImmediate(resolve))
-    expect(closed).toBe(false)
-    await transport.close()
-  })
 })
 
 describe('toolErrorMessage', () => {

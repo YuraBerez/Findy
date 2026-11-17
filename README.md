@@ -90,8 +90,10 @@ frontend developer", "move Globex to the technical interview").
 1. In Findy open **⋯ → AI assistant access (MCP)…** and turn it on (it is off by default).
 2. Copy the configuration it shows into your client:
    - **Claude Desktop / Cowork:** `claude_desktop_config.json` (Settings → Developer → Edit Config).
-   - **Claude Code:** `claude mcp add findy -- /Applications/Findy.app/Contents/MacOS/Findy --mcp`
-   - **Gemini CLI, Cursor, VS Code, Windsurf, Zed, Codex CLI…:** command `<Findy> --mcp`, transport stdio.
+   - **Claude Code:** the `claude mcp add findy …` command from the same dialog.
+   - **Gemini CLI, Cursor, VS Code, Windsurf, Zed, Codex CLI…:** the command, arguments
+     and environment (`ELECTRON_RUN_AS_NODE=1`) from the dialog, transport stdio.
+     The short form `<Findy> --mcp` also works.
 
 Tools: list and get applications, list stages, add, update, move, add a note,
 delete (the assistant asks you first). The same rules apply as in the app, and an

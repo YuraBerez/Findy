@@ -88,8 +88,10 @@ npm run dev          # запуск із гарячим перезавантаж
 1. У Findy відкрийте **⋯ → Доступ для AI-асистентів (MCP)…** і ввімкніть його (за замовчуванням вимкнено).
 2. Скопіюйте показані налаштування у свій клієнт:
    - **Claude Desktop / Cowork:** `claude_desktop_config.json` (Settings → Developer → Edit Config).
-   - **Claude Code:** `claude mcp add findy -- /Applications/Findy.app/Contents/MacOS/Findy --mcp`
-   - **Gemini CLI, Cursor, VS Code, Windsurf, Zed, Codex CLI…:** команда `<Findy> --mcp`, транспорт stdio.
+   - **Claude Code:** команда `claude mcp add findy …` з того самого діалогу.
+   - **Gemini CLI, Cursor, VS Code, Windsurf, Zed, Codex CLI…:** команда, аргументи
+     й змінна середовища (`ELECTRON_RUN_AS_NODE=1`) з діалогу, транспорт stdio.
+     Коротка форма `<Findy> --mcp` теж працює.
 
 Інструменти: список і перегляд заявок, список етапів, додати, змінити, перемістити,
 нотатка, видалити (асистент спершу питає вас). Правила ті самі, що в застосунку, а

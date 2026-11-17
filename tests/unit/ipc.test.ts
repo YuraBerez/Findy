@@ -26,6 +26,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     mcpConnection: () => ({
       command: '/Applications/Findy.app/Contents/MacOS/Findy',
       args: ['--mcp'],
+      env: {},
     }),
     ...overrides,
   }
@@ -182,6 +183,7 @@ describe('MCP settings (spec 004)', () => {
     expect(unwrap(await ctx.handlers.getMcpConnection())).toEqual({
       command: '/Applications/Findy.app/Contents/MacOS/Findy',
       args: ['--mcp'],
+      env: {},
     })
   })
 })

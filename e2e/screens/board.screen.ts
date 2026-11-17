@@ -176,8 +176,12 @@ export class BoardScreen extends BaseComponent {
 
   /** FR-009: ready-to-copy client configuration */
   async verifyAssistantInstructions(): Promise<void> {
-    await expect(this.assistantDialog.getByTestId('mcp-desktop-config')).toContainText('"--mcp"')
-    await expect(this.assistantDialog).toContainText('claude mcp add findy')
+    const config = this.assistantDialog.getByTestId('mcp-desktop-config')
+    await expect(config).toContainText('"mcpServers"')
+    await expect(config).toContainText('"ELECTRON_RUN_AS_NODE": "1"')
+    await expect(this.assistantDialog).toContainText(
+      'claude mcp add findy -e ELECTRON_RUN_AS_NODE=1 --',
+    )
   }
 
   // ── Notifications (spec 003) ───────────────────────────────────────────

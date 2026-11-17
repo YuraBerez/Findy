@@ -43,7 +43,12 @@ export function McpDialog({ enabled, onChange, onClose }: Props) {
           <h3 className={styles.heading}>{t('mcp.codeTitle')}</h3>
           <CodeBlock
             label={t('mcp.codeTitle')}
-            code={`claude mcp add findy -- ${[connection.command, ...connection.args].map(quote).join(' ')}`}
+            code={[
+              'claude mcp add findy',
+              ...Object.entries(connection.env).map(([key, value]) => `-e ${key}=${value}`),
+              '--',
+              ...[connection.command, ...connection.args].map(quote),
+            ].join(' ')}
             {...copy}
           />
           {/* MCP is an open standard: any client with stdio servers can connect */}
@@ -51,7 +56,12 @@ export function McpDialog({ enabled, onChange, onClose }: Props) {
           <p className={styles.hint}>{t('mcp.otherHint')}</p>
           <CodeBlock
             label={t('mcp.otherTitle')}
-            code={`command:   ${connection.command}\nargs:      ${connection.args.join(' ')}\ntransport: stdio`}
+            code={[
+              `command:   ${connection.command}`,
+              `args:      ${connection.args.map(quote).join(' ')}`,
+              ...Object.entries(connection.env).map(([key, value]) => `env:       ${key}=${value}`),
+              'transport: stdio',
+            ].join('\n')}
           />
         </>
       )}
