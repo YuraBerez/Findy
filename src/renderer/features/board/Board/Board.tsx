@@ -1,6 +1,7 @@
 import { DndContext, DragOverlay } from '@dnd-kit/core'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { filterApplications, toFullIndex } from '@domain/search'
 import { visibleStages, type StageId } from '@domain/stages'
 import type { Application } from '@shared/ipc'
 import { Button } from '@ui'
@@ -19,6 +20,8 @@ interface Props {
   onOpenLink(url: string): void
   hiddenStages: StageId[]
   onHide(stage: StageId): void
+  /** FR-060: show only the cards that match */
+  query: string
 }
 
 /** FR-001…004 and FR-020…025: stage columns with drag-and-drop (mouse and keyboard). */
@@ -30,10 +33,21 @@ export function Board({
   onOpenLink,
   hiddenStages,
   onHide,
+  query,
 }: Props) {
   const { t } = useTranslation()
   const visible = useMemo(() => visibleStages(hiddenStages), [hiddenStages])
-  const dnd = useBoardDnd(applications, visible, onMove)
+  const shown = useMemo(() => filterApplications(applications, query), [applications, query])
+  // Positions in a filtered column become positions in the whole column
+  const move = useCallback<MoveHandler>(
+    (id, target) =>
+      onMove(
+        id,
+        query.trim() ? { ...target, index: toFullIndex(applications, shown, id, target) } : target,
+      ),
+    [onMove, query, applications, shown],
+  )
+  const dnd = useBoardDnd(shown, visible, move)
   const actions = useMemo<BoardActions>(
     () => ({
       move: dnd.moveFromMenu,
@@ -49,6 +63,11 @@ export function Board({
 
   return (
     <div className={styles.wrapper}>
+      {query.trim() && applications.length > 0 && shown.length === 0 && (
+        <p className={styles.noResults} role="status">
+          {t('search.noResults', { query: query.trim() })}
+        </p>
+      )}
       {applications.length === 0 && (
         <section className={styles.empty} data-testid="empty-board">
           <h2>{t('board.emptyTitle')}</h2>

@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import logo from '../../../../assets/logo.svg'
+import { SearchBox } from '../../features/search'
 import { LanguageSelect, ThemeToggle } from '../../features/settings'
 import type { Language, Theme } from '@shared/ipc'
 import { Button, Menu, MoreIcon } from '@ui'
@@ -14,6 +15,8 @@ interface Props {
   applicationCount: number
   onReset(): void
   onColumns(): void
+  query: string
+  onQueryChange(query: string): void
 }
 
 export function Toolbar({
@@ -24,6 +27,8 @@ export function Toolbar({
   applicationCount,
   onReset,
   onColumns,
+  query,
+  onQueryChange,
 }: Props) {
   const { t } = useTranslation()
   return (
@@ -33,6 +38,7 @@ export function Toolbar({
         <span className={styles.name}>{t('app.name')}</span>
       </div>
       <div className={styles.actions}>
+        <SearchBox value={query} onChange={onQueryChange} />
         <Button variant="primary" onClick={onAdd} disabled={!storageReady}>
           {t('toolbar.addApplication')}
         </Button>

@@ -3,7 +3,9 @@ import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
+import { resolveLanguage } from '../domain/language'
 import { createHandlers } from './ipc'
+import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
 
@@ -64,6 +66,7 @@ function start(): void {
         }
 
   nativeTheme.themeSource = repository?.getSettings().theme ?? 'system'
+  applyMenu(resolveLanguage(repository?.getSettings().language ?? null, app.getLocale()))
 
   const handlers = createHandlers({
     repository,
@@ -74,6 +77,7 @@ function start(): void {
     applyTheme: (theme) => {
       nativeTheme.themeSource = theme
     },
+    applyLanguage: applyMenu,
     backup: (label) => {
       if (opened.status === 'ok') backupDatabase(opened.db, app.getPath('userData'), label)
     },

@@ -20,6 +20,7 @@ export class BoardScreen extends BaseComponent {
   private readonly storageError: Locator
   private readonly menu: Locator
   private readonly columnsDialog: Locator
+  private readonly searchInput: Locator
 
   constructor(page: Page) {
     super(page)
@@ -33,6 +34,7 @@ export class BoardScreen extends BaseComponent {
     this.storageError = page.getByTestId('storage-error')
     this.menu = page.getByRole('menu')
     this.columnsDialog = page.getByRole('dialog', { name: 'Columns' })
+    this.searchInput = this.toolbar.getByRole('searchbox', { name: 'Search applications' })
   }
 
   private column(stage: StageId): Locator {
@@ -94,6 +96,32 @@ export class BoardScreen extends BaseComponent {
       .getByRole('button', { name: answer === 'confirm' ? 'Reset board' : 'Cancel' })
       .click()
     await expect(confirm).toBeHidden()
+  }
+
+  // ── Search (US-8) ───────────────────────────────────────────────────────
+
+  async search(text: string): Promise<void> {
+    await this.searchInput.fill(text)
+  }
+
+  async clearSearchWithEscape(): Promise<void> {
+    await this.searchInput.press('Escape')
+  }
+
+  /** Cmd+F on macOS, Ctrl+F elsewhere, from anywhere on the board */
+  async focusSearchWithShortcut(): Promise<void> {
+    await this.board.press('ControlOrMeta+f')
+  }
+
+  async verifySearch(value: string, focused = false): Promise<void> {
+    await expect(this.searchInput).toHaveValue(value)
+    if (focused) await expect(this.searchInput).toBeFocused()
+  }
+
+  async verifyNoResults(query: string): Promise<void> {
+    await expect(
+      this.page.getByRole('status').filter({ hasText: `No applications match “${query}”.` }),
+    ).toBeVisible()
   }
 
   // ── Notifications (spec 003) ───────────────────────────────────────────

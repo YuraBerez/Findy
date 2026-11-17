@@ -60,6 +60,13 @@ export class FindyBackdoor {
     }, message)
   }
 
+  /** Top-level labels of the native application menu (FR-044) */
+  menuLabels(): Promise<string[]> {
+    return this.app.evaluate(
+      ({ Menu }) => Menu.getApplicationMenu()?.items.map((item) => item.label) ?? [],
+    )
+  }
+
   openedLinks(): Promise<string[]> {
     return this.app.evaluate(() => (globalThis as { openedLinks?: string[] }).openedLinks ?? [])
   }

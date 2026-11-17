@@ -38,3 +38,8 @@
   margin: 0 0 var(--space-4);
   color: var(--fg-muted);
 }
+
+.noResults {
+  margin: 0;
+  color: var(--fg-muted);
+}
