@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "Findy",
+    "loading": "Завантаження…"
+  },
+  "toolbar": {
+    "label": "Головна панель інструментів"
+  },
+  "theme": {
+    "label": "Тема",
+    "system": "Системна",
+    "light": "Світла",
+    "dark": "Темна"
+  },
+  "stages": {
+    "applied": "Заявку надіслано",
+    "hr_interview": "HR-співбесіда",
+    "test_task": "Тестове завдання",
+    "technical_interview": "Технічна співбесіда",
+    "c_level_interview": "Співбесіда з C-level",
+    "offered": "Офер",
+    "rejected": "Відмова"
+  },
+  "storage": {
+    "errorTitle": "Не вдалося відкрити ваші дані",
+    "corrupt": "Файл бази даних пошкоджено, або це не база Findy. Findy не змінював його і зберіг копію: {{backupPath}}.",
+    "newer_version": "Базу даних створено новішою версією Findy. Оновіть застосунок, щоб відкрити її. Findy не змінював файл і зберіг копію: {{backupPath}}.",
+    "open_failed": "Findy не вдалося відкрити або створити базу даних.",
+    "location": "Файл бази даних: {{dataFilePath}}"
+  }
+}

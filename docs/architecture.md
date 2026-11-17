@@ -14,7 +14,7 @@ must be motivated by a spec and land in the same PR.
 | Language | **TypeScript** (strict) | Shared types across main / preload / renderer |
 | Build tooling | **electron-vite** | Fast dev server + HMR for all three processes |
 | UI | **React** | Large ecosystem, easy for contributors |
-| Styling | CSS Modules + CSS variables | No runtime cost; light/dark via `prefers-color-scheme` |
+| Styling | CSS Modules + CSS variables | No runtime cost; light/dark via `prefers-color-scheme`, driven by `nativeTheme.themeSource` (System/Light/Dark) |
 | Drag & drop | **@dnd-kit** | Accessible (keyboard sensor), maintained |
 | i18n | **i18next** + **react-i18next** | Interpolation, plurals (Ukrainian has 3 plural forms) |
 | Validation | **zod** | One schema → TS types + runtime validation in main |
@@ -75,7 +75,7 @@ src/
 │   │   ├── connection.ts    # open findy.db, pragmas, integrity check
 │   │   ├── migrate.ts       # PRAGMA user_version + backups
 │   │   ├── migrations/      # 001-init.sql, …
-│   │   └── repositories.ts  # applications / notes / settings queries
+│   │   └── repository.ts  # applications / notes / settings queries
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
 ├── preload/
@@ -123,7 +123,7 @@ build/                   # icons, entitlements for electron-builder
   is denied in `package.json` → `allowScripts`, and electron-builder runs with
   `npmRebuild: false`. CI verifies every packaged build loads it
   (`npm run smoke:packaged`).
-- **No ORM:** plain SQL in `repositories.ts` keeps the dependency count low
+- **No ORM:** plain SQL in `repository.ts` keeps the dependency count low
   (§VII); revisit if queries become complex.
 
 ### D-3 — Main process is the single source of truth

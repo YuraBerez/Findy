@@ -1,22 +1,40 @@
+/* Design tokens: docs/brand.md. Dark values apply when nativeTheme.themeSource
+   (System/Light/Dark, FR-080) makes prefers-color-scheme match "dark". */
 :root {
   color-scheme: light dark;
   --primary: #0a66c2;
   --on-primary: #ffffff;
-  --bg: #f6f7f9;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
   --fg: #1c1f24;
+  --fg-muted: #5b6370;
+  --border: #d9dee5;
+  --danger: #c62828;
+  --danger-bg: #fdecea;
+  --radius: 8px;
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
   font-family:
     system-ui,
     -apple-system,
     'Segoe UI',
     Roboto,
     sans-serif;
+  font-size: 14px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --primary: #4a9de8;
+    --on-primary: #0b1520;
     --bg: #16181c;
+    --surface: #1f2228;
     --fg: #e6e8eb;
+    --fg-muted: #a3abb7;
+    --border: #343a44;
+    --danger: #ef5350;
+    --danger-bg: #3a1d1d;
   }
 }
 
@@ -28,13 +46,4 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-}
-
-.app {
-  padding: 16px;
-}
-
-.app__brand {
-  margin: 0;
-  font-size: 20px;
 }

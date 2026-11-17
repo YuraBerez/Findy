@@ -23,7 +23,7 @@ Do not add effects (gradients, shadows) to the mark: it must stay readable at 16
 | Token | Light | Dark | Use |
 |-------|-------|------|-----|
 | `--primary` | `#0A66C2` | `#4A9DE8` | Logo, primary buttons, focus rings, links |
-| `--on-primary` | `#FFFFFF` | `#FFFFFF` | Text and icons on `--primary` |
+| `--on-primary` | `#FFFFFF` | `#0B1520` | Text and icons on `--primary` (dark text in dark theme for AA contrast) |
 
 The dark-theme primary is lighter, so it keeps enough contrast on the dark background.
 Tokens live in `src/renderer/styles/global.css`.

@@ -15,15 +15,16 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 2 — Foundations (blocks all user stories)
 
-- [ ] T010 [P] `domain/stages.ts` — `STAGES` constant and `StageId` (FR-001)
-- [ ] T011 [P] `domain/schema.ts` — zod schemas for entities and IPC input (data-model.md)
+- [x] T010 [P] `domain/stages.ts` — `STAGES` constant and `StageId` (FR-001)
+- [x] T011 [P] `domain/schema.ts` — zod schemas for entities and IPC input (data-model.md)
 - [x] T012 Add `better-sqlite3` (Node-API prebuilds, no rebuild); verify packaged app loads it on all 3 OSes in CI via `smoke:packaged` (architecture D-2)
-- [ ] T013 Tests + `main/db/connection.ts` + `migrate.ts` + `migrations/001-init.sql` — pragmas, `user_version`, backup before migrate, corrupt/newer-version handling (FR-051, FR-053, FR-054, US-6)
-- [ ] T014 Tests + `main/db/repositories.ts` — CRUD for applications/notes/settings, each mutation in one transaction (FR-050, FR-052)
-- [ ] T015 Secure `BrowserWindow`, CSP, single-instance lock, navigation guards (security.md, NFR-004)
-- [ ] T016 `shared/ipc.ts` types, preload `contextBridge`, `main/ipc.ts` handler skeleton with zod parsing (contracts/ipc.md)
-- [ ] T017 [P] i18n setup: `locales/en.json`, `locales/uk.json`, renderer + main i18n, key-parity test (FR-040, SC-003)
-- [ ] T018 [P] Base layout, CSS variables, light/dark theme (NFR-006)
+- [x] T013 Tests + `main/db/connection.ts` + `migrate.ts` + `migrations/001-init.ts` — pragmas, `user_version`, backup before migrate, corrupt/newer-version handling (FR-051, FR-053, FR-054, US-6)
+- [x] T014 Tests + `main/db/repository.ts` — CRUD for applications/notes/settings, each mutation in one transaction (FR-050, FR-052)
+- [x] T015 Secure `BrowserWindow`, CSP, single-instance lock, navigation guards (security.md, NFR-004)
+- [x] T016 `shared/ipc.ts` types, preload `contextBridge`, `main/ipc.ts` handler skeleton with zod parsing (contracts/ipc.md)
+- [x] T017 [P] i18n setup: `locales/en.json`, `locales/uk.json`, renderer + main i18n, key-parity test (FR-040, SC-003)
+- [x] T018 [P] Base layout (app shell, toolbar), CSS tokens for light and dark (NFR-006)
+- [x] T019 Theme: `theme` setting + `setTheme` IPC → `nativeTheme.themeSource`; `ThemeSwitcher` (System/Light/Dark) in toolbar; e2e for US-9 (FR-080…083)
 
 ## Phase 3 — US-1 Add application (P1)
 

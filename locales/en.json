@@ -1,0 +1,31 @@
+{
+  "app": {
+    "name": "Findy",
+    "loading": "Loading…"
+  },
+  "toolbar": {
+    "label": "Main toolbar"
+  },
+  "theme": {
+    "label": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "stages": {
+    "applied": "Applied",
+    "hr_interview": "HR interview",
+    "test_task": "Test task",
+    "technical_interview": "Technical interview",
+    "c_level_interview": "C-level interview",
+    "offered": "Offer",
+    "rejected": "Rejected"
+  },
+  "storage": {
+    "errorTitle": "Your data could not be opened",
+    "corrupt": "The database file is damaged or is not a Findy database. Findy did not change it and saved a copy to {{backupPath}}.",
+    "newer_version": "The database was created by a newer version of Findy. Update the app to open it. Findy did not change the file and saved a copy to {{backupPath}}.",
+    "open_failed": "Findy could not open or create its database.",
+    "location": "Database file: {{dataFilePath}}"
+  }
+}
