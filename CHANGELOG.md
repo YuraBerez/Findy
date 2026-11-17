@@ -3,6 +3,14 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.1.1] - 2026-11-17
+
+### Fixed
+- **macOS:** the downloaded app no longer shows *"Findy" is damaged and can't be opened* on Apple Silicon. The whole app bundle is now signed ad hoc, so macOS shows the usual unknown-developer warning, and **System Settings → Privacy & Security → Open Anyway** opens Findy. See [First start](https://github.com/YuraBerez/findy#first-start-the-builds-are-not-signed-yet).
+
+### Changed
+- The macOS downloads are named `…-macOS-Apple-Silicon.dmg` and `…-macOS-Intel.dmg`, and the release notes start with a table that tells which file to download.
+
 ## [0.1.0] - 2026-11-17
 
 The first release: a private, local-first kanban board for your job search.
@@ -30,4 +38,4 @@ The first release: a private, local-first kanban board for your job search.
 
 ### Downloads
 - Windows (x64) installer, macOS (Apple Silicon and Intel) disk images, Linux AppImage and `.deb`.
-- The builds are **not code-signed** yet: see "Download" in the README for how to open them.
+- The builds are **not code-signed** yet. The first time you open Findy, macOS and Windows show a warning: see [First start](https://github.com/YuraBerez/findy#first-start-the-builds-are-not-signed-yet) in the README for the steps.

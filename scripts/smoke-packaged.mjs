@@ -36,6 +36,20 @@ if (result.status !== 0 || !result.stdout?.includes('FINDY_SMOKE_OK')) {
 }
 console.log(`Smoke test passed: ${executable}`)
 
+// macOS: a broken bundle signature makes a downloaded app "damaged" on Apple
+// Silicon, with no way to open it (electron-builder.yml → mac.identity)
+if (process.platform === 'darwin') {
+  const app = join(dirname(executable), '..', '..')
+  const verify = spawnSync('codesign', ['--verify', '--deep', '--strict', app], {
+    encoding: 'utf8',
+  })
+  if (verify.status !== 0) {
+    console.error(`Code signature is not valid:\n${verify.stderr}`)
+    process.exit(1)
+  }
+  console.log('Code signature valid (ad hoc)')
+}
+
 // Same command as the app shows the user (architecture D-8)
 const resources =
   process.platform === 'darwin'
