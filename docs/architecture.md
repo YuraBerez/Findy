@@ -14,7 +14,7 @@ must be motivated by a spec and land in the same PR.
 | Language | **TypeScript** (strict) | Shared types across main / preload / renderer |
 | Build tooling | **electron-vite** | Fast dev server + HMR for all three processes |
 | UI | **React** | Large ecosystem, easy for contributors |
-| Styling | CSS Modules + CSS variables | No runtime cost; light/dark via `prefers-color-scheme`, driven by `nativeTheme.themeSource` (System/Light/Dark) |
+| Styling | CSS Modules + CSS variables | No runtime cost; light/dark via `prefers-color-scheme`, driven by `nativeTheme.themeSource` (follows the OS until the user flips the sun/moon toggle) |
 | Drag & drop | **@dnd-kit** | Accessible (keyboard sensor), maintained |
 | i18n | **i18next** + **react-i18next** | Interpolation, plurals (Ukrainian has 3 plural forms) |
 | Validation | **zod** | One schema → TS types + runtime validation in main |

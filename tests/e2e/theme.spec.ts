@@ -7,36 +7,37 @@ const prefersDark = (page: Page) =>
 const background = (page: Page) =>
   page.evaluate(() => getComputedStyle(document.body).backgroundColor)
 
-test('US-9: theme switcher changes the theme at once and remembers it', async () => {
+test('US-9: sun/moon toggle switches the theme at once and remembers it', async () => {
   const dir = newUserDataDir()
   let { app, page } = await launchApp(dir)
-  const switcher = page.getByRole('group', { name: 'Theme' })
+  const toggle = page.getByRole('switch', { name: 'Dark theme' })
 
-  // 9.1: System is the default
-  await expect(switcher.getByRole('radio', { name: 'System' })).toBeChecked()
+  // 9.1: before the first use the toggle mirrors the OS theme
+  const osDark = await prefersDark(page)
+  await expect(toggle).toHaveAttribute('aria-checked', String(osDark))
 
-  // 9.2: Dark applies without restart
-  await switcher.getByRole('radio', { name: 'Dark' }).check()
-  await expect(switcher.getByRole('radio', { name: 'Dark' })).toBeChecked()
-  await expect.poll(() => prefersDark(page)).toBe(true)
-  const darkBackground = await background(page)
+  // 9.2: a click flips the whole window at once
+  const before = await background(page)
+  await toggle.click()
+  await expect.poll(() => prefersDark(page)).toBe(!osDark)
+  await expect(toggle).toHaveAttribute('aria-checked', String(!osDark))
+  expect(await background(page)).not.toBe(before)
 
-  // Light, chosen with the keyboard (FR-081)
-  await switcher.getByRole('radio', { name: 'Dark' }).focus()
-  await page.keyboard.press('ArrowLeft')
-  await expect(switcher.getByRole('radio', { name: 'Light' })).toBeChecked()
-  await expect.poll(() => prefersDark(page)).toBe(false)
-  expect(await background(page)).not.toBe(darkBackground)
+  // FR-081: the keyboard flips it back
+  await toggle.focus()
+  await page.keyboard.press('Space')
+  await expect.poll(() => prefersDark(page)).toBe(osDark)
 
-  // 9.5: the choice survives a restart
-  await switcher.getByRole('radio', { name: 'Dark' }).check()
-  await expect.poll(() => prefersDark(page)).toBe(true)
+  // 9.4: the explicit choice survives a restart
+  await page.keyboard.press('Enter')
+  await expect.poll(() => prefersDark(page)).toBe(!osDark)
   await app.close()
 
   ;({ app, page } = await launchApp(dir))
-  await expect(
-    page.getByRole('group', { name: 'Theme' }).getByRole('radio', { name: 'Dark' }),
-  ).toBeChecked()
-  expect(await prefersDark(page)).toBe(true)
+  await expect(page.getByRole('switch', { name: 'Dark theme' })).toHaveAttribute(
+    'aria-checked',
+    String(!osDark),
+  )
+  expect(await prefersDark(page)).toBe(!osDark)
   await app.close()
 })

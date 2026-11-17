@@ -7,10 +7,9 @@
     "label": "Main toolbar"
   },
   "theme": {
-    "label": "Theme",
-    "system": "System",
-    "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark theme",
+    "switchToDark": "Switch to dark theme",
+    "switchToLight": "Switch to light theme"
   },
   "stages": {
     "applied": "Applied",

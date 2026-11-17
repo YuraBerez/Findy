@@ -24,7 +24,7 @@ Tests for a task are written before (or together with) its implementation.
 - [x] T016 `shared/ipc.ts` types, preload `contextBridge`, `main/ipc.ts` handler skeleton with zod parsing (contracts/ipc.md)
 - [x] T017 [P] i18n setup: `locales/en.json`, `locales/uk.json`, renderer + main i18n, key-parity test (FR-040, SC-003)
 - [x] T018 [P] Base layout (app shell, toolbar), CSS tokens for light and dark (NFR-006)
-- [x] T019 Theme: `theme` setting + `setTheme` IPC → `nativeTheme.themeSource`; `ThemeSwitcher` (System/Light/Dark) in toolbar; e2e for US-9 (FR-080…083)
+- [x] T019 Theme: `theme` setting + `setTheme` IPC → `nativeTheme.themeSource`; sun/moon `ThemeToggle` in toolbar; e2e for US-9 (FR-080…083)
 
 ## Phase 3 — US-1 Add application (P1)
 

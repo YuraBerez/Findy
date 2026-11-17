@@ -160,13 +160,14 @@ comfortable to use in any lighting.
 
 **Acceptance scenarios**
 
-1. **Given** first launch, **Then** the theme follows the OS light/dark setting.
-2. **Given** the app is open, **When** I choose **Dark** in the theme switcher,
-   **Then** the whole UI switches to the dark theme at once, without restart.
-3. **Given** I chose **Light** or **Dark**, **When** the OS theme changes,
-   **Then** the app keeps my choice.
-4. **Given** I choose **System**, **Then** the app follows the OS setting again.
-5. **Given** I chose a theme, **When** I restart the app, **Then** my choice is kept.
+1. **Given** first launch, **Then** the theme follows the OS light/dark setting,
+   and the toggle shows the sun (light) or the moon (dark) to match.
+2. **Given** the light theme, **When** I click the sun/moon toggle, **Then** the
+   whole UI switches to the dark theme at once, without restart. Clicking again
+   switches back to light.
+3. **Given** I used the toggle, **When** the OS theme changes, **Then** the app
+   keeps my choice.
+4. **Given** I used the toggle, **When** I restart the app, **Then** my choice is kept.
 
 ### US-8 — Find applications quickly (P2)
 
@@ -248,12 +249,12 @@ can find a specific company fast.
   timestamped backup, and MUST inform the user where the file is.
 
 ### Appearance
-- **FR-080** The user MUST be able to choose the theme: **System** (default),
-  **Light** or **Dark**.
-- **FR-081** The theme switcher MUST be visible in the main toolbar and work with
-  the keyboard.
+- **FR-080** The toolbar MUST have a sun/moon toggle that switches between the
+  **light** and **dark** theme. Until the user uses it, the theme follows the OS
+  (and follows OS changes while the app runs).
+- **FR-081** The toggle MUST work with the keyboard (Tab, Space, Enter), have an
+  accessible name, and expose its on/off state to assistive technology.
 - **FR-082** A theme change MUST apply to the whole window at once, without restart.
-  With **System**, the app MUST follow OS theme changes while it runs.
 - **FR-083** The choice MUST persist across restarts.
 
 ### Search (P2)
@@ -323,4 +324,6 @@ Resolved clarifications (2026-11-17):
 - **D-3** MVP builds are unsigned; README documents how to open them on macOS
   (Gatekeeper) and Windows (SmartScreen).
 - **D-4** (added 2026-11-17 at the owner's request) Users can switch between
-  System, Light and Dark themes (US-9, FR-080…083).
+  light and dark themes with a sun/moon toggle (US-9, FR-080…083). The theme
+  follows the OS until the first use of the toggle. There is no control to go
+  back to "follow the OS" in the MVP.

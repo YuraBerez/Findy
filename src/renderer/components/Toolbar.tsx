@@ -1,16 +1,15 @@
 import { useTranslation } from 'react-i18next'
 import logo from '../../../assets/logo.svg'
 import type { Theme } from '../../shared/ipc'
-import { ThemeSwitcher } from './ThemeSwitcher'
+import { ThemeToggle } from './ThemeToggle'
 import styles from './Toolbar.module.css'
 
 interface Props {
-  theme: Theme
   themeDisabled: boolean
   onThemeChange(theme: Theme): void
 }
 
-export function Toolbar({ theme, themeDisabled, onThemeChange }: Props) {
+export function Toolbar({ themeDisabled, onThemeChange }: Props) {
   const { t } = useTranslation()
   return (
     <header className={styles.toolbar} aria-label={t('toolbar.label')}>
@@ -19,7 +18,7 @@ export function Toolbar({ theme, themeDisabled, onThemeChange }: Props) {
         <span className={styles.name}>{t('app.name')}</span>
       </div>
       <div className={styles.actions}>
-        <ThemeSwitcher value={theme} disabled={themeDisabled} onChange={onThemeChange} />
+        <ThemeToggle disabled={themeDisabled} onChange={onThemeChange} />
       </div>
     </header>
   )

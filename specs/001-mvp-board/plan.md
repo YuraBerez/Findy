@@ -47,7 +47,7 @@ publishes Windows/macOS/Linux builds. It establishes everything described in
 | FR-040…044 | `locales/*.json`, `renderer/i18n.ts`, `main/i18n.ts`, `main/menu.ts` |
 | FR-050…054 | `main/db/*` (connection, migrate, migrations/001-init.ts, repositories) |
 | FR-060 | `domain/search.ts`, `SearchBox` |
-| FR-080…083 | `settings` row `theme`, `setTheme` IPC → `nativeTheme.themeSource`, `ThemeSwitcher` in toolbar, CSS tokens under `prefers-color-scheme` |
+| FR-080…083 | `settings` row `theme`, `setTheme` IPC → `nativeTheme.themeSource`, sun/moon `ThemeToggle` in toolbar, CSS tokens under `prefers-color-scheme` |
 | FR-070…072 | `electron-builder.yml`, `.github/workflows/release.yml`, About dialog |
 
 ## UI sketch

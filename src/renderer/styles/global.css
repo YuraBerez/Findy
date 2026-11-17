@@ -1,5 +1,5 @@
 /* Design tokens: docs/brand.md. Dark values apply when nativeTheme.themeSource
-   (System/Light/Dark, FR-080) makes prefers-color-scheme match "dark". */
+   (OS default, then the sun/moon toggle, FR-080) makes prefers-color-scheme match "dark". */
 :root {
   color-scheme: light dark;
   --primary: #0a66c2;
@@ -11,6 +11,9 @@
   --border: #d9dee5;
   --danger: #c62828;
   --danger-bg: #fdecea;
+  --toggle-track: #dbe7f5;
+  --toggle-knob: #ffffff;
+  --toggle-icon: #e8a200;
   --radius: 8px;
   --space-2: 8px;
   --space-4: 16px;
@@ -35,6 +38,9 @@
     --border: #343a44;
     --danger: #ef5350;
     --danger-bg: #3a1d1d;
+    --toggle-track: #2b3442;
+    --toggle-knob: #0f1216;
+    --toggle-icon: #c9d6ff;
   }
 }
 
