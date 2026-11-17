@@ -17,7 +17,7 @@ export function useNoteDraft(initial: string) {
       setError(null)
     },
     /** Calls `save` with the trimmed text when it is valid. */
-    submit: (save: (text: string) => Promise<void>) => async (event: FormEvent) => {
+    submit: (save: (text: string) => Promise<unknown>) => async (event: FormEvent) => {
       event.preventDefault()
       const problem = validateNote(draft)
       setError(problem)

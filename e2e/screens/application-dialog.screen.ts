@@ -73,6 +73,10 @@ export class ApplicationDialogScreen extends BaseComponent {
     await expect(this.stageSelect.getByRole('option', { selected: true })).toHaveText(selected)
   }
 
+  async verifyValue(field: Field, value: string): Promise<void> {
+    await expect(this.fields[field]).toHaveValue(value)
+  }
+
   async verifyEmpty(): Promise<void> {
     for (const field of Object.values(this.fields)) await expect(field).toHaveValue('')
   }

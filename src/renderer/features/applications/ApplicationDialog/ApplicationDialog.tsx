@@ -9,6 +9,7 @@ import { useApplicationForm } from '../useApplicationForm'
 interface Props {
   hiddenStages: StageId[]
   onClose(): void
+  /** Closing on success is the caller's job; a failure is notified there */
   onSubmit(application: ValidApplication): Promise<void>
 }
 
@@ -18,18 +19,14 @@ export function ApplicationDialog({ hiddenStages, onClose, onSubmit }: Props) {
   // FR-007: start in the first visible column
   const form = useApplicationForm({ ...EMPTY_FORM, stage: firstVisibleStage(hiddenStages) })
   const [saving, setSaving] = useState(false)
-  const [saveFailed, setSaveFailed] = useState(false)
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = form.validate(event)
     if (!data) return
     setSaving(true)
-    setSaveFailed(false)
     try {
       await onSubmit(data)
-    } catch {
-      setSaveFailed(true)
     } finally {
       setSaving(false)
     }
@@ -51,7 +48,6 @@ export function ApplicationDialog({ hiddenStages, onClose, onSubmit }: Props) {
       }
     >
       <ApplicationFields form={form} stages={visibleStages(hiddenStages)} />
-      {saveFailed && <p role="alert">{t('form.errors.saveFailed')}</p>}
     </Dialog>
   )
 }

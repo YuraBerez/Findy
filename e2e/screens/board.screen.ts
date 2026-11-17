@@ -96,6 +96,24 @@ export class BoardScreen extends BaseComponent {
     await expect(confirm).toBeHidden()
   }
 
+  // ── Notifications (spec 003) ───────────────────────────────────────────
+
+  async closeNotification(text: string): Promise<void> {
+    await this.page
+      .getByTestId('toast')
+      .filter({ hasText: text })
+      .getByRole('button', { name: 'Close' })
+      .click()
+  }
+
+  async verifyNotification(text: string): Promise<void> {
+    await expect(this.page.getByRole('alert').filter({ hasText: text })).toBeVisible()
+  }
+
+  async verifyNoNotification(): Promise<void> {
+    await expect(this.page.getByTestId('toast')).toHaveCount(0)
+  }
+
   // ── Columns (spec 002) ─────────────────────────────────────────────────
 
   async hideColumn(stage: StageId, name: string): Promise<void> {
