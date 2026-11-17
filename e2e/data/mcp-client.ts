@@ -13,21 +13,23 @@ export interface ToolResult {
 
 /** A real MCP client, as Claude Desktop would start Findy: `<app> --mcp` over stdio (spec 004). */
 export class McpTestClient {
-  private constructor(private readonly client: Client) {}
+  private constructor(
+    private readonly client: Client,
+    private readonly transport: StdioClientTransport,
+  ) {}
 
   static async start(userDataDir: string): Promise<McpTestClient> {
     const args = ['.', '--mcp']
     if (process.env.CI && process.platform === 'linux') args.push('--no-sandbox')
     const client = new Client({ name: 'findy-e2e', version: '1.0.0' })
-    await client.connect(
-      new StdioClientTransport({
-        command: electronBinary,
-        args,
-        env: { ...(process.env as Record<string, string>), FINDY_USER_DATA_DIR: userDataDir },
-        stderr: 'ignore',
-      }),
-    )
-    return new McpTestClient(client)
+    const transport = new StdioClientTransport({
+      command: electronBinary,
+      args,
+      env: { ...(process.env as Record<string, string>), FINDY_USER_DATA_DIR: userDataDir },
+      stderr: 'ignore',
+    })
+    await client.connect(transport)
+    return new McpTestClient(client, transport)
   }
 
   async tools(): Promise<{ name: string; annotations?: Record<string, unknown> }[]> {
@@ -44,7 +46,22 @@ export class McpTestClient {
     }
   }
 
-  close(): Promise<void> {
-    return this.client.close()
+  /** Closes the connection and waits until `Findy --mcp` has exited (it holds the database) */
+  async close(): Promise<void> {
+    const pid = this.transport.pid
+    await this.client.close()
+    if (pid === null) return
+    const deadline = Date.now() + 5_000
+    while (Date.now() < deadline && isRunning(pid))
+      await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+}
+
+function isRunning(pid: number): boolean {
+  try {
+    process.kill(pid, 0) // signal 0 only checks that the process exists
+    return true
+  } catch {
+    return false
   }
 }

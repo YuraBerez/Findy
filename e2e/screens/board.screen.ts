@@ -283,7 +283,9 @@ export class BoardScreen extends BaseComponent {
     if ('before' in target) {
       const cardBox = await this.card(target.before).boundingBox()
       if (!cardBox) throw new Error('Drop card is not visible')
-      y = cardBox.y - columnBox.y - 4
+      // Inside the top of the card, not in the gap above it: a gap can resolve to
+      // the next card under load
+      y = cardBox.y - columnBox.y + cardBox.height * 0.25
     }
     const to = { x: columnBox.x + columnBox.width / 2, y: columnBox.y + y }
     await this.pointer.drag(this.card(title), to, async () => {
