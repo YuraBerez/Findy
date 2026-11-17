@@ -45,8 +45,8 @@ Installers are on the [Releases](https://github.com/YuraBerez/findy/releases) pa
 | OS | File |
 |----|------|
 | Windows 10/11 (x64) | `Findy-Setup-x.y.z.exe` |
-| macOS (Apple Silicon) | `Findy-x.y.z-arm64.dmg` |
-| macOS (Intel) | `Findy-x.y.z-x64.dmg` |
+| Mac with Apple Silicon (M1, M2, M3, M4…) | `Findy-x.y.z-macOS-Apple-Silicon.dmg` |
+| Mac with an Intel processor | `Findy-x.y.z-macOS-Intel.dmg` |
 | Linux (x64) | `Findy-x.y.z.AppImage` or `findy_x.y.z_amd64.deb` |
 
 ### First start: the builds are not signed yet
@@ -56,6 +56,9 @@ Windows show a warning the first time you open Findy. The builds come from the
 public source code on GitHub Actions. Do these steps one time only.
 
 #### macOS
+
+To see which Mac you have, open the Apple menu → **About This Mac**: **Chip: Apple
+M…** means Apple Silicon, **Processor: Intel…** means Intel.
 
 1. Open the `.dmg` file and drag **Findy** to **Applications**.
 2. Open Findy. macOS shows *"Findy" Not Opened* (or *cannot be opened because

@@ -21,8 +21,10 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           version="${TAG#v}"
-          awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[/ {on=0} on' CHANGELOG.md > notes.md
-          [ -s notes.md ] || { echo "No CHANGELOG.md section for $version"; exit 1; }
+          awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {on=1; next} /^## \[/ {on=0} on' CHANGELOG.md > changes.md
+          [ -s changes.md ] || { echo "No CHANGELOG.md section for $version"; exit 1; }
+          # "Which file to download" first, then the changes
+          { sed "s/VERSION/$version/g" .github/release-downloads.md; cat changes.md; } > notes.md
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --draft --title "Findy $TAG" --notes-file notes.md
 
   build:
@@ -63,6 +65,9 @@ jobs:
           TAG: ${{ github.ref_name }}
         run: |
           shopt -s nullglob
+          # Names a user understands (.github/release-downloads.md links to them)
+          for dmg in dist/*-arm64.dmg; do mv "$dmg" "${dmg%-arm64.dmg}-macOS-Apple-Silicon.dmg"; done
+          for dmg in dist/*-x64.dmg; do mv "$dmg" "${dmg%-x64.dmg}-macOS-Intel.dmg"; done
           files=(dist/*.dmg dist/*.exe dist/*.AppImage dist/*.deb)
           [ ${#files[@]} -gt 0 ] || { echo "No installers in dist/"; ls dist; exit 1; }
           printf '%s\n' "${files[@]}"

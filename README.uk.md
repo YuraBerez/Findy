@@ -44,8 +44,8 @@ Findy збирає всі заявки на одній дошці: від від
 | ОС | Файл |
 |----|------|
 | Windows 10/11 (x64) | `Findy-Setup-x.y.z.exe` |
-| macOS (Apple Silicon) | `Findy-x.y.z-arm64.dmg` |
-| macOS (Intel) | `Findy-x.y.z-x64.dmg` |
+| Mac з Apple Silicon (M1, M2, M3, M4…) | `Findy-x.y.z-macOS-Apple-Silicon.dmg` |
+| Mac з процесором Intel | `Findy-x.y.z-macOS-Intel.dmg` |
 | Linux (x64) | `Findy-x.y.z.AppImage` або `findy_x.y.z_amd64.deb` |
 
 ### Перший запуск: збірки поки не підписані
@@ -55,6 +55,9 @@ Findy збирає всі заявки на одній дошці: від від
 коду в GitHub Actions. Ці кроки потрібні лише один раз.
 
 #### macOS
+
+Тип свого Mac видно в меню Apple → **Про цей Mac**: **Чип: Apple M…** означає
+Apple Silicon, **Процесор: Intel…** означає Intel.
 
 1. Відкрийте файл `.dmg` і перетягніть **Findy** у **Програми** (Applications).
 2. Відкрийте Findy. macOS покаже *«Findy» не відкрито* (або *не вдається
