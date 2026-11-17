@@ -1,0 +1,61 @@
+.timeline {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* One row = 20px line + 12px gap. Dot 10×10 centred on the line (5…15px);
+   the connector is centred under the dots (x = 4…6px) and runs from the bottom of
+   this dot to the top of the next one (next row starts 32px lower: 37px) */
+.item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 0 12px 24px;
+  line-height: 20px;
+}
+
+.item::before {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface);
+  content: '';
+  z-index: 1;
+}
+
+.item:not(:last-child)::after {
+  position: absolute;
+  top: 15px;
+  bottom: -5px;
+  left: 4px;
+  z-index: 0;
+  width: 2px;
+  background: var(--border);
+  content: '';
+}
+
+.item[data-current]::before {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.item[data-current] .stage {
+  font-weight: 600;
+}
+
+.time {
+  flex-shrink: 0;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+/* Text of the ghost button lines up with the stage names */
+.toggle {
+  margin-left: 14px;
+}

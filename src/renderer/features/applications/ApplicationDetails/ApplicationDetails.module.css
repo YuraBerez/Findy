@@ -1,13 +1,19 @@
-.summary {
-  display: flex;
+.subtitle {
+  display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-2);
-  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
 }
 
-.company {
-  color: var(--fg-muted);
+/* Title and company side by side; link and stage full width */
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--space-4);
+}
+
+.form > :nth-child(n + 3) {
+  grid-column: 1 / -1;
 }
 
 .saveRow {
@@ -22,31 +28,8 @@
   font-size: 13px;
 }
 
-.section {
-  margin-top: var(--space-6);
-}
-
-.heading {
-  margin: 0 0 var(--space-2);
-  font-size: 15px;
-}
-
-.history {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.history li {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.history time,
 .dates {
+  margin: var(--space-2) 0 0;
   color: var(--fg-muted);
   font-size: 12px;
 }

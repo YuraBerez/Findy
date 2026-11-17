@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Note } from '@shared/ipc'
-import { Button, TextField } from '@ui'
+import { Button, Section, TextField } from '@ui'
 import { NoteItem } from '../NoteItem'
 import { useNoteDraft } from '../useNoteDraft'
 import styles from './NotesPanel.module.css'
@@ -16,50 +16,48 @@ interface Props {
   actions: NoteActions
 }
 
-/** US-3: add, list (newest first), edit and delete notes of one application. */
+/** US-3: write a note, then the list (newest first) with edit and delete. */
 export function NotesPanel({ notes, actions }: Props) {
   const { t } = useTranslation()
   const note = useNoteDraft('')
 
   return (
-    <section className={styles.panel} aria-labelledby="notes-heading">
-      <h3 id="notes-heading" className={styles.heading}>
-        {t('notes.title')}
-      </h3>
+    <Section title={t('notes.title')} count={notes.length}>
       <form
         noValidate
+        className={styles.composer}
         onSubmit={note.submit(async (text) => {
           await actions.add(text)
           note.reset('')
         })}
       >
+        {/* The section title says it already; the label stays for screen readers */}
         <TextField
           multiline
+          hideLabel
+          rows={2}
           label={t('notes.new')}
+          placeholder={notes.length === 0 ? t('notes.empty') : t('notes.placeholder')}
           value={note.draft}
           error={note.error}
           onChange={(event) => note.change(event.target.value)}
         />
-        <div className={styles.addRow}>
-          <Button type="submit" variant="primary" size="small">
-            {t('notes.add')}
-          </Button>
-        </div>
+        <Button type="submit" variant="primary" size="small" className={styles.add}>
+          {t('notes.add')}
+        </Button>
       </form>
-      {notes.length === 0 ? (
-        <p className={styles.empty}>{t('notes.empty')}</p>
-      ) : (
+      {notes.length > 0 && (
         <ul className={styles.list} aria-label={t('notes.title')}>
-          {notes.map((note) => (
+          {notes.map((item) => (
             <NoteItem
-              key={note.id}
-              note={note}
-              onSave={(text) => actions.update(note.id, text)}
-              onDelete={() => actions.remove(note.id)}
+              key={item.id}
+              note={item}
+              onSave={(text) => actions.update(item.id, text)}
+              onDelete={() => actions.remove(item.id)}
             />
           ))}
         </ul>
       )}
-    </section>
+    </Section>
   )
 }

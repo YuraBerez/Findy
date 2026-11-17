@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Note } from '@shared/ipc'
-import { Button, ConfirmDialog, TextField } from '@ui'
+import { Button, ConfirmDialog, IconButton, PencilIcon, TextField, TrashIcon } from '@ui'
 import { formatDateTime } from '../../../format'
 import { useNoteDraft } from '../useNoteDraft'
 import styles from './NoteItem.module.css'
@@ -57,19 +57,19 @@ export function NoteItem({ note, onSave, onDelete }: Props) {
               </span>
             )}
             <span className={styles.spacer} />
-            <Button
-              size="small"
-              variant="ghost"
+            <IconButton
+              label={t('notes.edit')}
+              icon={<PencilIcon size={15} />}
               onClick={() => {
                 edit.reset(note.text)
                 setEditing(true)
               }}
-            >
-              {t('notes.edit')}
-            </Button>
-            <Button size="small" variant="ghost" onClick={() => setConfirming(true)}>
-              {t('notes.delete')}
-            </Button>
+            />
+            <IconButton
+              label={t('notes.delete')}
+              icon={<TrashIcon size={15} />}
+              onClick={() => setConfirming(true)}
+            />
           </div>
         </>
       )}

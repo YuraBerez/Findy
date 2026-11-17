@@ -103,7 +103,7 @@ test.describe('move applications (US-2)', () => {
 
     await test.step('drag C above A', async () => {
       await findy.pages.board.verifyCards('applied', ['A', 'B', 'C'])
-      await findy.pages.board.dragCard('C', { onto: 'A' })
+      await findy.pages.board.dragCard('C', { before: 'A', in: 'applied' })
       await findy.pages.board.verifyCards('applied', ['C', 'A', 'B'])
     })
     await test.step('the order survives a restart, with no new history', async () => {

@@ -63,6 +63,11 @@ export class ApplicationDetailsScreen extends BaseComponent {
     await this.closeButton.click()
   }
 
+  /** A click on the dimmed board left of the panel */
+  async closeByClickingOutside(): Promise<void> {
+    await this.panel.click({ position: { x: -100, y: 200 } })
+  }
+
   async closeWithEscape(): Promise<void> {
     await this.heading.press('Escape')
   }
@@ -132,7 +137,8 @@ export class ApplicationDetailsScreen extends BaseComponent {
   }
 
   async verifyNoNotes(): Promise<void> {
-    await expect(this.panel).toContainText('No notes yet.')
+    await expect(this.notes).toHaveCount(0)
+    await expect(this.newNote).toHaveAttribute('placeholder', /^No notes yet/)
   }
 
   async verifyNoteEdited(text: string): Promise<void> {

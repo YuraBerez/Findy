@@ -72,7 +72,6 @@
     "label": "Language"
   },
   "details": {
-    "close": "Close",
     "openVacancy": "Open vacancy",
     "save": "Save changes",
     "saved": "Saved",
@@ -81,13 +80,16 @@
     "updated": "Updated {{date}}",
     "delete": "Delete application",
     "deleteTitle": "Delete this application?",
-    "deleteMessage": "“{{title}}” and all its notes will be deleted. This cannot be undone."
+    "deleteMessage": "“{{title}}” and all its notes will be deleted. This cannot be undone.",
+    "fields": "Details",
+    "showAll": "Show all ({{count}})",
+    "showLess": "Show less"
   },
   "notes": {
     "title": "Notes",
     "new": "New note",
     "add": "Add note",
-    "empty": "No notes yet.",
+    "empty": "No notes yet. Write the first one: who you talked to, salary, next steps…",
     "edit": "Edit",
     "delete": "Delete",
     "save": "Save",
@@ -95,6 +97,10 @@
     "edited": "edited",
     "editLabel": "Note text",
     "deleteTitle": "Delete this note?",
-    "deleteMessage": "This cannot be undone."
+    "deleteMessage": "This cannot be undone.",
+    "placeholder": "Write a note…"
+  },
+  "common": {
+    "close": "Close"
   }
 }

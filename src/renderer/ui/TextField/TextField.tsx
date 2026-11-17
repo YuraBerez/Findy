@@ -6,15 +6,23 @@ interface BaseProps {
   label: string
   hint?: string
   error?: string
+  hideLabel?: boolean
 }
 
 type InputProps = BaseProps & { multiline?: false } & Omit<ComponentProps<'input'>, 'id'>
 type TextareaProps = BaseProps & { multiline: true } & Omit<ComponentProps<'textarea'>, 'id'>
 
 /** A labelled text input or textarea. */
-export function TextField({ label, hint, error, multiline, ...props }: InputProps | TextareaProps) {
+export function TextField({
+  label,
+  hint,
+  error,
+  hideLabel,
+  multiline,
+  ...props
+}: InputProps | TextareaProps) {
   return (
-    <Field label={label} hint={hint} error={error}>
+    <Field label={label} hint={hint} error={error} hideLabel={hideLabel}>
       {(control) =>
         multiline ? (
           <textarea

@@ -69,8 +69,11 @@ export function SortableCard({ application }: { application: Application }) {
   }, [focus, board])
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter') board.open(application.id)
-    else listeners?.onKeyDown?.(event)
+    if (event.key === 'Enter') {
+      // Otherwise the same Enter activates the first button of the opened panel (×)
+      event.preventDefault()
+      board.open(application.id)
+    } else listeners?.onKeyDown?.(event)
   }
 
   return (

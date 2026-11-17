@@ -35,6 +35,7 @@ export function ApplicationDialog({ onClose, onSubmit }: Props) {
   return (
     <Dialog
       title={t('form.createTitle')}
+      closeLabel={t('common.close')}
       onClose={onClose}
       onSubmit={submit}
       footer={

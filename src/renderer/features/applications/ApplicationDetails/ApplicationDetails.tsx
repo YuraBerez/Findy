@@ -2,10 +2,11 @@ import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formValuesOf, type ValidApplication } from '@domain/forms'
 import type { Application } from '@shared/ipc'
-import { Button, ConfirmDialog, Dialog, ExternalLinkIcon } from '@ui'
+import { Badge, Button, ConfirmDialog, Dialog, ExternalLinkIcon, Section } from '@ui'
 import { formatDateTime } from '../../../format'
 import { NotesPanel, type NoteActions } from '../../notes'
 import { ApplicationFields } from '../ApplicationFields'
+import { StageHistory } from '../StageHistory'
 import { useApplicationForm } from '../useApplicationForm'
 import styles from './ApplicationDetails.module.css'
 
@@ -18,7 +19,7 @@ interface Props {
   notes: NoteActions
 }
 
-/** US-4: view and edit an application, its stage history and notes (US-3); delete it. */
+/** US-4: view and edit an application, its notes (US-3) and stage history; delete it. */
 export function ApplicationDetails({
   application,
   onClose,
@@ -31,6 +32,7 @@ export function ApplicationDetails({
   const form = useApplicationForm(formValuesOf(application))
   const [saved, setSaved] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const { url } = application
   const date = (iso: string) => formatDateTime(iso, i18n.language)
 
   const save = async (event: FormEvent<HTMLFormElement>) => {
@@ -44,58 +46,53 @@ export function ApplicationDetails({
   return (
     <Dialog
       variant="drawer"
-      title={application.title}
-      onClose={onClose}
       testId="details"
-      footer={
-        <>
-          <Button variant="danger" className={styles.delete} onClick={() => setConfirming(true)}>
-            {t('details.delete')}
+      title={application.title}
+      closeLabel={t('common.close')}
+      onClose={onClose}
+      subtitle={
+        <span className={styles.subtitle}>
+          {application.company}
+          <Badge>{t(`stages.${application.stage}`)}</Badge>
+        </span>
+      }
+      headerExtra={
+        url && (
+          <Button size="small" onClick={() => onOpenLink(url)}>
+            <ExternalLinkIcon size={14} />
+            {t('details.openVacancy')}
           </Button>
-          <Button onClick={onClose}>{t('details.close')}</Button>
-        </>
+        )
+      }
+      footer={
+        <Button variant="danger" className={styles.delete} onClick={() => setConfirming(true)}>
+          {t('details.delete')}
+        </Button>
       }
     >
-      <div className={styles.summary}>
-        <span className={styles.company}>{application.company}</span>
-        {application.url && (
-          <Button size="small" onClick={() => onOpenLink(application.url!)}>
-            <ExternalLinkIcon size={14} /> {t('details.openVacancy')}
-          </Button>
-        )}
-      </div>
+      <NotesPanel notes={application.notes} actions={notes} />
 
-      <form noValidate onSubmit={save} onChange={() => setSaved(false)}>
-        <ApplicationFields form={form} />
-        <div className={styles.saveRow}>
-          <span role="status" className={styles.saved}>
-            {saved ? t('details.saved') : ''}
-          </span>
-          <Button type="submit" variant="primary">
-            {t('details.save')}
-          </Button>
-        </div>
-      </form>
+      <Section title={t('details.fields')}>
+        <form noValidate className={styles.form} onSubmit={save} onChange={() => setSaved(false)}>
+          <ApplicationFields form={form} />
+          <div className={styles.saveRow}>
+            <span role="status" className={styles.saved}>
+              {saved ? t('details.saved') : ''}
+            </span>
+            <Button type="submit" variant="primary">
+              {t('details.save')}
+            </Button>
+          </div>
+        </form>
+      </Section>
 
-      <section className={styles.section} aria-labelledby="history-heading">
-        <h3 id="history-heading" className={styles.heading}>
-          {t('details.history')}
-        </h3>
-        <ol className={styles.history}>
-          {application.stageHistory.map((change, index) => (
-            <li key={index}>
-              <span>{t(`stages.${change.stage}`)}</span>
-              <time dateTime={change.at}>{date(change.at)}</time>
-            </li>
-          ))}
-        </ol>
+      <Section title={t('details.history')}>
+        <StageHistory history={application.stageHistory} />
         <p className={styles.dates}>
           {t('details.created', { date: date(application.createdAt) })} ·{' '}
           {t('details.updated', { date: date(application.updatedAt) })}
         </p>
-      </section>
-
-      <NotesPanel notes={application.notes} actions={notes} />
+      </Section>
 
       {confirming && (
         <ConfirmDialog

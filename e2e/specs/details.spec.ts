@@ -21,16 +21,18 @@ test.describe('application details (US-4)', () => {
           stage: 'Applied',
         })
         await details.verifyHistory(['Applied'])
-        await details.verifyShows(['Created', 'Updated', 'Notes'])
+        await details.verifyShows(['Acme', 'Created', 'Updated', 'Notes', 'Details'])
       })
       await test.step('Escape closes and focus returns to the card', async () => {
         await details.closeWithEscape()
         await details.verifyClosed()
         await board.verifyCardFocusedAnywhere('Frontend Developer')
       })
-      await test.step('Enter opens it again', async () => {
+      await test.step('Enter opens it again; a click outside closes it', async () => {
         await board.openCardWithEnter('Frontend Developer')
         await details.verifyOpen('Frontend Developer')
+        await details.closeByClickingOutside()
+        await details.verifyClosed()
       })
     },
   )
@@ -48,7 +50,7 @@ test.describe('application details (US-4)', () => {
       stage: 'Test task',
     })
     await details.verifySaved()
-    await details.verifyHistory(['Applied', 'Test task'])
+    await details.verifyHistory(['Test task', 'Applied']) // newest first
     await details.close()
     await board.verifyCards('test_task', ['Senior Dev'])
     await board.verifyCardShows('Senior Dev', ['Globex'])

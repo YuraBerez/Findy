@@ -1,8 +1,8 @@
 // Renderer ↔ main contract: docs/contracts/ipc.md
 import type { StageId } from '../domain/stages'
-import type { Application, Language, Note, Settings, Theme } from '../domain/types'
+import type { Application, Language, Note, Settings, StageChange, Theme } from '../domain/types'
 
-export type { Application, Language, Note, Settings, StageId, Theme }
+export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
 export const CHANNEL_PREFIX = 'findy:'
 

@@ -77,16 +77,27 @@ export class BoardScreen extends BaseComponent {
 
   // ── Cards ──────────────────────────────────────────────────────────────
 
-  /** Drags a card onto a column (its free space) or onto another card. */
-  async dragCard(title: string, target: { stage: StageId } | { onto: string }): Promise<void> {
-    const destination = 'stage' in target ? this.column(target.stage) : this.card(target.onto)
-    const box = await destination.boundingBox()
-    if (!box) throw new Error('Drop target is not visible')
-    await this.card(title).dragTo(destination, {
+  /**
+   * Drags a card onto a column (its free space) or in front of another card.
+   * "In front of" drops into the gap just above that card: cards shift while the
+   * drag runs, but the card below the gap stays the closest one.
+   */
+  async dragCard(
+    title: string,
+    target: { stage: StageId } | { before: string; in: StageId },
+  ): Promise<void> {
+    const column = this.column('stage' in target ? target.stage : target.in)
+    const columnBox = await column.boundingBox()
+    if (!columnBox) throw new Error('Drop column is not visible')
+    let y = columnBox.height * 0.6
+    if ('before' in target) {
+      const cardBox = await this.card(target.before).boundingBox()
+      if (!cardBox) throw new Error('Drop card is not visible')
+      y = cardBox.y - columnBox.y - 4
+    }
+    await this.card(title).dragTo(column, {
       steps: 20,
-      // Free space of a column is below its cards; the upper part of a card means "before it"
-      targetPosition:
-        'stage' in target ? { x: box.width / 2, y: box.height * 0.6 } : { x: box.width / 2, y: 4 },
+      targetPosition: { x: columnBox.width / 2, y },
     })
   }
 
