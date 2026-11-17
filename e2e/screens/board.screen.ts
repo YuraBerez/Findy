@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import { BaseComponent, escapeRegExp } from 'playwright-e2e-kit'
 import type { StageId } from '../../src/shared/ipc'
+import type { Pointer } from './pointer'
 
 /** Light and dark `--bg` (src/renderer/styles/global.css) */
 const BACKGROUND = { light: 'rgb(244, 246, 248)', dark: 'rgb(22, 24, 28)' } as const
@@ -21,7 +22,10 @@ export class BoardScreen extends BaseComponent {
   private readonly columnsDialog: Locator
   private readonly searchInput: Locator
 
-  constructor(page: Page) {
+  constructor(
+    page: Page,
+    private readonly pointer: Pointer,
+  ) {
     super(page)
     this.appRoot = page.getByTestId('app')
     this.toolbar = page.getByRole('banner')
@@ -142,6 +146,11 @@ export class BoardScreen extends BaseComponent {
     ).toBeVisible()
   }
 
+  /** FR-074 */
+  async reportIssue(): Promise<void> {
+    await this.page.getByRole('button', { name: /^(Found an issue\?|Знайшли проблему\?)$/ }).click()
+  }
+
   // ── Notifications (spec 003) ───────────────────────────────────────────
 
   async closeNotification(text: string): Promise<void> {
@@ -247,9 +256,13 @@ export class BoardScreen extends BaseComponent {
       if (!cardBox) throw new Error('Drop card is not visible')
       y = cardBox.y - columnBox.y - 4
     }
-    await this.card(title).dragTo(column, {
-      steps: 20,
-      targetPosition: { x: columnBox.width / 2, y },
+    const to = { x: columnBox.x + columnBox.width / 2, y: columnBox.y + y }
+    await this.pointer.drag(this.card(title), to, async () => {
+      // The drop is ready when the app shows it: the card's preview is in the target
+      // column, and in front of the right card when there is one
+      await expect(this.card(title, column)).toHaveCount(1)
+      if ('before' in target)
+        await expect(this.card(target.before)).toHaveAttribute('data-over', 'true')
     })
   }
 

@@ -1,8 +1,8 @@
 name: CI
 
+# Pull requests only: main is protected and gets only squash merges of PRs that
+# passed these checks, so running them again after a merge adds nothing.
 on:
-  push:
-    branches: [main]
   pull_request:
 
 concurrency:

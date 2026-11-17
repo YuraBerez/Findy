@@ -57,6 +57,7 @@ export function SortableCard({ application }: { application: Application }) {
     transform,
     transition,
     isDragging,
+    isOver,
   } = useSortable({ id: application.id })
   const handle = useRef<HTMLDivElement | null>(null)
   const focus = board.focusId === application.id
@@ -90,6 +91,8 @@ export function SortableCard({ application }: { application: Application }) {
           setActivatorNodeRef(node)
         }}
         className={styles.handle}
+        // The card the dragged one would land in front of
+        data-over={isOver || undefined}
         {...attributes}
         {...listeners}
         onKeyDown={onKeyDown}

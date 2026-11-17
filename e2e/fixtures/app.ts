@@ -14,6 +14,7 @@ import { FindyBackdoor } from '../data/findy-backdoor'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { BoardScreen } from '../screens/board.screen'
+import { mousePointer } from './pointer'
 import { ElectronA11ySteps } from '../steps/a11y.steps'
 import { ApplicationSteps } from '../steps/application.steps'
 
@@ -70,7 +71,7 @@ async function firstWindow(app: ElectronApplication): Promise<Page> {
 }
 
 function pagesFor(page: Page): FindyPages {
-  const board = new BoardScreen(page)
+  const board = new BoardScreen(page, mousePointer(page))
   const dialog = new ApplicationDialogScreen(page)
   return {
     board,

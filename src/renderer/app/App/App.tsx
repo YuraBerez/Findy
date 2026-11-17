@@ -4,6 +4,7 @@ import type { AppState } from '@shared/ipc'
 import { ConfirmDialog } from '@ui'
 import { ApplicationDetails, ApplicationDialog } from '../../features/applications'
 import { Board } from '../../features/board'
+import { ReportIssueButton } from '../../features/feedback'
 import { ColumnsDialog } from '../../features/settings'
 import { StorageError } from '../../features/storage'
 import { Toolbar } from '../Toolbar'
@@ -106,6 +107,7 @@ export function App({ initialState }: { initialState: AppState }) {
           }}
         />
       )}
+      <ReportIssueButton onOpenLink={actions.openLink} />
     </div>
   )
 }
