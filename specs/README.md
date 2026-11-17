@@ -39,7 +39,7 @@ Rules:
 
 | # | Feature | Status |
 |---|---------|--------|
-| 001 | [MVP: job-search board](001-mvp-board/spec.md) | Approved |
-| 002 | [Hidden columns](002-hidden-columns/spec.md) | Approved |
-| 003 | [Error handling](003-error-handling/spec.md) | Approved |
-| 004 | [MCP server](004-mcp-server/spec.md) | Approved |
+| 001 | [MVP: job-search board](001-mvp-board/spec.md) | Implemented |
+| 002 | [Hidden columns](002-hidden-columns/spec.md) | Implemented |
+| 003 | [Error handling](003-error-handling/spec.md) | Implemented |
+| 004 | [MCP server](004-mcp-server/spec.md) | Implemented |
