@@ -55,6 +55,22 @@ export class IpcError extends Error {
   }
 }
 
+export type ErrorKind = 'validation' | 'notFound' | 'storage' | 'unknown'
+
+/** Spec 003 FR-002: what kind of message the user needs for this failure. */
+export function errorKind(error: unknown): ErrorKind {
+  switch (getIpcErrorCode(error)) {
+    case 'VALIDATION':
+      return 'validation'
+    case 'NOT_FOUND':
+      return 'notFound'
+    case 'STORAGE':
+      return 'storage'
+    default:
+      return 'unknown'
+  }
+}
+
 export function getIpcErrorCode(error: unknown): IpcErrorCode | null {
   const message = error instanceof Error ? error.message : String(error)
   // Electron prefixes rejected invoke() messages; search instead of anchoring

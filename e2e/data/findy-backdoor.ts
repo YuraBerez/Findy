@@ -29,6 +29,37 @@ export class FindyBackdoor {
     })
   }
 
+  /** Deletes behind the UI's back, e.g. to simulate another window (spec 003 US-1.3) */
+  async deleteApplication(title: string): Promise<void> {
+    await this.page.evaluate(async (value) => {
+      const state = await window.findy.getState()
+      await window.findy.deleteApplication(
+        state.applications.find((item) => item.title === value)!.id,
+      )
+    }, title)
+  }
+
+  /** Makes every later call of one IPC method fail in main with this code (spec 003). */
+  async failInMain(method: string, code: 'STORAGE' | 'NOT_FOUND' | 'VALIDATION'): Promise<void> {
+    await this.app.evaluate(
+      ({ ipcMain }, { method, code }) => {
+        ipcMain.removeHandler(`findy:${method}`)
+        ipcMain.handle(`findy:${method}`, () => ({
+          ok: false,
+          error: { code, message: 'simulated' },
+        }))
+      },
+      { method, code },
+    )
+  }
+
+  /** A promise rejection that no code handles (spec 003 FR-005) */
+  async rejectUnhandled(message: string): Promise<void> {
+    await this.page.evaluate((text) => {
+      void Promise.reject(new Error(text))
+    }, message)
+  }
+
   openedLinks(): Promise<string[]> {
     return this.app.evaluate(() => (globalThis as { openedLinks?: string[] }).openedLinks ?? [])
   }

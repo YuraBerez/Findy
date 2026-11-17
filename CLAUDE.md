@@ -37,7 +37,7 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
 - TypeScript strict. Business logic goes in `src/domain` (pure, no Electron/React/fs).
 - Renderer: `app/` → `features/*` → `ui/` (docs/architecture.md D-7). One folder per
   component (`Name/Name.tsx`, `Name.module.css`, `index.ts`). Never duplicate a control,
-  dialog, menu, icon or style: reuse or extend `@ui` first. All IPC goes through `useAppState`.
+  dialog, menu, icon or style: reuse or extend `@ui` first. All IPC goes through `useAppState.run()`, which shows failures (spec 003); never catch and ignore an error.
 - Renderer never imports Node/Electron; it uses only `window.findy`
   (see docs/contracts/ipc.md). Validate all IPC input with zod in main.
 - Every user-visible string goes into **both** `locales/en.json` and
