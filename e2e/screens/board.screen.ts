@@ -13,26 +13,26 @@ export class BoardScreen extends BaseComponent {
   private readonly appRoot: Locator
   private readonly toolbar: Locator
   private readonly addButton: Locator
-  private readonly themeToggle: Locator
-  private readonly languageSelect: Locator
+  private readonly appMenuButton: Locator
   private readonly board: Locator
   private readonly emptyState: Locator
   private readonly storageError: Locator
   private readonly menu: Locator
   private readonly columnsDialog: Locator
+  private readonly searchInput: Locator
 
   constructor(page: Page) {
     super(page)
     this.appRoot = page.getByTestId('app')
     this.toolbar = page.getByRole('banner')
     this.addButton = this.toolbar.getByRole('button', { name: /^(Add application|Додати заявку)$/ })
-    this.themeToggle = this.toolbar.getByRole('switch')
-    this.languageSelect = this.toolbar.getByRole('combobox')
+    this.appMenuButton = this.toolbar.getByRole('button', { name: /^(App menu|Меню застосунку)$/ })
     this.board = page.getByRole('list', { name: /^(Job applications board|Дошка заявок)$/ })
     this.emptyState = page.getByTestId('empty-board')
     this.storageError = page.getByTestId('storage-error')
     this.menu = page.getByRole('menu')
     this.columnsDialog = page.getByRole('dialog', { name: 'Columns' })
+    this.searchInput = this.toolbar.getByRole('searchbox', { name: 'Search applications' })
   }
 
   private column(stage: StageId): Locator {
@@ -64,17 +64,37 @@ export class BoardScreen extends BaseComponent {
     await this.emptyState.getByRole('button').click()
   }
 
+  private themeSwitch(): Locator {
+    return this.menu.getByRole('menuitemcheckbox', { name: /^(Dark theme|Темна тема)$/ })
+  }
+
+  /** US-9: app menu → the "Dark theme" switch (the menu stays open, then closes) */
   async toggleTheme(): Promise<void> {
-    await this.themeToggle.click()
+    await this.openAppMenu()
+    await this.themeSwitch().click()
+    await this.closeAppMenu()
   }
 
-  /** FR-081: the toggle works with Space and Enter */
-  async toggleThemeWithKey(key: 'Space' | 'Enter'): Promise<void> {
-    await this.themeToggle.press(key)
+  /** FR-081: Enter opens the menu, Space flips the switch, Escape closes */
+  async toggleThemeWithKeyboard(): Promise<void> {
+    await this.appMenuButton.press('Enter')
+    await expect(this.menu).toBeVisible()
+    await this.themeSwitch().press('Space')
+    await this.themeSwitch().press('Escape')
+    await expect(this.menu).toBeHidden()
   }
 
+  /** US-5: app menu → Language › → a language (submenu, so the menu stays short) */
   async chooseLanguage(name: 'English' | 'Українська'): Promise<void> {
-    await this.languageSelect.selectOption({ label: name })
+    await this.openAppMenu()
+    await this.menu.getByRole('menuitem', { name: /^(Language|Мова)/ }).click()
+    await this.menu.getByRole('menuitemradio', { name }).click()
+    await expect(this.menu).toBeHidden()
+  }
+
+  async closeAppMenu(): Promise<void> {
+    await this.appMenuButton.click()
+    await expect(this.menu).toBeHidden()
   }
 
   private appMenuItem(name: string): Locator {
@@ -82,7 +102,7 @@ export class BoardScreen extends BaseComponent {
   }
 
   async openAppMenu(): Promise<void> {
-    await this.toolbar.getByRole('button', { name: 'App menu' }).click()
+    await this.appMenuButton.click()
     await expect(this.menu).toBeVisible()
   }
 
@@ -94,6 +114,32 @@ export class BoardScreen extends BaseComponent {
       .getByRole('button', { name: answer === 'confirm' ? 'Reset board' : 'Cancel' })
       .click()
     await expect(confirm).toBeHidden()
+  }
+
+  // ── Search (US-8) ───────────────────────────────────────────────────────
+
+  async search(text: string): Promise<void> {
+    await this.searchInput.fill(text)
+  }
+
+  async clearSearchWithEscape(): Promise<void> {
+    await this.searchInput.press('Escape')
+  }
+
+  /** Cmd+F on macOS, Ctrl+F elsewhere, from anywhere on the board */
+  async focusSearchWithShortcut(): Promise<void> {
+    await this.board.press('ControlOrMeta+f')
+  }
+
+  async verifySearch(value: string, focused = false): Promise<void> {
+    await expect(this.searchInput).toHaveValue(value)
+    if (focused) await expect(this.searchInput).toBeFocused()
+  }
+
+  async verifyNoResults(query: string): Promise<void> {
+    await expect(
+      this.page.getByRole('status').filter({ hasText: `No applications match “${query}”.` }),
+    ).toBeVisible()
   }
 
   // ── Notifications (spec 003) ───────────────────────────────────────────
@@ -177,7 +223,7 @@ export class BoardScreen extends BaseComponent {
   async verifyResetDisabled(): Promise<void> {
     await this.openAppMenu()
     await expect(this.appMenuItem('Reset board…')).toBeDisabled()
-    await this.toolbar.getByRole('button', { name: 'App menu' }).click() // close it again
+    await this.appMenuButton.click() // close it again
     await expect(this.menu).toBeHidden()
   }
 
@@ -338,14 +384,23 @@ export class BoardScreen extends BaseComponent {
     await expect(this.menu).toBeHidden()
   }
 
-  /** US-9: the toggle state and the colours of the whole window agree. */
+  /** US-9: the colours of the whole window */
   async verifyTheme(theme: 'light' | 'dark'): Promise<void> {
-    await expect(this.themeToggle).toHaveAttribute('aria-checked', String(theme === 'dark'))
     await expect(this.appRoot).toHaveCSS('background-color', BACKGROUND[theme])
   }
 
+  /** The switch in the app menu agrees with the theme on screen */
+  async verifyThemeSwitch(dark: boolean): Promise<void> {
+    await this.openAppMenu()
+    await expect(this.themeSwitch()).toHaveAttribute('aria-checked', String(dark))
+    await this.closeAppMenu()
+  }
+
   async verifyLanguage(name: 'English' | 'Українська', addButtonText: string): Promise<void> {
-    await expect(this.languageSelect.getByRole('option', { selected: true })).toHaveText(name)
+    // The Language item shows the current one next to its label
+    await this.openAppMenu()
+    await expect(this.menu.getByRole('menuitem', { name: /^(Language|Мова)/ })).toContainText(name)
+    await this.closeAppMenu()
     await expect(this.addButton).toHaveText(addButtonText)
   }
 

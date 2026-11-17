@@ -1,29 +1,31 @@
 import type { ReactNode } from 'react'
 import styles from './Switch.module.css'
 
-interface Props {
+interface VisualProps {
   checked: boolean
+  /** Content of the moving knob (an icon) */
+  thumb?: ReactNode
+}
+
+/** The look of a switch without its behaviour, e.g. inside a menu item that owns the role. */
+export function SwitchVisual({ checked, thumb }: VisualProps) {
+  return (
+    <span className={styles.track} data-checked={checked || undefined} aria-hidden="true">
+      <span className={styles.thumb}>{thumb}</span>
+    </span>
+  )
+}
+
+interface Props extends VisualProps {
   /** Accessible name; the state is aria-checked */
   label: string
   /** Tooltip, e.g. what a click does */
   title?: string
   disabled?: boolean
-  /** Content of the moving knob (an icon) */
-  thumb?: ReactNode
-  /** `primary`: on = primary colour (settings). `neutral`: both states equal (sun/moon) */
-  variant?: 'primary' | 'neutral'
   onToggle(): void
 }
 
-export function Switch({
-  checked,
-  label,
-  title,
-  disabled = false,
-  thumb,
-  onToggle,
-  variant = 'primary',
-}: Props) {
+export function Switch({ checked, label, title, disabled = false, thumb, onToggle }: Props) {
   return (
     <button
       type="button"
@@ -31,13 +33,11 @@ export function Switch({
       aria-checked={checked}
       aria-label={label}
       title={title}
-      className={[styles.track, styles[variant]].join(' ')}
+      className={styles.button}
       disabled={disabled}
       onClick={onToggle}
     >
-      <span className={styles.thumb} aria-hidden="true">
-        {thumb}
-      </span>
+      <SwitchVisual checked={checked} thumb={thumb} />
     </button>
   )
 }

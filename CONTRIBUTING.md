@@ -44,6 +44,15 @@ npm run test:coverage   # fails below 80 % coverage
 npm run test:e2e
 ```
 
+### README screenshots
+
+If a PR changes how the board or the details panel look, regenerate the README
+screenshots (macOS or Linux; demo data, light theme, en and uk):
+
+```bash
+npm run screenshots   # writes docs/screenshots/*.png
+```
+
 ## Branches, commits, PRs
 
 - Branch: `NNN-feature-name` for features, `fix/short-description` for fixes.

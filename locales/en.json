@@ -9,9 +9,8 @@
     "menu": "App menu"
   },
   "theme": {
-    "dark": "Dark theme",
-    "switchToDark": "Switch to dark theme",
-    "switchToLight": "Switch to light theme"
+    "label": "Theme",
+    "dark": "Dark theme"
   },
   "stages": {
     "applied": "Applied",
@@ -102,7 +101,8 @@
     "placeholder": "Write a note…"
   },
   "common": {
-    "close": "Close"
+    "close": "Close",
+    "back": "Back"
   },
   "reset": {
     "menuItem": "Reset board…",
@@ -126,5 +126,39 @@
     "crashTitle": "Something went wrong",
     "crashText": "The window could not show this screen. Your data is safe in the database.",
     "reload": "Reload"
+  },
+  "menu": {
+    "file": "File",
+    "edit": "Edit",
+    "view": "View",
+    "window": "Window",
+    "help": "Help",
+    "about": "About Findy",
+    "hide": "Hide Findy",
+    "hideOthers": "Hide Others",
+    "showAll": "Show All",
+    "quit": "Quit Findy",
+    "undo": "Undo",
+    "redo": "Redo",
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "selectAll": "Select All",
+    "reload": "Reload",
+    "devTools": "Developer Tools",
+    "resetZoom": "Actual Size",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "fullScreen": "Toggle Full Screen",
+    "minimize": "Minimize",
+    "zoom": "Zoom",
+    "close": "Close",
+    "projectPage": "Findy on GitHub",
+    "copyright": "Open-source, MIT licence"
+  },
+  "search": {
+    "label": "Search applications",
+    "placeholder": "Title or company",
+    "noResults": "No applications match “{{query}}”."
   }
 }

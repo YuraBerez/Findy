@@ -30,13 +30,17 @@ On every push to `main` and every PR:
    functions and statements (`vitest.config.ts`); below that the job fails.
    A coverage table is published in the job summary.
 2. **E2E + package** (Windows, macOS, Linux; runs after the gate):
-   `test:e2e` (Linux under `xvfb-run`) → `dist:dir` → `smoke:packaged`.
+   `test:e2e` (Linux: one Xvfb display started and checked before the tests) → `dist:dir` → `smoke:packaged`.
 
 Coverage scope: `src/domain`, `src/main` (except the Electron bootstrap
 `src/main/index.ts`) and `src/shared`. UI and preload are covered by e2e tests.
 
-To make the gate block merges, mark the `Quality gate …` and `E2E + package …`
-checks as **required** in GitHub → Settings → Branches → branch protection for `main`.
+Branch protection on `main` requires all four checks (`Quality gate …` and
+`E2E + package` on Ubuntu, Windows and macOS), linear history, and forbids force
+pushes and deletion. Pull requests are merged with squash.
+
+Performance (NFR-002, NFR-003) is an e2e spec with 1 000 applications and 10 000
+notes (`e2e/specs/performance.spec.ts`, tag `@perf`); limits are 3× on CI runners.
 
 ## Release — `.github/workflows/release.yml`
 

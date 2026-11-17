@@ -60,7 +60,7 @@ Tests for a task are written before (or together with) its implementation.
 ## Phase 7 — US-5 Language (P1)
 
 - [x] T060 First-launch language from OS locale (FR-041)
-- [ ] T061 Language switch in settings + native menu; persist; live switch incl. menu (FR-042, FR-044) — toolbar switch done; native menu (FR-044) open
+- [x] T061 Language switch in settings + native menu; persist; live switch incl. menu (FR-042, FR-044)
 - [x] T062 Locale-aware dates/relative time; Ukrainian plural tests (FR-043)
 - [x] T063 e2e: US-5 scenarios 1–4
 
@@ -73,20 +73,20 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 8 — US-8 Search (P2)
 
-- [ ] T070 [P] Unit tests + `domain/search.ts` (FR-060)
-- [ ] T071 `SearchBox` in toolbar
-- [ ] T072 e2e: US-8 scenarios 1–2
+- [x] T070 [P] Unit tests + `domain/search.ts` (FR-060)
+- [x] T071 `SearchBox` in toolbar
+- [x] T072 e2e: US-8 scenarios 1–2
 
 ## Phase 9 — US-7 Release (P1)
 
 - [x] T080 App icons for all platforms in `build/` (source: `assets/logo.svg`, see docs/brand.md)
-- [ ] T081 About dialog with version (FR-072)
+- [x] T081 About dialog with version (FR-072) — native About panel from the app/Help menu
 - [ ] T082 `.github/workflows/release.yml` — tag `v*` → matrix build → draft GitHub Release (FR-071)
 - [ ] T083 Manual smoke test of artifacts on Windows, macOS (arm64 + x64), Linux (SC-002)
 
 ## Phase 10 — Polish
 
-- [ ] T090 Performance fixture: 1 000 applications / 10 000 notes; verify NFR-002, NFR-003
+- [x] T090 Performance fixture: 1 000 applications / 10 000 notes; verify NFR-002, NFR-003 (e2e/specs/performance.spec.ts: cold start ~0.8 s, reload ~0.3 s, move ~0.4 s, search ~0.06 s on an M-series Mac)
 - [ ] T091 Accessibility pass: keyboard-only walkthrough, accessible names (NFR-005)
-- [ ] T092 Screenshots in README (en + uk); `CHANGELOG.md` for 0.1.0
+- [ ] T092 Screenshots in README (en + uk) ✅; `CHANGELOG.md` for 0.1.0
 - [ ] T093 Set spec status to `Implemented`

@@ -5,5 +5,11 @@
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["node"]
   },
-  "include": ["e2e/**/*", "src/shared/**/*", "src/domain/**/*"]
+  "include": [
+    "e2e/**/*",
+    "src/shared/**/*",
+    "src/domain/**/*",
+    "src/main/db/migrate.ts",
+    "src/main/db/migrations/**/*"
+  ]
 }
