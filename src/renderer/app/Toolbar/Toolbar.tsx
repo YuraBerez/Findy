@@ -15,6 +15,7 @@ interface Props {
   applicationCount: number
   onReset(): void
   onColumns(): void
+  onAssistant(): void
   query: string
   onQueryChange(query: string): void
 }
@@ -27,6 +28,7 @@ export function Toolbar({
   applicationCount,
   onReset,
   onColumns,
+  onAssistant,
   query,
   onQueryChange,
 }: Props) {
@@ -56,6 +58,12 @@ export function Toolbar({
               label: t('columns.menuItem'),
               disabled: !storageReady,
               onSelect: onColumns,
+            },
+            {
+              key: 'assistant',
+              label: t('mcp.menuItem'),
+              disabled: !storageReady,
+              onSelect: onAssistant,
             },
             {
               key: 'reset',

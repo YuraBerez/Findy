@@ -163,5 +163,18 @@
   },
   "feedback": {
     "reportIssue": "Found an issue?"
+  },
+  "mcp": {
+    "menuItem": "AI assistant access (MCP)…",
+    "title": "AI assistant access",
+    "allow": "Allow AI assistants to use my board",
+    "privacy": "When this is on, an assistant you connect (Claude Desktop, Cowork, Claude Code) can read and change your applications when you ask it to. Findy itself sends nothing anywhere; your assistant sends what it reads to its AI provider.",
+    "desktopTitle": "Claude Desktop and Cowork",
+    "desktopHint": "Add this to claude_desktop_config.json (Settings → Developer → Edit Config), then restart Claude.",
+    "codeTitle": "Claude Code",
+    "copy": "Copy",
+    "copied": "Copied",
+    "otherTitle": "Other MCP clients",
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI and other apps that run local (stdio) MCP servers use this command."
   }
 }

@@ -21,6 +21,7 @@ export class BoardScreen extends BaseComponent {
   private readonly menu: Locator
   private readonly columnsDialog: Locator
   private readonly searchInput: Locator
+  private readonly assistantDialog: Locator
 
   constructor(
     page: Page,
@@ -36,6 +37,7 @@ export class BoardScreen extends BaseComponent {
     this.storageError = page.getByTestId('storage-error')
     this.menu = page.getByRole('menu')
     this.columnsDialog = page.getByRole('dialog', { name: 'Columns' })
+    this.assistantDialog = page.getByRole('dialog', { name: 'AI assistant access' })
     this.searchInput = this.toolbar.getByRole('searchbox', { name: 'Search applications' })
   }
 
@@ -151,6 +153,37 @@ export class BoardScreen extends BaseComponent {
     await this.page.getByRole('button', { name: /^(Found an issue\?|Знайшли проблему\?)$/ }).click()
   }
 
+  // ── AI assistant access (spec 004) ──────────────────────────────────────
+
+  async openAssistantDialog(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem('AI assistant access (MCP)…').click()
+    await expect(this.assistantDialog).toBeVisible()
+  }
+
+  async setAssistantAccess(on: boolean): Promise<void> {
+    const toggle = this.assistantDialog.getByRole('switch', {
+      name: 'Allow AI assistants to use my board',
+    })
+    if ((await toggle.getAttribute('aria-checked')) !== String(on)) await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', String(on))
+  }
+
+  async closeAssistantDialog(): Promise<void> {
+    await this.assistantDialog.getByRole('button', { name: 'Close' }).click()
+    await expect(this.assistantDialog).toBeHidden()
+  }
+
+  /** FR-009: ready-to-copy client configuration */
+  async verifyAssistantInstructions(): Promise<void> {
+    const config = this.assistantDialog.getByTestId('mcp-desktop-config')
+    await expect(config).toContainText('"mcpServers"')
+    await expect(config).toContainText('"ELECTRON_RUN_AS_NODE": "1"')
+    await expect(this.assistantDialog).toContainText(
+      'claude mcp add findy -e ELECTRON_RUN_AS_NODE=1 --',
+    )
+  }
+
   // ── Notifications (spec 003) ───────────────────────────────────────────
 
   async closeNotification(text: string): Promise<void> {
@@ -254,7 +287,9 @@ export class BoardScreen extends BaseComponent {
     if ('before' in target) {
       const cardBox = await this.card(target.before).boundingBox()
       if (!cardBox) throw new Error('Drop card is not visible')
-      y = cardBox.y - columnBox.y - 4
+      // Inside the top of the card, not in the gap above it: a gap can resolve to
+      // the next card under load
+      y = cardBox.y - columnBox.y + cardBox.height * 0.25
     }
     const to = { x: columnBox.x + columnBox.width / 2, y: columnBox.y + y }
     await this.pointer.drag(this.card(title), to, async () => {

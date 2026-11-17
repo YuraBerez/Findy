@@ -5,6 +5,14 @@ import { DEFAULT_STAGE, isStageId, STAGES, type StageId } from '../../domain/sta
 import { HiddenStagesSchema } from '../../domain/schema'
 import type { Application, Language, Note, Settings, Theme } from '../../domain/types'
 
+/** Spec 002 FR-006: no application may go into a hidden column (IPC and MCP alike) */
+export class HiddenStageError extends Error {
+  constructor(readonly stage: StageId) {
+    super(`The stage "${stage}" is hidden on the board`)
+    this.name = 'HiddenStageError'
+  }
+}
+
 export class NotFoundError extends Error {
   constructor(what: string, id: string) {
     super(`${what} not found: ${id}`)
@@ -104,6 +112,7 @@ export class Repository {
       language: language === 'en' || language === 'uk' ? language : null,
       theme: theme === 'light' || theme === 'dark' ? theme : 'system',
       hiddenStages: parseHiddenStages(map.get('hiddenStages')),
+      mcpEnabled: map.get('mcpEnabled') === 'true',
     }
   }
 
@@ -113,6 +122,7 @@ export class Repository {
     const id = this.newId()
     const at = this.now()
     const stage = input.stage ?? DEFAULT_STAGE
+    this.assertVisible(stage)
     this.db.transaction(() => {
       // FR-023: new cards go to the top of the column
       this.db.prepare('UPDATE applications SET position = position + 1 WHERE stage = ?').run(stage)
@@ -147,6 +157,7 @@ export class Repository {
 
   /** FR-020…024: move to any stage and position; history only on a stage change. */
   moveApplication(id: string, target: MoveTarget): Application {
+    this.assertVisible(target.stage)
     this.db.transaction(() => {
       const current = this.requireApplication(id)
       const at = this.now()
@@ -232,6 +243,17 @@ export class Repository {
     return this.getSettings()
   }
 
+  setMcpEnabled(enabled: boolean): Settings {
+    this.setSetting('mcpEnabled', String(enabled))
+    return this.getSettings()
+  }
+
+  getApplication(id: string): Application {
+    const application = this.listApplications().find((app) => app.id === id)
+    if (!application) throw new NotFoundError('Application', id)
+    return application
+  }
+
   setHiddenStages(stages: StageId[]): Settings {
     this.setSetting('hiddenStages', JSON.stringify(stages))
     return this.getSettings()
@@ -239,10 +261,8 @@ export class Repository {
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
-  private getApplication(id: string): Application {
-    const application = this.listApplications().find((app) => app.id === id)
-    if (!application) throw new NotFoundError('Application', id)
-    return application
+  private assertVisible(stage: StageId): void {
+    if (this.getSettings().hiddenStages.includes(stage)) throw new HiddenStageError(stage)
   }
 
   private getNote(id: string): Note {

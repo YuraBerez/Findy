@@ -9,10 +9,16 @@ import {
   NoteTextSchema,
   ThemeSchema,
 } from '../domain/schema'
-import type { StageId } from '../domain/stages'
 import type { Language, Theme } from '../domain/types'
-import type { AppInfo, AppState, IpcErrorPayload, IpcMethod, IpcResult } from '../shared/ipc'
-import { NotFoundError, type Repository } from './db/repository'
+import type {
+  AppInfo,
+  AppState,
+  IpcErrorPayload,
+  IpcMethod,
+  IpcResult,
+  McpConnection,
+} from '../shared/ipc'
+import { HiddenStageError, NotFoundError, type Repository } from './db/repository'
 import { isSafeExternalUrl } from './security'
 
 export interface IpcDeps {
@@ -27,6 +33,8 @@ export interface IpcDeps {
   applyLanguage(language: Language): void
   /** Saves a copy of the database before a destructive action (FR-092) */
   backup(label: string): void
+  /** Spec 004 FR-009: the command an MCP client runs */
+  mcpConnection(): McpConnection
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -48,19 +56,11 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       language: null,
       theme: 'system',
       hiddenStages: [],
+      mcpEnabled: false,
     },
     applications: deps.repository?.listApplications() ?? [],
     storage: deps.storage,
   })
-
-  /** Spec 002 FR-006: no application may go into a hidden column */
-  const assertVisible = (stage: StageId) => {
-    if (repo().getSettings().hiddenStages.includes(stage)) {
-      throw new z.ZodError([
-        { code: 'custom', path: ['stage'], message: 'hidden_stage', input: stage },
-      ])
-    }
-  }
 
   const handle =
     <S extends z.ZodTuple>(schema: S, run: (...args: z.output<S>) => unknown): Handler =>
@@ -78,7 +78,6 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
   return {
     getState: handle(none, state),
     createApplication: handle(z.tuple([ApplicationInputSchema]), (input) => {
-      if (input.stage) assertVisible(input.stage)
       repo().createApplication(input)
       return state()
     }),
@@ -87,7 +86,6 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       return state()
     }),
     moveApplication: handle(z.tuple([IdSchema, MoveTargetSchema]), (id, target) => {
-      assertVisible(target.stage)
       repo().moveApplication(id, target)
       return state()
     }),
@@ -122,6 +120,11 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       repo().setHiddenStages(stages)
       return state()
     }),
+    setMcpEnabled: handle(z.tuple([z.boolean()]), (enabled) => {
+      repo().setMcpEnabled(enabled)
+      return state()
+    }),
+    getMcpConnection: handle(none, () => deps.mcpConnection()),
     setTheme: handle(z.tuple([ThemeSchema]), (theme) => {
       repo().setTheme(theme)
       deps.applyTheme(theme)
@@ -144,6 +147,9 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
 function toPayload(error: unknown): IpcErrorPayload {
   if (error instanceof z.ZodError) {
     return { code: 'VALIDATION', message: z.prettifyError(error) }
+  }
+  if (error instanceof HiddenStageError) {
+    return { code: 'VALIDATION', message: error.message }
   }
   if (error instanceof NotFoundError) {
     return { code: 'NOT_FOUND', message: error.message }

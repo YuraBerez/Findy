@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyMove } from '@domain/board'
 import type { ValidApplication } from '@domain/forms'
@@ -23,6 +23,9 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       // The notification for the first failure is already shown
     }
   }
+
+  // Spec 004 FR-006: an AI assistant changed the board through MCP
+  useEffect(() => window.findy.on('stateChanged', () => void refresh()), [])
 
   const run = async (call: () => Promise<AppState>): Promise<boolean> => {
     try {
@@ -79,6 +82,9 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       },
 
       setTheme: (theme: Theme) => run(() => window.findy.setTheme(theme)),
+
+      /** Spec 004 FR-005 */
+      setMcpEnabled: (enabled: boolean) => run(() => window.findy.setMcpEnabled(enabled)),
 
       /** Spec 002: optimistic, so the column disappears at once */
       setHiddenStages: (stages: StageId[]) => {

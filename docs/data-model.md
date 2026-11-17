@@ -61,6 +61,7 @@ column does not add history.
 |-------|------|---------|-------|
 | `language` | `'en' \| 'uk'` \| null | `null` | `null` = not chosen yet → derive from OS locale (FR-041) |
 | `theme` | `'system' \| 'light' \| 'dark'` | `'system'` | FR-080…083 |
+| `mcpEnabled` | `boolean` | `false` | Spec 004: AI assistants may use the board through MCP; row `mcpEnabled` (`'true'`/`'false'`) |
 | `hiddenStages` | `StageId[]` | `[]` | Spec 002: unique, never all stages; stored as a JSON array in the `settings` row `hiddenStages` |
 
 ## Invariants
