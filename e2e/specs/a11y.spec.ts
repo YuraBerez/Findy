@@ -39,6 +39,13 @@ test.describe('accessibility', () => {
     await findy.pages.a11y.expectNoViolations()
   })
 
+  test('columns dialog has no violations', { tag: '@a11y' }, async ({ findy }) => {
+    await findy.api.setHiddenStages(['rejected'])
+    await findy.refresh()
+    await findy.pages.board.openColumnsDialog()
+    await findy.pages.a11y.expectNoViolations()
+  })
+
   test('empty board in Ukrainian has no violations', { tag: '@a11y' }, async ({ findy }) => {
     await findy.api.setLanguage('uk')
     await findy.refresh()

@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formValuesOf, type ValidApplication } from '@domain/forms'
-import type { Application } from '@shared/ipc'
+import { visibleStages } from '@domain/stages'
+import type { Application, StageId } from '@shared/ipc'
 import { Badge, Button, ConfirmDialog, Dialog, ExternalLinkIcon, Section } from '@ui'
 import { formatDateTime } from '../../../format'
 import { NotesPanel, type NoteActions } from '../../notes'
@@ -17,6 +18,7 @@ interface Props {
   onDelete(): Promise<void>
   onOpenLink(url: string): void
   notes: NoteActions
+  hiddenStages: StageId[]
 }
 
 /** US-4: view and edit an application, its notes (US-3) and stage history; delete it. */
@@ -27,6 +29,7 @@ export function ApplicationDetails({
   onDelete,
   onOpenLink,
   notes,
+  hiddenStages,
 }: Props) {
   const { t, i18n } = useTranslation()
   const form = useApplicationForm(formValuesOf(application))
@@ -74,7 +77,7 @@ export function ApplicationDetails({
 
       <Section title={t('details.fields')}>
         <form noValidate className={styles.form} onSubmit={save} onChange={() => setSaved(false)}>
-          <ApplicationFields form={form} />
+          <ApplicationFields form={form} stages={visibleStages(hiddenStages)} />
           <div className={styles.saveRow}>
             <span role="status" className={styles.saved}>
               {saved ? t('details.saved') : ''}

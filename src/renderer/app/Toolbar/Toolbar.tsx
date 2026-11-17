@@ -13,6 +13,7 @@ interface Props {
   /** Number of applications on the board (Reset is disabled at 0) */
   applicationCount: number
   onReset(): void
+  onColumns(): void
 }
 
 export function Toolbar({
@@ -22,6 +23,7 @@ export function Toolbar({
   onLanguageChange,
   applicationCount,
   onReset,
+  onColumns,
 }: Props) {
   const { t } = useTranslation()
   return (
@@ -42,6 +44,12 @@ export function Toolbar({
           label={t('toolbar.menu')}
           showLabel={false}
           items={[
+            {
+              key: 'columns',
+              label: t('columns.menuItem'),
+              disabled: !storageReady,
+              onSelect: onColumns,
+            },
             {
               key: 'reset',
               label: t('reset.menuItem'),

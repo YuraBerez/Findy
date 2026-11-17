@@ -20,6 +20,11 @@ export const IdSchema = z.uuid()
 export const StageSchema = z.enum(STAGES)
 export const LanguageSchema = z.enum(['en', 'uk'])
 export const ThemeSchema = z.enum(['system', 'light', 'dark'])
+/** Spec 002 FR-006: unique stages, and at least one stays visible */
+export const HiddenStagesSchema = z
+  .array(StageSchema)
+  .refine((stages) => new Set(stages).size === stages.length, { message: 'duplicate_stage' })
+  .refine((stages) => new Set(stages).size < STAGES.length, { message: 'all_hidden' })
 
 export const ApplicationInputSchema = z.object({
   title: requiredText(LIMITS.title),

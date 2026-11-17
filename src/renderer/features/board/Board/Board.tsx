@@ -1,7 +1,7 @@
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { STAGES } from '@domain/stages'
+import { visibleStages, type StageId } from '@domain/stages'
 import type { Application } from '@shared/ipc'
 import { Button } from '@ui'
 import { BoardActionsContext, type BoardActions } from '../BoardActions'
@@ -17,21 +17,34 @@ interface Props {
   onMove: MoveHandler
   onOpen(id: string): void
   onOpenLink(url: string): void
+  hiddenStages: StageId[]
+  onHide(stage: StageId): void
 }
 
 /** FR-001…004 and FR-020…025: stage columns with drag-and-drop (mouse and keyboard). */
-export function Board({ applications, onAdd, onMove, onOpen, onOpenLink }: Props) {
+export function Board({
+  applications,
+  onAdd,
+  onMove,
+  onOpen,
+  onOpenLink,
+  hiddenStages,
+  onHide,
+}: Props) {
   const { t } = useTranslation()
-  const dnd = useBoardDnd(applications, onMove)
+  const visible = useMemo(() => visibleStages(hiddenStages), [hiddenStages])
+  const dnd = useBoardDnd(applications, visible, onMove)
   const actions = useMemo<BoardActions>(
     () => ({
       move: dnd.moveFromMenu,
       open: onOpen,
       openLink: onOpenLink,
+      visible,
+      hide: onHide,
       focusId: dnd.focusId,
       clearFocus: dnd.clearFocus,
     }),
-    [dnd.moveFromMenu, dnd.focusId, dnd.clearFocus, onOpen, onOpenLink],
+    [dnd.moveFromMenu, dnd.focusId, dnd.clearFocus, onOpen, onOpenLink, visible, onHide],
   )
 
   return (
@@ -57,7 +70,8 @@ export function Board({ applications, onAdd, onMove, onOpen, onOpenLink }: Props
         >
           {/* Focusable, so the horizontal scroll works from the keyboard too */}
           <div className={styles.board} role="list" aria-label={t('board.label')} tabIndex={0}>
-            {STAGES.map((stage) => (
+            {/* Hidden columns are not rendered, so nothing can be dropped there */}
+            {visible.map((stage) => (
               <Column
                 key={stage}
                 stage={stage}

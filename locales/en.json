@@ -36,7 +36,8 @@
   },
   "column": {
     "count_one": "{{count}} application",
-    "count_other": "{{count}} applications"
+    "count_other": "{{count}} applications",
+    "hide": "Hide column {{stage}}"
   },
   "card": {
     "notes_one": "{{count}} note",
@@ -110,5 +111,12 @@
     "confirm": "Reset board",
     "message_one": "{{count}} application will be deleted with its notes and stage history. Findy saves a backup copy of your data first.",
     "message_other": "{{count}} applications will be deleted with their notes and stage history. Findy saves a backup copy of your data first."
+  },
+  "columns": {
+    "menuItem": "Columns…",
+    "title": "Columns",
+    "show": "Show {{stage}}",
+    "lastVisible": "At least one column stays visible",
+    "hint": "Hidden columns are not shown on the board, and no application can be moved into them. Their applications are kept."
   }
 }

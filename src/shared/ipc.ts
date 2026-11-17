@@ -18,6 +18,7 @@ export const IPC_METHODS = [
   'deleteNote',
   'setLanguage',
   'setTheme',
+  'setHiddenStages',
   'getSystemLocale',
   'openExternal',
   'getAppInfo',
@@ -106,6 +107,8 @@ export interface FindyApi {
   deleteNote(applicationId: string, noteId: string): Promise<AppState>
   setLanguage(language: Language): Promise<AppState>
   setTheme(theme: Theme): Promise<AppState>
+  /** Spec 002: columns hidden on the board */
+  setHiddenStages(stages: StageId[]): Promise<AppState>
   getSystemLocale(): Promise<string>
   openExternal(url: string): Promise<void>
   getAppInfo(): Promise<AppInfo>

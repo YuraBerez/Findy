@@ -36,7 +36,7 @@ describe('IPC handlers', () => {
 
   it('returns the full state', async () => {
     expect(await state(ctx.handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system' },
+      settings: { language: null, theme: 'system', hiddenStages: [] },
       applications: [],
       storage: okStorage,
     })
@@ -68,7 +68,7 @@ describe('IPC handlers', () => {
   it('saves settings and applies the theme (FR-082)', async () => {
     await state(ctx.handlers.setLanguage('uk'))
     const s = await state(ctx.handlers.setTheme('dark'))
-    expect(s.settings).toEqual({ language: 'uk', theme: 'dark' })
+    expect(s.settings).toEqual({ language: 'uk', theme: 'dark', hiddenStages: [] })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
   })
 
@@ -107,6 +107,57 @@ describe('IPC handlers', () => {
   })
 })
 
+describe('hidden stages (spec 002)', () => {
+  it('saves hidden stages and keeps them over a reset', async () => {
+    const ctx = setup()
+    let s = await state(ctx.handlers.setHiddenStages(['rejected']))
+    expect(s.settings.hiddenStages).toEqual(['rejected'])
+    s = await state(ctx.handlers.resetBoard())
+    expect(s.settings.hiddenStages).toEqual(['rejected'])
+  })
+
+  it('rejects hiding every stage and duplicates (FR-006)', async () => {
+    const ctx = setup()
+    const all = [
+      'applied',
+      'hr_interview',
+      'test_task',
+      'technical_interview',
+      'c_level_interview',
+      'offered',
+      'rejected',
+    ]
+    expect(await ctx.handlers.setHiddenStages(all)).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+    expect(await ctx.handlers.setHiddenStages(['rejected', 'rejected'])).toMatchObject({
+      ok: false,
+    })
+  })
+
+  it('rejects creating or moving into a hidden stage (FR-006)', async () => {
+    const ctx = setup()
+    const s = await state(ctx.handlers.createApplication({ title: 'a', company: 'b' }))
+    const id = s.applications[0]!.id
+    await state(ctx.handlers.setHiddenStages(['offered']))
+    expect(await ctx.handlers.moveApplication(id, { stage: 'offered', index: 0 })).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+    expect(
+      await ctx.handlers.createApplication({ title: 'x', company: 'y', stage: 'offered' }),
+    ).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+    // a visible stage still works
+    expect(await ctx.handlers.moveApplication(id, { stage: 'rejected', index: 0 })).toMatchObject({
+      ok: true,
+    })
+  })
+})
+
 describe('resetBoard (FR-090…093)', () => {
   it('backs up first, then deletes all applications', async () => {
     const order: string[] = []
@@ -141,7 +192,7 @@ describe('IPC handlers without storage (FR-054)', () => {
   it('returns an empty state with the storage error', async () => {
     const { handlers } = setup({ repository: null, storage })
     expect(await state(handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system' },
+      settings: { language: null, theme: 'system', hiddenStages: [] },
       applications: [],
       storage,
     })

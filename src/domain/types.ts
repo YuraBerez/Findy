@@ -32,4 +32,6 @@ export interface Application {
 export interface Settings {
   language: Language | null
   theme: Theme
+  /** Columns hidden on the board (spec 002); never all of them */
+  hiddenStages: StageId[]
 }

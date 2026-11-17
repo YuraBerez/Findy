@@ -19,6 +19,7 @@ export class BoardScreen extends BaseComponent {
   private readonly emptyState: Locator
   private readonly storageError: Locator
   private readonly menu: Locator
+  private readonly columnsDialog: Locator
 
   constructor(page: Page) {
     super(page)
@@ -31,6 +32,7 @@ export class BoardScreen extends BaseComponent {
     this.emptyState = page.getByTestId('empty-board')
     this.storageError = page.getByTestId('storage-error')
     this.menu = page.getByRole('menu')
+    this.columnsDialog = page.getByRole('dialog', { name: 'Columns' })
   }
 
   private column(stage: StageId): Locator {
@@ -92,6 +94,53 @@ export class BoardScreen extends BaseComponent {
       .getByRole('button', { name: answer === 'confirm' ? 'Reset board' : 'Cancel' })
       .click()
     await expect(confirm).toBeHidden()
+  }
+
+  // ── Columns (spec 002) ─────────────────────────────────────────────────
+
+  async hideColumn(stage: StageId, name: string): Promise<void> {
+    await this.column(stage)
+      .getByRole('button', { name: `Hide column ${name}` })
+      .click()
+  }
+
+  async openColumnsDialog(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem('Columns…').click()
+    await expect(this.columnsDialog).toBeVisible()
+  }
+
+  async setColumnShown(name: string): Promise<void> {
+    await this.columnsDialog.getByRole('switch', { name: `Show ${name}` }).click()
+  }
+
+  async closeColumnsDialog(): Promise<void> {
+    await this.columnsDialog.getByRole('button', { name: 'Close' }).click()
+    await expect(this.columnsDialog).toBeHidden()
+  }
+
+  async verifyColumnSwitch(
+    name: string,
+    state: { on: boolean; enabled?: boolean; count?: string },
+  ): Promise<void> {
+    const toggle = this.columnsDialog.getByRole('switch', { name: `Show ${name}` })
+    await expect(toggle).toHaveAttribute('aria-checked', String(state.on))
+    if (state.enabled !== undefined) {
+      if (state.enabled) await expect(toggle).toBeEnabled()
+      else await expect(toggle).toBeDisabled()
+    }
+    if (state.count)
+      await expect(
+        this.columnsDialog.getByRole('listitem').filter({ hasText: name }),
+      ).toContainText(state.count)
+  }
+
+  async verifyNoHideButton(stage: StageId): Promise<void> {
+    await expect(this.column(stage).getByRole('button', { name: /^Hide column/ })).toHaveCount(0)
+  }
+
+  async verifyColumnHidden(stage: StageId): Promise<void> {
+    await expect(this.column(stage)).toHaveCount(0)
   }
 
   /** Opens the confirmation and leaves it open */

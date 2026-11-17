@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import type { StageId } from '@domain/stages'
 import type { MoveTarget } from './useBoardDnd'
 
 /** What a card can do, given once by the Board instead of through every layer. */
@@ -9,6 +10,10 @@ export interface BoardActions {
   open(id: string): void
   /** FR-016: open the vacancy in the system browser */
   openLink(url: string): void
+  /** Columns on the board, in order: the only valid move targets (spec 002) */
+  visible: readonly StageId[]
+  /** Spec 002 FR-001; not offered when it is the last visible column */
+  hide(stage: StageId): void
   /** Card to focus after it moved (it remounts in its new column) */
   focusId: string | null
   clearFocus(): void

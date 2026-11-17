@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next'
-import { STAGES } from '@domain/stages'
 import type { Application } from '@shared/ipc'
 import { ExternalLinkIcon, IconButton, Menu, MoreIcon } from '@ui'
 import { useBoardActions } from '../BoardActions'
@@ -29,11 +28,13 @@ export function CardActions({ application }: { application: Application }) {
         triggerLabel={t('card.actions', { title: application.title })}
         triggerIcon={<MoreIcon />}
         label={t('card.moveTo')}
-        items={STAGES.filter((stage) => stage !== application.stage).map((stage) => ({
-          key: stage,
-          label: t(`stages.${stage}`),
-          onSelect: () => board.move(application.id, { stage, index: 0 }),
-        }))}
+        items={board.visible
+          .filter((stage) => stage !== application.stage)
+          .map((stage) => ({
+            key: stage,
+            label: t(`stages.${stage}`),
+            onSelect: () => board.move(application.id, { stage, index: 0 }),
+          }))}
       />
     </div>
   )

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { Database } from 'better-sqlite3'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../domain/schema'
 import { DEFAULT_STAGE, isStageId, STAGES, type StageId } from '../../domain/stages'
+import { HiddenStagesSchema } from '../../domain/schema'
 import type { Application, Language, Note, Settings, Theme } from '../../domain/types'
 
 export class NotFoundError extends Error {
@@ -102,6 +103,7 @@ export class Repository {
     return {
       language: language === 'en' || language === 'uk' ? language : null,
       theme: theme === 'light' || theme === 'dark' ? theme : 'system',
+      hiddenStages: parseHiddenStages(map.get('hiddenStages')),
     }
   }
 
@@ -230,6 +232,11 @@ export class Repository {
     return this.getSettings()
   }
 
+  setHiddenStages(stages: StageId[]): Settings {
+    this.setSetting('hiddenStages', JSON.stringify(stages))
+    return this.getSettings()
+  }
+
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   private getApplication(id: string): Application {
@@ -285,6 +292,17 @@ export class Repository {
         'INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
       )
       .run(key, value)
+  }
+}
+
+/** A damaged or invalid value means "nothing hidden", never a broken board. */
+function parseHiddenStages(raw: string | undefined): StageId[] {
+  if (!raw) return []
+  try {
+    const parsed = HiddenStagesSchema.safeParse(JSON.parse(raw))
+    return parsed.success ? parsed.data : []
+  } catch {
+    return []
   }
 }
 

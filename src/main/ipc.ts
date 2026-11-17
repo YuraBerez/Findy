@@ -2,12 +2,14 @@ import { z } from 'zod'
 import {
   ApplicationInputSchema,
   ApplicationPatchSchema,
+  HiddenStagesSchema,
   IdSchema,
   LanguageSchema,
   MoveTargetSchema,
   NoteTextSchema,
   ThemeSchema,
 } from '../domain/schema'
+import type { StageId } from '../domain/stages'
 import type { Theme } from '../domain/types'
 import type { AppInfo, AppState, IpcErrorPayload, IpcMethod, IpcResult } from '../shared/ipc'
 import { NotFoundError, type Repository } from './db/repository'
@@ -40,10 +42,23 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
   }
 
   const state = (): AppState => ({
-    settings: deps.repository?.getSettings() ?? { language: null, theme: 'system' },
+    settings: deps.repository?.getSettings() ?? {
+      language: null,
+      theme: 'system',
+      hiddenStages: [],
+    },
     applications: deps.repository?.listApplications() ?? [],
     storage: deps.storage,
   })
+
+  /** Spec 002 FR-006: no application may go into a hidden column */
+  const assertVisible = (stage: StageId) => {
+    if (repo().getSettings().hiddenStages.includes(stage)) {
+      throw new z.ZodError([
+        { code: 'custom', path: ['stage'], message: 'hidden_stage', input: stage },
+      ])
+    }
+  }
 
   const handle =
     <S extends z.ZodTuple>(schema: S, run: (...args: z.output<S>) => unknown): Handler =>
@@ -61,6 +76,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
   return {
     getState: handle(none, state),
     createApplication: handle(z.tuple([ApplicationInputSchema]), (input) => {
+      if (input.stage) assertVisible(input.stage)
       repo().createApplication(input)
       return state()
     }),
@@ -69,6 +85,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       return state()
     }),
     moveApplication: handle(z.tuple([IdSchema, MoveTargetSchema]), (id, target) => {
+      assertVisible(target.stage)
       repo().moveApplication(id, target)
       return state()
     }),
@@ -96,6 +113,10 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     setLanguage: handle(z.tuple([LanguageSchema]), (language) => {
       repo().setLanguage(language)
+      return state()
+    }),
+    setHiddenStages: handle(z.tuple([HiddenStagesSchema]), (stages) => {
+      repo().setHiddenStages(stages)
       return state()
     }),
     setTheme: handle(z.tuple([ThemeSchema]), (theme) => {

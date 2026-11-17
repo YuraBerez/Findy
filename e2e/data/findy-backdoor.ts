@@ -63,6 +63,25 @@ export class FindyBackdoor {
     await this.page.evaluate((value) => window.findy.setTheme(value), theme)
   }
 
+  async setHiddenStages(stages: StageId[]): Promise<void> {
+    await this.page.evaluate((value) => window.findy.setHiddenStages(value), stages)
+  }
+
+  /** Message of the rejected move, or "saved" */
+  tryMove(title: string, stage: StageId): Promise<string> {
+    return this.page.evaluate(
+      async ({ title, stage }) => {
+        const state = await window.findy.getState()
+        const id = state.applications.find((item) => item.title === title)!.id
+        return window.findy.moveApplication(id, { stage, index: 0 }).then(
+          () => 'saved',
+          (error: Error) => error.message,
+        )
+      },
+      { title, stage },
+    )
+  }
+
   async setLanguage(language: Language): Promise<void> {
     await this.page.evaluate((value) => window.findy.setLanguage(value), language)
   }

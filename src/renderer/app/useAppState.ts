@@ -56,6 +56,15 @@ export function useAppState(initial: AppState) {
 
       setTheme: (theme: Theme) => save(window.findy.setTheme(theme)),
 
+      /** Spec 002: optimistic, so the column disappears at once */
+      setHiddenStages: async (stages: StageId[]) => {
+        setState((current) => ({
+          ...current,
+          settings: { ...current.settings, hiddenStages: stages },
+        }))
+        await save(window.findy.setHiddenStages(stages))
+      },
+
       // FR-042: switch at once, then save the choice
       setLanguage: async (language: Language) => {
         await i18n.changeLanguage(language)
