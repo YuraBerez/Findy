@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 import electron from 'electron'
@@ -32,7 +33,9 @@ export class McpTestClient {
     let log = ''
     transport.stderr?.on('data', (chunk) => (log += String(chunk)))
     client.onclose = () => {
-      if (log && !closing.has(client))
+      // Always on Windows CI, to see how Findy ends there (spec 004 FR-001)
+      const windowsCi = process.platform === 'win32' && !!process.env.CI
+      if (log && (windowsCi || !closing.has(client)))
         console.log(`Findy --mcp closed the connection. Its stderr:\n${log}`)
     }
     await client.connect(transport)
@@ -57,6 +60,10 @@ export class McpTestClient {
   async close(): Promise<void> {
     const pid = this.transport.pid
     closing.add(this.client)
+    // Windows: a killed Electron leaves helper processes that lock the data folder,
+    // so end the whole process tree while its root is still known
+    if (process.platform === 'win32' && pid !== null && isRunning(pid))
+      spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'ignore' })
     await this.client.close()
     if (pid === null) return
     const deadline = Date.now() + 5_000

@@ -97,7 +97,7 @@ export const test = base.extend<Fixtures>({
     if (bulkData) writeBulkDatabase(join(dir, 'findy.db'), bulkData)
     await use(dir)
     // Windows keeps files locked for a moment after a child process exits
-    rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })
+    rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 })
   },
 
   electronApp: async ({ userDataDir, systemLocale }, use) => {
