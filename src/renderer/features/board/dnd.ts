@@ -67,20 +67,22 @@ export const dragSession: {
 
 /**
  * Two steps, so a card lands where the user points:
- * 1. the column under the pointer (or under the dragged card, for the keyboard);
- * 2. the closest other card inside that column, or the column itself when it has none.
- * The dragged card is never a target: as a target it makes the result flip
- * between the card and the column on every pointer move.
+ * 1. the column under the pointer. Only a keyboard drag, which has no pointer,
+ *    uses the dragged card's rectangle: for a mouse it can hit a column far away
+ *    and move the card there for a moment (issue #12);
+ * 2. the closest card inside that column, or the column itself when it has none.
+ * The dragged card is a candidate too: over its own slot it means "stay here".
+ * Without it, a card that comes back into a column always lands one slot below
+ * the card it points at (issue #12). Its rectangle is its slot, not the moving
+ * overlay (droppables are measured without transforms), so the target is stable.
  */
 export const collisionDetection: CollisionDetection = (args) => {
-  const underPointer = pointerWithin(args)
-  const hits = underPointer.length > 0 ? underPointer : rectIntersection(args)
+  const hits = args.pointerCoordinates ? pointerWithin(args) : rectIntersection(args)
   const column = hits.find((hit) => String(hit.id).startsWith(COLUMN_PREFIX))
   if (!column) return []
   const stage = String(column.id).slice(COLUMN_PREFIX.length)
   const cards = args.droppableContainers.filter(
-    (container) =>
-      container.id !== args.active.id && container.data.current?.sortable?.containerId === stage,
+    (container) => container.data.current?.sortable?.containerId === stage,
   )
   return cards.length > 0 ? closestCenter({ ...args, droppableContainers: cards }) : [column]
 }

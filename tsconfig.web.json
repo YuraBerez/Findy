@@ -11,5 +11,5 @@
       "@ui": ["./src/renderer/ui"]
     }
   },
-  "include": ["src/renderer/**/*", "src/shared/**/*", "src/domain/**/*"]
+  "include": ["src/renderer/**/*", "src/shared/**/*", "src/domain/**/*", "tests/unit/renderer/**/*"]
 }

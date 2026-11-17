@@ -1,6 +1,11 @@
+import { resolve } from 'node:path'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
+  // Same aliases as the renderer, for unit tests of its pure modules (tests/unit/renderer)
+  resolve: {
+    alias: { '@domain': resolve('src/domain'), '@shared': resolve('src/shared') },
+  },
   test: {
     include: ['tests/unit/**/*.test.ts'],
     environment: 'node',
