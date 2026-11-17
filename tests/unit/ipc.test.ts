@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createHandlers, type IpcDeps } from '../../src/main/ipc'
 import {
+  errorKind,
   getIpcErrorCode,
   IpcError,
   type AppState,
@@ -232,5 +233,17 @@ describe('unwrap', () => {
       ok: false,
       error: { code: 'STORAGE', message: 'disk on fire' },
     })
+  })
+})
+
+describe('errorKind (spec 003 FR-002)', () => {
+  it.each([
+    [new IpcError({ code: 'VALIDATION', message: 'x' }), 'validation'],
+    [new Error('Error invoking remote method: NOT_FOUND: gone'), 'notFound'],
+    [new IpcError({ code: 'STORAGE', message: 'disk' }), 'storage'],
+    [new TypeError('window.findy.resetBoard is not a function'), 'unknown'],
+    ['plain string', 'unknown'],
+  ])('%s → %s', (error, kind) => {
+    expect(errorKind(error)).toBe(kind)
   })
 })

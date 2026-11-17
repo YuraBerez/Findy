@@ -1,0 +1,14 @@
+.fallback {
+  max-width: 480px;
+  margin: 15vh auto 0;
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.fallback h1 {
+  font-size: 20px;
+}
+
+.fallback p {
+  color: var(--fg-muted);
+}

@@ -14,7 +14,8 @@ import styles from './ApplicationDetails.module.css'
 interface Props {
   application: Application
   onClose(): void
-  onSave(changes: ValidApplication): Promise<void>
+  /** Resolves to false when saving failed (the failure is already notified) */
+  onSave(changes: ValidApplication): Promise<boolean>
   onDelete(): Promise<void>
   onOpenLink(url: string): void
   notes: NoteActions
@@ -42,8 +43,7 @@ export function ApplicationDetails({
     event.preventDefault()
     const data = form.validate(event)
     if (!data) return
-    await onSave(data)
-    setSaved(true)
+    setSaved(await onSave(data))
   }
 
   return (
