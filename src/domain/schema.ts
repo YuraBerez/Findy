@@ -1,24 +1,11 @@
 // Runtime validation of everything that crosses the IPC boundary (docs/security.md)
 import { z } from 'zod'
+import { isHttpUrl, LIMITS } from './limits'
 import { STAGES } from './stages'
 
-export const LIMITS = {
-  title: 200,
-  company: 200,
-  url: 2048,
-  note: 10_000,
-} as const
+export { isHttpUrl, LIMITS }
 
 const requiredText = (max: number) => z.string().trim().min(1).max(max)
-
-export function isHttpUrl(value: string): boolean {
-  try {
-    const { protocol } = new URL(value)
-    return protocol === 'http:' || protocol === 'https:'
-  } catch {
-    return false
-  }
-}
 
 // Empty or whitespace-only input means "no URL" (FR-010)
 export const UrlSchema = z

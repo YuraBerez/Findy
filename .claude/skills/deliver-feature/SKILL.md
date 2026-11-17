@@ -47,7 +47,8 @@ Commit `plan.md` + `tasks.md` (+ docs) as the first commit:
 For each task in order:
 
 1. Write or extend the unit tests first for `src/domain`, `src/main` or `src/shared`.
-   Add or extend an e2e test in `tests/e2e/` for each acceptance scenario.
+   Add or extend an e2e spec in `e2e/specs/` for each acceptance scenario. Follow the
+   playwright-e2e-kit layers: specs → steps → screens; seed data through `findy.api`.
 2. Write the code. Follow `CLAUDE.md` → *Code rules*.
 3. New UI strings go into **both** `locales/en.json` and `locales/uk.json`
    (see `/localization`).

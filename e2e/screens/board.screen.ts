@@ -1,0 +1,205 @@
+import { expect, type Locator, type Page } from '@playwright/test'
+import { BaseComponent, escapeRegExp } from 'playwright-e2e-kit'
+import type { StageId } from '../../src/shared/ipc'
+
+/** Light and dark `--bg` (src/renderer/styles/global.css) */
+const BACKGROUND = { light: 'rgb(244, 246, 248)', dark: 'rgb(22, 24, 28)' } as const
+
+/**
+ * The main window: toolbar, stage columns, cards and their menus.
+ * Electron has no routes, so this is a component of the one window, not a routed screen.
+ */
+export class BoardScreen extends BaseComponent {
+  private readonly appRoot: Locator
+  private readonly toolbar: Locator
+  private readonly addButton: Locator
+  private readonly themeToggle: Locator
+  private readonly languageSelect: Locator
+  private readonly board: Locator
+  private readonly emptyState: Locator
+  private readonly storageError: Locator
+  private readonly menu: Locator
+
+  constructor(page: Page) {
+    super(page)
+    this.appRoot = page.getByTestId('app')
+    this.toolbar = page.getByRole('banner')
+    this.addButton = this.toolbar.getByRole('button', { name: /^(Add application|Додати заявку)$/ })
+    this.themeToggle = this.toolbar.getByRole('switch')
+    this.languageSelect = this.toolbar.getByRole('combobox')
+    this.board = page.getByRole('list', { name: /^(Job applications board|Дошка заявок)$/ })
+    this.emptyState = page.getByTestId('empty-board')
+    this.storageError = page.getByTestId('storage-error')
+    this.menu = page.getByRole('menu')
+  }
+
+  private column(stage: StageId): Locator {
+    return this.page.getByTestId(`column-${stage}`)
+  }
+
+  private cardsIn(stage: StageId): Locator {
+    return this.column(stage).getByTestId('card')
+  }
+
+  /** The draggable part of a card: a button named by its text, title first. */
+  private card(title: string, scope: Locator = this.board): Locator {
+    return scope.getByRole('button', { name: new RegExp(`^${escapeRegExp(title)}(\\s|$)`) })
+  }
+
+  private cardActions(title: string): Locator {
+    return this.page.getByRole('button', {
+      name: new RegExp(`^(Actions for |Дії для «)${escapeRegExp(title)}»?$`),
+    })
+  }
+
+  // ── Toolbar ────────────────────────────────────────────────────────────
+
+  async startAdding(): Promise<void> {
+    await this.addButton.click()
+  }
+
+  async startAddingFromEmptyState(): Promise<void> {
+    await this.emptyState.getByRole('button').click()
+  }
+
+  async toggleTheme(): Promise<void> {
+    await this.themeToggle.click()
+  }
+
+  /** FR-081: the toggle works with Space and Enter */
+  async toggleThemeWithKey(key: 'Space' | 'Enter'): Promise<void> {
+    await this.themeToggle.press(key)
+  }
+
+  async chooseLanguage(name: 'English' | 'Українська'): Promise<void> {
+    await this.languageSelect.selectOption({ label: name })
+  }
+
+  // ── Cards ──────────────────────────────────────────────────────────────
+
+  /** Drags a card onto a column (its free space) or onto another card. */
+  async dragCard(title: string, target: { stage: StageId } | { onto: string }): Promise<void> {
+    const destination = 'stage' in target ? this.column(target.stage) : this.card(target.onto)
+    const box = await destination.boundingBox()
+    if (!box) throw new Error('Drop target is not visible')
+    await this.card(title).dragTo(destination, {
+      steps: 20,
+      // Free space of a column is below its cards; the upper part of a card means "before it"
+      targetPosition:
+        'stage' in target ? { x: box.width / 2, y: box.height * 0.6 } : { x: box.width / 2, y: 4 },
+    })
+  }
+
+  async moveWithMenu(title: string, stageName: string): Promise<void> {
+    await this.openCardMenu(title)
+    await this.menu.getByRole('menuitem', { name: stageName }).click()
+  }
+
+  async openCardMenuWithKeyboard(title: string): Promise<void> {
+    await this.cardActions(title).press('Enter')
+  }
+
+  /**
+   * dnd-kit swallows clicks for ~50 ms after a drop (so the mouse-up is not a click).
+   * A person never notices; a test right after a drag does, so click until it opens.
+   */
+  async openCardMenu(title: string): Promise<void> {
+    await expect(async () => {
+      if ((await this.cardActions(title).getAttribute('aria-expanded')) !== 'true') {
+        await this.cardActions(title).click()
+      }
+      await expect(this.menu).toBeVisible({ timeout: 1_000 })
+    }).toPass()
+  }
+
+  /** Presses a key on the menu item that has focus now. */
+  async pressInMenu(focusedItem: string, key: string): Promise<void> {
+    await this.menu.getByRole('menuitem', { name: focusedItem }).press(key)
+  }
+
+  /**
+   * FR-021: keyboard drag-and-drop. Space picks up the card; each arrow moves it one
+   * column; Space drops it. Waits until the card shows in each column it passes.
+   */
+  async moveWithKeyboard(
+    title: string,
+    steps: { key: 'ArrowLeft' | 'ArrowRight'; reaches: StageId }[],
+  ): Promise<void> {
+    const card = this.card(title)
+    await card.press('Space')
+    for (const step of steps) {
+      await card.press(step.key)
+      await expect(this.card(title, this.column(step.reaches))).toHaveCount(1)
+    }
+    await card.press('Space')
+  }
+
+  // ── Checks ─────────────────────────────────────────────────────────────
+
+  async verifyShown(): Promise<void> {
+    await expect(this.toolbar).toContainText('Findy')
+    await expect(this.board).toBeVisible()
+  }
+
+  async verifyStageNames(names: string[]): Promise<void> {
+    await expect(this.board.getByRole('heading', { level: 2 })).toHaveText(names)
+  }
+
+  async verifyEmptyState(text: string): Promise<void> {
+    await expect(this.emptyState).toContainText(text)
+  }
+
+  async verifyNoEmptyState(): Promise<void> {
+    await expect(this.emptyState).toBeHidden()
+  }
+
+  async verifyCards(stage: StageId, titles: string[]): Promise<void> {
+    await expect(this.cardsIn(stage).getByRole('heading', { level: 3 })).toHaveText(titles)
+  }
+
+  async verifyColumnCount(stage: StageId, count: number): Promise<void> {
+    // The badge's accessible name is the localised count, e.g. "2 applications"
+    await expect(this.column(stage).getByLabel(new RegExp(`^${count} `))).toHaveText(String(count))
+  }
+
+  async verifyCardShows(title: string, texts: string[]): Promise<void> {
+    for (const text of texts) await expect(this.card(title)).toContainText(text)
+  }
+
+  async verifyCardFocused(stage: StageId, title: string): Promise<void> {
+    await expect(this.card(title, this.column(stage))).toBeFocused()
+  }
+
+  async verifyCardMenuFocused(title: string): Promise<void> {
+    await expect(this.cardActions(title)).toBeFocused()
+  }
+
+  async verifyMenuItems(names: string[]): Promise<void> {
+    await expect(this.menu.getByRole('menuitem')).toHaveText(names)
+  }
+
+  async verifyMenuItemFocused(name: string): Promise<void> {
+    await expect(this.menu.getByRole('menuitem', { name })).toBeFocused()
+  }
+
+  async verifyMenuClosed(): Promise<void> {
+    await expect(this.menu).toBeHidden()
+  }
+
+  /** US-9: the toggle state and the colours of the whole window agree. */
+  async verifyTheme(theme: 'light' | 'dark'): Promise<void> {
+    await expect(this.themeToggle).toHaveAttribute('aria-checked', String(theme === 'dark'))
+    await expect(this.appRoot).toHaveCSS('background-color', BACKGROUND[theme])
+  }
+
+  async verifyLanguage(name: 'English' | 'Українська', addButtonText: string): Promise<void> {
+    await expect(this.languageSelect.getByRole('option', { selected: true })).toHaveText(name)
+    await expect(this.addButton).toHaveText(addButtonText)
+  }
+
+  async verifyStorageError(texts: string[]): Promise<void> {
+    await expect(this.storageError).toBeVisible()
+    for (const text of texts) await expect(this.storageError).toContainText(text)
+    await expect(this.addButton).toBeDisabled()
+  }
+}

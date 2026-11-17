@@ -40,7 +40,9 @@
   "card": {
     "notes_one": "{{count}} note",
     "notes_other": "{{count}} notes",
-    "inStage": "In this stage since {{date}}"
+    "inStage": "In this stage since {{date}}",
+    "actions": "Actions for {{title}}",
+    "moveTo": "Move to"
   },
   "form": {
     "createTitle": "New application",
@@ -57,5 +59,15 @@
       "invalidUrl": "Enter a link that starts with http:// or https://.",
       "saveFailed": "Could not save the application. Try again."
     }
+  },
+  "dnd": {
+    "instructions": "To pick up a card, press Space or Enter. Use the arrow keys to move it. Press Space or Enter again to drop it, or Escape to cancel.",
+    "picked": "Picked up {{title}}.",
+    "over": "{{title}} is over {{stage}}.",
+    "dropped": "{{title}} was moved to {{stage}}.",
+    "cancelled": "Moving {{title}} was cancelled."
+  },
+  "language": {
+    "label": "Language"
   }
 }

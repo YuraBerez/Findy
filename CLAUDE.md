@@ -43,6 +43,8 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
   new migration file + test; never edit a released migration
   (docs/contracts/database.md). Each IPC mutation runs in one transaction.
 - Follow docs/security.md for anything in `src/main` or `src/preload`.
+- E2E: `e2e/` follows playwright-e2e-kit layers (specs → steps → screens, data via fixtures);
+  ESLint enforces them. No locators or raw `page` in specs. See docs/architecture.md D-6.
 
 ## Commands
 
@@ -50,7 +52,7 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
 npm run dev        # run app
 npm test           # unit tests (Vitest)
 npm run test:coverage  # unit tests + 80 % coverage gate (same as CI)
-npm run test:e2e   # e2e (Playwright + Electron)
+npm run test:e2e   # e2e (Playwright + Electron, playwright-e2e-kit layers in e2e/)
 npm run lint       # eslint + tsc
 npm run dist       # installer for current OS
 ```

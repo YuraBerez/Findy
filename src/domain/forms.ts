@@ -1,7 +1,7 @@
 // Field-level validation for the application form (FR-010, FR-011).
 // The same rules run again in main (domain/schema.ts); this layer only maps
 // them to messages next to each field.
-import { isHttpUrl, LIMITS } from './schema'
+import { isHttpUrl, LIMITS } from './limits'
 import { DEFAULT_STAGE, type StageId } from './stages'
 
 export interface ApplicationFormValues {

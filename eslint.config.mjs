@@ -3,6 +3,7 @@ import prettier from 'eslint-config-prettier'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import globals from 'globals'
+import { e2eLayerRules } from 'playwright-e2e-kit/eslint'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
@@ -33,5 +34,7 @@ export default tseslint.config(
       ],
     },
   },
+  // E2E layers (specs → steps → screens; data only through fixtures)
+  ...e2eLayerRules({ unusedVars: '@typescript-eslint/no-unused-vars' }),
   prettier,
 )

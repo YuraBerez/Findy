@@ -21,7 +21,7 @@ must be motivated by a spec and land in the same PR.
 | Database | **SQLite** via **better-sqlite3** | Local embedded DB, transactions, migrations (see D-2) |
 | Packaging | **electron-builder** | Win/mac/Linux targets from CI |
 | Unit tests | **Vitest** + `@vitest/coverage-v8` | Native to Vite; coverage gate ≥ 80 % |
-| E2E tests | **Playwright** (`_electron`) | Drives the real packaged-like app |
+| E2E tests | **Playwright** (`_electron`) + [**playwright-e2e-kit**](https://github.com/YuraBerez/playwright-e2e-kit) | Drives the real built app; layered suite, error guard, axe audits (D-6) |
 | Lint/format | ESLint + Prettier | |
 | Package manager | npm | Zero extra tooling for contributors |
 
@@ -90,8 +90,13 @@ locales/
 ├── en.json              # single source for main + renderer strings
 └── uk.json
 tests/
-├── unit/                # Vitest: domain, store, i18n key parity
-└── e2e/                 # Playwright: acceptance scenarios
+└── unit/                # Vitest: domain, db, IPC, i18n key parity
+e2e/                     # Playwright + playwright-e2e-kit (D-6)
+├── specs/               # acceptance scenarios, phases in test.step()
+├── steps/               # flows across screens; Electron a11y step
+├── screens/             # page objects: private locators, verbs, verify…()
+├── fixtures/app.ts      # one Electron app + isolated database per test
+└── data/                # back door: seed and read through window.findy
 build/                   # icons, entitlements for electron-builder
 .github/workflows/       # ci.yml, release.yml
 ```
@@ -139,6 +144,18 @@ build/                   # icons, entitlements for electron-builder
 
 - **Why:** Signing certificates cost money; decided in spec 001 (D-3).
   README documents how to open unsigned apps.
+
+### D-6 — E2E suite on playwright-e2e-kit
+
+- **Chosen:** the owner's [playwright-e2e-kit](https://github.com/YuraBerez/playwright-e2e-kit)
+  (pinned git tag) for layers, ESLint layer rules, the error guard and axe audits.
+- **Electron adapter** (`e2e/fixtures/app.ts`): no `baseURL` or browser project. Each test
+  launches the built app with `FINDY_USER_DATA_DIR` set to a temp directory and gives the
+  window's context to the kit's error guard. Screens extend `BaseComponent` (no routes).
+- **Accessibility:** `e2e/steps/a11y.steps.ts` runs axe in legacy mode, because axe's default
+  mode opens a new page and Electron cannot. Formatting and exclusions come from the kit.
+- **Rule:** the renderer must not trigger CSP violations; zod stays out of the renderer
+  (`domain/limits.ts`), because zod v4 probes `new Function()` on load.
 
 ## Cross-cutting docs
 

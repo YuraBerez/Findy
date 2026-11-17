@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import logo from '../../../assets/logo.svg'
-import type { Theme } from '../../shared/ipc'
+import type { Language, Theme } from '../../shared/ipc'
+import { LanguageSelect } from './LanguageSelect'
 import { ThemeToggle } from './ThemeToggle'
 import styles from './Toolbar.module.css'
 
@@ -8,9 +9,10 @@ interface Props {
   storageReady: boolean
   onAdd(): void
   onThemeChange(theme: Theme): void
+  onLanguageChange(language: Language): void
 }
 
-export function Toolbar({ storageReady, onAdd, onThemeChange }: Props) {
+export function Toolbar({ storageReady, onAdd, onThemeChange, onLanguageChange }: Props) {
   const { t } = useTranslation()
   return (
     <header className={styles.toolbar} aria-label={t('toolbar.label')}>
@@ -27,6 +29,7 @@ export function Toolbar({ storageReady, onAdd, onThemeChange }: Props) {
         >
           {t('toolbar.addApplication')}
         </button>
+        <LanguageSelect disabled={!storageReady} onChange={onLanguageChange} />
         <ThemeToggle disabled={!storageReady} onChange={onThemeChange} />
       </div>
     </header>

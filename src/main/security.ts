@@ -1,4 +1,4 @@
-import { isHttpUrl } from '../domain/schema'
+import { isHttpUrl } from '../domain/limits'
 
 /** FR-015: only http(s) links may leave the app, and only to the system browser. */
 export function isSafeExternalUrl(url: string): boolean {

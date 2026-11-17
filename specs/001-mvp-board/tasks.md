@@ -35,12 +35,12 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 4 — US-2 Board & moving cards (P1)
 
-- [ ] T030 [P] Unit tests for `moveApplication` (cross-column, reorder, order renormalisation, history only on stage change) (FR-020…024)
-- [ ] T031 Implement `moveApplication` + IPC
+- [x] T030 [P] Unit tests for `moveApplication` (cross-column, reorder, order renormalisation, history only on stage change) (FR-020…024)
+- [x] T031 Implement `moveApplication` + IPC
 - [x] T032 `Board`, `Column`, `Card` with counts and time-in-stage (FR-001…004) — done in Phase 3, needed to show new cards
-- [ ] T033 dnd-kit drag-and-drop with keyboard sensor; card "Move to…" menu (FR-020, FR-021)
+- [x] T033 dnd-kit drag-and-drop with keyboard sensor; card "Move to…" menu (FR-020, FR-021)
 - [x] T034 Empty state (edge cases) — done in Phase 3
-- [ ] T035 e2e: US-2 scenarios 1–4
+- [x] T035 e2e: US-2 scenarios 1–4
 
 ## Phase 5 — US-4 View / edit / delete (P1)
 
@@ -58,10 +58,10 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 7 — US-5 Language (P1)
 
-- [ ] T060 First-launch language from OS locale (FR-041)
-- [ ] T061 Language switch in settings + native menu; persist; live switch incl. menu (FR-042, FR-044)
-- [ ] T062 Locale-aware dates/relative time; Ukrainian plural tests (FR-043)
-- [ ] T063 e2e: US-5 scenarios 1–4
+- [x] T060 First-launch language from OS locale (FR-041)
+- [ ] T061 Language switch in settings + native menu; persist; live switch incl. menu (FR-042, FR-044) — toolbar switch done; native menu (FR-044) open
+- [x] T062 Locale-aware dates/relative time; Ukrainian plural tests (FR-043)
+- [x] T063 e2e: US-5 scenarios 1–4
 
 ## Phase 8 — US-8 Search (P2)
 

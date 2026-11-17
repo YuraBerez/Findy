@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { groupByStage } from '../../src/domain/board'
+import { applyMove, groupByStage } from '../../src/domain/board'
 import { EMPTY_FORM, validateApplicationForm } from '../../src/domain/forms'
 import { elapsed, enteredStageAt } from '../../src/domain/time'
 import type { Application } from '../../src/domain/types'
@@ -94,5 +94,35 @@ describe('board helpers', () => {
     expect(enteredStageAt({ ...app('a', 'applied', 0), stageHistory: [] })).toBe(
       '2026-11-10T00:00:00Z',
     )
+  })
+})
+
+describe('applyMove (optimistic move, FR-020…024)', () => {
+  const now = '2026-11-17T10:00:00.000Z'
+  const board = [app('a', 'applied', 0), app('b', 'applied', 1), app('c', 'hr_interview', 0)]
+
+  it('moves across stages, renumbers both columns and appends history', () => {
+    const result = applyMove(board, 'a', { stage: 'hr_interview', index: 1 }, now)
+    const columns = groupByStage(result)
+    expect(columns.applied.map((x) => [x.id, x.order])).toEqual([['b', 0]])
+    expect(columns.hr_interview.map((x) => [x.id, x.order])).toEqual([
+      ['c', 0],
+      ['a', 1],
+    ])
+    const moved = result.find((x) => x.id === 'a')!
+    expect(moved.stageHistory.at(-1)).toEqual({ stage: 'hr_interview', at: now })
+    expect(moved.updatedAt).toBe(now)
+  })
+
+  it('reorders within a stage without new history', () => {
+    const result = applyMove(board, 'b', { stage: 'applied', index: 0 }, now)
+    expect(groupByStage(result).applied.map((x) => x.id)).toEqual(['b', 'a'])
+    expect(result.find((x) => x.id === 'b')!.stageHistory).toHaveLength(2)
+  })
+
+  it('clamps the index and ignores unknown ids', () => {
+    const result = applyMove(board, 'c', { stage: 'applied', index: 99 }, now)
+    expect(groupByStage(result).applied.map((x) => x.id)).toEqual(['a', 'b', 'c'])
+    expect(applyMove(board, 'zzz', { stage: 'offered', index: 0 }, now)).toBe(board)
   })
 })
