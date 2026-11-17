@@ -11,19 +11,37 @@ interface Props {
   onSubmit?(event: FormEvent<HTMLFormElement>): void
   /** `drawer` comes in from the right edge (details), `modal` is centred */
   variant?: 'modal' | 'drawer'
+  /** A confirmation that interrupts the user (WAI-ARIA alertdialog) */
+  alert?: boolean
+  testId?: string
 }
 
 /**
  * Native modal <dialog>: focus trap, Escape and the backdrop come from the browser.
  * Open while mounted: render it conditionally, so its state starts fresh each time.
  */
-export function Dialog({ title, onClose, children, footer, onSubmit, variant = 'modal' }: Props) {
+export function Dialog({
+  title,
+  onClose,
+  children,
+  footer,
+  onSubmit,
+  variant = 'modal',
+  alert = false,
+  testId,
+}: Props) {
   const ref = useRef<HTMLDialogElement>(null)
   const headingId = useId()
 
   useEffect(() => {
     const dialog = ref.current
+    // The browser returns focus on dialog.close(), but this dialog is unmounted
+    // instead, so return it ourselves (e.g. to the card that opened the details)
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null
     if (dialog && !dialog.open) dialog.showModal()
+    return () => {
+      if (previous?.isConnected) previous.focus()
+    }
   }, [])
 
   const content = (
@@ -41,6 +59,8 @@ export function Dialog({ title, onClose, children, footer, onSubmit, variant = '
       ref={ref}
       className={[styles.dialog, styles[variant]].join(' ')}
       aria-labelledby={headingId}
+      role={alert ? 'alertdialog' : undefined}
+      data-testid={testId}
       // Escape closes the native dialog; keep React in charge of unmounting
       onCancel={(event) => {
         event.preventDefault()

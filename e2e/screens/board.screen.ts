@@ -90,6 +90,30 @@ export class BoardScreen extends BaseComponent {
     })
   }
 
+  /** FR-025: a click on the card opens its details */
+  async openCard(title: string): Promise<void> {
+    await this.card(title).click()
+  }
+
+  async openCardWithEnter(title: string): Promise<void> {
+    await this.card(title).press('Enter')
+  }
+
+  /** FR-016 */
+  async openVacancyFromCard(title: string): Promise<void> {
+    await this.page.getByRole('button', { name: `Open the vacancy for ${title}` }).click()
+  }
+
+  async verifyVacancyButton(title: string, shown: boolean): Promise<void> {
+    const button = this.page.getByRole('button', { name: `Open the vacancy for ${title}` })
+    if (shown) await expect(button).toBeVisible()
+    else await expect(button).toBeHidden()
+  }
+
+  async verifyCardFocusedAnywhere(title: string): Promise<void> {
+    await expect(this.card(title)).toBeFocused()
+  }
+
   async moveWithMenu(title: string, stageName: string): Promise<void> {
     await this.openCardMenu(title)
     await this.menu.getByRole('menuitem', { name: stageName }).click()

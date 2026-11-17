@@ -22,6 +22,15 @@ test.describe('accessibility', () => {
     })
   }
 
+  test('details with notes has no violations', { tag: '@a11y' }, async ({ findy }) => {
+    await findy.api.seed([{ title: 'Frontend Developer', url: 'https://acme.com' }])
+    await findy.api.addNote('Frontend Developer', 'First call done')
+    await findy.refresh()
+    await findy.pages.board.openCard('Frontend Developer')
+    await findy.pages.details.verifyOpen('Frontend Developer')
+    await findy.pages.a11y.expectNoViolations()
+  })
+
   test('empty board in Ukrainian has no violations', { tag: '@a11y' }, async ({ findy }) => {
     await findy.api.setLanguage('uk')
     await findy.refresh()

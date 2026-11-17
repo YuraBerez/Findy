@@ -1,12 +1,12 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { enteredStageAt } from '@domain/time'
 import type { Application } from '@shared/ipc'
 import { formatDateTime, formatSince } from '../../../format'
+import { useBoardActions } from '../BoardActions'
 import { CardActions } from '../CardActions'
-import type { MoveHandler } from '../useBoardDnd'
 import styles from './Card.module.css'
 
 interface CardContentProps {
@@ -41,19 +41,14 @@ export function CardContent({ application, overlay = false }: CardContentProps) 
   )
 }
 
-interface SortableCardProps {
-  application: Application
-  onMove: MoveHandler
-  focus: boolean
-  onFocused(): void
-}
-
 /**
- * A card on the board (FR-020…022). The article is only a container: the handle
+ * A card on the board (FR-020…025). The article is only a container: the handle
  * (card text) is the draggable button and the actions are its siblings, because a
  * button inside a button is hidden from assistive technology.
+ * Click or Enter opens the details; Space picks the card up.
  */
-export function SortableCard({ application, onMove, focus, onFocused }: SortableCardProps) {
+export function SortableCard({ application }: { application: Application }) {
+  const board = useBoardActions()
   const {
     attributes,
     listeners,
@@ -64,13 +59,19 @@ export function SortableCard({ application, onMove, focus, onFocused }: Sortable
     isDragging,
   } = useSortable({ id: application.id })
   const handle = useRef<HTMLDivElement | null>(null)
+  const focus = board.focusId === application.id
 
   // Keyboard users keep their place after a move (constitution §VIII)
   useEffect(() => {
     if (!focus) return
     handle.current?.focus()
-    onFocused()
-  }, [focus, onFocused])
+    board.clearFocus()
+  }, [focus, board])
+
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') board.open(application.id)
+    else listeners?.onKeyDown?.(event)
+  }
 
   return (
     <article
@@ -88,13 +89,13 @@ export function SortableCard({ application, onMove, focus, onFocused }: Sortable
         className={styles.handle}
         {...attributes}
         {...listeners}
+        onKeyDown={onKeyDown}
+        // dnd-kit swallows the click that ends a drag, so this is a real click
+        onClick={() => board.open(application.id)}
       >
         <CardContent application={application} />
       </div>
-      <CardActions
-        application={application}
-        onMove={(stage) => onMove(application.id, { stage, index: 0 })}
-      />
+      <CardActions application={application} />
     </article>
   )
 }

@@ -10,7 +10,7 @@ import {
   type UniqueIdentifier,
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { StageId } from '@domain/stages'
 import type { Application } from '@shared/ipc'
@@ -41,7 +41,11 @@ export function useBoardDnd(applications: Application[], onMove: MoveHandler) {
   const sensors = useSensors(
     // A small distance keeps clicks on the card and its actions working
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: columnKeyboardCoordinates }),
+    // FR-025: only Space picks a card up; Enter opens its details
+    useSensor(KeyboardSensor, {
+      coordinateGetter: columnKeyboardCoordinates,
+      keyboardCodes: { start: ['Space'], cancel: ['Escape'], end: ['Space'] },
+    }),
   )
 
   /**
@@ -53,6 +57,16 @@ export function useBoardDnd(applications: Application[], onMove: MoveHandler) {
     if (keepFocus) setFocusId(id)
     onMove(id, target)
   }
+
+  /** Move from the card menu; focus follows the card */
+  const moveFromMenu = useCallback(
+    (id: string, target: MoveTarget) => {
+      setFocusId(id)
+      onMove(id, target)
+    },
+    [onMove],
+  )
+  const clearFocus = useCallback(() => setFocusId(null), [])
 
   const reset = () => {
     dragSession.layout = null
@@ -120,9 +134,8 @@ export function useBoardDnd(applications: Application[], onMove: MoveHandler) {
     announcements,
     dragged: start ? byId.get(start.id) : undefined,
     handlers: { onDragStart, onDragOver, onDragEnd, onDragCancel: reset },
-    /** Move from the card menu; focus follows the card */
-    moveFromMenu: (id: string, target: MoveTarget) => move(id, target, true),
+    moveFromMenu,
     focusId,
-    clearFocus: () => setFocusId(null),
+    clearFocus,
   }
 }

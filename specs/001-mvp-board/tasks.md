@@ -44,17 +44,18 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 5 — US-4 View / edit / delete (P1)
 
-- [ ] T040 [P] Unit tests for `updateApplication`, `deleteApplication` (FR-012, FR-013)
-- [ ] T041 Implement + IPC; `openExternal` with protocol allow-list (FR-015)
-- [ ] T042 Details panel: fields, stage history, dates, link, delete with confirmation
-- [ ] T043 e2e: US-4 scenarios 1–4
+- [x] T040 [P] Unit tests for `updateApplication`, `deleteApplication` (FR-012, FR-013)
+- [x] T041 Implement + IPC; `openExternal` with protocol allow-list (FR-015)
+- [x] T042 Details panel: fields, stage history, dates, link, delete with confirmation
+- [x] T043 e2e: US-4 scenarios 1–5
+- [x] T044 Card link button (FR-016); open details by click / Enter (FR-025)
 
 ## Phase 6 — US-3 Notes (P1)
 
-- [ ] T050 [P] Unit tests for `domain/notes.ts` (FR-030…033)
-- [ ] T051 Implement notes ops + IPC
-- [ ] T052 `NotesPanel`: add, edit (with "edited" marker), delete with confirm, newest first; note count on card
-- [ ] T053 e2e: US-3 scenarios 1–5
+- [x] T050 [P] Unit tests for `domain/notes.ts` (FR-030…033)
+- [x] T051 Implement notes ops + IPC
+- [x] T052 `NotesPanel`: add, edit (with "edited" marker), delete with confirm, newest first; note count on card
+- [x] T053 e2e: US-3 scenarios 1–5
 
 ## Phase 7 — US-5 Language (P1)
 

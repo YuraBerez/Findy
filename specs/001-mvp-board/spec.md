@@ -110,6 +110,9 @@ vacancy page, or delete it.
    vacancy opens in my default web browser (not inside the app).
 4. **Given** an open card, **When** I choose "Delete" and confirm, **Then** the
    application and its notes are removed. **When** I cancel, nothing changes.
+5. **Given** a card with a vacancy URL on the board, **When** I click its link
+   button, **Then** the vacancy opens in my default web browser. A card without a
+   URL shows no link button.
 
 ### US-5 — Switch interface language (P1)
 
@@ -205,6 +208,8 @@ can find a specific company fast.
   application.
 - **FR-015** Clicking the vacancy URL MUST open it in the system default
   browser. Non-`http(s)` URLs MUST never be opened.
+- **FR-016** A card with a vacancy URL MUST show a link button on the board that
+  opens the URL as in FR-015. The button MUST NOT start a drag.
 
 ### Stages & ordering
 - **FR-020** The user MUST be able to move a card to any stage by drag-and-drop.
@@ -216,6 +221,8 @@ can find a specific company fast.
   column.
 - **FR-024** Every stage change MUST append an entry (stage, timestamp) to the
   application's stage history; history is shown in the card details.
+- **FR-025** Clicking a card or pressing Enter on it MUST open its details.
+  Space picks the card up for keyboard drag-and-drop (FR-021).
 
 ### Notes
 - **FR-030** The user MUST be able to add a note (1–10 000 chars) to an application.
@@ -327,3 +334,6 @@ Resolved clarifications (2026-11-17):
   light and dark themes with a sun/moon toggle (US-9, FR-080…083). The theme
   follows the OS until the first use of the toggle. There is no control to go
   back to "follow the OS" in the MVP.
+- **D-5** (added 2026-11-17 at the owner's request) Cards with a vacancy URL show a
+  link button that opens it in the browser (FR-016). Enter opens a card's details,
+  Space starts a keyboard drag (FR-025).

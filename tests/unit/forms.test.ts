@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { applyMove, groupByStage } from '../../src/domain/board'
-import { EMPTY_FORM, validateApplicationForm } from '../../src/domain/forms'
+import {
+  EMPTY_FORM,
+  formValuesOf,
+  validateApplicationForm,
+  validateNote,
+} from '../../src/domain/forms'
 import { elapsed, enteredStageAt } from '../../src/domain/time'
 import type { Application } from '../../src/domain/types'
 
@@ -124,5 +129,25 @@ describe('applyMove (optimistic move, FR-020…024)', () => {
     const result = applyMove(board, 'c', { stage: 'applied', index: 99 }, now)
     expect(groupByStage(result).applied.map((x) => x.id)).toEqual(['a', 'b', 'c'])
     expect(applyMove(board, 'zzz', { stage: 'offered', index: 0 }, now)).toBe(board)
+  })
+})
+
+describe('editing and notes', () => {
+  it('fills the form from an application (FR-012)', () => {
+    expect(formValuesOf({ ...app('a', 'offered', 0), url: null })).toEqual({
+      title: 'a',
+      company: 'c',
+      url: '',
+      stage: 'offered',
+    })
+    expect(formValuesOf({ ...app('a', 'applied', 0), url: 'https://x.com' }).url).toBe(
+      'https://x.com',
+    )
+  })
+
+  it('validates note text (FR-030)', () => {
+    expect(validateNote('  call back  ')).toBeNull()
+    expect(validateNote('   ')).toEqual({ code: 'required' })
+    expect(validateNote('x'.repeat(10_001))).toEqual({ code: 'tooLong', max: 10_000 })
   })
 })

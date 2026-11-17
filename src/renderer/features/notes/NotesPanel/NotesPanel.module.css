@@ -1,0 +1,27 @@
+.panel {
+  margin-top: var(--space-6);
+}
+
+.heading {
+  margin: 0 0 var(--space-2);
+  font-size: 15px;
+}
+
+.addRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: calc(-1 * var(--space-2));
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  color: var(--fg-muted);
+}

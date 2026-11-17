@@ -1,0 +1,57 @@
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+}
+
+.company {
+  color: var(--fg-muted);
+}
+
+.saveRow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.saved {
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.section {
+  margin-top: var(--space-6);
+}
+
+.heading {
+  margin: 0 0 var(--space-2);
+  font-size: 15px;
+}
+
+.history {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.history time,
+.dates {
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+/* Destructive action stays apart from Close */
+.delete {
+  margin-right: auto;
+}

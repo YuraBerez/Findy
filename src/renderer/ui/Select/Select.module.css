@@ -23,9 +23,13 @@
 
 .select {
   composes: control from '../styles/control.module.css';
-  padding-right: 32px;
   appearance: none;
   cursor: pointer;
+}
+
+/* Higher specificity than the composed .control, which sets the padding too */
+.wrapper .select {
+  padding-right: 32px;
 }
 
 .block .select {
