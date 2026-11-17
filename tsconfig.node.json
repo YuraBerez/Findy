@@ -14,5 +14,7 @@
     "src/shared/**/*",
     "src/domain/**/*",
     "tests/unit/**/*"
-  ]
+  ],
+  // Unit tests of pure renderer modules need the DOM types: tsconfig.web.json
+  "exclude": ["tests/unit/renderer/**/*"]
 }
