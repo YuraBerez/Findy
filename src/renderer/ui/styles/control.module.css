@@ -10,8 +10,11 @@
 }
 
 .control:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 0;
+  /* Ring inside the border: an outline would be clipped by scrolling containers
+     (dialog body, side panel) */
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--primary);
 }
 
 .control[aria-invalid='true'] {
