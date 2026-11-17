@@ -50,7 +50,7 @@ Findy збирає всі заявки на одній дошці: від від
 Потрібно: [Node.js](https://nodejs.org/) 22 LTS або новіший, npm, Git.
 
 ```bash
-git clone https://github.com/<owner>/findy.git
+git clone https://github.com/YuraBerez/findy.git
 cd findy
 npm install
 npm run dev          # запуск із гарячим перезавантаженням
