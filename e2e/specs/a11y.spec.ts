@@ -31,6 +31,14 @@ test.describe('accessibility', () => {
     await findy.pages.a11y.expectNoViolations()
   })
 
+  test('reset confirmation has no violations', { tag: '@a11y' }, async ({ findy }) => {
+    await findy.api.seed([{ title: 'A' }])
+    await findy.refresh()
+    await findy.pages.board.startReset()
+    await findy.pages.board.verifyResetConfirmation('1 application will be deleted')
+    await findy.pages.a11y.expectNoViolations()
+  })
+
   test('empty board in Ukrainian has no violations', { tag: '@a11y' }, async ({ findy }) => {
     await findy.api.setLanguage('uk')
     await findy.refresh()

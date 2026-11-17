@@ -22,6 +22,21 @@ export function fileStamp(now: Date): string {
   return now.toISOString().replace(/[:.]/g, '-')
 }
 
+/**
+ * Consistent copy of the open database next to it: `findy.backup-<label>-<time>.db`.
+ * VACUUM INTO also copies what is still in the WAL. Returns the path.
+ */
+export function backupDatabase(
+  db: Database.Database,
+  dir: string,
+  label: string,
+  now: () => Date = () => new Date(),
+): string {
+  const target = join(dir, `findy.backup-${label}-${fileStamp(now())}.db`)
+  db.prepare('VACUUM INTO ?').run(target)
+  return target
+}
+
 function configure(db: Database.Database): void {
   db.pragma('journal_mode = WAL')
   db.pragma('foreign_keys = ON')
@@ -71,15 +86,7 @@ export function openDatabase(
   try {
     const db = new Database(dataFilePath)
     configure(db)
-    migrate(
-      db,
-      (fromVersion) => {
-        db.prepare('VACUUM INTO ?').run(
-          join(dir, `findy.backup-v${fromVersion}-${fileStamp(now())}.db`),
-        )
-      },
-      migrations,
-    )
+    migrate(db, (fromVersion) => backupDatabase(db, dir, `v${fromVersion}`, now), migrations)
     return { status: 'ok', db, dataFilePath }
   } catch {
     return { status: 'error', error: 'open_failed', dataFilePath, backupPath: null }

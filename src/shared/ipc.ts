@@ -12,6 +12,7 @@ export const IPC_METHODS = [
   'updateApplication',
   'moveApplication',
   'deleteApplication',
+  'resetBoard',
   'addNote',
   'updateNote',
   'deleteNote',
@@ -98,6 +99,8 @@ export interface FindyApi {
   updateApplication(id: string, patch: ApplicationChanges): Promise<AppState>
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>
   deleteApplication(id: string): Promise<AppState>
+  /** FR-090…093: backup, then delete all applications */
+  resetBoard(): Promise<AppState>
   addNote(applicationId: string, text: string): Promise<AppState>
   updateNote(applicationId: string, noteId: string, text: string): Promise<AppState>
   deleteNote(applicationId: string, noteId: string): Promise<AppState>

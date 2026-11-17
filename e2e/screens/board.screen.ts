@@ -75,6 +75,45 @@ export class BoardScreen extends BaseComponent {
     await this.languageSelect.selectOption({ label: name })
   }
 
+  private appMenuItem(name: string): Locator {
+    return this.menu.getByRole('menuitem', { name })
+  }
+
+  async openAppMenu(): Promise<void> {
+    await this.toolbar.getByRole('button', { name: 'App menu' }).click()
+    await expect(this.menu).toBeVisible()
+  }
+
+  /** US-10: app menu → Reset board… → confirm or cancel */
+  async resetBoard(answer: 'confirm' | 'cancel'): Promise<void> {
+    if ((await this.page.getByRole('alertdialog').count()) === 0) await this.startReset()
+    const confirm = this.page.getByRole('alertdialog', { name: 'Reset the board?' })
+    await confirm
+      .getByRole('button', { name: answer === 'confirm' ? 'Reset board' : 'Cancel' })
+      .click()
+    await expect(confirm).toBeHidden()
+  }
+
+  /** Opens the confirmation and leaves it open */
+  async startReset(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem('Reset board…').click()
+  }
+
+  async verifyResetConfirmation(message: string): Promise<void> {
+    const confirm = this.page.getByRole('alertdialog', { name: 'Reset the board?' })
+    await expect(confirm).toContainText(message)
+    // FR-091: Cancel is the default action
+    await expect(confirm.getByRole('button', { name: 'Cancel' })).toBeFocused()
+  }
+
+  async verifyResetDisabled(): Promise<void> {
+    await this.openAppMenu()
+    await expect(this.appMenuItem('Reset board…')).toBeDisabled()
+    await this.toolbar.getByRole('button', { name: 'App menu' }).click() // close it again
+    await expect(this.menu).toBeHidden()
+  }
+
   // ── Cards ──────────────────────────────────────────────────────────────
 
   /**

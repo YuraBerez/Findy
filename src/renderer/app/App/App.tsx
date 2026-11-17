@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { AppState } from '@shared/ipc'
+import { ConfirmDialog } from '@ui'
 import { ApplicationDetails, ApplicationDialog } from '../../features/applications'
 import { Board } from '../../features/board'
 import { StorageError } from '../../features/storage'
@@ -11,6 +13,9 @@ export function App({ initialState }: { initialState: AppState }) {
   const { state, storageReady, actions } = useAppState(initialState)
   const [adding, setAdding] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
+  const [resetting, setResetting] = useState(false)
+  const { t } = useTranslation()
+  const count = state.applications.length
   const opened = state.applications.find((application) => application.id === openId)
   const startAdding = () => setAdding(true)
 
@@ -21,6 +26,8 @@ export function App({ initialState }: { initialState: AppState }) {
         onAdd={startAdding}
         onThemeChange={actions.setTheme}
         onLanguageChange={actions.setLanguage}
+        applicationCount={count}
+        onReset={() => setResetting(true)}
       />
       <main className={styles.content}>
         {state.storage.status === 'error' ? (
@@ -41,6 +48,21 @@ export function App({ initialState }: { initialState: AppState }) {
           onSubmit={async (application) => {
             await actions.createApplication(application)
             setAdding(false)
+          }}
+        />
+      )}
+      {resetting && (
+        // FR-091: the count, and Cancel as the default action
+        <ConfirmDialog
+          title={t('reset.title')}
+          message={t('reset.message', { count })}
+          confirmLabel={t('reset.confirm')}
+          cancelLabel={t('form.cancel')}
+          onCancel={() => setResetting(false)}
+          onConfirm={async () => {
+            setResetting(false)
+            setOpenId(null)
+            await actions.resetBoard()
           }}
         />
       )}

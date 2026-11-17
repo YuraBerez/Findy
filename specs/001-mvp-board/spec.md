@@ -172,6 +172,22 @@ comfortable to use in any lighting.
    keeps my choice.
 4. **Given** I used the toggle, **When** I restart the app, **Then** my choice is kept.
 
+### US-10 — Reset the board (P2)
+
+As a user, I want to delete all applications at once so that I can start a new
+job search from an empty board.
+
+**Acceptance scenarios**
+
+1. **Given** a board with applications, **When** I choose "Reset board" in the
+   app menu, **Then** a confirmation shows how many applications will be deleted.
+2. **Given** the confirmation, **When** I cancel, **Then** nothing changes.
+3. **Given** the confirmation, **When** I confirm, **Then** all applications, their
+   notes and stage history are deleted and the empty board shows.
+4. **Given** I confirmed, **Then** a backup copy of the database was saved first,
+   and my language and theme did not change.
+5. **Given** an empty board, **Then** "Reset board" is disabled.
+
 ### US-8 — Find applications quickly (P2)
 
 As a user with many applications, I want to filter the board by text so that I
@@ -264,6 +280,16 @@ can find a specific company fast.
 - **FR-082** A theme change MUST apply to the whole window at once, without restart.
 - **FR-083** The choice MUST persist across restarts.
 
+### Reset (P2)
+- **FR-090** The app menu in the toolbar MUST offer "Reset board", disabled when
+  the board is empty.
+- **FR-091** Reset MUST ask for confirmation, name the number of applications,
+  and have Cancel as the default action.
+- **FR-092** Before deleting, the app MUST save a backup copy of the database next
+  to it (`findy.backup-reset-<timestamp>.db`).
+- **FR-093** Reset MUST delete all applications with their notes and stage history
+  in one transaction, and MUST keep the settings (language, theme).
+
 ### Search (P2)
 - **FR-060** The board MUST offer a text filter matching title or company,
   case-insensitively, across all columns.
@@ -337,3 +363,5 @@ Resolved clarifications (2026-11-17):
 - **D-5** (added 2026-11-17 at the owner's request) Cards with a vacancy URL show a
   link button that opens it in the browser (FR-016). Enter opens a card's details,
   Space starts a keyboard drag (FR-025).
+- **D-6** (added 2026-11-17 at the owner's request) Users can reset the board
+  (US-10, FR-090…093): confirmation with a count, automatic backup, settings kept.

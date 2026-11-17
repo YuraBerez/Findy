@@ -64,6 +64,13 @@ Tests for a task are written before (or together with) its implementation.
 - [x] T062 Locale-aware dates/relative time; Ukrainian plural tests (FR-043)
 - [x] T063 e2e: US-5 scenarios 1–4
 
+## Phase 7b — US-10 Reset board (P2)
+
+- [x] T064 Tests + `Repository.resetBoard()` in one transaction; settings kept (FR-093)
+- [x] T065 `resetBoard` IPC with a VACUUM INTO backup first (FR-092); contract update
+- [x] T066 App menu in the toolbar + confirmation with count, Cancel default (FR-090, FR-091)
+- [x] T067 e2e: US-10 scenarios 1–5
+
 ## Phase 8 — US-8 Search (P2)
 
 - [ ] T070 [P] Unit tests + `domain/search.ts` (FR-060)

@@ -42,6 +42,8 @@ export function useAppState(initial: AppState) {
       },
 
       deleteApplication: (id: string) => save(window.findy.deleteApplication(id)),
+      /** FR-090…093: main saves a backup, then deletes every application */
+      resetBoard: () => save(window.findy.resetBoard()),
       moveApplication,
 
       addNote: (id: string, text: string) => save(window.findy.addNote(id, text)),

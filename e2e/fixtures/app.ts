@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -32,6 +32,8 @@ export interface Findy {
   api: FindyBackdoor
   /** Reload the window, e.g. to show data seeded through the back door. */
   refresh(): Promise<void>
+  /** File names in the app's data directory (database, backups) */
+  dataFiles(): string[]
   /** Close the app and start it again on the same database (US-6). Use the new pages. */
   restart(): Promise<FindyPages>
 }
@@ -111,6 +113,7 @@ export const test = base.extend<Fixtures>({
     const findy: Findy = {
       pages: pagesFor(page),
       api: new FindyBackdoor(page, electronApp),
+      dataFiles: () => readdirSync(userDataDir),
       refresh: async () => {
         await window.reload()
         await window.getByTestId('app').waitFor()

@@ -5,7 +5,8 @@
   },
   "toolbar": {
     "label": "Main toolbar",
-    "addApplication": "Add application"
+    "addApplication": "Add application",
+    "menu": "App menu"
   },
   "theme": {
     "dark": "Dark theme",
@@ -102,5 +103,12 @@
   },
   "common": {
     "close": "Close"
+  },
+  "reset": {
+    "menuItem": "Reset board…",
+    "title": "Reset the board?",
+    "confirm": "Reset board",
+    "message_one": "{{count}} application will be deleted with its notes and stage history. Findy saves a backup copy of your data first.",
+    "message_other": "{{count}} applications will be deleted with their notes and stage history. Findy saves a backup copy of your data first."
   }
 }
