@@ -1,7 +1,7 @@
 # Feature Spec: Error handling
 
 - **ID:** 003-error-handling
-- **Status:** Approved
+- **Status:** Implemented (0.1.0)
 - **Created:** 2026-11-17
 - **Approved:** 2026-11-17 (owner request)
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md)

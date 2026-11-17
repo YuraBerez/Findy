@@ -1,7 +1,7 @@
 # Feature Spec: MVP — Job-search board
 
 - **ID:** 001-mvp-board
-- **Status:** Approved
+- **Status:** Implemented (0.1.0)
 - **Created:** 2026-11-17
 - **Approved:** 2026-11-17
 
