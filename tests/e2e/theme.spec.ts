@@ -27,6 +27,7 @@ test('US-9: sun/moon toggle switches the theme at once and remembers it', async 
   await toggle.focus()
   await page.keyboard.press('Space')
   await expect.poll(() => prefersDark(page)).toBe(osDark)
+  await expect(toggle).toHaveAttribute('aria-checked', String(osDark))
 
   // 9.4: the explicit choice survives a restart
   await page.keyboard.press('Enter')

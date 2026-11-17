@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { Theme } from '../../shared/ipc'
-import { usePrefersDark } from '../hooks/usePrefersDark'
+import { isDarkNow, usePrefersDark } from '../hooks/usePrefersDark'
 import styles from './ThemeToggle.module.css'
 
 interface Props {
@@ -22,7 +22,8 @@ export function ThemeToggle({ disabled = false, onChange }: Props) {
       title={t(dark ? 'theme.switchToLight' : 'theme.switchToDark')}
       className={styles.toggle}
       disabled={disabled}
-      onClick={() => onChange(dark ? 'light' : 'dark')}
+      // Read the live value: two fast clicks can come before React re-renders
+      onClick={() => onChange(isDarkNow() ? 'light' : 'dark')}
     >
       <span className={styles.knob} aria-hidden="true">
         {dark ? <MoonIcon /> : <SunIcon />}

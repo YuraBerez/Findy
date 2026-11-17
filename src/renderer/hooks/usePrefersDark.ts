@@ -2,6 +2,9 @@ import { useSyncExternalStore } from 'react'
 
 const query = () => window.matchMedia('(prefers-color-scheme: dark)')
 
+/** Current value, read directly (not from the last render). */
+export const isDarkNow = (): boolean => query().matches
+
 function subscribe(onChange: () => void): () => void {
   const media = query()
   media.addEventListener('change', onChange)
