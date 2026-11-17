@@ -31,7 +31,16 @@ branch protection lets only PRs that passed these checks in.
    functions and statements (`vitest.config.ts`); below that the job fails.
    A coverage table is published in the job summary.
 2. **E2E + package** (Windows, macOS, Linux; runs after the gate):
-   `test:e2e` (Linux: one Xvfb display started and checked before the tests) → `dist:dir` → `smoke:packaged`.
+   `test:e2e:ci` (Linux: one Xvfb display started and checked before the tests) → `dist:dir` → `smoke:packaged`.
+
+**Flaky policy** (`scripts/e2e-ci.mjs`): the run has no retries. At the end, only
+the failed tests run once more (`playwright test --last-failed`).
+
+- A test that passes on the rerun is **flaky**: the job stays green, and the test is
+  listed as a warning on the PR and in the job summary. Fix it in the same PR or
+  open an issue; a test that stays flaky gets the `@quarantine` tag (the kit skips
+  it, `E2E_QUARANTINE=include` runs it) until it is fixed.
+- A test that fails again is a real failure: the job is red.
 
 Coverage scope: `src/domain`, `src/main` (except the Electron bootstrap
 `src/main/index.ts`) and `src/shared`. UI and preload are covered by e2e tests.

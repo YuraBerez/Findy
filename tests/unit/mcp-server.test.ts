@@ -1,8 +1,9 @@
+import { PassThrough } from 'node:stream'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js'
 import { describe, expect, it } from 'vitest'
 import { HiddenStageError, NotFoundError, type Repository } from '../../src/main/db/repository'
-import { runMcpServer, toolErrorMessage } from '../../src/main/mcp/server'
+import { runMcpServer, stdioTransport, toolErrorMessage } from '../../src/main/mcp/server'
 import { McpAccessDisabledError } from '../../src/main/mcp/tools'
 import { memoryRepository } from './helpers/db'
 
@@ -80,6 +81,32 @@ describe('MCP server (spec 004)', () => {
     expect(result.isError).toBe(true)
     expect(text(result)).toBe('Findy cannot open its database.')
     await close()
+  })
+})
+
+describe('stdioTransport (FR-001)', () => {
+  it('ends the server when the client closes stdin', async () => {
+    const stdin = new PassThrough()
+    const stdout = new PassThrough()
+    const running = runMcpServer(null, '9.9.9', 'x', stdioTransport(stdin, stdout))
+    stdin.write(
+      JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2025-06-18',
+          capabilities: {},
+          clientInfo: { name: 't', version: '1' },
+        },
+      }) + '\n',
+    )
+    const reply = await new Promise<string>((resolve) =>
+      stdout.once('data', (chunk) => resolve(String(chunk))),
+    )
+    expect(JSON.parse(reply)).toMatchObject({ id: 1, result: { serverInfo: { name: 'findy' } } })
+    stdin.end()
+    await expect(running).resolves.toBeUndefined()
   })
 })
 

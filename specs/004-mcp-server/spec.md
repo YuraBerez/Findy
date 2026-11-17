@@ -82,7 +82,8 @@ not have to copy it into the board by hand.
 ## Functional requirements
 
 - **FR-001** `Findy --mcp` MUST start an MCP server over stdio only, with no network
-  listener and no window.
+  listener and no window. It MUST exit by itself when the client closes the connection
+  (end of stdin), so no Findy process stays behind after the assistant quits.
 - **FR-002** Tools: `list_applications`, `get_application`, `list_stages`,
   `add_application`, `update_application`, `move_application`, `add_note`,
   `delete_application`. No other data access.

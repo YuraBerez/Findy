@@ -14,6 +14,20 @@ export function toolErrorMessage(error: unknown): string {
 }
 
 /**
+ * stdio transport that also closes when the client closes our stdin. The SDK one
+ * waits for data only, so `Findy --mcp` would stay alive until the client kills it,
+ * and a killed Electron leaves helper processes that lock the data folder (FR-001).
+ */
+export function stdioTransport(
+  stdin: NodeJS.ReadableStream = process.stdin,
+  stdout: NodeJS.WritableStream = process.stdout,
+): Transport {
+  const transport = new StdioServerTransport(stdin as never, stdout as never)
+  stdin.once('end', () => void transport.close())
+  return transport
+}
+
+/**
  * Serves the tools over stdio until the client closes the connection (FR-001).
  * `repository` is null when the database cannot be opened: every tool then
  * explains that, and the file is not touched (001 FR-054).
@@ -23,7 +37,7 @@ export async function runMcpServer(
   version: string,
   storageProblem: string,
   /** stdio for real clients; an in-memory transport in tests */
-  transport: Transport = new StdioServerTransport(),
+  transport: Transport = stdioTransport(),
 ): Promise<void> {
   const server = new McpServer({ name: 'findy', title: 'Findy job-search board', version })
 
