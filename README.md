@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" width="128" height="128" alt="Findy logo"></p>
+
 # Findy
 
 **A free, open-source desktop app to track your job search.**

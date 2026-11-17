@@ -1,5 +1,7 @@
 :root {
   color-scheme: light dark;
+  --primary: #0a66c2;
+  --on-primary: #ffffff;
   --bg: #f6f7f9;
   --fg: #1c1f24;
   font-family:
@@ -12,6 +14,7 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    --primary: #4a9de8;
     --bg: #16181c;
     --fg: #e6e8eb;
   }

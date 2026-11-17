@@ -70,7 +70,7 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 9 — US-7 Release (P1)
 
-- [ ] T080 App icons for all platforms in `build/`
+- [x] T080 App icons for all platforms in `build/` (source: `assets/logo.svg`, see docs/brand.md)
 - [ ] T081 About dialog with version (FR-072)
 - [ ] T082 `.github/workflows/release.yml` — tag `v*` → matrix build → draft GitHub Release (FR-071)
 - [ ] T083 Manual smoke test of artifacts on Windows, macOS (arm64 + x64), Linux (SC-002)

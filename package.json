@@ -5,6 +5,12 @@
   "description": "Open-source desktop app to track your job search",
   "license": "MIT",
   "author": "Findy contributors",
+  "homepage": "https://github.com/YuraBerez/findy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YuraBerez/findy.git"
+  },
+  "bugs": "https://github.com/YuraBerez/findy/issues",
   "private": true,
   "main": "out/main/index.js",
   "engines": {

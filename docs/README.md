@@ -13,6 +13,7 @@ live separately in [`/specs`](../specs/README.md).
 | [i18n.md](i18n.md) | Localisation rules (en / uk) |
 | [security.md](security.md) | Electron hardening checklist |
 | [release.md](release.md) | Build targets, CI, release process |
+| [brand.md](brand.md) | Logo, colours, icon files |
 
 **docs vs specs:** a spec says *what* a feature must do and is frozen once
 implemented. Docs describe *the system as it is now* and evolve; every change
