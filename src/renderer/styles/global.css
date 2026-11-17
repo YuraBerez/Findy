@@ -11,6 +11,7 @@
   --border: #d9dee5;
   --danger: #c62828;
   --danger-bg: #fdecea;
+  --column-bg: #e9edf2;
   --toggle-track: #dbe7f5;
   --toggle-knob: #ffffff;
   --toggle-icon: #e8a200;
@@ -38,6 +39,7 @@
     --border: #343a44;
     --danger: #ef5350;
     --danger-bg: #3a1d1d;
+    --column-bg: #1b1e23;
     --toggle-track: #2b3442;
     --toggle-knob: #0f1216;
     --toggle-icon: #c9d6ff;
@@ -52,4 +54,31 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
+}
+
+.button {
+  padding: 7px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button--primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

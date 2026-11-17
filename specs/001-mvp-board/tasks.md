@@ -28,18 +28,18 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 3 — US-1 Add application (P1)
 
-- [ ] T020 [P] Unit tests for `createApplication` (validation, trimming, defaults, history) (FR-010, FR-011, FR-014, FR-024)
-- [ ] T021 Implement `domain/board.ts#createApplication` + IPC handler
-- [ ] T022 `ApplicationDialog` (create mode) with inline validation messages in both languages
-- [ ] T023 e2e: US-1 scenarios 1–5
+- [x] T020 [P] Unit tests for `createApplication` (validation, trimming, defaults, history) (FR-010, FR-011, FR-014, FR-024)
+- [x] T021 Implement create in `main/db/repository.ts` + IPC handler; form rules in `domain/forms.ts`
+- [x] T022 `ApplicationDialog` (create mode) with inline validation messages in both languages
+- [x] T023 e2e: US-1 scenarios 1–5
 
 ## Phase 4 — US-2 Board & moving cards (P1)
 
 - [ ] T030 [P] Unit tests for `moveApplication` (cross-column, reorder, order renormalisation, history only on stage change) (FR-020…024)
 - [ ] T031 Implement `moveApplication` + IPC
-- [ ] T032 `Board`, `Column`, `Card` with counts and time-in-stage (FR-001…004)
+- [x] T032 `Board`, `Column`, `Card` with counts and time-in-stage (FR-001…004) — done in Phase 3, needed to show new cards
 - [ ] T033 dnd-kit drag-and-drop with keyboard sensor; card "Move to…" menu (FR-020, FR-021)
-- [ ] T034 Empty state (edge cases)
+- [x] T034 Empty state (edge cases) — done in Phase 3
 - [ ] T035 e2e: US-2 scenarios 1–4
 
 ## Phase 5 — US-4 View / edit / delete (P1)

@@ -5,11 +5,12 @@ import { ThemeToggle } from './ThemeToggle'
 import styles from './Toolbar.module.css'
 
 interface Props {
-  themeDisabled: boolean
+  storageReady: boolean
+  onAdd(): void
   onThemeChange(theme: Theme): void
 }
 
-export function Toolbar({ themeDisabled, onThemeChange }: Props) {
+export function Toolbar({ storageReady, onAdd, onThemeChange }: Props) {
   const { t } = useTranslation()
   return (
     <header className={styles.toolbar} aria-label={t('toolbar.label')}>
@@ -18,7 +19,15 @@ export function Toolbar({ themeDisabled, onThemeChange }: Props) {
         <span className={styles.name}>{t('app.name')}</span>
       </div>
       <div className={styles.actions}>
-        <ThemeToggle disabled={themeDisabled} onChange={onThemeChange} />
+        <button
+          type="button"
+          className="button button--primary"
+          onClick={onAdd}
+          disabled={!storageReady}
+        >
+          {t('toolbar.addApplication')}
+        </button>
+        <ThemeToggle disabled={!storageReady} onChange={onThemeChange} />
       </div>
     </header>
   )

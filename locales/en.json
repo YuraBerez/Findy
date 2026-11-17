@@ -4,7 +4,8 @@
     "loading": "Loading…"
   },
   "toolbar": {
-    "label": "Main toolbar"
+    "label": "Main toolbar",
+    "addApplication": "Add application"
   },
   "theme": {
     "dark": "Dark theme",
@@ -26,5 +27,35 @@
     "newer_version": "The database was created by a newer version of Findy. Update the app to open it. Findy did not change the file and saved a copy to {{backupPath}}.",
     "open_failed": "Findy could not open or create its database.",
     "location": "Database file: {{dataFilePath}}"
+  },
+  "board": {
+    "label": "Job applications board",
+    "emptyTitle": "No applications yet",
+    "emptyHint": "Add the first job you applied to, and track it from here to the offer."
+  },
+  "column": {
+    "count_one": "{{count}} application",
+    "count_other": "{{count}} applications"
+  },
+  "card": {
+    "notes_one": "{{count}} note",
+    "notes_other": "{{count}} notes",
+    "inStage": "In this stage since {{date}}"
+  },
+  "form": {
+    "createTitle": "New application",
+    "title": "Job title",
+    "company": "Company",
+    "url": "Vacancy link",
+    "urlHint": "Optional",
+    "stage": "Stage",
+    "create": "Add",
+    "cancel": "Cancel",
+    "errors": {
+      "required": "Fill in this field.",
+      "tooLong": "Use {{max}} characters or fewer.",
+      "invalidUrl": "Enter a link that starts with http:// or https://.",
+      "saveFailed": "Could not save the application. Try again."
+    }
   }
 }
