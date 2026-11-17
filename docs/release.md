@@ -54,6 +54,17 @@ notes (`e2e/specs/performance.spec.ts`, tag `@perf`); limits are 3× on CI runne
 
 ## Release — `.github/workflows/release.yml`
 
+Release notes start with "Which file to download" (`.github/release-downloads.md`,
+`VERSION` replaced), then the version's section of `CHANGELOG.md`. The macOS disk
+images are renamed to `…-macOS-Apple-Silicon.dmg` and `…-macOS-Intel.dmg`.
+
+Until there is a Developer ID, macOS builds are signed **ad hoc**
+(`mac.identity: '-'`, hardened runtime off). An unsigned bundle with only the
+Electron binary's linker signature is "damaged" on Apple Silicon after a
+download, with no way to open it. `smoke:packaged` runs
+`codesign --verify --deep --strict` on macOS to catch this.
+
+
 1. Maintainer bumps version, updates `CHANGELOG.md`, merges to `main`.
 2. Pushes tag `vX.Y.Z`.
 3. Matrix job builds on the three runners and uploads artifacts to a **draft**

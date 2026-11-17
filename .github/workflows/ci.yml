@@ -65,5 +65,8 @@ jobs:
         run: npm run dist:dir
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
+          # Sign ad hoc like the release (electron-builder skips signing on PRs);
+          # an ad-hoc signature needs no secret
+          CSC_FOR_PULL_REQUEST: true
       - name: Smoke test packaged app
         run: npm run smoke:packaged

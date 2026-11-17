@@ -16,6 +16,12 @@ mac:
     - target: dmg
       arch: [arm64, x64]
   category: public.app-category.productivity
+  # No Developer ID yet: sign the whole bundle ad hoc. Without it only the Electron
+  # binary keeps its linker signature, and Apple Silicon Macs report the downloaded
+  # app as "damaged" with no way to open it (docs/release.md). Hardened runtime
+  # rejects ad-hoc signed Electron frameworks, so it is off until real signing.
+  identity: '-'
+  hardenedRuntime: false
   artifactName: ${productName}-${version}-${arch}.${ext}
 win:
   target:
