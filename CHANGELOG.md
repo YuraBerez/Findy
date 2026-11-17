@@ -22,7 +22,7 @@ The first release: a private, local-first kanban board for your job search.
 - Clear messages when something cannot be saved, and a **Found an issue?** button.
 
 ### AI assistants (MCP)
-- `Findy --mcp`: Claude Desktop, Cowork, Claude Code, Gemini CLI, Cursor and other MCP clients can read and change the board when you ask them. Off by default (**⋯ → AI assistant access (MCP)…**).
+- A built-in MCP server: Claude Desktop, Cowork, Claude Code, Gemini CLI, Cursor and other MCP clients can read and change the board when you ask them. Off by default; **⋯ → AI assistant access (MCP)…** turns it on and shows the configuration to copy. Works on Windows, macOS and Linux.
 
 ### Data and privacy
 - All data in a local SQLite database; no account, no telemetry; Findy makes no network requests.
