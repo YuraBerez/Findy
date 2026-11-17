@@ -49,12 +49,53 @@ Installers are on the [Releases](https://github.com/YuraBerez/findy/releases) pa
 | macOS (Intel) | `Findy-x.y.z-x64.dmg` |
 | Linux (x64) | `Findy-x.y.z.AppImage` or `findy_x.y.z_amd64.deb` |
 
-Early builds are not code-signed:
+### First start: the builds are not signed yet
 
-- **macOS:** right-click the app → *Open*, or run
-  `xattr -dr com.apple.quarantine /Applications/Findy.app`.
-- **Windows:** on the SmartScreen prompt click *More info* → *Run anyway*.
-- **Linux (AppImage):** `chmod +x Findy-*.AppImage` and run it.
+Code-signing certificates cost money, so the builds are not signed. macOS and
+Windows show a warning the first time you open Findy. The builds come from the
+public source code on GitHub Actions. Do these steps one time only.
+
+#### macOS
+
+1. Open the `.dmg` file and drag **Findy** to **Applications**.
+2. Open Findy. macOS shows *"Findy" Not Opened* (or *cannot be opened because
+   Apple cannot check it*). Click **Done**. Do not click *Move to Trash*.
+3. Open **System Settings → Privacy & Security**. Scroll down to **Security**.
+   Next to *"Findy" was blocked to protect your Mac*, click **Open Anyway**.
+4. Enter your password, then click **Open Anyway** again. Findy starts.
+
+On macOS 14 or earlier you can also Control-click Findy in Applications →
+**Open** → **Open**.
+
+If macOS says *"Findy" is damaged and can't be opened*, open **Terminal**, run
+this command, and open Findy again:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/Findy.app
+```
+
+Open Findy one time with these steps before you connect an AI assistant (MCP).
+Until then, macOS blocks the assistant from starting Findy as well.
+
+#### Windows
+
+1. Download `Findy-Setup-x.y.z.exe`. If the browser warns that the file is not
+   commonly downloaded, select **Keep** (Edge: **⋯ → Keep → Show more → Keep
+   anyway**).
+2. Run the file. On *Windows protected your PC* (SmartScreen), click
+   **More info**, then **Run anyway**.
+3. Follow the installer. Then start Findy from the Start menu.
+
+#### Linux
+
+- **AppImage:** make the file executable and run it:
+  ```bash
+  chmod +x Findy-*.AppImage
+  ./Findy-*.AppImage
+  ```
+  On Ubuntu 22.04 and newer, an AppImage needs FUSE 2:
+  `sudo apt install libfuse2` (Ubuntu 24.04: `sudo apt install libfuse2t64`).
+- **Debian / Ubuntu package:** `sudo apt install ./findy_x.y.z_amd64.deb`.
 
 ## Run from source
 

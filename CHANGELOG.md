@@ -30,4 +30,4 @@ The first release: a private, local-first kanban board for your job search.
 
 ### Downloads
 - Windows (x64) installer, macOS (Apple Silicon and Intel) disk images, Linux AppImage and `.deb`.
-- The builds are **not code-signed** yet: see "Download" in the README for how to open them.
+- The builds are **not code-signed** yet. The first time you open Findy, macOS and Windows show a warning: see [First start](https://github.com/YuraBerez/findy#first-start-the-builds-are-not-signed-yet) in the README for the steps.
