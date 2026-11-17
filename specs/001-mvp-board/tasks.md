@@ -7,39 +7,40 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 1 — Setup
 
-- [ ] T001 Scaffold electron-vite + React + TypeScript (strict) project with the structure from architecture.md
-- [ ] T002 [P] ESLint + Prettier + `npm run lint` / `typecheck` scripts
-- [ ] T003 [P] Vitest config + `npm test`; Playwright `_electron` config + `npm run test:e2e`
-- [ ] T004 [P] `electron-builder.yml` with targets from release.md; app id `io.github.findy`, product name `Findy` (FR-070)
-- [ ] T005 [P] `.github/workflows/ci.yml` — lint, typecheck, unit, e2e, `--dir` build on 3 OSes
+- [x] T001 Scaffold electron-vite + React + TypeScript (strict) project with the structure from architecture.md
+- [x] T002 [P] ESLint + Prettier + `npm run lint` / `typecheck` scripts
+- [x] T003 [P] Vitest config + `npm test`; coverage gate ≥ 80 % (`npm run test:coverage`); Playwright `_electron` config + `npm run test:e2e`
+- [x] T004 [P] `electron-builder.yml` with targets from release.md; app id `io.github.findy`, product name `Findy` (FR-070)
+- [x] T005 [P] `.github/workflows/ci.yml` — quality gate (format, lint, typecheck, unit + coverage ≥ 80 %) on every PR; e2e + `--dir` build + packaged smoke test on 3 OSes
 
 ## Phase 2 — Foundations (blocks all user stories)
 
-- [ ] T010 [P] `domain/stages.ts` — `STAGES` constant and `StageId` (FR-001)
-- [ ] T011 [P] `domain/schema.ts` — zod schemas for entities and IPC input (data-model.md)
-- [ ] T012 Add `better-sqlite3`; `postinstall: electron-builder install-app-deps`; verify packaged app loads it on all 3 OSes in CI (architecture D-2)
-- [ ] T013 Tests + `main/db/connection.ts` + `migrate.ts` + `migrations/001-init.sql` — pragmas, `user_version`, backup before migrate, corrupt/newer-version handling (FR-051, FR-053, FR-054, US-6)
-- [ ] T014 Tests + `main/db/repositories.ts` — CRUD for applications/notes/settings, each mutation in one transaction (FR-050, FR-052)
-- [ ] T015 Secure `BrowserWindow`, CSP, single-instance lock, navigation guards (security.md, NFR-004)
-- [ ] T016 `shared/ipc.ts` types, preload `contextBridge`, `main/ipc.ts` handler skeleton with zod parsing (contracts/ipc.md)
-- [ ] T017 [P] i18n setup: `locales/en.json`, `locales/uk.json`, renderer + main i18n, key-parity test (FR-040, SC-003)
-- [ ] T018 [P] Base layout, CSS variables, light/dark theme (NFR-006)
+- [x] T010 [P] `domain/stages.ts` — `STAGES` constant and `StageId` (FR-001)
+- [x] T011 [P] `domain/schema.ts` — zod schemas for entities and IPC input (data-model.md)
+- [x] T012 Add `better-sqlite3` (Node-API prebuilds, no rebuild); verify packaged app loads it on all 3 OSes in CI via `smoke:packaged` (architecture D-2)
+- [x] T013 Tests + `main/db/connection.ts` + `migrate.ts` + `migrations/001-init.ts` — pragmas, `user_version`, backup before migrate, corrupt/newer-version handling (FR-051, FR-053, FR-054, US-6)
+- [x] T014 Tests + `main/db/repository.ts` — CRUD for applications/notes/settings, each mutation in one transaction (FR-050, FR-052)
+- [x] T015 Secure `BrowserWindow`, CSP, single-instance lock, navigation guards (security.md, NFR-004)
+- [x] T016 `shared/ipc.ts` types, preload `contextBridge`, `main/ipc.ts` handler skeleton with zod parsing (contracts/ipc.md)
+- [x] T017 [P] i18n setup: `locales/en.json`, `locales/uk.json`, renderer + main i18n, key-parity test (FR-040, SC-003)
+- [x] T018 [P] Base layout (app shell, toolbar), CSS tokens for light and dark (NFR-006)
+- [x] T019 Theme: `theme` setting + `setTheme` IPC → `nativeTheme.themeSource`; sun/moon `ThemeToggle` in toolbar; e2e for US-9 (FR-080…083)
 
 ## Phase 3 — US-1 Add application (P1)
 
-- [ ] T020 [P] Unit tests for `createApplication` (validation, trimming, defaults, history) (FR-010, FR-011, FR-014, FR-024)
-- [ ] T021 Implement `domain/board.ts#createApplication` + IPC handler
-- [ ] T022 `ApplicationDialog` (create mode) with inline validation messages in both languages
-- [ ] T023 e2e: US-1 scenarios 1–5
+- [x] T020 [P] Unit tests for `createApplication` (validation, trimming, defaults, history) (FR-010, FR-011, FR-014, FR-024)
+- [x] T021 Implement create in `main/db/repository.ts` + IPC handler; form rules in `domain/forms.ts`
+- [x] T022 `ApplicationDialog` (create mode) with inline validation messages in both languages
+- [x] T023 e2e: US-1 scenarios 1–5
 
 ## Phase 4 — US-2 Board & moving cards (P1)
 
-- [ ] T030 [P] Unit tests for `moveApplication` (cross-column, reorder, order renormalisation, history only on stage change) (FR-020…024)
-- [ ] T031 Implement `moveApplication` + IPC
-- [ ] T032 `Board`, `Column`, `Card` with counts and time-in-stage (FR-001…004)
-- [ ] T033 dnd-kit drag-and-drop with keyboard sensor; card "Move to…" menu (FR-020, FR-021)
-- [ ] T034 Empty state (edge cases)
-- [ ] T035 e2e: US-2 scenarios 1–4
+- [x] T030 [P] Unit tests for `moveApplication` (cross-column, reorder, order renormalisation, history only on stage change) (FR-020…024)
+- [x] T031 Implement `moveApplication` + IPC
+- [x] T032 `Board`, `Column`, `Card` with counts and time-in-stage (FR-001…004) — done in Phase 3, needed to show new cards
+- [x] T033 dnd-kit drag-and-drop with keyboard sensor; card "Move to…" menu (FR-020, FR-021)
+- [x] T034 Empty state (edge cases) — done in Phase 3
+- [x] T035 e2e: US-2 scenarios 1–4
 
 ## Phase 5 — US-4 View / edit / delete (P1)
 
@@ -57,10 +58,10 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 7 — US-5 Language (P1)
 
-- [ ] T060 First-launch language from OS locale (FR-041)
-- [ ] T061 Language switch in settings + native menu; persist; live switch incl. menu (FR-042, FR-044)
-- [ ] T062 Locale-aware dates/relative time; Ukrainian plural tests (FR-043)
-- [ ] T063 e2e: US-5 scenarios 1–4
+- [x] T060 First-launch language from OS locale (FR-041)
+- [ ] T061 Language switch in settings + native menu; persist; live switch incl. menu (FR-042, FR-044) — toolbar switch done; native menu (FR-044) open
+- [x] T062 Locale-aware dates/relative time; Ukrainian plural tests (FR-043)
+- [x] T063 e2e: US-5 scenarios 1–4
 
 ## Phase 8 — US-8 Search (P2)
 
@@ -70,7 +71,7 @@ Tests for a task are written before (or together with) its implementation.
 
 ## Phase 9 — US-7 Release (P1)
 
-- [ ] T080 App icons for all platforms in `build/`
+- [x] T080 App icons for all platforms in `build/` (source: `assets/logo.svg`, see docs/brand.md)
 - [ ] T081 About dialog with version (FR-072)
 - [ ] T082 `.github/workflows/release.yml` — tag `v*` → matrix build → draft GitHub Release (FR-071)
 - [ ] T083 Manual smoke test of artifacts on Windows, macOS (arm64 + x64), Linux (SC-002)

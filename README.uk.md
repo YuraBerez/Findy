@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/logo.svg" width="128" height="128" alt="Логотип Findy"></p>
+
 # Findy
 
 **Безкоштовний десктопний застосунок з відкритим кодом для відстеження пошуку роботи.**
@@ -63,6 +65,7 @@ npm run dev          # запуск із гарячим перезавантаж
 | `npm run build` | Продакшн-збірка коду застосунку |
 | `npm run dist` | Інсталятор для вашої ОС у `dist/` |
 | `npm test` | Unit-тести |
+| `npm run test:coverage` | Unit-тести з перевіркою покриття ≥ 80 % |
 | `npm run test:e2e` | End-to-end тести на реальному застосунку |
 | `npm run lint` | Лінтер і перевірка типів |
 

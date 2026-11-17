@@ -60,6 +60,7 @@ column does not add history.
 | Field | Type | Default | Rules |
 |-------|------|---------|-------|
 | `language` | `'en' \| 'uk'` \| null | `null` | `null` = not chosen yet → derive from OS locale (FR-041) |
+| `theme` | `'system' \| 'light' \| 'dark'` | `'system'` | FR-080…083 |
 
 ## Invariants
 

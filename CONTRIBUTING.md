@@ -40,7 +40,7 @@ Before opening a PR:
 
 ```bash
 npm run lint
-npm test
+npm run test:coverage   # fails below 80 % coverage
 npm run test:e2e
 ```
 

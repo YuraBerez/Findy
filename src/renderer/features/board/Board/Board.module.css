@@ -1,0 +1,40 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  height: 100%;
+}
+
+.board {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(240px, 1fr);
+  gap: var(--space-2);
+  flex: 1;
+  min-height: 0;
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.board:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.empty {
+  padding: var(--space-4) var(--space-6);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.empty h2 {
+  margin: 0 0 var(--space-2);
+  font-size: 16px;
+}
+
+.empty p {
+  margin: 0 0 var(--space-4);
+  color: var(--fg-muted);
+}

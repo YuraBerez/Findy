@@ -1,0 +1,27 @@
+/* Base of every form control; TextField and Select compose it */
+.control {
+  min-height: 34px;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+}
+
+.control:focus-visible {
+  /* Ring inside the border: an outline would be clipped by scrolling containers
+     (dialog body, side panel) */
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.control[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.control:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

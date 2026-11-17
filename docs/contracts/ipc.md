@@ -10,6 +10,11 @@ in main (schema + invariants from [data-model.md](../data-model.md)), applied,
 persisted, and returns the new full state. Invalid input rejects with an
 `IpcError` (`{ code: 'VALIDATION' | 'NOT_FOUND' | 'STORAGE', message }`).
 
+Handlers resolve with an envelope `{ ok: true, data } | { ok: false, error }`; the
+preload unwraps it and throws `IpcError`. `contextBridge` keeps only an error's
+message, so the message starts with the code (`"VALIDATION: …"`). The renderer reads
+it with `getIpcErrorCode(error)` from `src/shared/ipc.ts`.
+
 ```ts
 interface FindyApi {
   // State
@@ -32,15 +37,20 @@ interface FindyApi {
 
   // Settings & system
   setLanguage(language: 'en' | 'uk'): Promise<AppState>;
+  setTheme(theme: 'system' | 'light' | 'dark'): Promise<AppState>;  // sets nativeTheme.themeSource
+  on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
   getSystemLocale(): Promise<string>;
   openExternal(url: string): Promise<void>;            // http/https only, else rejects
   getAppInfo(): Promise<{ version: string; dataFilePath: string }>;
 }
 
 interface AppState {
-  settings: { language: 'en' | 'uk' | null };
+  settings: { language: 'en' | 'uk' | null; theme: 'system' | 'light' | 'dark' };
   applications: Application[];
-  storage: { status: 'ok' | 'error'; error?: string; dataFilePath: string };
+  storage:
+    | { status: 'ok'; dataFilePath: string }
+    | { status: 'error'; error: 'corrupt' | 'newer_version' | 'open_failed';
+        dataFilePath: string; backupPath: string | null };
 }
 ```
 

@@ -47,7 +47,7 @@ CREATE TABLE notes (
 CREATE INDEX idx_notes_app ON notes(application_id, created_at DESC);
 
 CREATE TABLE settings (
-  key    TEXT PRIMARY KEY,                             -- e.g. 'language'
+  key    TEXT PRIMARY KEY,                             -- 'language' | 'theme'
   value  TEXT NOT NULL
 );
 ```
@@ -66,7 +66,7 @@ Column ↔ entity mapping is in [data-model.md](../data-model.md)
 ## Migrations (FR-053)
 
 - Schema version is stored in `PRAGMA user_version`.
-- Migrations live in `src/main/db/migrations/NNN-name.sql` (or `.ts`), applied
+- Migrations live in `src/main/db/migrations/NNN-name.ts` (SQL in a template string), listed in `migrations/index.ts`, applied
   in order inside a transaction at startup.
 - Before applying any migration, the file is copied to
   `findy.backup-v<old>-<timestamp>.db`.
