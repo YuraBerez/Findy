@@ -7,7 +7,7 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Domain
 
-- [ ] T001 `domain/csv.ts`: writer (BOM, CRLF, quoting) and reader (BOM, `,`/`;`, quotes, line breaks), formula guard and its removal; unit tests (FR-007, FR-011, NFR-002)
+- [x] T001 `domain/csv.ts`: writer (BOM, CRLF, quoting) and reader (BOM, `,`/`;`, quotes, line breaks), formula guard and its removal; unit tests (FR-007, FR-011, NFR-002)
 - [ ] T002 `domain/transfer`: columns, labels, dates with offset, `exportTable`; unit tests (FR-003…FR-006)
 - [ ] T003 `domain/transfer`: `planImport` (headers in en/uk, values, history, notes, row errors, duplicates, hidden, limits); round-trip test; 1 000 × 5 notes timing (FR-012…FR-016, FR-019, SC-001, NFR-003, NFR-004)
 
