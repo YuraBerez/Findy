@@ -58,7 +58,9 @@ export function Analytics({ applications, hiddenStages, view, onViewChange, onSh
       <div className={styles.grid}>
         <ActivityChart labels={labels} values={data.activity} />
         <StagesChart labels={labels} series={data.stages} />
-        <Funnel steps={data.funnel} rejected={data.rejected} />
+        <div className={styles.wide}>
+          <Funnel steps={data.funnel} rejected={data.rejected} />
+        </div>
       </div>
     </div>
   )

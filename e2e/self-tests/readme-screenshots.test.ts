@@ -1,6 +1,7 @@
 import { join } from 'node:path'
 import Database from 'better-sqlite3'
-import { test } from '../fixtures/app'
+import type { StageId } from '../../src/domain/stages'
+import { test, type HistoryApplication } from '../fixtures/app'
 
 // Regenerates docs/screenshots/*.png for the READMEs: `npm run screenshots`.
 // Skipped in normal test runs.
@@ -160,3 +161,57 @@ for (const lang of ['en', 'uk'] as const) {
     await page.screenshot({ path: join(OUT, `details-${lang}.png`) })
   })
 }
+
+// Spec 005: three months of made-up history, so the charts have a shape. Fixed seed,
+// so the screenshots change only when the app changes.
+function demoHistory(): HistoryApplication[] {
+  let seed = 7
+  const random = () => (seed = (seed * 1_103_515_245 + 12_345) % 2 ** 31) / 2 ** 31
+  return Array.from({ length: 70 }, (_, i) => {
+    // More applications in the recent weeks
+    const created = Math.floor(84 * random() ** 1.5)
+    const reach = random()
+    const path: StageId[] = []
+    if (reach > 0.45) path.push('hr_interview')
+    if (reach > 0.62 && random() > 0.4) path.push('test_task')
+    if (reach > 0.72) path.push('technical_interview')
+    if (reach > 0.88) path.push('c_level_interview')
+    if (reach > 0.95) path.push('offered')
+    if (path.at(-1) !== 'offered' && random() > 0.55) path.push('rejected')
+    let day = created
+    const moves = path.map((stage): [StageId, number] => {
+      day = Math.max(0, day - 1 - Math.floor(random() * 6))
+      return [stage, day]
+    })
+    return { title: `Example role ${i + 1}`, createdDaysAgo: created, moves }
+  })
+}
+
+test.describe('analytics', () => {
+  test.use({ history: { applications: demoHistory() } })
+
+  for (const lang of ['en', 'uk'] as const) {
+    test(`README analytics screenshot (${lang})`, async ({ findy, page }) => {
+      // An emulated viewport at Retina density, like the other screenshots: the screen
+      // limits the height of a real window
+      const cdp = await page.context().newCDPSession(page)
+      await cdp.send('Emulation.setDeviceMetricsOverride', {
+        width: 1440,
+        height: 1060,
+        deviceScaleFactor: 2,
+        mobile: false,
+      })
+      await findy.api.setTheme('light')
+      await findy.api.setLanguage(lang)
+      await findy.api.setAnalyticsView({ period: '90d', grouping: 'week' })
+      await findy.refresh()
+      await page.getByRole('tab', { name: lang === 'en' ? 'Analytics' : 'Аналітика' }).click()
+      await page
+        .getByTestId('app')
+        .getByRole('tabpanel')
+        .getByRole('heading', { level: 2 })
+        .waitFor()
+      await page.screenshot({ path: join(OUT, `analytics-${lang}.png`) })
+    })
+  }
+})

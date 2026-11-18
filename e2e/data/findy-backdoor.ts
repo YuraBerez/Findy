@@ -1,5 +1,6 @@
 import type { ElectronApplication, Page } from '@playwright/test'
 import type {
+  AnalyticsView,
   AppState,
   Language,
   McpConnection,
@@ -106,6 +107,10 @@ export class FindyBackdoor {
 
   async setTheme(theme: Theme): Promise<void> {
     await this.page.evaluate((value) => window.findy.setTheme(value), theme)
+  }
+
+  async setAnalyticsView(view: AnalyticsView): Promise<void> {
+    await this.page.evaluate((value) => window.findy.setAnalyticsView(value), view)
   }
 
   async setHiddenStages(stages: StageId[]): Promise<void> {
