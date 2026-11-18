@@ -2,6 +2,7 @@ import type { ElectronApplication, Page } from '@playwright/test'
 import type {
   AnalyticsView,
   AppState,
+  CardColor,
   Language,
   McpConnection,
   NewApplication,
@@ -102,6 +103,19 @@ export class FindyBackdoor {
         await window.findy.addNote(application.id, text)
       },
       { title, text },
+    )
+  }
+
+  /** Spec 007 */
+  async setColor(title: string, color: CardColor | null): Promise<void> {
+    await this.page.evaluate(
+      async ({ title, color }) => {
+        const state = await window.findy.getState()
+        const application = state.applications.find((item) => item.title === title)
+        if (!application) throw new Error(`No application "${title}"`)
+        await window.findy.setApplicationColor(application.id, color)
+      },
+      { title, color },
     )
   }
 

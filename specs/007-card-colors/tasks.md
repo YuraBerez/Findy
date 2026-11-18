@@ -22,5 +22,5 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — Verification and docs
 
-- [ ] T020 e2e: US-1 (menu, keyboard, restart), US-2 (details), US-3 (move, edit, new card); axe with coloured cards in light and dark (NFR-001, SC-002)
-- [ ] T021 Docs: data-model.md, contracts/database.md (schema v2), contracts/ipc.md
+- [x] T020 e2e: US-1 (menu, keyboard, restart), US-2 (details), US-3 (move, edit, new card); axe with coloured cards in light and dark (NFR-001, SC-002)
+- [x] T021 Docs: data-model.md, contracts/database.md (schema v2), contracts/ipc.md

@@ -16,6 +16,7 @@ export class ApplicationDetailsScreen extends BaseComponent {
   private readonly addNoteButton: Locator
   private readonly notes: Locator
   private readonly confirm: Locator
+  private readonly colors: Locator
 
   constructor(page: Page) {
     super(page)
@@ -31,6 +32,7 @@ export class ApplicationDetailsScreen extends BaseComponent {
     this.addNoteButton = this.panel.getByRole('button', { name: 'Add note' })
     this.notes = this.panel.getByTestId('note')
     this.confirm = page.getByRole('alertdialog')
+    this.colors = this.panel.getByRole('radiogroup', { name: 'Colour' })
   }
 
   private note(text: string): Locator {
@@ -46,6 +48,11 @@ export class ApplicationDetailsScreen extends BaseComponent {
     if (form.stage !== undefined)
       await this.panel.getByLabel('Stage', { exact: true }).selectOption({ label: form.stage })
     await this.saveButton.click()
+  }
+
+  /** Spec 007 US-2: saved at once, no "Save changes" */
+  async chooseColor(name: string): Promise<void> {
+    await this.colors.getByRole('radio', { name }).click()
   }
 
   async openVacancy(): Promise<void> {
@@ -121,6 +128,10 @@ export class ApplicationDetailsScreen extends BaseComponent {
     await expect(
       this.panel.getByLabel('Stage', { exact: true }).getByRole('option', { selected: true }),
     ).toHaveText(form.stage)
+  }
+
+  async verifyColor(name: string): Promise<void> {
+    await expect(this.colors.getByRole('radio', { checked: true })).toHaveText(name)
   }
 
   async verifySaved(): Promise<void> {
