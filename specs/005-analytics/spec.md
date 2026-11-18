@@ -1,8 +1,9 @@
 # Feature Spec: Analytics
 
 - **ID:** 005-analytics
-- **Status:** Draft
+- **Status:** Approved
 - **Created:** 2026-11-18
+- **Approved:** 2026-11-18 (owner)
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md), [002-hidden-columns](../002-hidden-columns/spec.md)
 
 ## Summary

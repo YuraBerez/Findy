@@ -43,4 +43,4 @@ Rules:
 | 002 | [Hidden columns](002-hidden-columns/spec.md) | Implemented |
 | 003 | [Error handling](003-error-handling/spec.md) | Implemented |
 | 004 | [MCP server](004-mcp-server/spec.md) | Implemented |
-| 005 | [Analytics](005-analytics/spec.md) | Draft |
+| 005 | [Analytics](005-analytics/spec.md) | Approved |
