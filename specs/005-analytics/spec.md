@@ -151,7 +151,9 @@ As a user with an empty board, I want a clear message instead of empty charts.
   applications that reached this stage or a later stage, and the percentage of the
   first row.
 - **FR-023** "Reached" in FR-022 means: the stage history has an entry for this stage
-  or for a later stage. "Rejected" is not a funnel step; it is a separate number.
+  or for a later stage. Every application reached "Applied", also one that was created
+  in "Rejected". "Rejected" is not a funnel step; it is a separate number: the
+  applications of the period with a "Rejected" entry.
 - **FR-024** The totals MUST show for the period: applications sent (FR-020), interviews
   (stage entries for HR, technical and C-level interview), offers and rejections
   (stage entries for "Offer" and "Rejected").

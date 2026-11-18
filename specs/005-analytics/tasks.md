@@ -6,7 +6,7 @@ Legend: `[P]` — can run in parallel with other `[P]` tasks in the same phase.
 
 ## Phase 1 — Foundations
 
-- [ ] T001 Domain `analytics.ts`: periods, buckets (local time, Monday weeks), applications per bucket, stage entries per bucket, funnel, totals, hidden-stage filter; unit tests incl. DST (FR-010…FR-015, FR-020…FR-024)
+- [x] T001 Domain `analytics.ts`: periods, buckets (local time, Monday weeks), applications per bucket, stage entries per bucket, funnel, totals, hidden-stage filter; unit tests incl. DST (FR-010…FR-015, FR-020…FR-024)
 - [ ] T002 Settings row `analytics` + IPC `setAnalyticsView` (zod), default and damaged value; repository and IPC unit tests; docs: ipc.md, data-model.md (FR-030…FR-032)
 
 ## Phase 2 — Navigation (US-1)
