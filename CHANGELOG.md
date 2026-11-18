@@ -3,6 +3,21 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.3.0] - 2026-11-18
+
+### Card colours
+- Give a card one of 7 colours (red, orange, yellow, green, blue, purple, grey) to mark what matters to you: **⋯ → Colour** on the card, or the **Colour** section in the details panel. **None** removes it.
+- The card gets a soft tint and a border in its colour, in the light and the dark theme. Screen readers hear the colour name with the card.
+
+### CSV export and import
+- **⋯ → Export to CSV…** saves all applications to one file: title, company, link, stage, colour, dates, stage history and notes. It opens in Excel, Numbers or Google Sheets; headers and stage names are in the app language.
+- **⋯ → Import from CSV…** adds applications from a file. A summary shows what will happen before anything changes: how many applications will be added, which rows have errors (with row numbers), and which are skipped as duplicates. Import never changes or deletes the applications that you already have.
+- Your own table works too: only **Title** and **Company** columns are required, in English or Ukrainian.
+- A file exported from Findy imports back with the same data, so you can use it as a copy or to move to another computer.
+
+### Data
+- The database gets a new version for the card colour. Findy backs it up before the update. **Findy 0.2.0 and older cannot open a database after 0.3.0 has opened it**: update every computer that uses the same data.
+
 ## [0.2.0] - 2026-11-18
 
 ### Analytics
