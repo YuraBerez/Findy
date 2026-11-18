@@ -1,8 +1,6 @@
 import type { MenuItemConstructorOptions } from 'electron'
 import type { Translate } from './i18n'
 
-export const PROJECT_URL = 'https://github.com/YuraBerez/findy'
-
 interface Options {
   t: Translate
   platform: NodeJS.Platform

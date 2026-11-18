@@ -88,6 +88,6 @@ dependency.
 | Risk | Mitigation |
 |------|------------|
 | GitHub changes the API answer | zod schema; a bad answer is "no update" (auto) or an error (manual) |
-| A hostile answer points "Download" to another site | Only `https://github.com/YuraBerez/findy/releases/…` passes |
+| A hostile answer points "Download" to another site | Only a URL that starts with `RELEASE_PAGE_PREFIX` (`src/shared/project.ts`) passes |
 | Slow network delays the start | The check is async after the window shows; 10 s timeout |
 | Two checks at once (start + menu) | Main runs one request at a time and gives both callers its result |

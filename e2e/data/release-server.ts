@@ -1,5 +1,6 @@
 import { createServer, type Server } from 'node:http'
 import type { AddressInfo } from 'node:net'
+import { releasePageUrl } from '../../src/shared/project'
 
 export interface FakeRelease {
   /** Tag of the latest release, e.g. "v9.0.0" */
@@ -30,7 +31,7 @@ export class ReleaseServer {
       response.writeHead(200, { 'Content-Type': 'application/json' }).end(
         JSON.stringify({
           tag_name: release.tag,
-          html_url: `https://github.com/YuraBerez/findy/releases/tag/${release.tag}`,
+          html_url: releasePageUrl(release.tag),
           draft: false,
           prerelease: false,
         }),
@@ -46,7 +47,7 @@ export class ReleaseServer {
   }
 
   pageOf(tag: string): string {
-    return `https://github.com/YuraBerez/findy/releases/tag/${tag}`
+    return releasePageUrl(tag)
   }
 
   async close(): Promise<void> {

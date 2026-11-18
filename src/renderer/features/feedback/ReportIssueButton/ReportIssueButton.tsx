@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next'
+import { NEW_ISSUE_URL } from '@shared/project'
 import { BugIcon, Button } from '@ui'
 import styles from './ReportIssueButton.module.css'
-
-export const NEW_ISSUE_URL = 'https://github.com/YuraBerez/findy/issues/new/choose'
 
 /** FR-074: report a problem on GitHub, from any screen. */
 export function ReportIssueButton({ onOpenLink }: { onOpenLink(url: string): void }) {

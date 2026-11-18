@@ -2,11 +2,7 @@ import { z } from 'zod'
 import { isHttpUrl } from '../domain/limits'
 import { isCheckDue, isNewer, normalizeVersion } from '../domain/updates'
 import type { UpdateCheckResult, UpdateTrigger } from '../shared/ipc'
-
-/** Spec 006 FR-005: the latest published, stable release (drafts and pre-releases excluded) */
-export const RELEASES_URL = 'https://api.github.com/repos/YuraBerez/findy/releases/latest'
-/** "Download" may open only a release page of this repository (plan D-1) */
-export const RELEASE_PAGE_PREFIX = 'https://github.com/YuraBerez/findy/releases/'
+import { LATEST_RELEASE_API_URL, RELEASE_PAGE_PREFIX } from '../shared/project'
 
 const TIMEOUT_MS = 10_000
 const MAX_CHARS = 1_000_000
@@ -42,7 +38,7 @@ export interface FetchOptions {
  */
 export async function fetchLatestRelease(
   fetchFn: typeof fetch,
-  { url = RELEASES_URL, timeoutMs = TIMEOUT_MS }: FetchOptions = {},
+  { url = LATEST_RELEASE_API_URL, timeoutMs = TIMEOUT_MS }: FetchOptions = {},
 ): Promise<LatestRelease> {
   let text: string
   try {

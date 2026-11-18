@@ -2,12 +2,12 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   createUpdateChecker,
   fetchLatestRelease,
-  RELEASES_URL,
   UpdateCheckError,
   type LatestRelease,
 } from '../../src/main/updates'
+import { LATEST_RELEASE_API_URL, releasePageUrl } from '../../src/shared/project'
 
-const PAGE = 'https://github.com/YuraBerez/findy/releases/tag/v0.2.0'
+const PAGE = releasePageUrl('v0.2.0')
 const release = (extra: object = {}) => ({
   tag_name: 'v0.2.0',
   html_url: PAGE,
@@ -28,7 +28,7 @@ describe('fetchLatestRelease (spec 006 FR-005, FR-011, FR-012)', () => {
     const fetchFn = fakeFetch(release())
     expect(await fetchLatestRelease(fetchFn)).toEqual({ version: '0.2.0', url: PAGE })
     const [url, init] = fetchFn.mock.calls[0]!
-    expect(url).toBe(RELEASES_URL)
+    expect(url).toBe(LATEST_RELEASE_API_URL)
     expect(init.method).toBeUndefined() // GET
     expect(init.body).toBeUndefined() // FR-011: nothing sent
     expect(Object.keys(init.headers)).toEqual(['Accept', 'User-Agent'])

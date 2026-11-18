@@ -1,3 +1,4 @@
+import { NEW_ISSUE_URL } from '../../src/shared/project'
 import { expect, test } from '../fixtures/app'
 
 test.describe('app shell', () => {
@@ -31,8 +32,6 @@ test.describe('app shell', () => {
   test('FR-074: "Found an issue?" opens the GitHub new-issue page', async ({ findy }) => {
     await findy.api.captureExternalLinks()
     await findy.pages.board.reportIssue()
-    await expect
-      .poll(() => findy.api.openedLinks())
-      .toEqual(['https://github.com/YuraBerez/findy/issues/new/choose'])
+    await expect.poll(() => findy.api.openedLinks()).toEqual([NEW_ISSUE_URL])
   })
 })

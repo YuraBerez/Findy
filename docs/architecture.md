@@ -69,7 +69,8 @@ src/
 │   ├── updates.ts       # spec 006: SemVer compare, the 24-hour check rule
 │   └── notes.ts         # validation rules for notes
 ├── shared/
-│   └── ipc.ts           # FindyApi, AppState, channel names
+│   ├── ipc.ts           # FindyApi, AppState, channel names
+│   └── project.ts       # every GitHub URL of the project (home, issues, releases, API)
 ├── main/
 │   ├── index.ts         # window, lifecycle, single instance, CSP
 │   ├── ipc.ts           # ipcMain.handle registrations
