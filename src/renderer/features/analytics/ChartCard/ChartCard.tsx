@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, DataTable, Section } from '@ui'
+import styles from './ChartCard.module.css'
 
 interface Props {
   title: string
@@ -15,7 +16,7 @@ export function ChartCard({ title, table, children }: Props) {
   const [asTable, setAsTable] = useState(false)
   // A wrapper, so cards in a grid are not adjacent sections with a top margin
   return (
-    <div>
+    <div className={styles.card}>
       <Section
         title={title}
         actions={

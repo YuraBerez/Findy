@@ -1,7 +1,7 @@
 # Feature Spec: Update check
 
 - **ID:** 006-update-check
-- **Status:** Approved
+- **Status:** Implemented (0.2.0)
 - **Created:** 2026-11-18
 - **Approved:** 2026-11-18 (owner)
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md) (FR-070…FR-072, NFR-001), [003-error-handling](../003-error-handling/spec.md)

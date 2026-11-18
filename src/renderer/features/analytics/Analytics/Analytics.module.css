@@ -38,6 +38,11 @@
   min-width: 0;
 }
 
+/* The funnel is wide and short: it takes a full row under the two charts */
+.wide {
+  grid-column: 1 / -1;
+}
+
 .empty {
   max-width: 560px;
   margin: var(--space-6) auto;

@@ -3,6 +3,19 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.2.0] - 2026-11-18
+
+### Analytics
+- A new **Analytics** tab next to **Board** (Cmd/Ctrl+1 and Cmd/Ctrl+2 switch between them).
+- **Applications sent** per day, week or month, and **Stages over time**: how many HR, test-task, technical and C-level interviews, offers and rejections you had. Turn stages on and off in the legend.
+- A **funnel**: how many applications of the period reached each stage, with percentages, and the totals at the top.
+- Periods: last 7, 30, 90 days or all time. Hover a bar or use the arrow keys to see its value; every chart can show its numbers as a table.
+- Everything is calculated on your computer from the data that Findy already keeps.
+
+### Update check
+- **⋯ → Check for updates…** tells you if a newer version is on GitHub and opens its download page.
+- **⋯ → Check for updates automatically** checks at start, at most once a day. It is **off by default**: Findy makes no network request until you check or turn it on, and the check sends no data.
+
 ## [0.1.1] - 2026-11-17
 
 ### Fixed

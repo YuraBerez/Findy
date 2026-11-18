@@ -1,0 +1,4 @@
+/* A grid, so the card fills its grid cell and cards in one row are the same height */
+.card {
+  display: grid;
+}

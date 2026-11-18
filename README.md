@@ -6,7 +6,7 @@
 
 [Українською](README.uk.md)
 
-> **Status: 0.1.0, the first release.** Download it from
+> **Status: 0.2.0, with analytics and an update check.** Download it from
 > [Releases](https://github.com/YuraBerez/findy/releases). Feedback is welcome: use the
 > *Found an issue?* button in the app.
 
@@ -17,6 +17,8 @@ apply until you get an offer.
 ![Findy board: applications in stage columns](docs/screenshots/board-en.png)
 
 ![Application details with notes, fields and stage history](docs/screenshots/details-en.png)
+
+![Analytics: applications sent, stages over time, funnel and totals](docs/screenshots/analytics-en.png)
 
 ## Features
 
@@ -32,10 +34,16 @@ apply until you get an offer.
 - **One click to the vacancy.** Cards with a link open it in your browser.
 - **Details panel.** Edit an application and see its stage history as a timeline.
 - **Stage history.** Each card shows how long it has been in its stage.
+- **Analytics.** See how many applications you send per day, week or month, how many
+  HR, technical and C-level interviews you get, and how far your applications go in a
+  funnel. Every chart can also show its numbers as a table.
+- **Update check.** **⋯ → Check for updates…** tells you when a new version is out.
+  Turn on the automatic check in the same menu if you want it (off by default).
 - **English and Ukrainian** interface, **light and dark** theme.
 - **Start over.** Reset the board in one step; Findy keeps a backup first.
 - **Private by design.** Works offline, no account, no telemetry. Your data lives in a
-  local SQLite database on your computer.
+  local SQLite database on your computer. The only network request Findy can make is
+  the update check, and only when you start it or turn it on; it sends no data.
 - **Windows, macOS and Linux.**
 
 ## Download
@@ -143,7 +151,7 @@ Tools: list and get applications, list stages, add, update, move, add a note,
 delete (the assistant asks you first). The same rules apply as in the app, and an
 open Findy window shows the changes within a second.
 
-**Privacy:** Findy itself makes no network requests. The assistant you connect sends
+**Privacy:** Findy itself sends your data nowhere. The assistant you connect sends
 what it reads to its AI provider, and only when you ask it to work with your board.
 
 ## Where is my data?
