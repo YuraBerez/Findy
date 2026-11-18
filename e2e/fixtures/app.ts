@@ -11,18 +11,22 @@ import {
 import { errorGuardFixture, type ErrorGuard } from 'playwright-e2e-kit'
 import { writeBulkDatabase, type BulkData } from '../data/bulk-database'
 import { FindyBackdoor } from '../data/findy-backdoor'
+import { writeHistoryDatabase, type HistoryApplication } from '../data/history-database'
 import { McpTestClient } from '../data/mcp-client'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
+import { AnalyticsScreen } from '../screens/analytics.screen'
 import { BoardScreen } from '../screens/board.screen'
 import { mousePointer } from './pointer'
 import { ElectronA11ySteps } from '../steps/a11y.steps'
 import { ApplicationSteps } from '../steps/application.steps'
 
 export { expect } from '@playwright/test'
+export type { HistoryApplication } from '../data/history-database'
 
 export interface FindyPages {
   board: BoardScreen
+  analytics: AnalyticsScreen
   dialog: ApplicationDialogScreen
   details: ApplicationDetailsScreen
   applications: ApplicationSteps
@@ -50,6 +54,11 @@ interface Options {
   databaseFile: string | undefined
   /** Many applications and notes written to findy.db before the first launch (NFR-002) */
   bulkData: BulkData | undefined
+  /**
+   * Applications with a past stage history, written before the first launch (spec 005).
+   * An object, because Playwright reads an array option as `[value, options]`.
+   */
+  history: { applications: HistoryApplication[] } | undefined
 }
 
 interface Fixtures extends Options {
@@ -78,6 +87,7 @@ function pagesFor(page: Page): FindyPages {
   const dialog = new ApplicationDialogScreen(page)
   return {
     board,
+    analytics: new AnalyticsScreen(page),
     dialog,
     details: new ApplicationDetailsScreen(page),
     applications: new ApplicationSteps({ board, dialog }),
@@ -90,11 +100,13 @@ export const test = base.extend<Fixtures>({
   systemLocale: ['en-US', { option: true }],
   databaseFile: [undefined, { option: true }],
   bulkData: [undefined, { option: true }],
+  history: [undefined, { option: true }],
 
-  userDataDir: async ({ databaseFile, bulkData }, use) => {
+  userDataDir: async ({ databaseFile, bulkData, history }, use) => {
     const dir = mkdtempSync(join(tmpdir(), 'findy-e2e-'))
     if (databaseFile !== undefined) writeFileSync(join(dir, 'findy.db'), databaseFile)
     if (bulkData) writeBulkDatabase(join(dir, 'findy.db'), bulkData)
+    if (history) writeHistoryDatabase(join(dir, 'findy.db'), history.applications)
     await use(dir)
     // Windows keeps files locked for a moment after a child process exits
     rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 })

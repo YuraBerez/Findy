@@ -33,6 +33,8 @@ and go back to the board quickly.
    opens analytics.
 5. **Given** analytics is open, **When** I go back to the board, **Then** the board
    keeps its search text and scroll position.
+6. **Given** a dialog or the details panel is open, **When** I press Ctrl+2, **Then**
+   nothing changes: the dialog is modal and stays open.
 
 ### US-2 — Applications per day (P1)
 
@@ -119,8 +121,9 @@ As a user with an empty board, I want a clear message instead of empty charts.
   default tab when the app starts.
 - **FR-002** The tabs MUST work with the keyboard: Tab moves focus to the selected tab,
   Left and Right change the tab. Ctrl/Cmd+1 opens the board, Ctrl/Cmd+2 opens analytics.
-- **FR-003** A change of tab MUST NOT reset the board state: search text, scroll
-  position and an open details panel stay as they were.
+  The shortcuts do nothing while a modal dialog (also the details panel) is open.
+- **FR-003** A change of tab MUST NOT reset the board state: the search text and the
+  scroll position stay as they were.
 - **FR-004** Board actions that need the board (search, "New application") MUST be
   hidden or disabled while analytics is open.
 

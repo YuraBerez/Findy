@@ -51,4 +51,51 @@ test.describe('accessibility', () => {
     await findy.refresh()
     await findy.pages.a11y.expectNoViolations()
   })
+
+  // Spec 005 NFR-002: the analytics screen with charts, legend, funnel and a table
+  test.describe('analytics', () => {
+    test.use({
+      history: {
+        applications: [
+          { title: 'A', createdDaysAgo: 0, moves: [['hr_interview', 0]] },
+          {
+            title: 'B',
+            createdDaysAgo: 2,
+            moves: [
+              ['technical_interview', 1],
+              ['rejected', 0],
+            ],
+          },
+        ],
+      },
+    })
+
+    for (const theme of ['light', 'dark'] as const) {
+      test(`analytics has no violations (${theme})`, { tag: '@a11y' }, async ({ findy }) => {
+        await findy.api.setTheme(theme)
+        await findy.refresh()
+        await findy.pages.analytics.openTab('Analytics')
+        await findy.pages.analytics.readBarWithKeyboard(
+          'Applications sent',
+          ['End'],
+          /: 1 application$/,
+        )
+        await findy.pages.a11y.expectNoViolations()
+      })
+    }
+
+    test('analytics in Ukrainian has no violations', { tag: '@a11y' }, async ({ findy }) => {
+      await findy.api.setLanguage('uk')
+      await findy.refresh()
+      await findy.pages.analytics.openTab('Аналітика')
+      await findy.pages.analytics.verifyFunnelStepCount(6)
+      await findy.pages.a11y.expectNoViolations()
+    })
+  })
+
+  test('empty analytics has no violations', { tag: '@a11y' }, async ({ findy }) => {
+    await findy.pages.analytics.openTab('Analytics')
+    await findy.pages.analytics.verifyEmpty()
+    await findy.pages.a11y.expectNoViolations()
+  })
 })

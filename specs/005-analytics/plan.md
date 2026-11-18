@@ -9,7 +9,7 @@ All numbers come from a pure domain module, `src/domain/analytics.ts`. It takes 
 applications, the hidden stages, the period, the grouping and "now", and returns the
 buckets, the series, the funnel and the totals. The renderer calls it in a `useMemo`
 on the state that it already has, so analytics updates with every new `AppState`
-(also after an MCP change). The charts are small SVG components in `ui/`. There is
+(also after an MCP change). The charts are small HTML and CSS components in `ui/`. There is
 no chart library. The period and grouping are one new settings row, `analytics`,
 saved through one new IPC call.
 
@@ -30,7 +30,7 @@ saved through one new IPC call.
 | I. Spec first | ✅ | Spec 005, approved 2026-11-18 |
 | II. Local-first | ✅ | Calculated in the renderer from local data; no network |
 | III. Secure Electron | ✅ | One new IPC call, parsed with zod in main |
-| IV. Cross-platform | ✅ | SVG and CSS only; Ctrl on Windows/Linux, Cmd on macOS |
+| IV. Cross-platform | ✅ | HTML and CSS only; Ctrl on Windows/Linux, Cmd on macOS |
 | V. i18n | ✅ | en + uk keys; dates and numbers through `Intl` |
 | VI. Tested | ✅ | Domain unit tests for every rule; e2e for every scenario |
 | VII. Simplicity | ✅ | No chart library (D-1); no schema change |
@@ -40,8 +40,8 @@ saved through one new IPC call.
 
 | Requirements | Where |
 |--------------|-------|
-| FR-001, FR-002 | `ui/Tabs` (ARIA tabs, roving focus); `app/Toolbar`; shortcuts in `app/App` |
-| FR-003 | `app/App`: the board stays mounted and gets `hidden`; the details panel shows only on the board tab |
+| FR-001, FR-002 | `ui/Tabs` (ARIA tabs, roving focus); `app/Toolbar`; shortcuts in `app/views.ts` |
+| FR-003 | `app/App`: the board stays mounted and gets `hidden`; each tab panel scrolls on its own |
 | FR-004 | `app/Toolbar`: search and "Add application" only on the board tab |
 | FR-010…FR-015 | `domain/analytics.ts`: `periodRange`, `buckets`, `bucketKey`, stage filter |
 | FR-020, FR-021 | `domain/analytics.ts#activity`, `#stageEntries`; `features/analytics/*`; `ui/BarChart` |
@@ -66,7 +66,9 @@ saved through one new IPC call.
 ```
 src/domain/analytics.ts                 # pure: periods, buckets, series, funnel, totals
 src/renderer/ui/Tabs/                   # ARIA tablist with roving focus
-src/renderer/ui/BarChart/               # SVG bars, one or more stacked series
+src/renderer/ui/BarChart/               # bars in HTML/CSS, one or more stacked series
+src/renderer/ui/ChartLegend/            # series toggles (aria-pressed)
+src/renderer/ui/DataTable/              # the numbers behind a chart
 src/renderer/features/analytics/
   Analytics/                            # the screen: filters, totals, charts, empty states
   AnalyticsFilters/                     # period and grouping selects
@@ -78,13 +80,13 @@ src/renderer/features/analytics/
 
 ## Key decisions
 
-### D-1 — Charts in SVG, without a chart library
+### D-1 — Charts in HTML and CSS, without a chart library
 
-- **Options considered:** Recharts, Chart.js, hand-written SVG.
-- **Chosen:** hand-written SVG in `ui/BarChart`; the funnel is CSS bars.
+- **Options considered:** Recharts, Chart.js, hand-written SVG, HTML and CSS bars.
+- **Chosen:** stacked bars of `div`s in `ui/BarChart`; the funnel is CSS bars too.
 - **Why:** The spec needs only bars. A library adds 50–150 kB, its own colours and
-  its own a11y rules (constitution §VII). An SVG chart uses our tokens in both
-  themes and passes the CSP without changes.
+  its own a11y rules (constitution §VII). Flex bars take the width of the container,
+  so the text never scales with the chart (an SVG `viewBox` would stretch it).
 
 ### D-2 — "Stages over time" is a stacked bar chart
 
@@ -105,7 +107,7 @@ src/renderer/features/analytics/
 
 ### D-5 — Series colours are tokens
 
-- `--chart-1…--chart-6` in `global.css`, light and dark, with 3:1 contrast against
+- `--chart-<stageId>` in `global.css` (seven stages), light and dark, with 3:1 contrast against
   `--surface` (WCAG 1.4.11). Each stage keeps the same colour in every chart.
   Labels in the legend and the table carry the meaning; colour is never the only signal.
 
@@ -121,6 +123,6 @@ src/renderer/features/analytics/
 |------|------------|
 | DST and time zones move a stage entry to the wrong day | Local `Date` getters only; unit tests across a DST change |
 | 1 000 applications + "all time" by day is slow | One pass, a `Map` of bucket keys; e2e timing for NFR-003 |
-| Ctrl/Cmd+1/2 conflict with the native menu | The native menu has no such accelerators (checked in `menuTemplate.ts`) |
+| Ctrl/Cmd+1/2 conflict with the native menu or a dialog | The native menu has no such accelerators; the shortcuts do nothing under a modal dialog |
 | Colours too close for colour-blind users | Legend and table labels; stage order is the same in stack and legend |
-| Narrow window | Charts use the width of the container (`viewBox` + `preserveAspectRatio`), axis labels thin out |
+| Narrow window | Charts use the width of the container; axis labels thin out; one column in a narrow window |

@@ -72,6 +72,11 @@ export class ApplicationDetailsScreen extends BaseComponent {
     await this.heading.press('Escape')
   }
 
+  /** A key combination inside the open panel, e.g. an app shortcut (spec 005 FR-002) */
+  async pressShortcut(keys: string): Promise<void> {
+    await this.heading.press(keys)
+  }
+
   // ── Notes ──────────────────────────────────────────────────────────────
 
   async addNote(text: string): Promise<void> {

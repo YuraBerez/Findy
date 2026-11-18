@@ -26,6 +26,22 @@ Do not add effects (gradients, shadows) to the mark: it must stay readable at 16
 | `--on-primary` | `#FFFFFF` | `#0B1520` | Text and icons on `--primary` (dark text in dark theme for AA contrast) |
 
 The dark-theme primary is lighter, so it keeps enough contrast on the dark background.
+
+### Chart colours (spec 005)
+
+One colour per stage, the same in every chart. Each one has a contrast of 3:1 or more
+against `--surface` and `--bg` in its theme (WCAG 1.4.11). Labels in the legend and the
+tables carry the meaning, so colour is never the only signal.
+
+| Token | Light | Dark |
+|-------|-------|------|
+| `--chart-applied` | `#0A66C2` | `#4A9DE8` |
+| `--chart-hr_interview` | `#7B3FBF` | `#B28AF0` |
+| `--chart-test_task` | `#B35C00` | `#F0A14A` |
+| `--chart-technical_interview` | `#00796B` | `#4DB6AC` |
+| `--chart-c_level_interview` | `#C2185B` | `#F06292` |
+| `--chart-offered` | `#2E7D32` | `#66BB6A` |
+| `--chart-rejected` | `#6B7280` | `#9AA3B0` |
 Tokens live in `src/renderer/styles/global.css`.
 
 Findy is not affiliated with any job platform. Do not use other companies' logos or

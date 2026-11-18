@@ -65,6 +65,7 @@ src/
 │   ├── stages.ts        # STAGES constant, StageId
 │   ├── schema.ts        # zod schemas for IPC input & entities
 │   ├── board.ts         # validation + ordering rules for applications
+│   ├── analytics.ts     # spec 005: periods, buckets, stage entries, funnel, totals
 │   └── notes.ts         # validation rules for notes
 ├── shared/
 │   └── ipc.ts           # FindyApi, AppState, channel names
@@ -84,14 +85,17 @@ src/
 │   └── index.ts
 └── renderer/            # component architecture (D-7)
     ├── index.html, main.tsx, i18n.ts, format.ts
-    ├── app/             # App, Toolbar, useAppState (all IPC calls)
+    ├── app/             # App, Toolbar, useAppState (all IPC calls), views.ts (tabs)
     ├── features/        # one folder per feature, one folder per component
     │   ├── board/       # Board/, Column/, Card/, CardActions/, dnd.ts, useBoardDnd.ts
+    │   ├── analytics/   # Analytics/, AnalyticsFilters/, Totals/, ActivityChart/,
+    │   │                # StagesChart/, Funnel/, ChartCard/ (spec 005)
     │   ├── applications/# ApplicationDialog/
     │   ├── settings/    # ThemeToggle/, LanguageSelect/
     │   └── storage/     # StorageError/
     ├── ui/              # design-system primitives: Button, IconButton, Field,
-    │                    # TextField, Select, Dialog, Menu, Switch, icons, styles/
+    │                    # TextField, Select, Dialog, Menu, Switch, Tabs, BarChart,
+    │                    # ChartLegend, DataTable, icons, styles/
     └── styles/          # global.css: tokens and reset only
 locales/
 ├── en.json              # single source for main + renderer strings
@@ -202,6 +206,17 @@ build/                   # icons, entitlements for electron-builder
   one transaction. The open app polls `PRAGMA data_version` (`main/watch.ts`) and
   sends `findy:stateChanged`, so the window shows MCP changes within a second.
 - In MCP mode stdout is the protocol: logs go to stderr.
+
+### D-9 — Analytics in the renderer, charts without a library (spec 005)
+
+- The numbers come from `domain/analytics.ts`, a pure function of the state that the
+  renderer already has. No new IPC read and no SQL aggregates: one pass over 1 000
+  applications takes a few milliseconds, and MCP changes update the charts for free.
+- Charts are `ui/BarChart` (stacked bars in HTML and CSS) and CSS funnel bars. No chart
+  library: smaller bundle, our colour tokens, our a11y rules (constitution §VII, §VIII).
+- One tab stop per chart; the arrow keys move a cursor and an `aria-live` caption reads
+  the value. Every chart can show its numbers as a table.
+- The board stays mounted under the analytics tab (`hidden`), so it keeps its state.
 
 ## Cross-cutting docs
 
