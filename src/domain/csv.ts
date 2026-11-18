@@ -63,7 +63,8 @@ function detectSeparator(text: string): ',' | ';' {
 
 /**
  * FR-011: with or without a BOM, `,` or `;` (from the header row), CRLF or LF, quoted
- * cells with separators, quotes and line breaks. Empty lines are dropped.
+ * cells with separators, quotes and line breaks. An empty line is kept as an empty
+ * record (`[]`), so a record's index + 1 is its row number in a spreadsheet (FR-014).
  * Throws CsvError for text that cannot be CSV.
  */
 export function readCsv(input: string): string[][] {
@@ -82,7 +83,7 @@ export function readCsv(input: string): string[][] {
   }
   const endRow = () => {
     endCell()
-    if (row.some((value) => value !== '')) rows.push(row)
+    rows.push(row.some((value) => value !== '') ? row : [])
     row = []
   }
 

@@ -68,8 +68,8 @@ describe('readCsv (FR-011)', () => {
     ])
   })
 
-  it('drops empty lines and reads a last row without a line end', () => {
-    expect(readCsv('a\r\n\r\nb\r\n,\r\nc')).toEqual([['a'], ['b'], ['c']])
+  it('keeps empty lines as empty records and reads a last row without a line end', () => {
+    expect(readCsv('a\r\n\r\nb\r\n,\r\nc')).toEqual([['a'], [], ['b'], [], ['c']])
   })
 
   it('accepts a lone CR as a line end and keeps short rows short', () => {

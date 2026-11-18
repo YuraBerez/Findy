@@ -219,6 +219,12 @@ describe('planImport (FR-012…FR-016)', () => {
     ])
   })
 
+  it('FR-014: row numbers match the spreadsheet with empty and multi-line rows', () => {
+    const result = plan('\r\nTitle,Company,Notes\r\nok,x,"two\nlines"\r\n\r\n,missing\r\n')
+    expect(result.items.map((item) => item.title)).toEqual(['ok'])
+    expect(result.errors).toEqual([{ row: 5, field: 'title', problem: 'required' }])
+  })
+
   it('skips a note longer than the limit', () => {
     const result = plan(`Title,Company,Notes\r\na,b,${'x'.repeat(10_001)}`)
     expect(result.errors).toEqual([{ row: 2, field: 'notes', problem: 'tooLong' }])

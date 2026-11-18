@@ -104,7 +104,11 @@ const HISTORY_LINE = /^(\S+)\s+[—–-]\s+(.+)$/
  * Nothing is written here; the main process adds `items` after the user confirms.
  */
 export function planImport(rows: string[][], context: ImportContext): ImportPlan {
-  const [header, ...data] = rows.map((row) => row.map(unguardCell))
+  // Empty records keep their place, so row numbers match the spreadsheet (FR-014)
+  const records = rows.map((row, i) => ({ row: i + 1, cells: row.map(unguardCell) }))
+  const filled = records.filter((record) => record.cells.length > 0)
+  const header = filled[0]?.cells
+  const data = filled.slice(1)
   if (!header || data.length === 0) return fatalPlan({ reason: 'noRows' })
 
   const columnOf = lookup(COLUMNS, (labels) => labels.columns, context.labels)
@@ -122,8 +126,7 @@ export function planImport(rows: string[][], context: ImportContext): ImportPlan
   const seen = new Set(context.existing.map(duplicateKey))
   const plan: ImportPlan = { fatal: null, items: [], errors: [], duplicates: 0, hidden: 0 }
 
-  data.forEach((cells, i) => {
-    const row = i + 2
+  data.forEach(({ row, cells }) => {
     const rowErrors: ImportRowError[] = []
     const fail = (field: Column, problem: ImportProblem) => rowErrors.push({ row, field, problem })
     const cell = (column: Column) => {
