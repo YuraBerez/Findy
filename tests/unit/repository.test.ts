@@ -107,6 +107,59 @@ describe('setApplicationColor (spec 007)', () => {
   })
 })
 
+describe('importApplications (spec 008)', () => {
+  const item = (title: string, stage: 'applied' | 'offered' | 'rejected' = 'applied') => ({
+    title,
+    company: 'Acme',
+    url: null,
+    stage,
+    color: 'blue' as const,
+    createdAt: '2026-10-01T08:00:00.000Z',
+    stageHistory: [
+      { stage: 'applied' as const, at: '2026-10-01T08:00:00.000Z' },
+      ...(stage === 'applied' ? [] : [{ stage, at: '2026-10-05T08:00:00.000Z' }]),
+    ],
+    notes: [
+      { text: 'newer', createdAt: '2026-10-03T08:00:00.000Z' },
+      { text: 'older', createdAt: '2026-10-02T08:00:00.000Z' },
+    ],
+  })
+
+  it('adds on top of the columns in file order, with history, notes and colour (FR-018, FR-019)', () => {
+    repo.createApplication(input('Old'))
+    expect(repo.importApplications([item('A'), item('B', 'offered'), item('C')])).toBe(3)
+    expect(column('applied')).toEqual(['A', 'C', 'Old'])
+    expect(column('offered')).toEqual(['B'])
+    const b = repo.listApplications().find((app) => app.title === 'B')!
+    expect(b).toMatchObject({
+      color: 'blue',
+      createdAt: '2026-10-01T08:00:00.000Z',
+      stageHistory: [
+        { stage: 'applied', at: '2026-10-01T08:00:00.000Z' },
+        { stage: 'offered', at: '2026-10-05T08:00:00.000Z' },
+      ],
+      notes: [
+        { text: 'newer', createdAt: '2026-10-03T08:00:00.000Z', updatedAt: null },
+        { text: 'older', createdAt: '2026-10-02T08:00:00.000Z', updatedAt: null },
+      ],
+    })
+    expect(repo.listApplications().map((app) => app.order)).toEqual([0, 1, 2, 0])
+  })
+
+  it('imports into a hidden stage (D-6)', () => {
+    repo.setHiddenStages(['rejected'])
+    repo.importApplications([item('R', 'rejected')])
+    expect(column('rejected')).toEqual(['R'])
+  })
+
+  it('adds all or nothing (FR-017)', () => {
+    repo.createApplication(input('Old'))
+    expect(() => repo.importApplications([item('A'), { ...item('B'), title: '' }])).toThrow()
+    expect(column('applied')).toEqual(['Old'])
+    expect(repo.listApplications()[0]!.order).toBe(0)
+  })
+})
+
 describe('moveApplication (FR-020…024)', () => {
   it('moves between stages, to the requested index, and records history', () => {
     const a = repo.createApplication(input('A'))

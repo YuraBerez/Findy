@@ -4,6 +4,7 @@ import type { AnalyticsView } from '../../../domain/analytics'
 import type { CardColor } from '../../../domain/colors'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
+import type { ImportedApplication } from '../../../domain/transfer'
 import type { Application, Language, Note, Settings, Theme } from '../../../domain/types'
 import { ApplicationStore } from './applications'
 import { NoteStore } from './notes'
@@ -67,6 +68,11 @@ export class Repository {
 
   deleteApplication(id: string): void {
     this.applications.delete(id)
+  }
+
+  /** Spec 008: adds every item in one transaction; returns the number added */
+  importApplications(items: ImportedApplication[]): number {
+    return this.applications.importMany(items)
   }
 
   resetBoard(): void {
