@@ -1,7 +1,7 @@
 # Feature Spec: CSV export and import
 
 - **ID:** 008-csv-import-export
-- **Status:** Approved
+- **Status:** Implemented (0.3.0)
 - **Approved:** 2026-11-18 (owner)
 - **Created:** 2026-11-18
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md), [002-hidden-columns](../002-hidden-columns/spec.md), [003-error-handling](../003-error-handling/spec.md), [007-card-colors](../007-card-colors/spec.md)

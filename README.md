@@ -32,6 +32,7 @@ apply until you get an offer.
 - **Drag and drop** cards between stages (keyboard works too).
 - **Notes on every application.** Who you talked to, salary discussed, next steps.
 - **One click to the vacancy.** Cards with a link open it in your browser.
+- **Card colours.** Mark cards with one of 7 colours from the card's **⋯** menu.
 - **Details panel.** Edit an application and see its stage history as a timeline.
 - **Stage history.** Each card shows how long it has been in its stage.
 - **Analytics.** See how many applications you send per day, week or month, how many
@@ -39,6 +40,9 @@ apply until you get an offer.
   funnel. Every chart can also show its numbers as a table.
 - **Update check.** **⋯ → Check for updates…** tells you when a new version is out.
   Turn on the automatic check in the same menu if you want it (off by default).
+- **CSV export and import.** Save the whole board to a file that opens in any
+  spreadsheet, or add applications from your own table (**⋯ → Export to CSV…**,
+  **Import from CSV…**). Import shows a summary first and never changes existing cards.
 - **English and Ukrainian** interface, **light and dark** theme.
 - **Start over.** Reset the board in one step; Findy keeps a backup first.
 - **Private by design.** Works offline, no account, no telemetry. Your data lives in a
@@ -163,7 +167,7 @@ what it reads to its AI provider, and only when you ask it to work with your boa
 | Linux | `~/.config/Findy/findy.db` |
 
 It is a standard SQLite database: back it up to keep your board, or open it
-with any SQLite tool. The schema is documented in
+with any SQLite tool. To get your applications as a table, use **⋯ → Export to CSV…**. The schema is documented in
 [docs/contracts/database.md](docs/contracts/database.md).
 
 ## Contributing

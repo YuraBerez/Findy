@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import Database from 'better-sqlite3'
+import type { CardColor } from '../../src/domain/colors'
 import type { StageId } from '../../src/domain/stages'
 import { test, type HistoryApplication } from '../fixtures/app'
 
@@ -17,6 +18,8 @@ type Demo = {
   days: number
   url?: string
   notes?: string[]
+  /** Spec 007 */
+  color?: CardColor
 }
 
 // Made-up companies only: screenshots go to the README and social posts
@@ -35,6 +38,7 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       company: 'Example Company 3',
       stage: 'hr_interview',
       days: 4,
+      color: 'green',
       url: 'https://example.com/jobs/2',
       notes: [
         'Call with Olena (recruiter). Salary range discussed: 4–5k.',
@@ -46,6 +50,7 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       company: 'Example Company 4',
       stage: 'test_task',
       days: 6,
+      color: 'orange',
       url: 'https://example.com/jobs/3',
       notes: ['Take-home: small kanban app, 3 days.'],
     },
@@ -62,6 +67,7 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       company: 'Example Company 7',
       stage: 'offered',
       days: 15,
+      color: 'purple',
       url: 'https://example.com/jobs/4',
     },
     { title: 'JavaScript Developer', company: 'Example Company 8', stage: 'rejected', days: 20 },
@@ -80,6 +86,7 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       company: 'Компанія-приклад 3',
       stage: 'hr_interview',
       days: 4,
+      color: 'green',
       url: 'https://example.com/jobs/2',
       notes: [
         'Дзвінок з Оленою (рекрутерка). Обговорили зарплату: 4–5k.',
@@ -91,6 +98,7 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       company: 'Компанія-приклад 4',
       stage: 'test_task',
       days: 6,
+      color: 'orange',
       url: 'https://example.com/jobs/3',
       notes: ['Тестове: маленький канбан-застосунок, 3 дні.'],
     },
@@ -112,6 +120,7 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       company: 'Компанія-приклад 7',
       stage: 'offered',
       days: 15,
+      color: 'purple',
       url: 'https://example.com/jobs/4',
     },
     { title: 'JavaScript-розробник', company: 'Компанія-приклад 8', stage: 'rejected', days: 20 },
@@ -133,8 +142,10 @@ for (const lang of ['en', 'uk'] as const) {
         url: url ?? null,
       })),
     )
-    for (const item of DATA[lang])
+    for (const item of DATA[lang]) {
       for (const note of item.notes ?? []) await findy.api.addNote(item.title, note)
+      if (item.color) await findy.api.setColor(item.title, item.color)
+    }
 
     // Back-date the history, so cards show "4 days ago" and not "this minute"
     const db = new Database(join(userDataDir, 'findy.db'))
