@@ -4,7 +4,7 @@ The non-negotiable principles of the project. Every spec, plan, task and pull
 request must comply. Changing this document requires its own PR with the
 `constitution` label and a short rationale.
 
-**Version:** 1.1.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5)
+**Version:** 1.2.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6)
 
 ---
 
@@ -37,6 +37,11 @@ No production code is written without an approved spec.
    such as Claude, only after the user turns this on in the app (off by default)
    and only for the calls the user's assistant makes. Findy itself still makes no
    network requests. See spec 004.
+6. **Exception — update check.** The app may ask the project's public release page
+   for the latest version. It does this only when the user starts a check, or after
+   the user turns on the automatic check (off by default). The request sends no user
+   data: no applications, notes, settings, identifiers or usage data. The app does
+   not download or install anything. See spec 006.
 
 ## III. Secure Electron by default
 
