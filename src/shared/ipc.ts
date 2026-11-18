@@ -22,6 +22,7 @@ export const IPC_METHODS = [
   'setTheme',
   'setHiddenStages',
   'setAnalyticsView',
+  'setAutoUpdateCheck',
   'setMcpEnabled',
   'getMcpConnection',
   'getSystemLocale',
@@ -139,6 +140,8 @@ export interface FindyApi {
   setHiddenStages(stages: StageId[]): Promise<AppState>
   /** Spec 005: period and grouping of the analytics screen */
   setAnalyticsView(view: AnalyticsView): Promise<AppState>
+  /** Spec 006 FR-002: check for updates at start */
+  setAutoUpdateCheck(enabled: boolean): Promise<AppState>
   /** Spec 004: allow AI assistants (MCP) to use the board */
   setMcpEnabled(enabled: boolean): Promise<AppState>
   /** Spec 004 FR-009: how an MCP client starts Findy's server */

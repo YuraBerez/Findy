@@ -39,4 +39,6 @@ export interface Settings {
   mcpEnabled: boolean
   /** Period and grouping of the analytics screen (spec 005) */
   analytics: AnalyticsView
+  /** Check for a newer version at start, at most once a day (spec 006); off by default */
+  autoUpdateCheck: boolean
 }

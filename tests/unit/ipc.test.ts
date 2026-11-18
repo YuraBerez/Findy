@@ -49,6 +49,7 @@ describe('IPC handlers', () => {
         hiddenStages: [],
         mcpEnabled: false,
         analytics: { period: '30d', grouping: 'day' },
+        autoUpdateCheck: false,
       },
       applications: [],
       storage: okStorage,
@@ -87,6 +88,7 @@ describe('IPC handlers', () => {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
+      autoUpdateCheck: false,
     })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
@@ -191,6 +193,20 @@ describe('analytics view (spec 005, FR-030…FR-032)', () => {
   })
 })
 
+describe('automatic update check (spec 006 FR-002)', () => {
+  it('turns it on and off and rejects other values', async () => {
+    const ctx = setup()
+    expect((await state(ctx.handlers.setAutoUpdateCheck(true))).settings.autoUpdateCheck).toBe(true)
+    expect((await state(ctx.handlers.setAutoUpdateCheck(false))).settings.autoUpdateCheck).toBe(
+      false,
+    )
+    expect(await ctx.handlers.setAutoUpdateCheck('on')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+})
+
 describe('MCP settings (spec 004)', () => {
   it('turns access on and off and gives the connection command', async () => {
     const ctx = setup()
@@ -248,6 +264,7 @@ describe('IPC handlers without storage (FR-054)', () => {
         hiddenStages: [],
         mcpEnabled: false,
         analytics: { period: '30d', grouping: 'day' },
+        autoUpdateCheck: false,
       },
       applications: [],
       storage,

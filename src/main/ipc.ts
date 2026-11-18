@@ -60,6 +60,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: DEFAULT_ANALYTICS_VIEW,
+      autoUpdateCheck: false,
     },
     applications: deps.repository?.listApplications() ?? [],
     storage: deps.storage,
@@ -125,6 +126,10 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     setAnalyticsView: handle(z.tuple([AnalyticsViewSchema]), (view) => {
       repo().setAnalyticsView(view)
+      return state()
+    }),
+    setAutoUpdateCheck: handle(z.tuple([z.boolean()]), (enabled) => {
+      repo().setAutoUpdateCheck(enabled)
       return state()
     }),
     setMcpEnabled: handle(z.tuple([z.boolean()]), (enabled) => {

@@ -23,6 +23,7 @@ export class SettingsStore {
       hiddenStages: parseHiddenStages(map.get('hiddenStages')),
       mcpEnabled: map.get('mcpEnabled') === 'true',
       analytics: parseAnalyticsView(map.get('analytics')),
+      autoUpdateCheck: map.get('autoUpdateCheck') === 'true',
     }
   }
 
@@ -44,6 +45,22 @@ export class SettingsStore {
 
   setAnalyticsView(view: AnalyticsView): Settings {
     return this.set('analytics', JSON.stringify(view))
+  }
+
+  setAutoUpdateCheck(enabled: boolean): Settings {
+    return this.set('autoUpdateCheck', String(enabled))
+  }
+
+  /** Spec 006 FR-004: when the last update check ran; not part of Settings */
+  getLastUpdateCheck(): string | null {
+    const row = this.ctx.db
+      .prepare("SELECT value FROM settings WHERE key = 'lastUpdateCheckAt'")
+      .get() as { value: string } | undefined
+    return row?.value ?? null
+  }
+
+  setLastUpdateCheck(at: string): void {
+    this.set('lastUpdateCheckAt', at)
   }
 
   /** Spec 002 FR-006 */
