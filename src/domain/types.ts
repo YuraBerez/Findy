@@ -1,4 +1,5 @@
 // Entities: docs/data-model.md
+import type { AnalyticsView } from './analytics'
 import type { StageId } from './stages'
 
 export type Language = 'en' | 'uk'
@@ -36,4 +37,6 @@ export interface Settings {
   hiddenStages: StageId[]
   /** AI assistants may use the board through the MCP server (spec 004); off by default */
   mcpEnabled: boolean
+  /** Period and grouping of the analytics screen (spec 005) */
+  analytics: AnalyticsView
 }

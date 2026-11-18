@@ -173,6 +173,7 @@ describe('settings', () => {
       theme: 'system',
       hiddenStages: [],
       mcpEnabled: false,
+      analytics: { period: '30d', grouping: 'day' },
     })
   })
 
@@ -184,6 +185,7 @@ describe('settings', () => {
       theme: 'dark',
       hiddenStages: [],
       mcpEnabled: false,
+      analytics: { period: '30d', grouping: 'day' },
     })
     expect(repo.setTheme('light').theme).toBe('light')
   })
@@ -195,8 +197,27 @@ describe('settings', () => {
       theme: 'system',
       hiddenStages: [],
       mcpEnabled: false,
+      analytics: { period: '30d', grouping: 'day' },
     })
   })
+})
+
+describe('analytics view (spec 005)', () => {
+  it('stores the period and grouping (FR-032)', () => {
+    expect(repo.setAnalyticsView({ period: 'all', grouping: 'month' }).analytics).toEqual({
+      period: 'all',
+      grouping: 'month',
+    })
+    expect(repo.getSettings().analytics).toEqual({ period: 'all', grouping: 'month' })
+  })
+
+  it.each(['not json', '{"period":"1y","grouping":"day"}'])(
+    'reads a damaged value %s as the default (US-6.1)',
+    (value) => {
+      db.prepare("INSERT INTO settings VALUES ('analytics', ?)").run(value)
+      expect(repo.getSettings().analytics).toEqual({ period: '30d', grouping: 'day' })
+    },
+  )
 })
 
 describe('transactions (FR-052)', () => {
@@ -226,6 +247,7 @@ describe('resetBoard (FR-093)', () => {
       theme: 'dark',
       hiddenStages: [],
       mcpEnabled: false,
+      analytics: { period: '30d', grouping: 'day' },
     })
   })
 })

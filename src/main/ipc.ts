@@ -1,5 +1,7 @@
 import { z } from 'zod'
+import { DEFAULT_ANALYTICS_VIEW } from '../domain/analytics'
 import {
+  AnalyticsViewSchema,
   ApplicationInputSchema,
   ApplicationPatchSchema,
   HiddenStagesSchema,
@@ -57,6 +59,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       theme: 'system',
       hiddenStages: [],
       mcpEnabled: false,
+      analytics: DEFAULT_ANALYTICS_VIEW,
     },
     applications: deps.repository?.listApplications() ?? [],
     storage: deps.storage,
@@ -118,6 +121,10 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     setHiddenStages: handle(z.tuple([HiddenStagesSchema]), (stages) => {
       repo().setHiddenStages(stages)
+      return state()
+    }),
+    setAnalyticsView: handle(z.tuple([AnalyticsViewSchema]), (view) => {
+      repo().setAnalyticsView(view)
       return state()
     }),
     setMcpEnabled: handle(z.tuple([z.boolean()]), (enabled) => {

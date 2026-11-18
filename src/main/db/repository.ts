@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto'
 import type { Database } from 'better-sqlite3'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../domain/schema'
 import { DEFAULT_STAGE, isStageId, STAGES, type StageId } from '../../domain/stages'
-import { HiddenStagesSchema } from '../../domain/schema'
+import { DEFAULT_ANALYTICS_VIEW, type AnalyticsView } from '../../domain/analytics'
+import { AnalyticsViewSchema, HiddenStagesSchema } from '../../domain/schema'
 import type { Application, Language, Note, Settings, Theme } from '../../domain/types'
 
 /** Spec 002 FR-006: no application may go into a hidden column (IPC and MCP alike) */
@@ -113,6 +114,7 @@ export class Repository {
       theme: theme === 'light' || theme === 'dark' ? theme : 'system',
       hiddenStages: parseHiddenStages(map.get('hiddenStages')),
       mcpEnabled: map.get('mcpEnabled') === 'true',
+      analytics: parseAnalyticsView(map.get('analytics')),
     }
   }
 
@@ -259,6 +261,11 @@ export class Repository {
     return this.getSettings()
   }
 
+  setAnalyticsView(view: AnalyticsView): Settings {
+    this.setSetting('analytics', JSON.stringify(view))
+    return this.getSettings()
+  }
+
   // ── Helpers ──────────────────────────────────────────────────────────────
 
   private assertVisible(stage: StageId): void {
@@ -323,6 +330,17 @@ function parseHiddenStages(raw: string | undefined): StageId[] {
     return parsed.success ? parsed.data : []
   } catch {
     return []
+  }
+}
+
+/** A damaged or invalid value means the default view (spec 005 US-6.1). */
+function parseAnalyticsView(raw: string | undefined): AnalyticsView {
+  if (!raw) return DEFAULT_ANALYTICS_VIEW
+  try {
+    const parsed = AnalyticsViewSchema.safeParse(JSON.parse(raw))
+    return parsed.success ? parsed.data : DEFAULT_ANALYTICS_VIEW
+  } catch {
+    return DEFAULT_ANALYTICS_VIEW
   }
 }
 
