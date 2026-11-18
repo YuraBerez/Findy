@@ -182,5 +182,66 @@
     "copied": "Скопійовано",
     "otherTitle": "Інші MCP-клієнти",
     "otherHint": "Gemini CLI (~/.gemini/settings.json, розділ \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI та інші застосунки з локальними (stdio) MCP-серверами використовують цю команду."
+  },
+  "views": {
+    "label": "Розділи",
+    "board": "Дошка",
+    "analytics": "Аналітика"
+  },
+  "analytics": {
+    "showTable": "Показати таблицею",
+    "showChart": "Показати графіком",
+    "chartHint": "Наведіть на стовпчик або скористайтеся стрілками, щоб побачити значення.",
+    "noActivity": "За цей період активності немає",
+    "activity": {
+      "title": "Надіслані заявки",
+      "value_one": "{{date}}: {{count}} заявка",
+      "value_few": "{{date}}: {{count}} заявки",
+      "value_many": "{{date}}: {{count}} заявок",
+      "value_other": "{{date}}: {{count}} заявки"
+    },
+    "stages": {
+      "title": "Етапи в часі",
+      "legend": "Показані етапи",
+      "item": "{{stage}}: {{count}}",
+      "value": "{{date}}: {{list}}",
+      "none": "{{date}}: змін етапів немає"
+    },
+    "funnel": {
+      "title": "Воронка",
+      "hint": "Заявки за період, які дійшли до етапу або далі.",
+      "rejected": "Відмови: {{count}}"
+    },
+    "totals": {
+      "label": "Підсумок",
+      "applications": "Надіслано заявок",
+      "interviews": "Співбесіди",
+      "offers": "Офери",
+      "rejections": "Відмови"
+    },
+    "table": {
+      "period": "Період",
+      "applications": "Заявки",
+      "stage": "Етап",
+      "share": "Частка"
+    },
+    "period": {
+      "label": "Період",
+      "7d": "Останні 7 днів",
+      "30d": "Останні 30 днів",
+      "90d": "Останні 90 днів",
+      "all": "Весь час"
+    },
+    "grouping": {
+      "label": "Групувати",
+      "day": "За днями",
+      "week": "За тижнями",
+      "month": "За місяцями"
+    },
+    "empty": {
+      "title": "Даних поки немає",
+      "text": "Додайте заявки на дошці — тут зʼявиться ваша статистика.",
+      "action": "Відкрити дошку"
+    }
   }
 }

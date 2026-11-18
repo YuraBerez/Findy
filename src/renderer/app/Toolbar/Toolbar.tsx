@@ -3,7 +3,8 @@ import logo from '../../../../assets/logo.svg'
 import { SearchBox } from '../../features/search'
 import { useSettingsMenu } from '../../features/settings'
 import type { Language, Theme } from '@shared/ipc'
-import { Button, Menu, MoreIcon } from '@ui'
+import { Button, Menu, MoreIcon, Tabs } from '@ui'
+import { VIEWS, VIEW_ID_PREFIX, type View } from '../views'
 import styles from './Toolbar.module.css'
 
 interface Props {
@@ -18,6 +19,9 @@ interface Props {
   onAssistant(): void
   query: string
   onQueryChange(query: string): void
+  /** Spec 005 FR-001: the board or the analytics screen */
+  view: View
+  onViewChange(view: View): void
 }
 
 export function Toolbar({
@@ -31,6 +35,8 @@ export function Toolbar({
   onAssistant,
   query,
   onQueryChange,
+  view,
+  onViewChange,
 }: Props) {
   const { t } = useTranslation()
   const settings = useSettingsMenu({ onLanguageChange, onThemeChange })
@@ -40,11 +46,25 @@ export function Toolbar({
         <img src={logo} alt="" width={28} height={28} />
         <span className={styles.name}>{t('app.name')}</span>
       </div>
+      {storageReady && (
+        <Tabs
+          label={t('views.label')}
+          items={VIEWS.map((key) => ({ key, label: t(`views.${key}`) }))}
+          value={view}
+          onChange={onViewChange}
+          idPrefix={VIEW_ID_PREFIX}
+        />
+      )}
       <div className={styles.actions}>
-        <SearchBox value={query} onChange={onQueryChange} />
-        <Button variant="primary" onClick={onAdd} disabled={!storageReady}>
-          {t('toolbar.addApplication')}
-        </Button>
+        {/* Spec 005 FR-004: board actions only on the board */}
+        {view === 'board' && (
+          <>
+            <SearchBox value={query} onChange={onQueryChange} />
+            <Button variant="primary" onClick={onAdd} disabled={!storageReady}>
+              {t('toolbar.addApplication')}
+            </Button>
+          </>
+        )}
         <Menu
           triggerLabel={t('toolbar.menu')}
           triggerIcon={<MoreIcon size={18} />}

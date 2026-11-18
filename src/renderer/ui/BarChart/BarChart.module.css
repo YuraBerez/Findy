@@ -1,0 +1,74 @@
+.figure {
+  margin: 0;
+}
+
+.plot {
+  display: flex;
+  gap: var(--space-2);
+  height: 200px;
+  border-radius: 6px;
+}
+
+.plot:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  color: var(--fg-muted);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  text-align: right;
+}
+
+.bars {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 1px;
+  background: linear-gradient(var(--border), var(--border)) bottom 20px left 0 / 100% 1px no-repeat;
+}
+
+.bucket {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bucket[data-active] .stack {
+  background: var(--column-bg);
+}
+
+.stack {
+  display: flex;
+  flex: 1;
+  flex-direction: column-reverse;
+  border-radius: 3px 3px 0 0;
+}
+
+.segment {
+  flex: none;
+  min-height: 2px;
+}
+
+.label {
+  height: 20px;
+  overflow: visible;
+  padding-top: 4px;
+  color: var(--fg-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.caption {
+  min-height: 1.4em;
+  margin-top: var(--space-2);
+  color: var(--fg-muted);
+  font-size: 13px;
+}

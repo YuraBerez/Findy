@@ -1,0 +1,49 @@
+.analytics {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+}
+
+.note {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--fg-muted);
+}
+
+/* NFR-005: one column in a narrow window, two in a wide one */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: var(--space-4);
+}
+
+.grid > * {
+  min-width: 0;
+}
+
+.empty {
+  max-width: 560px;
+  margin: var(--space-6) auto;
+  padding: var(--space-4) var(--space-6);
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}

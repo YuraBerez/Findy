@@ -1,3 +1,4 @@
+import type { AnalyticsGrouping } from '@domain/analytics'
 import { elapsed } from '@domain/time'
 
 /** "3 days ago" / "3 дні тому" (FR-003, FR-043). */
@@ -10,5 +11,36 @@ export function formatSince(iso: string, language: string, now = new Date()): st
 export function formatDateTime(iso: string, language: string): string {
   return new Intl.DateTimeFormat(language, { dateStyle: 'medium', timeStyle: 'short' }).format(
     new Date(iso),
+  )
+}
+
+/** Spec 005: the label of a chart bucket. `short` for the axis, `long` for captions and tables. */
+export function formatBucket(
+  start: Date,
+  grouping: AnalyticsGrouping,
+  language: string,
+  variant: 'short' | 'long',
+): string {
+  if (grouping === 'month') {
+    return new Intl.DateTimeFormat(language, {
+      month: variant === 'short' ? 'short' : 'long',
+      year: 'numeric',
+    }).format(start)
+  }
+  const options: Intl.DateTimeFormatOptions =
+    variant === 'short'
+      ? { day: 'numeric', month: 'short' }
+      : { day: 'numeric', month: 'long', year: 'numeric' }
+  const format = new Intl.DateTimeFormat(language, options)
+  if (grouping === 'day' || variant === 'short') return format.format(start)
+  // A week: "16–22 November 2026"
+  const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6)
+  return format.formatRange(start, end)
+}
+
+/** "25 %" / "2,5 %" */
+export function formatShare(share: number, language: string): string {
+  return new Intl.NumberFormat(language, { style: 'percent', maximumFractionDigits: 1 }).format(
+    share,
   )
 }
