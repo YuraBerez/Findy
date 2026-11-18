@@ -18,5 +18,5 @@
 
 ## Phase 3 — Verification and docs
 
-- [ ] T020 e2e: local release server; US-1, US-2 scenarios; no request when off (SC-001); axe
-- [ ] T021 Docs: ipc.md, data-model.md, security.md, architecture.md (D-10)
+- [x] T020 e2e: local release server; US-1, US-2 scenarios; no request when off (SC-001); axe
+- [x] T021 Docs: ipc.md, data-model.md, security.md, architecture.md (D-10)

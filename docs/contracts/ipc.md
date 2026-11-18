@@ -8,7 +8,8 @@ main, preload and renderer.
 The main process owns the state and the file. Every mutating call is validated
 in main (schema + invariants from [data-model.md](../data-model.md)), applied,
 persisted, and returns the new full state. Invalid input rejects with an
-`IpcError` (`{ code: 'VALIDATION' | 'NOT_FOUND' | 'STORAGE', message }`).
+`IpcError` (`{ code: 'VALIDATION' | 'NOT_FOUND' | 'STORAGE' | 'NETWORK', message }`).
+`NETWORK` (spec 006) means that a manual update check failed.
 `createApplication` and `moveApplication` into a hidden stage (spec 002) reject
 with `VALIDATION`.
 
@@ -45,6 +46,12 @@ interface FindyApi {
   setAnalyticsView(view: {                              // spec 005
     period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month';
   }): Promise<AppState>;
+  setAutoUpdateCheck(enabled: boolean): Promise<AppState>;  // spec 006
+  checkForUpdates(trigger: 'manual' | 'auto'): Promise<     // spec 006
+    | { status: 'available'; version: string; currentVersion: string; url: string }
+    | { status: 'latest'; currentVersion: string }
+    | null                                                  // 'auto' only: off, not due, or failed
+  >;                                                        // 'manual' rejects with NETWORK
   setMcpEnabled(enabled: boolean): Promise<AppState>;    // spec 004
   getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009  // spec 002; rejects all-hidden and duplicates
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
@@ -56,7 +63,7 @@ interface FindyApi {
 interface AppState {
   settings: {
     language: 'en' | 'uk' | null; theme: 'system' | 'light' | 'dark'; hiddenStages: StageId[];
-    mcpEnabled: boolean; analytics: { period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month' };
+    mcpEnabled: boolean; autoUpdateCheck: boolean; analytics: { period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month' };
   };
   applications: Application[];
   storage:

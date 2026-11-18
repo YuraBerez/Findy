@@ -28,3 +28,8 @@ webPreferences: {
 - [ ] Single-instance lock (`app.requestSingleInstanceLock`).
 - [ ] No `remote` module, no `eval`, no `dangerouslySetInnerHTML` for user content.
 - [ ] Electron kept on a supported major version (Dependabot).
+- [ ] Outbound network: only the update check (constitution §II.6, spec 006), from main
+      with `net.fetch`, never from the renderer. It is a GET with no user data, a 10 s
+      timeout and a size limit; the answer is parsed with zod, and "Download" opens only
+      `https://github.com/YuraBerez/findy/releases/…`. `FINDY_RELEASES_URL` replaces the
+      API URL for e2e tests only.
