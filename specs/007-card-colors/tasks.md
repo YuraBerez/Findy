@@ -14,11 +14,11 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — UI
 
-- [ ] T010 `ui/ColorSwatch`, `ui/ColorPicker` (radiogroup, arrow keys); `Menu` submenu option `icon`; colour tokens light/dark (FR-003, FR-005)
-- [ ] T011 `features/colors/useColorOptions`; en/uk strings (colour names, "Colour", "None", accessible label) (FR-003, FR-010)
-- [ ] T012 Card ⋯ menu "Colour" submenu with the current colour; `useAppState.setApplicationColor` (FR-002, FR-004)
-- [ ] T013 Card tint and border, drag overlay, accessible name with the colour (FR-005, FR-010, NFR-002)
-- [ ] T014 Details panel "Colour" section, saves on change (FR-007)
+- [x] T010 `ui/ColorSwatch`, `ui/ColorPicker` (radiogroup, arrow keys); `Menu` submenu option `icon`; colour tokens light/dark (FR-003, FR-005)
+- [x] T011 `features/colors/useColorOptions`; en/uk strings (colour names, "Colour", "None", accessible label) (FR-003, FR-010)
+- [x] T012 Card ⋯ menu "Colour" submenu with the current colour; `useAppState.setApplicationColor` (FR-002, FR-004)
+- [x] T013 Card tint and border, drag overlay, accessible name with the colour (FR-005, FR-010, NFR-002)
+- [x] T014 Details panel "Colour" section, saves on change (FR-007)
 
 ## Phase 3 — Verification and docs
 

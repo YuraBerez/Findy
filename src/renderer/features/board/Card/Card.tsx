@@ -1,10 +1,11 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { useEffect, useRef, type KeyboardEvent } from 'react'
+import { useEffect, useRef, type CSSProperties, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { enteredStageAt } from '@domain/time'
 import type { Application } from '@shared/ipc'
 import { formatDateTime, formatSince } from '../../../format'
+import { colorToken, useColorOptions } from '../../colors'
 import { useBoardActions } from '../BoardActions'
 import { CardActions } from '../CardActions'
 import styles from './Card.module.css'
@@ -15,18 +16,37 @@ interface CardContentProps {
   overlay?: boolean
 }
 
+/** Spec 007 FR-005: the tint follows the card colour token */
+function colorStyle(application: Application): CSSProperties | undefined {
+  return application.color
+    ? ({ '--card-color': colorToken(application.color) } as CSSProperties)
+    : undefined
+}
+
 /** FR-003: title, company, note count, time in the current stage. */
 export function CardContent({ application, overlay = false }: CardContentProps) {
   const { t, i18n } = useTranslation()
+  const colors = useColorOptions()
   const since = enteredStageAt(application)
   return (
-    <div className={styles.body} data-overlay={overlay || undefined}>
+    <div
+      className={styles.body}
+      data-overlay={overlay || undefined}
+      data-color={(overlay && application.color) || undefined}
+      style={overlay ? colorStyle(application) : undefined}
+    >
       <h3 className={styles.title} title={application.title}>
         {application.title}
       </h3>
       <p className={styles.company} title={application.company}>
         {application.company}
       </p>
+      {/* FR-010: the colour is in the card's accessible name, not only seen */}
+      {application.color && (
+        <span className={styles.srOnly}>
+          {t('colors.cardLabel', { color: colors.name(application.color) })}
+        </span>
+      )}
       <footer className={styles.meta}>
         <span>{t('card.notes', { count: application.notes.length })}</span>
         {/* Right edge, in line with the actions above it */}
@@ -83,7 +103,12 @@ export function SortableCard({ application }: { application: Application }) {
       className={styles.card}
       data-testid="card"
       data-dragging={isDragging || undefined}
-      style={{ transform: CSS.Translate.toString(transform), transition }}
+      data-color={application.color ?? undefined}
+      style={{
+        ...colorStyle(application),
+        transform: CSS.Translate.toString(transform),
+        transition,
+      }}
     >
       <div
         ref={(node) => {

@@ -1,6 +1,7 @@
 import { DndContext, DragOverlay } from '@dnd-kit/core'
 import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { CardColor } from '@domain/colors'
 import { filterApplications, toFullIndex } from '@domain/search'
 import { visibleStages, type StageId } from '@domain/stages'
 import type { Application } from '@shared/ipc'
@@ -18,6 +19,7 @@ interface Props {
   onMove: MoveHandler
   onOpen(id: string): void
   onOpenLink(url: string): void
+  onColorChange(id: string, color: CardColor | null): void
   hiddenStages: StageId[]
   onHide(stage: StageId): void
   /** FR-060: show only the cards that match */
@@ -31,6 +33,7 @@ export function Board({
   onMove,
   onOpen,
   onOpenLink,
+  onColorChange,
   hiddenStages,
   onHide,
   query,
@@ -51,6 +54,7 @@ export function Board({
   const actions = useMemo<BoardActions>(
     () => ({
       move: dnd.moveFromMenu,
+      setColor: onColorChange,
       open: onOpen,
       openLink: onOpenLink,
       visible,
@@ -58,7 +62,16 @@ export function Board({
       focusId: dnd.focusId,
       clearFocus: dnd.clearFocus,
     }),
-    [dnd.moveFromMenu, dnd.focusId, dnd.clearFocus, onOpen, onOpenLink, visible, onHide],
+    [
+      dnd.moveFromMenu,
+      dnd.focusId,
+      dnd.clearFocus,
+      onColorChange,
+      onOpen,
+      onOpenLink,
+      visible,
+      onHide,
+    ],
   )
 
   return (

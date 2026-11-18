@@ -23,6 +23,14 @@
   --chart-c_level_interview: #c2185b;
   --chart-offered: #2e7d32;
   --chart-rejected: #6b7280;
+  /* Spec 007: card colours; a card shows a tint of its colour and a border in it */
+  --card-red: #d32f2f;
+  --card-orange: #e65100;
+  --card-yellow: #b38600;
+  --card-green: #2e7d32;
+  --card-blue: #1565c0;
+  --card-purple: #7b1fa2;
+  --card-grey: #6b7280;
   --radius: 8px;
   --space-2: 8px;
   --space-4: 16px;
@@ -58,6 +66,13 @@
     --chart-c_level_interview: #f06292;
     --chart-offered: #66bb6a;
     --chart-rejected: #9aa3b0;
+    --card-red: #ef5350;
+    --card-orange: #ff8a3d;
+    --card-yellow: #fdd835;
+    --card-green: #66bb6a;
+    --card-blue: #42a5f5;
+    --card-purple: #ba68c8;
+    --card-grey: #9aa3b0;
   }
 }
 

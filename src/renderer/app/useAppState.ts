@@ -6,6 +6,7 @@ import {
   errorKind,
   type AnalyticsView,
   type AppState,
+  type CardColor,
   type Language,
   type StageId,
   type Theme,
@@ -85,6 +86,10 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         const current = state.applications.find((application) => application.id === id)
         return current && current.stage !== stage ? moveApplication(id, { stage, index: 0 }) : true
       },
+
+      /** Spec 007 FR-004 */
+      setApplicationColor: (id: string, color: CardColor | null) =>
+        run(() => window.findy.setApplicationColor(id, color)),
 
       deleteApplication: (id: string) => run(() => window.findy.deleteApplication(id)),
       /** FR-090…093: main saves a backup, then deletes every application */
