@@ -18,8 +18,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — UI
 
-- [ ] T020 Notifications: `info` tone and `notify` (FR-008, US-2.2)
-- [ ] T021 App menu items, `ImportDialog`, `useAppState` actions; en/uk strings with plurals (FR-001, FR-010, FR-020, FR-030)
+- [x] T020 Notifications: `info` tone and `notify` (FR-008, US-2.2)
+- [x] T021 App menu items, `ImportDialog`, `useAppState` actions; en/uk strings with plurals (FR-001, FR-010, FR-020, FR-030)
 
 ## Phase 4 — Verification and docs
 

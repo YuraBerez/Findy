@@ -6,6 +6,8 @@ import styles from './Toast.module.css'
 export interface ToastMessage {
   id: number
   text: string
+  /** `error` (default) interrupts as an alert; `info` is a polite status, e.g. "Exported" */
+  tone?: 'error' | 'info'
 }
 
 interface ViewportProps {
@@ -17,7 +19,7 @@ interface ViewportProps {
 
 const LIFETIME_MS = 8_000
 
-/** Error notifications, bottom-right, newest on top (spec 003 FR-007). */
+/** Notifications, bottom-right, newest on top (spec 003 FR-007, spec 008 FR-008). */
 export function ToastViewport({ toasts, closeLabel, onDismiss }: ViewportProps) {
   return (
     <div className={styles.viewport}>
@@ -44,8 +46,9 @@ function Toast({
 
   return (
     <div
-      role="alert"
+      role={toast.tone === 'info' ? 'status' : 'alert'}
       className={styles.toast}
+      data-tone={toast.tone ?? 'error'}
       data-testid="toast"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
