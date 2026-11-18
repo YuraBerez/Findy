@@ -25,6 +25,7 @@ import type {
 } from '../shared/ipc'
 import { HiddenStageError, NotFoundError, type Repository } from './db/repository'
 import { isSafeExternalUrl } from './security'
+import type { Transfer } from './transfer'
 import { UpdateCheckError } from './updates'
 
 export interface IpcDeps {
@@ -41,6 +42,8 @@ export interface IpcDeps {
   backup(label: string): void
   /** Spec 004 FR-009: the command an MCP client runs */
   mcpConnection(): McpConnection
+  /** Spec 008: CSV files; `null` when the database could not be opened */
+  transfer: Transfer | null
   /** Spec 006: main/updates.ts#createUpdateChecker */
   checkForUpdates(trigger: UpdateTrigger): Promise<UpdateCheckResult | null>
 }
@@ -57,6 +60,11 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
   const repo = (): Repository => {
     if (!deps.repository) throw new StorageUnavailableError('Storage is not available')
     return deps.repository
+  }
+
+  const transfer = (): Transfer => {
+    if (!deps.transfer) throw new StorageUnavailableError('Storage is not available')
+    return deps.transfer
   }
 
   const state = (): AppState => ({
@@ -113,6 +121,12 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       deps.backup('reset') // a failed backup throws, and nothing is deleted
       repository.resetBoard()
       return state()
+    }),
+    exportCsv: handle(z.tuple([LanguageSchema]), (language) => transfer().exportCsv(language)),
+    previewImport: handle(none, () => transfer().previewImport()),
+    confirmImport: handle(z.tuple([z.string().min(1).max(100)]), (token) => {
+      const added = transfer().confirmImport(token)
+      return { state: state(), added }
     }),
     addNote: handle(z.tuple([IdSchema, NoteTextSchema]), (applicationId, text) => {
       repo().addNote(applicationId, text)

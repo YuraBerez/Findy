@@ -1,6 +1,8 @@
+import { randomUUID } from 'node:crypto'
 import { spawn } from 'node:child_process'
+import { readFile, stat, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { app, BrowserWindow, ipcMain, nativeTheme, net, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, nativeTheme, net, shell } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
@@ -11,6 +13,7 @@ import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
+import { createTransfer } from './transfer'
 import { createUpdateChecker, fetchLatestRelease } from './updates'
 
 // The same folder the MCP server computes without Electron (paths.ts); must run
@@ -88,8 +91,38 @@ function start(): void {
     },
   })
 
+  // Spec 008: files only through the system dialogs (FR-031)
+  const csvFilter = [{ name: 'CSV', extensions: ['csv'] }]
+  const transfer =
+    repository &&
+    createTransfer({
+      repository,
+      pickSavePath: async (defaultPath) => {
+        const owner = BrowserWindow.getFocusedWindow()
+        const options = { defaultPath, filters: csvFilter }
+        const result = await (owner
+          ? dialog.showSaveDialog(owner, options)
+          : dialog.showSaveDialog(options))
+        return result.canceled ? null : (result.filePath ?? null)
+      },
+      pickOpenPath: async () => {
+        const owner = BrowserWindow.getFocusedWindow()
+        const options = { properties: ['openFile' as const], filters: csvFilter }
+        const result = await (owner
+          ? dialog.showOpenDialog(owner, options)
+          : dialog.showOpenDialog(options))
+        return result.canceled ? null : (result.filePaths[0] ?? null)
+      },
+      fileSize: async (path) => (await stat(path)).size,
+      readText: (path) => readFile(path, 'utf8'),
+      writeText: (path, text) => writeFile(path, text, 'utf8'),
+      now: () => new Date(),
+      newToken: randomUUID,
+    })
+
   const handlers = createHandlers({
     repository,
+    transfer,
     storage,
     appVersion: app.getVersion(),
     getSystemLocale: () => app.getLocale(),

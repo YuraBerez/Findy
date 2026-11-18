@@ -14,7 +14,7 @@ Each task references the requirement(s) it satisfies.
 ## Phase 2 — Main
 
 - [x] T010 `Repository.importApplications`: one transaction, top of columns in file order, hidden stages allowed; tests (FR-017, FR-018, D-6)
-- [ ] T011 `main/transfer.ts` + IPC `exportCsv`, `previewImport`, `confirmImport`; locale labels; tests with fake dialogs and files (FR-002, FR-008, FR-010, FR-017, FR-031, NFR-004)
+- [x] T011 `main/transfer.ts` + IPC `exportCsv`, `previewImport`, `confirmImport`; locale labels; tests with fake dialogs and files (FR-002, FR-008, FR-010, FR-017, FR-031, NFR-004)
 
 ## Phase 3 — UI
 
