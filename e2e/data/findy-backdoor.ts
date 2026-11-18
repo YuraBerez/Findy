@@ -168,6 +168,22 @@ export class FindyBackdoor {
     return this.page.evaluate(() => window.open('https://example.com') !== null)
   }
 
+  /** NFR-005: e.g. the minimum window size of spec 001 */
+  async setWindowSize(width: number, height: number): Promise<void> {
+    await this.app.evaluate(
+      ({ BrowserWindow }, size) =>
+        BrowserWindow.getAllWindows()[0]!.setSize(size.width, size.height),
+      { width, height },
+    )
+  }
+
+  /** True when the window content is wider than the window (NFR-005) */
+  hasHorizontalScroll(): Promise<boolean> {
+    return this.page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth,
+    )
+  }
+
   osPrefersDark(): Promise<boolean> {
     return this.page.evaluate(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
   }

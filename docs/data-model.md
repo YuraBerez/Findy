@@ -63,6 +63,7 @@ column does not add history.
 | `theme` | `'system' \| 'light' \| 'dark'` | `'system'` | FR-080…083 |
 | `mcpEnabled` | `boolean` | `false` | Spec 004: AI assistants may use the board through MCP; row `mcpEnabled` (`'true'`/`'false'`) |
 | `hiddenStages` | `StageId[]` | `[]` | Spec 002: unique, never all stages; stored as a JSON array in the `settings` row `hiddenStages` |
+| `analytics` | `{ period: '7d' \| '30d' \| '90d' \| 'all'; grouping: 'day' \| 'week' \| 'month' }` | `{ period: '30d', grouping: 'day' }` | Spec 005: the view of the analytics screen; a JSON object in the `settings` row `analytics`; an invalid value reads as the default |
 
 ## Invariants
 

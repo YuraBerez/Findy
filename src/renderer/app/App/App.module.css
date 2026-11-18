@@ -12,3 +12,13 @@
   overflow: auto;
   padding: var(--space-4);
 }
+
+/* Spec 005 FR-003: each tab panel scrolls on its own, so the board keeps its scroll */
+.panel {
+  height: 100%;
+  overflow: auto;
+}
+
+.panel[hidden] {
+  display: none;
+}

@@ -1,7 +1,9 @@
 // Renderer ↔ main contract: docs/contracts/ipc.md
+import type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView } from '../domain/analytics'
 import type { StageId } from '../domain/stages'
 import type { Application, Language, Note, Settings, StageChange, Theme } from '../domain/types'
 
+export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView }
 export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
 export const CHANNEL_PREFIX = 'findy:'
@@ -19,6 +21,7 @@ export const IPC_METHODS = [
   'setLanguage',
   'setTheme',
   'setHiddenStages',
+  'setAnalyticsView',
   'setMcpEnabled',
   'getMcpConnection',
   'getSystemLocale',
@@ -134,6 +137,8 @@ export interface FindyApi {
   setTheme(theme: Theme): Promise<AppState>
   /** Spec 002: columns hidden on the board */
   setHiddenStages(stages: StageId[]): Promise<AppState>
+  /** Spec 005: period and grouping of the analytics screen */
+  setAnalyticsView(view: AnalyticsView): Promise<AppState>
   /** Spec 004: allow AI assistants (MCP) to use the board */
   setMcpEnabled(enabled: boolean): Promise<AppState>
   /** Spec 004 FR-009: how an MCP client starts Findy's server */

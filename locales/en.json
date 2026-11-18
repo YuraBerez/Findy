@@ -176,5 +176,64 @@
     "copied": "Copied",
     "otherTitle": "Other MCP clients",
     "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI and other apps that run local (stdio) MCP servers use this command."
+  },
+  "views": {
+    "label": "Views",
+    "board": "Board",
+    "analytics": "Analytics"
+  },
+  "analytics": {
+    "showTable": "Show as table",
+    "showChart": "Show as chart",
+    "chartHint": "Point at a bar or use the arrow keys to see the values.",
+    "noActivity": "No activity in this period",
+    "activity": {
+      "title": "Applications sent",
+      "value_one": "{{date}}: {{count}} application",
+      "value_other": "{{date}}: {{count}} applications"
+    },
+    "stages": {
+      "title": "Stages over time",
+      "legend": "Stages shown",
+      "item": "{{stage}}: {{count}}",
+      "value": "{{date}}: {{list}}",
+      "none": "{{date}}: no stage changes"
+    },
+    "funnel": {
+      "title": "Funnel",
+      "hint": "Applications of the period that reached each stage or a later one.",
+      "rejected": "Rejected: {{count}}"
+    },
+    "totals": {
+      "label": "Summary",
+      "applications": "Applications sent",
+      "interviews": "Interviews",
+      "offers": "Offers",
+      "rejections": "Rejections"
+    },
+    "table": {
+      "period": "Period",
+      "applications": "Applications",
+      "stage": "Stage",
+      "share": "Share"
+    },
+    "period": {
+      "label": "Period",
+      "7d": "Last 7 days",
+      "30d": "Last 30 days",
+      "90d": "Last 90 days",
+      "all": "All time"
+    },
+    "grouping": {
+      "label": "Group by",
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "empty": {
+      "title": "No data yet",
+      "text": "Add applications on the board, and your statistics show here.",
+      "action": "Open the board"
+    }
   }
 }

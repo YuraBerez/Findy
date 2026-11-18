@@ -2,7 +2,14 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyMove } from '@domain/board'
 import type { ValidApplication } from '@domain/forms'
-import { errorKind, type AppState, type Language, type StageId, type Theme } from '@shared/ipc'
+import {
+  errorKind,
+  type AnalyticsView,
+  type AppState,
+  type Language,
+  type StageId,
+  type Theme,
+} from '@shared/ipc'
 
 /**
  * The renderer's copy of the state and every action on it. Main owns the data
@@ -93,6 +100,12 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
           settings: { ...current.settings, hiddenStages: stages },
         }))
         return run(() => window.findy.setHiddenStages(stages))
+      },
+
+      /** Spec 005 FR-032: optimistic, so the charts change at once */
+      setAnalyticsView: (view: AnalyticsView) => {
+        setState((current) => ({ ...current, settings: { ...current.settings, analytics: view } }))
+        return run(() => window.findy.setAnalyticsView(view))
       },
 
       // FR-042: switch at once, then save the choice

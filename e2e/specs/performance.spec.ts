@@ -56,6 +56,31 @@ test.describe('performance with 1 000 applications', { tag: '@perf' }, () => {
       expect(results.searchMs).toBeLessThan(limit(1000))
     })
 
+    // Bulk data: stage i % 7, created (i % 30) days ago; "Position 0" was moved to Offer above
+    await test.step('spec 005 NFR-003: analytics opens and changes its period quickly', async () => {
+      const { analytics } = findy.pages
+      results.analyticsOpenMs = await timed(async () => {
+        await analytics.openTab('Analytics')
+        await analytics.verifyTotals({
+          applications: 1000,
+          interviews: 429,
+          offers: 144,
+          rejections: 142,
+        })
+      })
+      expect(results.analyticsOpenMs).toBeLessThan(limit(300))
+      results.analyticsPeriodMs = await timed(async () => {
+        await analytics.selectPeriod('Last 7 days')
+        await analytics.verifyTotals({
+          applications: 238,
+          interviews: 102,
+          offers: 35,
+          rejections: 34,
+        })
+      })
+      expect(results.analyticsPeriodMs).toBeLessThan(limit(300))
+    })
+
     await testInfo.attach('performance.json', {
       body: JSON.stringify(results, null, 2),
       contentType: 'application/json',

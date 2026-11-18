@@ -42,6 +42,9 @@ interface FindyApi {
   setLanguage(language: 'en' | 'uk'): Promise<AppState>;
   setTheme(theme: 'system' | 'light' | 'dark'): Promise<AppState>;  // sets nativeTheme.themeSource
   setHiddenStages(stages: StageId[]): Promise<AppState>;
+  setAnalyticsView(view: {                              // spec 005
+    period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month';
+  }): Promise<AppState>;
   setMcpEnabled(enabled: boolean): Promise<AppState>;    // spec 004
   getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009  // spec 002; rejects all-hidden and duplicates
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
@@ -51,7 +54,10 @@ interface FindyApi {
 }
 
 interface AppState {
-  settings: { language: 'en' | 'uk' | null; theme: 'system' | 'light' | 'dark'; hiddenStages: StageId[] };
+  settings: {
+    language: 'en' | 'uk' | null; theme: 'system' | 'light' | 'dark'; hiddenStages: StageId[];
+    mcpEnabled: boolean; analytics: { period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month' };
+  };
   applications: Application[];
   storage:
     | { status: 'ok'; dataFilePath: string }

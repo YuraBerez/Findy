@@ -15,6 +15,14 @@
   --toggle-track: #dbe7f5;
   --toggle-knob: #ffffff;
   --toggle-icon: #e8a200;
+  /* Spec 005: one colour per stage in charts, ≥ 3:1 against --surface and --bg */
+  --chart-applied: #0a66c2;
+  --chart-hr_interview: #7b3fbf;
+  --chart-test_task: #b35c00;
+  --chart-technical_interview: #00796b;
+  --chart-c_level_interview: #c2185b;
+  --chart-offered: #2e7d32;
+  --chart-rejected: #6b7280;
   --radius: 8px;
   --space-2: 8px;
   --space-4: 16px;
@@ -43,6 +51,13 @@
     --toggle-track: #2b3442;
     --toggle-knob: #0f1216;
     --toggle-icon: #c9d6ff;
+    --chart-applied: #4a9de8;
+    --chart-hr_interview: #b28af0;
+    --chart-test_task: #f0a14a;
+    --chart-technical_interview: #4db6ac;
+    --chart-c_level_interview: #f06292;
+    --chart-offered: #66bb6a;
+    --chart-rejected: #9aa3b0;
   }
 }
 

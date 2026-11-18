@@ -1,5 +1,6 @@
 // Runtime validation of everything that crosses the IPC boundary (docs/security.md)
 import { z } from 'zod'
+import { ANALYTICS_GROUPINGS, ANALYTICS_PERIODS } from './analytics'
 import { isHttpUrl, LIMITS } from './limits'
 import { STAGES } from './stages'
 
@@ -25,6 +26,12 @@ export const HiddenStagesSchema = z
   .array(StageSchema)
   .refine((stages) => new Set(stages).size === stages.length, { message: 'duplicate_stage' })
   .refine((stages) => new Set(stages).size < STAGES.length, { message: 'all_hidden' })
+
+/** Spec 005 FR-030, FR-031 */
+export const AnalyticsViewSchema = z.object({
+  period: z.enum(ANALYTICS_PERIODS),
+  grouping: z.enum(ANALYTICS_GROUPINGS),
+})
 
 export const ApplicationInputSchema = z.object({
   title: requiredText(LIMITS.title),

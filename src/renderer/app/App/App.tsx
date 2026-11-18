@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { AppState } from '@shared/ipc'
-import { ConfirmDialog } from '@ui'
+import { ConfirmDialog, panelId, tabId } from '@ui'
+import { Analytics } from '../../features/analytics'
 import { ApplicationDetails, ApplicationDialog } from '../../features/applications'
 import { McpDialog } from '../../features/assistant'
 import { Board } from '../../features/board'
@@ -11,6 +12,7 @@ import { StorageError } from '../../features/storage'
 import { Toolbar } from '../Toolbar'
 import { useNotifications } from '../notifications'
 import { useAppState } from '../useAppState'
+import { useViewShortcuts, VIEW_ID_PREFIX, type View } from '../views'
 import styles from './App.module.css'
 
 export function App({ initialState }: { initialState: AppState }) {
@@ -22,11 +24,22 @@ export function App({ initialState }: { initialState: AppState }) {
   const [editingColumns, setEditingColumns] = useState(false)
   const [assistant, setAssistant] = useState(false)
   const [query, setQuery] = useState('')
+  const [view, setView] = useState<View>('board')
   const { hiddenStages } = state.settings
   const { t } = useTranslation()
   const count = state.applications.length
   const opened = state.applications.find((application) => application.id === openId)
   const startAdding = () => setAdding(true)
+  const showBoard = useCallback(() => setView('board'), [])
+  useViewShortcuts(storageReady, setView)
+  // FR-003: the board stays mounted under the analytics tab, so it keeps its state
+  const panel = (key: View) => ({
+    role: 'tabpanel',
+    id: panelId(VIEW_ID_PREFIX, key),
+    'aria-labelledby': tabId(VIEW_ID_PREFIX, key),
+    hidden: view !== key,
+    className: styles.panel,
+  })
 
   return (
     <div className={styles.app} data-testid="app">
@@ -41,21 +54,38 @@ export function App({ initialState }: { initialState: AppState }) {
         onAssistant={() => setAssistant(true)}
         query={query}
         onQueryChange={setQuery}
+        view={view}
+        onViewChange={setView}
       />
       <main className={styles.content}>
         {state.storage.status === 'error' ? (
           <StorageError storage={state.storage} />
         ) : (
-          <Board
-            applications={state.applications}
-            onAdd={startAdding}
-            onMove={actions.moveApplication}
-            onOpen={setOpenId}
-            onOpenLink={actions.openLink}
-            hiddenStages={hiddenStages}
-            onHide={(stage) => actions.setHiddenStages([...hiddenStages, stage])}
-            query={query}
-          />
+          <>
+            <div {...panel('board')}>
+              <Board
+                applications={state.applications}
+                onAdd={startAdding}
+                onMove={actions.moveApplication}
+                onOpen={setOpenId}
+                onOpenLink={actions.openLink}
+                hiddenStages={hiddenStages}
+                onHide={(stage) => actions.setHiddenStages([...hiddenStages, stage])}
+                query={query}
+              />
+            </div>
+            <div {...panel('analytics')}>
+              {view === 'analytics' && (
+                <Analytics
+                  applications={state.applications}
+                  hiddenStages={hiddenStages}
+                  view={state.settings.analytics}
+                  onViewChange={actions.setAnalyticsView}
+                  onShowBoard={showBoard}
+                />
+              )}
+            </div>
+          </>
         )}
       </main>
       {adding && (

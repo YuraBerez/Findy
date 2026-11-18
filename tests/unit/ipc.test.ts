@@ -43,7 +43,13 @@ describe('IPC handlers', () => {
 
   it('returns the full state', async () => {
     expect(await state(ctx.handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system', hiddenStages: [], mcpEnabled: false },
+      settings: {
+        language: null,
+        theme: 'system',
+        hiddenStages: [],
+        mcpEnabled: false,
+        analytics: { period: '30d', grouping: 'day' },
+      },
       applications: [],
       storage: okStorage,
     })
@@ -80,6 +86,7 @@ describe('IPC handlers', () => {
       theme: 'dark',
       hiddenStages: [],
       mcpEnabled: false,
+      analytics: { period: '30d', grouping: 'day' },
     })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
@@ -171,6 +178,19 @@ describe('hidden stages (spec 002)', () => {
   })
 })
 
+describe('analytics view (spec 005, FR-030…FR-032)', () => {
+  it('saves the period and grouping, and rejects unknown values', async () => {
+    const ctx = setup()
+    const view = { period: '90d', grouping: 'week' }
+    expect((await state(ctx.handlers.setAnalyticsView(view))).settings.analytics).toEqual(view)
+    expect(await ctx.handlers.setAnalyticsView({ period: '1y', grouping: 'day' })).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+    expect(await ctx.handlers.setAnalyticsView({ period: 'all' })).toMatchObject({ ok: false })
+  })
+})
+
 describe('MCP settings (spec 004)', () => {
   it('turns access on and off and gives the connection command', async () => {
     const ctx = setup()
@@ -222,7 +242,13 @@ describe('IPC handlers without storage (FR-054)', () => {
   it('returns an empty state with the storage error', async () => {
     const { handlers } = setup({ repository: null, storage })
     expect(await state(handlers.getState())).toEqual({
-      settings: { language: null, theme: 'system', hiddenStages: [], mcpEnabled: false },
+      settings: {
+        language: null,
+        theme: 'system',
+        hiddenStages: [],
+        mcpEnabled: false,
+        analytics: { period: '30d', grouping: 'day' },
+      },
       applications: [],
       storage,
     })
