@@ -4,11 +4,11 @@
 
 ## Phase 0 — Constitution
 
-- [ ] T000 Amendment §II.6 in a separate branch and PR with the `constitution` label (D-1)
+- [x] T000 Amendment §II.6 in a separate branch and PR with the `constitution` label (D-1)
 
 ## Phase 1 — Main and domain
 
-- [ ] T001 Domain `updates.ts`: version compare (SemVer), check due after 24 h; unit tests (FR-004, FR-006)
+- [x] T001 Domain `updates.ts`: version compare (SemVer), check due after 24 h; unit tests (FR-004, FR-006)
 - [ ] T002 Settings rows `autoUpdateCheck`, `lastUpdateCheckAt`; IPC `setAutoUpdateCheck`; tests (FR-002, FR-004)
 - [ ] T003 `main/updates.ts`: fetch and validate the latest release, timeout, size limit, URL check, one request at a time; IPC `checkForUpdates`, error code `NETWORK`; tests (FR-003…FR-006, FR-009…FR-012)
 
