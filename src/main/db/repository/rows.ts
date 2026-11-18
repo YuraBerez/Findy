@@ -1,5 +1,6 @@
 // Table rows (docs/contracts/database.md) and their mapping to entities
 import type { Database } from 'better-sqlite3'
+import type { CardColor } from '../../../domain/colors'
 import type { StageId } from '../../../domain/stages'
 import type { Note } from '../../../domain/types'
 
@@ -10,6 +11,7 @@ export interface ApplicationRow {
   url: string | null
   stage: StageId
   position: number
+  color: CardColor | null
   created_at: string
   updated_at: string
 }

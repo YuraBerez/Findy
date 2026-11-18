@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react'
+import type { CardColor } from '@domain/colors'
 import type { StageId } from '@domain/stages'
 import type { MoveTarget } from './useBoardDnd'
 
@@ -6,6 +7,8 @@ import type { MoveTarget } from './useBoardDnd'
 export interface BoardActions {
   /** Move from the card menu; focus follows the card */
   move(id: string, target: MoveTarget): void
+  /** Spec 007 FR-002 */
+  setColor(id: string, color: CardColor | null): void
   /** FR-025: open the card's details */
   open(id: string): void
   /** FR-016: open the vacancy in the system browser */

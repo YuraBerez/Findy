@@ -35,7 +35,15 @@ export interface MenuSubmenu {
   /** The current choice, shown next to the label */
   value: string
   backLabel: string
-  options: { key: string; label: string; checked: boolean; lang?: string; onSelect(): void }[]
+  options: {
+    key: string
+    label: string
+    checked: boolean
+    lang?: string
+    /** Shown before the label, e.g. a colour sample */
+    icon?: ReactNode
+    onSelect(): void
+  }[]
 }
 
 export interface MenuSeparator {
@@ -213,6 +221,7 @@ export function Menu({ triggerLabel, triggerIcon, label, heading, items }: Props
                   <span className={styles.check} aria-hidden="true">
                     {option.checked && <CheckIcon size={14} />}
                   </span>
+                  {option.icon}
                   {option.label}
                 </button>
               ))}

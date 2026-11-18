@@ -31,10 +31,20 @@ user data. Labels come from locale files (`stages.<id>`).
 | `url` | string \| null | no | `http:`/`https:` only, ≤ 2048 chars |
 | `stage` | StageId | yes | |
 | `order` | number | yes | position within the stage column; lower = higher on screen (DB column `position`) |
+| `color` | CardColor \| null | yes | Spec 007: `null` = no colour (default); a change bumps `updatedAt`, adds no `stageHistory` entry and keeps `order` |
 | `stageHistory` | StageChange[] | yes | ≥ 1 entry; last entry's `stage` equals `stage` |
 | `notes` | Note[] | yes | may be empty |
 | `createdAt` | timestamp | yes | immutable |
 | `updatedAt` | timestamp | yes | ≥ `createdAt`; bumped on any change to the application or its notes |
+
+## CardColor
+
+```ts
+type CardColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'grey';
+```
+
+Spec 007. The order is the palette order (`CARD_COLORS`). Names come from locale files
+(`colors.<id>`); the on-screen colour comes from the theme tokens `--card-<id>`.
 
 ## StageChange
 

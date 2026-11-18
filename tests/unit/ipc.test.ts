@@ -67,6 +67,9 @@ describe('IPC handlers', () => {
     s = await state(h.updateApplication(id, { company: 'Globex' }))
     expect(s.applications[0]?.company).toBe('Globex')
 
+    s = await state(h.setApplicationColor(id, 'purple'))
+    expect(s.applications[0]?.color).toBe('purple')
+
     s = await state(h.moveApplication(id, { stage: 'offered', index: 0 }))
     expect(s.applications[0]?.stage).toBe('offered')
 
@@ -101,6 +104,8 @@ describe('IPC handlers', () => {
     ['createApplication', [{ title: 'a', company: 'b', url: 'ftp://x' }]],
     ['createApplication', []],
     ['updateApplication', ['not-a-uuid', {}]],
+    ['setApplicationColor', ['00000000-0000-4000-8000-000000000001', 'pink']],
+    ['setApplicationColor', ['00000000-0000-4000-8000-000000000001']],
     ['moveApplication', ['00000000-0000-4000-8000-000000000001', { stage: 'nope', index: 0 }]],
     ['addNote', ['00000000-0000-4000-8000-000000000001', '']],
     ['setLanguage', ['de']],

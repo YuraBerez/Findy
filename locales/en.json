@@ -247,5 +247,17 @@
     "later": "Later",
     "latestTitle": "No updates",
     "latestText": "You have the latest version ({{current}})."
+  },
+  "colors": {
+    "title": "Colour",
+    "none": "None",
+    "cardLabel": "Colour: {{color}}",
+    "red": "Red",
+    "orange": "Orange",
+    "yellow": "Yellow",
+    "green": "Green",
+    "blue": "Blue",
+    "purple": "Purple",
+    "grey": "Grey"
   }
 }

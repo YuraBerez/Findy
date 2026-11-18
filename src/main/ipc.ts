@@ -4,6 +4,7 @@ import {
   AnalyticsViewSchema,
   ApplicationInputSchema,
   ApplicationPatchSchema,
+  CardColorSchema,
   HiddenStagesSchema,
   IdSchema,
   LanguageSchema,
@@ -92,6 +93,11 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     updateApplication: handle(z.tuple([IdSchema, ApplicationPatchSchema]), (id, patch) => {
       repo().updateApplication(id, patch)
+      return state()
+    }),
+    // Spec 007 D-1: not part of the patch, so the MCP update tool cannot set it
+    setApplicationColor: handle(z.tuple([IdSchema, CardColorSchema]), (id, color) => {
+      repo().setApplicationColor(id, color)
       return state()
     }),
     moveApplication: handle(z.tuple([IdSchema, MoveTargetSchema]), (id, target) => {

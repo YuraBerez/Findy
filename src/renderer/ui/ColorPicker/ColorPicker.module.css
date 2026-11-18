@@ -1,0 +1,35 @@
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 4px 10px 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.option:hover {
+  border-color: var(--fg-muted);
+}
+
+.option[aria-checked='true'] {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+  font-weight: 600;
+}
+
+.option:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

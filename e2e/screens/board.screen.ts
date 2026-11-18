@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import { BaseComponent, escapeRegExp } from 'playwright-e2e-kit'
-import type { StageId } from '../../src/shared/ipc'
+import type { CardColor, StageId } from '../../src/shared/ipc'
 import type { Pointer } from './pointer'
 
 /** Light and dark `--bg` (src/renderer/styles/global.css) */
@@ -52,6 +52,11 @@ export class BoardScreen extends BaseComponent {
   /** The draggable part of a card: a button named by its text, title first. */
   private card(title: string, scope: Locator = this.board): Locator {
     return scope.getByRole('button', { name: new RegExp(`^${escapeRegExp(title)}(\\s|$)`) })
+  }
+
+  /** The whole card (article) around the handle */
+  private cardBox(title: string): Locator {
+    return this.board.getByTestId('card').filter({ hasText: title })
   }
 
   private cardActions(title: string): Locator {
@@ -330,6 +335,38 @@ export class BoardScreen extends BaseComponent {
     await this.menu.getByRole('menuitem', { name: stageName }).click()
   }
 
+  /** Spec 007 US-1: ⋯ → Colour › → a colour (or "None") */
+  async colorWithMenu(title: string, colorName: string): Promise<void> {
+    await this.openCardMenu(title)
+    await this.colorItem().click()
+    await this.colorOption(colorName).click()
+    await expect(this.menu).toBeHidden()
+  }
+
+  private colorItem(): Locator {
+    return this.menu.getByRole('menuitem', { name: /^(Colour|Колір)/ })
+  }
+
+  private colorOption(name: string): Locator {
+    return this.menu.getByRole('menuitemradio', { name })
+  }
+
+  /**
+   * Spec 007 US-1.6: Enter opens the menu, End goes to "Colour", → opens it with focus on
+   * the current colour (`path[0]`), ↓ walks the path, Enter selects its last option.
+   */
+  async colorWithKeyboard(title: string, path: string[]): Promise<void> {
+    await this.openCardMenuWithKeyboard(title)
+    await this.menu.getByRole('menuitem').first().press('End')
+    await expect(this.colorItem()).toBeFocused()
+    await this.colorItem().press('ArrowRight')
+    for (const [index, name] of path.entries()) {
+      await expect(this.colorOption(name)).toBeFocused()
+      await this.colorOption(name).press(index === path.length - 1 ? 'Enter' : 'ArrowDown')
+    }
+    await expect(this.menu).toBeHidden()
+  }
+
   async openCardMenuWithKeyboard(title: string): Promise<void> {
     await this.cardActions(title).press('Enter')
   }
@@ -412,6 +449,29 @@ export class BoardScreen extends BaseComponent {
     for (const text of texts) await expect(this.card(title)).toContainText(text)
   }
 
+  /** Spec 007 FR-005, FR-010: the tint, and the colour name for assistive technology */
+  async verifyCardColor(title: string, color: CardColor | null, name?: string): Promise<void> {
+    if (color === null) {
+      await expect(this.cardBox(title)).not.toHaveAttribute('data-color')
+      await expect(this.card(title)).not.toHaveAccessibleName(/(Colour|Колір):/)
+      return
+    }
+    await expect(this.cardBox(title)).toHaveAttribute('data-color', color)
+    if (name) await expect(this.card(title)).toHaveAccessibleName(new RegExp(` ${name} `))
+  }
+
+  /** Spec 007 FR-002: the "Colour" item shows the current colour; its panel marks it */
+  async verifyColorMenu(title: string, current: string, options: string[]): Promise<void> {
+    await this.openCardMenu(title)
+    await expect(this.colorItem()).toContainText(current)
+    await this.colorItem().click()
+    await expect(this.menu.getByRole('menuitemradio')).toHaveText(options)
+    await expect(this.menu.getByRole('menuitemradio', { checked: true })).toHaveText(current)
+    await this.colorOption(current).press('Escape') // back to the main panel
+    await this.colorItem().press('Escape') // close
+    await expect(this.menu).toBeHidden()
+  }
+
   async verifyCardFocused(stage: StageId, title: string): Promise<void> {
     await expect(this.card(title, this.column(stage))).toBeFocused()
   }
@@ -420,8 +480,9 @@ export class BoardScreen extends BaseComponent {
     await expect(this.cardActions(title)).toBeFocused()
   }
 
-  async verifyMenuItems(names: string[]): Promise<void> {
-    await expect(this.menu.getByRole('menuitem')).toHaveText(names)
+  /** The card menu: the "Move to" stages, then "Colour" (spec 007) */
+  async verifyMenuItems(stages: string[]): Promise<void> {
+    await expect(this.menu.getByRole('menuitem')).toHaveText([...stages, /^(Colour|Колір)/])
   }
 
   async verifyMenuItemFocused(name: string): Promise<void> {

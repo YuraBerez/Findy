@@ -26,6 +26,7 @@ function appWith(created: string, stageHistory: { stage: StageId; at: string }[]
     url: null,
     stage: stageHistory.at(-1)!.stage,
     order: 0,
+    color: null,
     stageHistory,
     notes: [],
     createdAt: created,

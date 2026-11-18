@@ -6,6 +6,22 @@
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.06);
 }
 
+/* Spec 007 FR-005: a soft tint and a border in the card colour */
+.card[data-color],
+.body[data-overlay][data-color] {
+  border-color: var(--card-color);
+  background: color-mix(in srgb, var(--card-color) 14%, var(--surface));
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .handle {
   border-radius: var(--radius);
   cursor: grab;

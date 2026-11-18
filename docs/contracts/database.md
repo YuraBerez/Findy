@@ -13,7 +13,7 @@ on the user's machine.
 - **Connection pragmas:** `journal_mode = WAL`, `foreign_keys = ON`,
   `synchronous = NORMAL`, `busy_timeout = 5000`.
 
-## Schema (version 1)
+## Schema (version 2)
 
 ```sql
 CREATE TABLE applications (
@@ -24,6 +24,8 @@ CREATE TABLE applications (
   stage       TEXT NOT NULL CHECK (stage IN ('applied','hr_interview','test_task',
                                    'technical_interview','c_level_interview','offered','rejected')),
   position    INTEGER NOT NULL,                        -- order within stage, 0 = top
+  color       TEXT          CHECK (color IS NULL OR color IN
+                            ('red','orange','yellow','green','blue','purple','grey')),  -- v2, spec 007
   created_at  TEXT NOT NULL,                           -- UTC ISO-8601
   updated_at  TEXT NOT NULL
 );
@@ -51,6 +53,10 @@ CREATE TABLE settings (
   value  TEXT NOT NULL
 );
 ```
+
+Version 2 (`002-card-color`, spec 007) adds `applications.color` with `ALTER TABLE …
+ADD COLUMN`; rows from version 1 get `NULL` (no colour). In version 2 databases the
+column is the last one of `applications`.
 
 Column ↔ entity mapping is in [data-model.md](../data-model.md)
 (`position` ↔ `order`, snake_case ↔ camelCase).

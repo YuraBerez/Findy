@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formValuesOf, type ValidApplication } from '@domain/forms'
+import type { CardColor } from '@domain/colors'
 import { visibleStages } from '@domain/stages'
 import type { Application, StageId } from '@shared/ipc'
-import { Badge, Button, ConfirmDialog, Dialog, ExternalLinkIcon, Section } from '@ui'
+import { Badge, Button, ColorPicker, ConfirmDialog, Dialog, ExternalLinkIcon, Section } from '@ui'
 import { formatDateTime } from '../../../format'
+import { useColorOptions } from '../../colors'
 import { NotesPanel, type NoteActions } from '../../notes'
 import { ApplicationFields } from '../ApplicationFields'
 import { StageHistory } from '../StageHistory'
@@ -18,6 +20,8 @@ interface Props {
   onSave(changes: ValidApplication): Promise<boolean>
   onDelete(): Promise<void>
   onOpenLink(url: string): void
+  /** Spec 007 FR-007: saved at once, not with "Save changes" */
+  onColorChange(color: CardColor | null): void
   notes: NoteActions
   hiddenStages: StageId[]
 }
@@ -29,10 +33,12 @@ export function ApplicationDetails({
   onSave,
   onDelete,
   onOpenLink,
+  onColorChange,
   notes,
   hiddenStages,
 }: Props) {
   const { t, i18n } = useTranslation()
+  const colors = useColorOptions()
   const form = useApplicationForm(formValuesOf(application))
   const [saved, setSaved] = useState(false)
   const [confirming, setConfirming] = useState(false)
@@ -87,6 +93,15 @@ export function ApplicationDetails({
             </Button>
           </div>
         </form>
+      </Section>
+
+      <Section title={t('colors.title')}>
+        <ColorPicker
+          label={t('colors.title')}
+          options={colors.options}
+          value={colors.keyOf(application.color)}
+          onChange={(key) => onColorChange(colors.colorOf(key))}
+        />
       </Section>
 
       <Section title={t('details.history')}>

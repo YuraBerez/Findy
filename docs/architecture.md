@@ -63,6 +63,7 @@ must be motivated by a spec and land in the same PR.
 src/
 ├── domain/              # pure logic + zod schemas (shared)
 │   ├── stages.ts        # STAGES constant, StageId
+│   ├── colors.ts        # spec 007: CARD_COLORS, CardColor
 │   ├── schema.ts        # zod schemas for IPC input & entities
 │   ├── board.ts         # validation + ordering rules for applications
 │   ├── analytics.ts     # spec 005: periods, buckets, stage entries, funnel, totals
@@ -94,12 +95,13 @@ src/
     │   ├── analytics/   # Analytics/, AnalyticsFilters/, Totals/, ActivityChart/,
     │   │                # StagesChart/, Funnel/, ChartCard/ (spec 005)
     │   ├── updates/     # UpdateDialog/, useUpdateCheck, useUpdatesMenu (spec 006)
+    │   ├── colors/      # useColorOptions: card colour names and tokens (spec 007)
     │   ├── applications/# ApplicationDialog/
     │   ├── settings/    # ThemeToggle/, LanguageSelect/
     │   └── storage/     # StorageError/
     ├── ui/              # design-system primitives: Button, IconButton, Field,
     │                    # TextField, Select, Dialog, Menu, Switch, Tabs, BarChart,
-    │                    # ChartLegend, DataTable, icons, styles/
+    │                    # ChartLegend, DataTable, ColorSwatch, ColorPicker, icons, styles/
     └── styles/          # global.css: tokens and reset only
 locales/
 ├── en.json              # single source for main + renderer strings

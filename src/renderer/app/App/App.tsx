@@ -77,6 +77,7 @@ export function App({ initialState }: { initialState: AppState }) {
                 onMove={actions.moveApplication}
                 onOpen={setOpenId}
                 onOpenLink={actions.openLink}
+                onColorChange={actions.setApplicationColor}
                 hiddenStages={hiddenStages}
                 onHide={(stage) => actions.setHiddenStages([...hiddenStages, stage])}
                 query={query}
@@ -147,6 +148,7 @@ export function App({ initialState }: { initialState: AppState }) {
             await actions.deleteApplication(opened.id)
           }}
           onOpenLink={actions.openLink}
+          onColorChange={(color) => actions.setApplicationColor(opened.id, color)}
           hiddenStages={hiddenStages}
           notes={{
             add: (text) => actions.addNote(opened.id, text),

@@ -1,5 +1,6 @@
 // Entities: docs/data-model.md
 import type { AnalyticsView } from './analytics'
+import type { CardColor } from './colors'
 import type { StageId } from './stages'
 
 export type Language = 'en' | 'uk'
@@ -24,6 +25,8 @@ export interface Application {
   url: string | null
   stage: StageId
   order: number
+  /** Spec 007: one colour of the palette, or none */
+  color: CardColor | null
   stageHistory: StageChange[]
   notes: Note[]
   createdAt: string

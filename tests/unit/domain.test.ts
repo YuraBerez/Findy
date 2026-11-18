@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
+import { CARD_COLORS, isCardColor } from '../../src/domain/colors'
 import { resolveLanguage } from '../../src/domain/language'
 import {
   ApplicationInputSchema,
   ApplicationPatchSchema,
+  CardColorSchema,
   isHttpUrl,
   MoveTargetSchema,
   NoteTextSchema,
@@ -127,5 +129,24 @@ describe('visible stages (spec 002)', () => {
   it('picks the first visible stage for new applications (FR-007)', () => {
     expect(firstVisibleStage([])).toBe('applied')
     expect(firstVisibleStage(['applied', 'hr_interview'])).toBe('test_task')
+  })
+})
+
+describe('card colours (spec 007 FR-001, FR-009)', () => {
+  it('has the seven colours in palette order', () => {
+    expect(CARD_COLORS).toEqual(['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey'])
+  })
+
+  it('accepts a palette colour or null, nothing else', () => {
+    expect(CardColorSchema.parse('blue')).toBe('blue')
+    expect(CardColorSchema.parse(null)).toBeNull()
+    expect(CardColorSchema.safeParse('pink').success).toBe(false)
+    expect(CardColorSchema.safeParse(undefined).success).toBe(false)
+  })
+
+  it('isCardColor checks the palette', () => {
+    expect(isCardColor('grey')).toBe(true)
+    expect(isCardColor('gray')).toBe(false)
+    expect(isCardColor(1)).toBe(false)
   })
 })

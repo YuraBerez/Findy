@@ -14,6 +14,18 @@ test.describe('accessibility', () => {
       await findy.pages.a11y.expectNoViolations()
     })
 
+    // Spec 007 SC-002: text on every card tint keeps its contrast
+    test(`coloured cards have no violations (${theme})`, { tag: '@a11y' }, async ({ findy }) => {
+      const colors = ['red', 'orange', 'yellow', 'green', 'blue', 'purple', 'grey'] as const
+      await findy.api.setTheme(theme)
+      await findy.api.seed(colors.map((color) => ({ title: `${color} card`, company: 'Acme' })))
+      for (const color of colors) await findy.api.setColor(`${color} card`, color)
+      await findy.api.addNote('red card', 'note')
+      await findy.refresh()
+      await findy.pages.board.verifyTheme(theme)
+      await findy.pages.a11y.expectNoViolations()
+    })
+
     test(`dialog with errors has no violations (${theme})`, { tag: '@a11y' }, async ({ findy }) => {
       await findy.api.setTheme(theme)
       await findy.refresh()

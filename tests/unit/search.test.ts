@@ -15,6 +15,7 @@ const app = (
   url: null,
   stage,
   order,
+  color: null,
   stageHistory: [{ stage, at: '2026-11-10T00:00:00Z' }],
   notes: [],
   createdAt: '2026-11-10T00:00:00Z',

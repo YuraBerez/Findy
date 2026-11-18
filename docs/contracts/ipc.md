@@ -30,6 +30,8 @@ interface FindyApi {
   updateApplication(id: string, patch: {
     title?: string; company?: string; url?: string | null;
   }): Promise<AppState>;
+  setApplicationColor(id: string,                       // spec 007; not in updateApplication,
+    color: CardColor | null): Promise<AppState>;         // so the MCP update tool cannot set it
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>;
   deleteApplication(id: string): Promise<AppState>;
   resetBoard(): Promise<AppState>;                    // backup first, then delete all applications (FR-090…093)
