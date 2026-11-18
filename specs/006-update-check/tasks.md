@@ -14,7 +14,7 @@
 
 ## Phase 2 — UI
 
-- [ ] T010 App menu: "Check for updates…", "Check for updates automatically"; `UpdateDialog`; auto check at start; dialog waits for other dialogs; en/uk (FR-001, FR-002, FR-007…FR-010)
+- [x] T010 App menu: "Check for updates…", "Check for updates automatically"; `UpdateDialog`; auto check at start; dialog waits for other dialogs; en/uk (FR-001, FR-002, FR-007…FR-010)
 
 ## Phase 3 — Verification and docs
 
