@@ -259,5 +259,18 @@
     "blue": "Blue",
     "purple": "Purple",
     "grey": "Grey"
+  },
+  "transfer": {
+    "columns": {
+      "title": "Title",
+      "company": "Company",
+      "url": "Link",
+      "stage": "Stage",
+      "color": "Colour",
+      "createdAt": "Created",
+      "inStageSince": "In stage since",
+      "history": "Stage history",
+      "notes": "Notes"
+    }
   }
 }

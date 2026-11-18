@@ -267,5 +267,18 @@
     "blue": "Синій",
     "purple": "Фіолетовий",
     "grey": "Сірий"
+  },
+  "transfer": {
+    "columns": {
+      "title": "Назва",
+      "company": "Компанія",
+      "url": "Посилання",
+      "stage": "Етап",
+      "color": "Колір",
+      "createdAt": "Створено",
+      "inStageSince": "На етапі з",
+      "history": "Історія етапів",
+      "notes": "Нотатки"
+    }
   }
 }
