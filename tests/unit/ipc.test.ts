@@ -8,6 +8,7 @@ import {
   type IpcResult,
   unwrap,
 } from '../../src/shared/ipc'
+import { UpdateCheckError } from '../../src/main/updates'
 import { memoryRepository } from './helpers/db'
 
 const okStorage = { status: 'ok' as const, dataFilePath: '/data/findy.db' }
@@ -28,6 +29,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
       args: ['--mcp'],
       env: {},
     }),
+    checkForUpdates: vi.fn(async () => ({ status: 'latest' as const, currentVersion: '0.1.0' })),
     ...overrides,
   }
   return { deps, handlers: createHandlers(deps) }
@@ -204,6 +206,32 @@ describe('automatic update check (spec 006 FR-002)', () => {
       ok: false,
       error: { code: 'VALIDATION' },
     })
+  })
+})
+
+describe('checkForUpdates (spec 006)', () => {
+  it('passes the trigger and returns the result', async () => {
+    const ctx = setup()
+    expect(unwrap(await ctx.handlers.checkForUpdates('manual'))).toEqual({
+      status: 'latest',
+      currentVersion: '0.1.0',
+    })
+    expect(ctx.deps.checkForUpdates).toHaveBeenCalledWith('manual')
+    expect(await ctx.handlers.checkForUpdates('weekly')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+
+  it('reports a failed check as NETWORK (FR-009)', async () => {
+    const ctx = setup({
+      checkForUpdates: vi.fn(async () => {
+        throw new UpdateCheckError('offline')
+      }),
+    })
+    const result = await ctx.handlers.checkForUpdates('manual')
+    expect(result).toEqual({ ok: false, error: { code: 'NETWORK', message: 'offline' } })
+    expect(errorKind(new IpcError({ code: 'NETWORK', message: 'offline' }))).toBe('network')
   })
 })
 
