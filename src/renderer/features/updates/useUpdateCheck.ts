@@ -1,26 +1,24 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { UpdateCheckResult, UpdateTrigger } from '@shared/ipc'
 
 /**
  * Spec 006: the automatic check once at start (main decides if it is on and due), the
  * manual check, and the result to show. An automatic "up to date" shows nothing.
- * `check` must be stable (useAppState memoises it), or the automatic check repeats.
  */
 export function useUpdateCheck(
   enabled: boolean,
   check: (trigger: UpdateTrigger) => Promise<UpdateCheckResult | null>,
 ) {
   const [result, setResult] = useState<UpdateCheckResult | null>(null)
+  // Once per start: `check` changes with the language, and StrictMode runs effects twice
+  const started = useRef(false)
 
   useEffect(() => {
-    if (!enabled) return
-    let live = true
+    if (!enabled || started.current) return
+    started.current = true
     void check('auto').then((found) => {
-      if (live && found?.status === 'available') setResult(found)
+      if (found?.status === 'available') setResult(found)
     })
-    return () => {
-      live = false
-    }
   }, [enabled, check])
 
   const checkNow = useCallback(async () => {

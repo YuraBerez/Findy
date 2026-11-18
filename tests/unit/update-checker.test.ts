@@ -54,6 +54,13 @@ describe('fetchLatestRelease (spec 006 FR-005, FR-011, FR-012)', () => {
       /repository/,
     ],
     ['a huge answer', fakeFetch('x'.repeat(1_000_001)), /too large/],
+    [
+      'a huge declared size',
+      vi.fn(
+        async () => new Response('{}', { headers: { 'Content-Length': '5000000' } }),
+      ) as unknown as typeof fetch,
+      /too large/,
+    ],
   ])('rejects %s', async (_name, fetchFn, message) => {
     await expect(fetchLatestRelease(fetchFn)).rejects.toThrow(message)
     await expect(fetchLatestRelease(fetchFn)).rejects.toBeInstanceOf(UpdateCheckError)

@@ -48,8 +48,8 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
   }
 
   /**
-   * Spec 006: stable, so the automatic check at start runs once. A failure of a manual
-   * check shows a notification (FR-009); an automatic check never fails (FR-010).
+   * Spec 006: a failure of a manual check shows a notification (FR-009); an automatic
+   * check never fails (FR-010).
    */
   const checkForUpdates = useCallback(
     async (trigger: UpdateTrigger) => {

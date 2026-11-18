@@ -51,6 +51,9 @@ export async function fetchLatestRelease(
       signal: AbortSignal.timeout(timeoutMs),
     })
     if (!response.ok) throw new UpdateCheckError(`HTTP ${response.status}`)
+    // Refuse a huge answer before it is read, when the server says its size
+    if (Number(response.headers.get('content-length')) > MAX_CHARS)
+      throw new UpdateCheckError('The answer is too large')
     text = await response.text()
   } catch (error) {
     if (error instanceof UpdateCheckError) throw error

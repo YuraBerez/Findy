@@ -74,12 +74,12 @@ function start(): void {
   nativeTheme.themeSource = repository?.getSettings().theme ?? 'system'
   applyMenu(resolveLanguage(repository?.getSettings().language ?? null, app.getLocale()))
 
-  // Spec 006. FINDY_RELEASES_URL points e2e tests at a local release server (plan D-4)
+  // Spec 006. FINDY_RELEASES_URL points e2e tests at a local release server (plan D-4);
+  // a packaged app ignores it, so it always asks the project's own release page
+  const releasesUrl = app.isPackaged ? undefined : process.env.FINDY_RELEASES_URL
   const checkForUpdates = createUpdateChecker({
     fetchLatest: () =>
-      fetchLatestRelease((input, init) => net.fetch(String(input), init), {
-        url: process.env.FINDY_RELEASES_URL,
-      }),
+      fetchLatestRelease((input, init) => net.fetch(String(input), init), { url: releasesUrl }),
     currentVersion: app.getVersion(),
     settings: repository && {
       autoCheck: () => repository.getSettings().autoUpdateCheck,

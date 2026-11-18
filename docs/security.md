@@ -32,4 +32,4 @@ webPreferences: {
       with `net.fetch`, never from the renderer. It is a GET with no user data, a 10 s
       timeout and a size limit; the answer is parsed with zod, and "Download" opens only
       `https://github.com/YuraBerez/findy/releases/…`. `FINDY_RELEASES_URL` replaces the
-      API URL for e2e tests only.
+      API URL for e2e tests; a packaged app ignores it.
