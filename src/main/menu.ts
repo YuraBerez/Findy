@@ -1,7 +1,8 @@
 import { app, Menu, shell } from 'electron'
 import type { Language } from '../domain/types'
 import { createMainTranslator } from './i18n'
-import { buildMenuTemplate, PROJECT_URL } from './menuTemplate'
+import { PROJECT_URL } from '../shared/project'
+import { buildMenuTemplate } from './menuTemplate'
 
 /** Builds and installs the native menu in `language`; call again after a change (FR-044). */
 export function applyMenu(language: Language): void {

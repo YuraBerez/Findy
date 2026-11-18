@@ -22,6 +22,8 @@ export const IPC_METHODS = [
   'setTheme',
   'setHiddenStages',
   'setAnalyticsView',
+  'setAutoUpdateCheck',
+  'checkForUpdates',
   'setMcpEnabled',
   'getMcpConnection',
   'getSystemLocale',
@@ -34,7 +36,7 @@ export type IpcMethod = (typeof IPC_METHODS)[number]
 export const IPC_EVENTS = ['languageChanged', 'storageError', 'stateChanged'] as const
 export type IpcEvent = (typeof IPC_EVENTS)[number]
 
-export type IpcErrorCode = 'VALIDATION' | 'NOT_FOUND' | 'STORAGE'
+export type IpcErrorCode = 'VALIDATION' | 'NOT_FOUND' | 'STORAGE' | 'NETWORK'
 
 export interface IpcErrorPayload {
   code: IpcErrorCode
@@ -44,7 +46,7 @@ export interface IpcErrorPayload {
 /** Every handler resolves with an envelope, so error codes survive the IPC boundary. */
 export type IpcResult<T> = { ok: true; data: T } | { ok: false; error: IpcErrorPayload }
 
-const ERROR_CODES: readonly IpcErrorCode[] = ['VALIDATION', 'NOT_FOUND', 'STORAGE']
+const ERROR_CODES: readonly IpcErrorCode[] = ['VALIDATION', 'NOT_FOUND', 'STORAGE', 'NETWORK']
 
 /**
  * contextBridge passes only the message of an Error to the renderer, so the code is
@@ -60,7 +62,7 @@ export class IpcError extends Error {
   }
 }
 
-export type ErrorKind = 'validation' | 'notFound' | 'storage' | 'unknown'
+export type ErrorKind = 'validation' | 'notFound' | 'storage' | 'network' | 'unknown'
 
 /** Spec 003 FR-002: what kind of message the user needs for this failure. */
 export function errorKind(error: unknown): ErrorKind {
@@ -71,6 +73,8 @@ export function errorKind(error: unknown): ErrorKind {
       return 'notFound'
     case 'STORAGE':
       return 'storage'
+    case 'NETWORK':
+      return 'network'
     default:
       return 'unknown'
   }
@@ -103,6 +107,13 @@ export interface McpConnection {
   /** Environment for the command, e.g. ELECTRON_RUN_AS_NODE=1 */
   env: Record<string, string>
 }
+
+/** Spec 006: who started the check */
+export type UpdateTrigger = 'manual' | 'auto'
+
+export type UpdateCheckResult =
+  | { status: 'available'; version: string; currentVersion: string; url: string }
+  | { status: 'latest'; currentVersion: string }
 
 export interface AppInfo {
   version: string
@@ -139,6 +150,13 @@ export interface FindyApi {
   setHiddenStages(stages: StageId[]): Promise<AppState>
   /** Spec 005: period and grouping of the analytics screen */
   setAnalyticsView(view: AnalyticsView): Promise<AppState>
+  /**
+   * Spec 006: `manual` always checks and rejects with NETWORK on failure; `auto` resolves
+   * to null when the automatic check is off, not due, or failed.
+   */
+  checkForUpdates(trigger: UpdateTrigger): Promise<UpdateCheckResult | null>
+  /** Spec 006 FR-002: check for updates at start */
+  setAutoUpdateCheck(enabled: boolean): Promise<AppState>
   /** Spec 004: allow AI assistants (MCP) to use the board */
   setMcpEnabled(enabled: boolean): Promise<AppState>
   /** Spec 004 FR-009: how an MCP client starts Findy's server */

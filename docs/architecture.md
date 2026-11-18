@@ -66,9 +66,11 @@ src/
 │   ├── schema.ts        # zod schemas for IPC input & entities
 │   ├── board.ts         # validation + ordering rules for applications
 │   ├── analytics.ts     # spec 005: periods, buckets, stage entries, funnel, totals
+│   ├── updates.ts       # spec 006: SemVer compare, the 24-hour check rule
 │   └── notes.ts         # validation rules for notes
 ├── shared/
-│   └── ipc.ts           # FindyApi, AppState, channel names
+│   ├── ipc.ts           # FindyApi, AppState, channel names
+│   └── project.ts       # every GitHub URL of the project (home, issues, releases, API)
 ├── main/
 │   ├── index.ts         # window, lifecycle, single instance, CSP
 │   ├── ipc.ts           # ipcMain.handle registrations
@@ -79,6 +81,7 @@ src/
 │   │   └── repository/      # index.ts: the Repository facade for IPC and MCP;
 │   │                        # applications.ts, notes.ts, settings.ts: one store each;
 │   │                        # rows.ts: table rows and mapping; errors.ts
+│   ├── updates.ts       # spec 006: latest release request, the update checker
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
 ├── preload/
@@ -90,6 +93,7 @@ src/
     │   ├── board/       # Board/, Column/, Card/, CardActions/, dnd.ts, useBoardDnd.ts
     │   ├── analytics/   # Analytics/, AnalyticsFilters/, Totals/, ActivityChart/,
     │   │                # StagesChart/, Funnel/, ChartCard/ (spec 005)
+    │   ├── updates/     # UpdateDialog/, useUpdateCheck, useUpdatesMenu (spec 006)
     │   ├── applications/# ApplicationDialog/
     │   ├── settings/    # ThemeToggle/, LanguageSelect/
     │   └── storage/     # StorageError/
@@ -217,6 +221,18 @@ build/                   # icons, entitlements for electron-builder
 - One tab stop per chart; the arrow keys move a cursor and an `aria-live` caption reads
   the value. Every chart can show its numbers as a table.
 - The board stays mounted under the analytics tab (`hidden`), so it keeps its state.
+
+### D-10 — Update check in main, off by default (spec 006)
+
+- The only network request that Findy itself makes (constitution §II.6). Main calls
+  the GitHub API `releases/latest` with `net.fetch`; the renderer CSP does not change.
+- `createUpdateChecker` owns the rules: an automatic check runs at start only when it
+  is on and 24 hours passed, and never fails; a manual check always runs and rejects
+  with `NETWORK`. One request at a time.
+- No updater library and no download: "Download" opens the release page in the
+  browser. Auto-install needs code signing on macOS first (D-5).
+- e2e sets `FINDY_RELEASES_URL` to a local fake server, and to a closed port when a
+  test has no server, so tests never reach GitHub.
 
 ## Cross-cutting docs
 

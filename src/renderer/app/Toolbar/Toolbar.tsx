@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import logo from '../../../../assets/logo.svg'
 import { SearchBox } from '../../features/search'
 import { useSettingsMenu } from '../../features/settings'
+import { useUpdatesMenu } from '../../features/updates'
 import type { Language, Theme } from '@shared/ipc'
 import { Button, Menu, MoreIcon, Tabs } from '@ui'
 import { VIEWS, VIEW_ID_PREFIX, type View } from '../views'
@@ -22,6 +23,10 @@ interface Props {
   /** Spec 005 FR-001: the board or the analytics screen */
   view: View
   onViewChange(view: View): void
+  /** Spec 006 FR-001, FR-002 */
+  autoUpdateCheck: boolean
+  onCheckUpdates(): void
+  onAutoUpdateCheckChange(enabled: boolean): void
 }
 
 export function Toolbar({
@@ -37,9 +42,17 @@ export function Toolbar({
   onQueryChange,
   view,
   onViewChange,
+  autoUpdateCheck,
+  onCheckUpdates,
+  onAutoUpdateCheckChange,
 }: Props) {
   const { t } = useTranslation()
   const settings = useSettingsMenu({ onLanguageChange, onThemeChange })
+  const updates = useUpdatesMenu({
+    autoCheck: autoUpdateCheck,
+    onCheck: onCheckUpdates,
+    onAutoCheckChange: onAutoUpdateCheckChange,
+  })
   return (
     <header className={styles.toolbar} aria-label={t('toolbar.label')}>
       <div className={styles.brand}>
@@ -85,6 +98,10 @@ export function Toolbar({
               disabled: !storageReady,
               onSelect: onAssistant,
             },
+            { key: 'updates-start', separator: true },
+            // A manual check works without the database; the switch needs it (FR-001)
+            ...(storageReady ? updates : updates.slice(0, 1)),
+            { key: 'updates-end', separator: true },
             {
               key: 'reset',
               label: t('reset.menuItem'),

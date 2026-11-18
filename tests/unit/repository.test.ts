@@ -174,6 +174,7 @@ describe('settings', () => {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
+      autoUpdateCheck: false,
     })
   })
 
@@ -186,6 +187,7 @@ describe('settings', () => {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
+      autoUpdateCheck: false,
     })
     expect(repo.setTheme('light').theme).toBe('light')
   })
@@ -198,6 +200,7 @@ describe('settings', () => {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
+      autoUpdateCheck: false,
     })
   })
 })
@@ -218,6 +221,17 @@ describe('analytics view (spec 005)', () => {
       expect(repo.getSettings().analytics).toEqual({ period: '30d', grouping: 'day' })
     },
   )
+})
+
+describe('update check settings (spec 006)', () => {
+  it('stores the switch and the time of the last check (FR-002, FR-004)', () => {
+    expect(repo.getSettings().autoUpdateCheck).toBe(false)
+    expect(repo.setAutoUpdateCheck(true).autoUpdateCheck).toBe(true)
+    expect(repo.getLastUpdateCheck()).toBeNull()
+    repo.setLastUpdateCheck('2026-11-18T10:00:00.000Z')
+    expect(repo.getLastUpdateCheck()).toBe('2026-11-18T10:00:00.000Z')
+    expect(repo.getSettings()).not.toHaveProperty('lastUpdateCheckAt')
+  })
 })
 
 describe('transactions (FR-052)', () => {
@@ -248,6 +262,7 @@ describe('resetBoard (FR-093)', () => {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
+      autoUpdateCheck: false,
     })
   })
 })

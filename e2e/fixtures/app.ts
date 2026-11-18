@@ -13,9 +13,11 @@ import { writeBulkDatabase, type BulkData } from '../data/bulk-database'
 import { FindyBackdoor } from '../data/findy-backdoor'
 import { writeHistoryDatabase, type HistoryApplication } from '../data/history-database'
 import { McpTestClient } from '../data/mcp-client'
+import { ReleaseServer, type FakeRelease } from '../data/release-server'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { AnalyticsScreen } from '../screens/analytics.screen'
+import { UpdatesScreen } from '../screens/updates.screen'
 import { BoardScreen } from '../screens/board.screen'
 import { mousePointer } from './pointer'
 import { ElectronA11ySteps } from '../steps/a11y.steps'
@@ -27,6 +29,7 @@ export type { HistoryApplication } from '../data/history-database'
 export interface FindyPages {
   board: BoardScreen
   analytics: AnalyticsScreen
+  updates: UpdatesScreen
   dialog: ApplicationDialogScreen
   details: ApplicationDetailsScreen
   applications: ApplicationSteps
@@ -45,6 +48,8 @@ export interface Findy {
   restart(): Promise<FindyPages>
   /** Start `Findy --mcp` on the same database and connect an MCP client (spec 004) */
   connectMcp(): Promise<McpTestClient>
+  /** The fake release API, when the test sets `latestRelease` (spec 006) */
+  releases: ReleaseServer | null
 }
 
 interface Options {
@@ -59,19 +64,29 @@ interface Options {
    * An object, because Playwright reads an array option as `[value, options]`.
    */
   history: { applications: HistoryApplication[] } | undefined
+  /** Serve this as the latest release through a local server (spec 006, plan D-4) */
+  latestRelease: FakeRelease | undefined
 }
 
 interface Fixtures extends Options {
   userDataDir: string
+  releaseServer: ReleaseServer | null
   electronApp: ElectronApplication
   errorGuard: ErrorGuard
   findy: Findy
 }
 
-async function launch(userDataDir: string, systemLocale: string): Promise<ElectronApplication> {
+async function launch(
+  userDataDir: string,
+  systemLocale: string,
+  releases: ReleaseServer | null,
+): Promise<ElectronApplication> {
   const args = ['.', `--lang=${systemLocale}`]
   if (process.env.CI && process.platform === 'linux') args.push('--no-sandbox')
-  return electron.launch({ args, env: { ...process.env, FINDY_USER_DATA_DIR: userDataDir } })
+  const env: Record<string, string> = { ...process.env, FINDY_USER_DATA_DIR: userDataDir }
+  // Never reach the real GitHub from a test: without a fake server, point at a closed port
+  env.FINDY_RELEASES_URL = releases?.url ?? 'http://127.0.0.1:9/latest'
+  return electron.launch({ args, env })
 }
 
 async function firstWindow(app: ElectronApplication): Promise<Page> {
@@ -88,6 +103,7 @@ function pagesFor(page: Page): FindyPages {
   return {
     board,
     analytics: new AnalyticsScreen(page),
+    updates: new UpdatesScreen(page),
     dialog,
     details: new ApplicationDetailsScreen(page),
     applications: new ApplicationSteps({ board, dialog }),
@@ -101,6 +117,13 @@ export const test = base.extend<Fixtures>({
   databaseFile: [undefined, { option: true }],
   bulkData: [undefined, { option: true }],
   history: [undefined, { option: true }],
+  latestRelease: [undefined, { option: true }],
+
+  releaseServer: async ({ latestRelease }, use) => {
+    const server = latestRelease ? await ReleaseServer.start(latestRelease) : null
+    await use(server)
+    await server?.close()
+  },
 
   userDataDir: async ({ databaseFile, bulkData, history }, use) => {
     const dir = mkdtempSync(join(tmpdir(), 'findy-e2e-'))
@@ -112,8 +135,8 @@ export const test = base.extend<Fixtures>({
     rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 })
   },
 
-  electronApp: async ({ userDataDir, systemLocale }, use) => {
-    const app = await launch(userDataDir, systemLocale)
+  electronApp: async ({ userDataDir, systemLocale, releaseServer }, use) => {
+    const app = await launch(userDataDir, systemLocale, releaseServer)
     await use(app)
     await app.close().catch(() => {})
   },
@@ -129,7 +152,10 @@ export const test = base.extend<Fixtures>({
 
   errorGuard: errorGuardFixture(),
 
-  findy: async ({ electronApp, page, userDataDir, systemLocale, errorGuard }, use) => {
+  findy: async (
+    { electronApp, page, userDataDir, systemLocale, errorGuard, releaseServer },
+    use,
+  ) => {
     let app = electronApp
     let window = page
     const mcpClients: McpTestClient[] = []
@@ -137,6 +163,7 @@ export const test = base.extend<Fixtures>({
       pages: pagesFor(page),
       api: new FindyBackdoor(page, electronApp),
       dataFiles: () => readdirSync(userDataDir),
+      releases: releaseServer,
       connectMcp: async () => {
         const client = await McpTestClient.start(await findy.api.mcpConnection(), userDataDir)
         mcpClients.push(client)
@@ -148,7 +175,7 @@ export const test = base.extend<Fixtures>({
       },
       restart: async () => {
         await app.close()
-        app = await launch(userDataDir, systemLocale)
+        app = await launch(userDataDir, systemLocale, releaseServer)
         await errorGuard.watch(app.context())
         window = await firstWindow(app)
         findy.pages = pagesFor(window)

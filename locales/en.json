@@ -102,7 +102,8 @@
   },
   "common": {
     "close": "Close",
-    "back": "Back"
+    "back": "Back",
+    "ok": "OK"
   },
   "reset": {
     "menuItem": "Reset board…",
@@ -122,6 +123,7 @@
     "validation": "This was not saved: check the data you entered.",
     "notFound": "This item no longer exists. The board now shows the saved data.",
     "storage": "Findy could not save this change. Your saved data did not change.",
+    "network": "Could not check for updates. Check the internet connection and try again.",
     "unknown": "Something went wrong. The board now shows the saved data.",
     "crashTitle": "Something went wrong",
     "crashText": "The window could not show this screen. Your data is safe in the database.",
@@ -235,5 +237,15 @@
       "text": "Add applications on the board, and your statistics show here.",
       "action": "Open the board"
     }
+  },
+  "updates": {
+    "menuCheck": "Check for updates…",
+    "menuAuto": "Check for updates automatically",
+    "availableTitle": "Update available",
+    "availableText": "Version {{version}} is available. You have {{current}}.",
+    "download": "Download",
+    "later": "Later",
+    "latestTitle": "No updates",
+    "latestText": "You have the latest version ({{current}})."
   }
 }

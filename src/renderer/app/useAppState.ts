@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyMove } from '@domain/board'
 import type { ValidApplication } from '@domain/forms'
@@ -9,6 +9,7 @@ import {
   type Language,
   type StageId,
   type Theme,
+  type UpdateTrigger,
 } from '@shared/ipc'
 
 /**
@@ -45,6 +46,22 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       return false
     }
   }
+
+  /**
+   * Spec 006: a failure of a manual check shows a notification (FR-009); an automatic
+   * check never fails (FR-010).
+   */
+  const checkForUpdates = useCallback(
+    async (trigger: UpdateTrigger) => {
+      try {
+        return await window.findy.checkForUpdates(trigger)
+      } catch (error) {
+        onError(error)
+        return null
+      }
+    },
+    [onError],
+  )
 
   const moveApplication = (id: string, target: { stage: StageId; index: number }) => {
     // Optimistic: show the move at once, then take the saved state from main
@@ -89,6 +106,10 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       },
 
       setTheme: (theme: Theme) => run(() => window.findy.setTheme(theme)),
+
+      checkForUpdates,
+      /** Spec 006 FR-002 */
+      setAutoUpdateCheck: (enabled: boolean) => run(() => window.findy.setAutoUpdateCheck(enabled)),
 
       /** Spec 004 FR-005 */
       setMcpEnabled: (enabled: boolean) => run(() => window.findy.setMcpEnabled(enabled)),

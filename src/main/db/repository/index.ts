@@ -107,4 +107,16 @@ export class Repository {
   setAnalyticsView(view: AnalyticsView): Settings {
     return this.settings.setAnalyticsView(view)
   }
+
+  setAutoUpdateCheck(enabled: boolean): Settings {
+    return this.settings.setAutoUpdateCheck(enabled)
+  }
+
+  getLastUpdateCheck(): string | null {
+    return this.settings.getLastUpdateCheck()
+  }
+
+  setLastUpdateCheck(at: string): void {
+    this.settings.setLastUpdateCheck(at)
+  }
 }

@@ -8,6 +8,7 @@ import {
   type IpcResult,
   unwrap,
 } from '../../src/shared/ipc'
+import { UpdateCheckError } from '../../src/main/updates'
 import { memoryRepository } from './helpers/db'
 
 const okStorage = { status: 'ok' as const, dataFilePath: '/data/findy.db' }
@@ -28,6 +29,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
       args: ['--mcp'],
       env: {},
     }),
+    checkForUpdates: vi.fn(async () => ({ status: 'latest' as const, currentVersion: '0.1.0' })),
     ...overrides,
   }
   return { deps, handlers: createHandlers(deps) }
@@ -49,6 +51,7 @@ describe('IPC handlers', () => {
         hiddenStages: [],
         mcpEnabled: false,
         analytics: { period: '30d', grouping: 'day' },
+        autoUpdateCheck: false,
       },
       applications: [],
       storage: okStorage,
@@ -87,6 +90,7 @@ describe('IPC handlers', () => {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
+      autoUpdateCheck: false,
     })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
@@ -191,6 +195,46 @@ describe('analytics view (spec 005, FR-030…FR-032)', () => {
   })
 })
 
+describe('automatic update check (spec 006 FR-002)', () => {
+  it('turns it on and off and rejects other values', async () => {
+    const ctx = setup()
+    expect((await state(ctx.handlers.setAutoUpdateCheck(true))).settings.autoUpdateCheck).toBe(true)
+    expect((await state(ctx.handlers.setAutoUpdateCheck(false))).settings.autoUpdateCheck).toBe(
+      false,
+    )
+    expect(await ctx.handlers.setAutoUpdateCheck('on')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+})
+
+describe('checkForUpdates (spec 006)', () => {
+  it('passes the trigger and returns the result', async () => {
+    const ctx = setup()
+    expect(unwrap(await ctx.handlers.checkForUpdates('manual'))).toEqual({
+      status: 'latest',
+      currentVersion: '0.1.0',
+    })
+    expect(ctx.deps.checkForUpdates).toHaveBeenCalledWith('manual')
+    expect(await ctx.handlers.checkForUpdates('weekly')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+
+  it('reports a failed check as NETWORK (FR-009)', async () => {
+    const ctx = setup({
+      checkForUpdates: vi.fn(async () => {
+        throw new UpdateCheckError('offline')
+      }),
+    })
+    const result = await ctx.handlers.checkForUpdates('manual')
+    expect(result).toEqual({ ok: false, error: { code: 'NETWORK', message: 'offline' } })
+    expect(errorKind(new IpcError({ code: 'NETWORK', message: 'offline' }))).toBe('network')
+  })
+})
+
 describe('MCP settings (spec 004)', () => {
   it('turns access on and off and gives the connection command', async () => {
     const ctx = setup()
@@ -248,6 +292,7 @@ describe('IPC handlers without storage (FR-054)', () => {
         hiddenStages: [],
         mcpEnabled: false,
         analytics: { period: '30d', grouping: 'day' },
+        autoUpdateCheck: false,
       },
       applications: [],
       storage,

@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 import { join } from 'node:path'
-import { app, BrowserWindow, ipcMain, nativeTheme, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeTheme, net, shell } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
@@ -11,6 +11,7 @@ import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
+import { createUpdateChecker, fetchLatestRelease } from './updates'
 
 // The same folder the MCP server computes without Electron (paths.ts); must run
 // before `ready`. FINDY_USER_DATA_DIR isolates e2e tests and screenshots.
@@ -73,6 +74,20 @@ function start(): void {
   nativeTheme.themeSource = repository?.getSettings().theme ?? 'system'
   applyMenu(resolveLanguage(repository?.getSettings().language ?? null, app.getLocale()))
 
+  // Spec 006. FINDY_RELEASES_URL points e2e tests at a local release server (plan D-4);
+  // a packaged app ignores it, so it always asks the project's own release page
+  const releasesUrl = app.isPackaged ? undefined : process.env.FINDY_RELEASES_URL
+  const checkForUpdates = createUpdateChecker({
+    fetchLatest: () =>
+      fetchLatestRelease((input, init) => net.fetch(String(input), init), { url: releasesUrl }),
+    currentVersion: app.getVersion(),
+    settings: repository && {
+      autoCheck: () => repository.getSettings().autoUpdateCheck,
+      lastCheck: () => repository.getLastUpdateCheck(),
+      recordCheck: (at) => repository.setLastUpdateCheck(at),
+    },
+  })
+
   const handlers = createHandlers({
     repository,
     storage,
@@ -83,6 +98,7 @@ function start(): void {
       nativeTheme.themeSource = theme
     },
     applyLanguage: applyMenu,
+    checkForUpdates,
     mcpConnection: () =>
       // An AppImage is mounted at a new path on every start: point at the file
       // itself, which forwards `--mcp` to Node mode

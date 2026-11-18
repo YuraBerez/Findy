@@ -19,9 +19,12 @@ import type {
   IpcMethod,
   IpcResult,
   McpConnection,
+  UpdateCheckResult,
+  UpdateTrigger,
 } from '../shared/ipc'
 import { HiddenStageError, NotFoundError, type Repository } from './db/repository'
 import { isSafeExternalUrl } from './security'
+import { UpdateCheckError } from './updates'
 
 export interface IpcDeps {
   /** `null` when the database could not be opened (storage.status === 'error'). */
@@ -37,6 +40,8 @@ export interface IpcDeps {
   backup(label: string): void
   /** Spec 004 FR-009: the command an MCP client runs */
   mcpConnection(): McpConnection
+  /** Spec 006: main/updates.ts#createUpdateChecker */
+  checkForUpdates(trigger: UpdateTrigger): Promise<UpdateCheckResult | null>
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -60,6 +65,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       hiddenStages: [],
       mcpEnabled: false,
       analytics: DEFAULT_ANALYTICS_VIEW,
+      autoUpdateCheck: false,
     },
     applications: deps.repository?.listApplications() ?? [],
     storage: deps.storage,
@@ -127,6 +133,13 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       repo().setAnalyticsView(view)
       return state()
     }),
+    checkForUpdates: handle(z.tuple([z.enum(['manual', 'auto'])]), (trigger) =>
+      deps.checkForUpdates(trigger),
+    ),
+    setAutoUpdateCheck: handle(z.tuple([z.boolean()]), (enabled) => {
+      repo().setAutoUpdateCheck(enabled)
+      return state()
+    }),
     setMcpEnabled: handle(z.tuple([z.boolean()]), (enabled) => {
       repo().setMcpEnabled(enabled)
       return state()
@@ -157,6 +170,9 @@ function toPayload(error: unknown): IpcErrorPayload {
   }
   if (error instanceof HiddenStageError) {
     return { code: 'VALIDATION', message: error.message }
+  }
+  if (error instanceof UpdateCheckError) {
+    return { code: 'NETWORK', message: error.message }
   }
   if (error instanceof NotFoundError) {
     return { code: 'NOT_FOUND', message: error.message }

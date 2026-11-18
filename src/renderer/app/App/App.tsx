@@ -7,6 +7,7 @@ import { ApplicationDetails, ApplicationDialog } from '../../features/applicatio
 import { McpDialog } from '../../features/assistant'
 import { Board } from '../../features/board'
 import { ReportIssueButton } from '../../features/feedback'
+import { UpdateDialog, useUpdateCheck } from '../../features/updates'
 import { ColumnsDialog } from '../../features/settings'
 import { StorageError } from '../../features/storage'
 import { Toolbar } from '../Toolbar'
@@ -29,6 +30,10 @@ export function App({ initialState }: { initialState: AppState }) {
   const { t } = useTranslation()
   const count = state.applications.length
   const opened = state.applications.find((application) => application.id === openId)
+  // Spec 006: the automatic check runs once the app can read its settings
+  const updates = useUpdateCheck(storageReady, actions.checkForUpdates)
+  // Edge case: a found update waits until no other dialog is open
+  const dialogOpen = adding || assistant || editingColumns || resetting || Boolean(opened)
   const startAdding = () => setAdding(true)
   const showBoard = useCallback(() => setView('board'), [])
   useViewShortcuts(storageReady, setView)
@@ -56,6 +61,9 @@ export function App({ initialState }: { initialState: AppState }) {
         onQueryChange={setQuery}
         view={view}
         onViewChange={setView}
+        autoUpdateCheck={state.settings.autoUpdateCheck}
+        onCheckUpdates={() => void updates.checkNow()}
+        onAutoUpdateCheckChange={actions.setAutoUpdateCheck}
       />
       <main className={styles.content}>
         {state.storage.status === 'error' ? (
@@ -144,6 +152,16 @@ export function App({ initialState }: { initialState: AppState }) {
             add: (text) => actions.addNote(opened.id, text),
             update: (noteId, text) => actions.updateNote(opened.id, noteId, text),
             remove: (noteId) => actions.deleteNote(opened.id, noteId),
+          }}
+        />
+      )}
+      {updates.result && !dialogOpen && (
+        <UpdateDialog
+          result={updates.result}
+          onClose={updates.dismiss}
+          onDownload={(url) => {
+            updates.dismiss()
+            void actions.openLink(url)
           }}
         />
       )}
