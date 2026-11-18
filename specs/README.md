@@ -45,3 +45,4 @@ Rules:
 | 004 | [MCP server](004-mcp-server/spec.md) | Implemented |
 | 005 | [Analytics](005-analytics/spec.md) | Implemented |
 | 006 | [Update check](006-update-check/spec.md) | Implemented |
+| 007 | [Card colours](007-card-colors/spec.md) | Approved |
