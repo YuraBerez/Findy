@@ -1,8 +1,9 @@
 # Feature Spec: Update check
 
 - **ID:** 006-update-check
-- **Status:** Draft
+- **Status:** Approved
 - **Created:** 2026-11-18
+- **Approved:** 2026-11-18 (owner)
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md) (FR-070…FR-072, NFR-001), [003-error-handling](../003-error-handling/spec.md)
 - **Needs:** a constitution amendment to §II (see D-1)
 

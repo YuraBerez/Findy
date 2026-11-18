@@ -44,4 +44,4 @@ Rules:
 | 003 | [Error handling](003-error-handling/spec.md) | Implemented |
 | 004 | [MCP server](004-mcp-server/spec.md) | Implemented |
 | 005 | [Analytics](005-analytics/spec.md) | Approved |
-| 006 | [Update check](006-update-check/spec.md) | Draft |
+| 006 | [Update check](006-update-check/spec.md) | Approved |
