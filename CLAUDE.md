@@ -35,6 +35,9 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
 ## Code rules
 
 - TypeScript strict. Business logic goes in `src/domain` (pure, no Electron/React/fs).
+- Split a large file into logical parts in a folder, with a small `index.ts` that keeps the
+  public API. Example: `src/main/db/repository/` (one store per table group behind the
+  `Repository` facade). Do this when a file mixes several concerns, not only by line count.
 - Renderer: `app/` → `features/*` → `ui/` (docs/architecture.md D-7). One folder per
   component (`Name/Name.tsx`, `Name.module.css`, `index.ts`). Never duplicate a control,
   dialog, menu, icon or style: reuse or extend `@ui` first. All IPC goes through `useAppState.run()`, which shows failures (spec 003); never catch and ignore an error.

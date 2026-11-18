@@ -75,7 +75,9 @@ src/
 │   │   ├── connection.ts    # open findy.db, pragmas, integrity check
 │   │   ├── migrate.ts       # PRAGMA user_version + backups
 │   │   ├── migrations/      # 001-init.ts, … (append-only)
-│   │   └── repository.ts  # applications / notes / settings queries
+│   │   └── repository/      # index.ts: the Repository facade for IPC and MCP;
+│   │                        # applications.ts, notes.ts, settings.ts: one store each;
+│   │                        # rows.ts: table rows and mapping; errors.ts
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
 ├── preload/
@@ -133,7 +135,7 @@ build/                   # icons, entitlements for electron-builder
   is denied in `package.json` → `allowScripts`, and electron-builder runs with
   `npmRebuild: false`. CI verifies every packaged build loads it
   (`npm run smoke:packaged`).
-- **No ORM:** plain SQL in `repository.ts` keeps the dependency count low
+- **No ORM:** plain SQL in `db/repository/` keeps the dependency count low
   (§VII); revisit if queries become complex.
 
 ### D-3 — Main process is the single source of truth
