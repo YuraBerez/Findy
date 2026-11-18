@@ -67,6 +67,46 @@ describe('updateApplication (FR-012)', () => {
   })
 })
 
+describe('setApplicationColor (spec 007)', () => {
+  it('new applications have no colour (US-3)', () => {
+    expect(repo.createApplication(input('Dev')).color).toBeNull()
+  })
+
+  it('sets and clears the colour and bumps updatedAt (FR-006)', () => {
+    const app = repo.createApplication(input('Dev'))
+    const red = repo.setApplicationColor(app.id, 'red')
+    expect(red.color).toBe('red')
+    expect(red.updatedAt > app.updatedAt).toBe(true)
+    expect(repo.getApplication(app.id).color).toBe('red')
+    expect(repo.setApplicationColor(app.id, null).color).toBeNull()
+  })
+
+  it('adds no history and keeps the position (FR-008)', () => {
+    repo.createApplication(input('A'))
+    const b = repo.createApplication(input('B'))
+    const colored = repo.setApplicationColor(b.id, 'blue')
+    expect(colored.stageHistory).toEqual(b.stageHistory)
+    expect(column('applied')).toEqual(['B', 'A'])
+  })
+
+  it('keeps the colour on move, edit and notes (FR-006)', () => {
+    const app = repo.createApplication(input('Dev'))
+    repo.setApplicationColor(app.id, 'green')
+    repo.moveApplication(app.id, { stage: 'offered', index: 0 })
+    repo.updateApplication(app.id, { title: 'Lead' })
+    repo.addNote(app.id, 'call back')
+    expect(repo.getApplication(app.id)).toMatchObject({
+      title: 'Lead',
+      stage: 'offered',
+      color: 'green',
+    })
+  })
+
+  it('throws NotFoundError for an unknown id', () => {
+    expect(() => repo.setApplicationColor('nope', 'red')).toThrow(NotFoundError)
+  })
+})
+
 describe('moveApplication (FR-020…024)', () => {
   it('moves between stages, to the requested index, and records history', () => {
     const a = repo.createApplication(input('A'))

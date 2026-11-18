@@ -7,10 +7,10 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Domain and storage
 
-- [ ] T001 Domain `colors.ts` (`CARD_COLORS`, `CardColor`), `Application.color`, `CardColorSchema`; unit tests (FR-001, FR-009)
-- [ ] T002 Migration 002 `color` column; migration test on a v1 fixture with rows (FR-006, FR-011)
-- [ ] T003 `Repository.setApplicationColor`; `list()` maps `color`; tests: persist, clear, keeps colour on move/update/notes, no history entry, no position change, NOT_FOUND (FR-006, FR-008)
-- [ ] T004 IPC `setApplicationColor` (zod, contract types, preload); tests: valid, unknown colour → VALIDATION; MCP output and `update_application` leave the colour alone (FR-004, FR-009)
+- [x] T001 Domain `colors.ts` (`CARD_COLORS`, `CardColor`), `Application.color`, `CardColorSchema`; unit tests (FR-001, FR-009)
+- [x] T002 Migration 002 `color` column; migration test on a v1 fixture with rows (FR-006, FR-011)
+- [x] T003 `Repository.setApplicationColor`; `list()` maps `color`; tests: persist, clear, keeps colour on move/update/notes, no history entry, no position change, NOT_FOUND (FR-006, FR-008)
+- [x] T004 IPC `setApplicationColor` (zod, contract types, preload); tests: valid, unknown colour → VALIDATION; MCP output and `update_application` leave the colour alone (FR-004, FR-009)
 
 ## Phase 2 — UI
 

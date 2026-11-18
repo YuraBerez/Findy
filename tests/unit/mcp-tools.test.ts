@@ -119,6 +119,17 @@ describe('MCP tools (spec 004)', () => {
       )
     })
 
+    it('neither shows nor changes the card colour (spec 007 D-4)', () => {
+      const { id } = repo.createApplication({ title: 'Dev', company: 'Acme', url: null })
+      repo.setApplicationColor(id, 'red')
+      expect(z.object(tools.get('update_application')!.inputSchema).shape).not.toHaveProperty(
+        'color',
+      )
+      call('update_application', { id, color: null, title: 'Lead' })
+      expect(repo.getApplication(id)).toMatchObject({ title: 'Lead', color: 'red' })
+      expect(call('get_application', { id })).not.toHaveProperty('application.color')
+    })
+
     it('reports unknown ids', () => {
       expect(() => call('get_application', { id: '00000000-0000-4000-8000-000000000999' })).toThrow(
         NotFoundError,

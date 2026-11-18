@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import type { Database } from 'better-sqlite3'
 import type { AnalyticsView } from '../../../domain/analytics'
+import type { CardColor } from '../../../domain/colors'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
 import type { Application, Language, Note, Settings, Theme } from '../../../domain/types'
@@ -54,6 +55,10 @@ export class Repository {
 
   updateApplication(id: string, patch: ApplicationPatch): Application {
     return this.applications.update(id, patch)
+  }
+
+  setApplicationColor(id: string, color: CardColor | null): Application {
+    return this.applications.setColor(id, color)
   }
 
   moveApplication(id: string, target: MoveTarget): Application {

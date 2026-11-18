@@ -32,22 +32,52 @@ describe('migrate (FR-053)', () => {
     const backup = vi.fn()
     const next = [
       ...MIGRATIONS,
-      { version: 2, name: 'a', sql: 'CREATE TABLE a (x INTEGER);' },
-      { version: 3, name: 'b', sql: 'CREATE TABLE b (y INTEGER);' },
+      { version: SCHEMA_VERSION + 1, name: 'a', sql: 'CREATE TABLE a (x INTEGER);' },
+      { version: SCHEMA_VERSION + 2, name: 'b', sql: 'CREATE TABLE b (y INTEGER);' },
     ]
     migrate(db, backup, next)
     expect(backup).toHaveBeenCalledOnce()
-    expect(backup).toHaveBeenCalledWith(1)
-    expect(getUserVersion(db)).toBe(3)
+    expect(backup).toHaveBeenCalledWith(SCHEMA_VERSION)
+    expect(getUserVersion(db)).toBe(SCHEMA_VERSION + 2)
   })
 
   it('rolls back a failing migration', () => {
     const db = new Database(':memory:')
     migrate(db, () => {})
-    const broken = [...MIGRATIONS, { version: 2, name: 'bad', sql: 'CREATE TABLE ok (x); NOPE;' }]
+    const broken = [
+      ...MIGRATIONS,
+      { version: SCHEMA_VERSION + 1, name: 'bad', sql: 'CREATE TABLE ok (x); NOPE;' },
+    ]
     expect(() => migrate(db, () => {}, broken)).toThrow()
-    expect(getUserVersion(db)).toBe(1)
+    expect(getUserVersion(db)).toBe(SCHEMA_VERSION)
     expect(db.prepare("SELECT name FROM sqlite_master WHERE name = 'ok'").get()).toBeUndefined()
+  })
+})
+
+describe('migration 002: card colour (spec 007 FR-011)', () => {
+  const v1Row = `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at)
+    VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, '2026-11-01T00:00:00.000Z', '2026-11-01T00:00:00.000Z')`
+
+  it('keeps v1 rows and gives them no colour', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {}, MIGRATIONS.slice(0, 1))
+    db.prepare(v1Row).run()
+
+    migrate(db, () => {})
+
+    expect(getUserVersion(db)).toBe(2)
+    expect(db.prepare('SELECT title, color FROM applications').get()).toEqual({
+      title: 'Dev',
+      color: null,
+    })
+  })
+
+  it('accepts only palette colours', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {})
+    db.prepare(v1Row).run()
+    db.prepare("UPDATE applications SET color = 'grey'").run()
+    expect(() => db.prepare("UPDATE applications SET color = 'pink'").run()).toThrow(/CHECK/)
   })
 })
 
@@ -119,15 +149,14 @@ describe('openDatabase (FR-051, FR-054)', () => {
   })
 
   it('backs up with VACUUM INTO before migrating an older database', () => {
-    const v1 = openDatabase(dir, { now: fixedNow })
+    const v1 = openDatabase(dir, { now: fixedNow, migrations: MIGRATIONS.slice(0, 1) })
     if (v1.status !== 'ok') throw new Error('expected ok')
     v1.db.prepare("INSERT INTO settings VALUES ('theme', 'dark')").run()
     v1.db.close()
 
-    const v2 = [...MIGRATIONS, { version: 2, name: 'x', sql: 'CREATE TABLE x (y INTEGER);' }]
-    const result = openDatabase(dir, { now: fixedNow, migrations: v2 })
+    const result = openDatabase(dir, { now: fixedNow })
     if (result.status !== 'ok') throw new Error('expected ok')
-    expect(getUserVersion(result.db)).toBe(2)
+    expect(getUserVersion(result.db)).toBe(SCHEMA_VERSION)
     result.db.close()
 
     const backup = join(dir, `findy.backup-v1-${fileStamp(fixedNow())}.db`)

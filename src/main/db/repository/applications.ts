@@ -1,3 +1,4 @@
+import type { CardColor } from '../../../domain/colors'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
 import { DEFAULT_STAGE, isStageId, STAGES, type StageId } from '../../../domain/stages'
 import type { Application } from '../../../domain/types'
@@ -44,6 +45,7 @@ export class ApplicationStore {
         url: row.url,
         stage: row.stage,
         order: row.position,
+        color: row.color,
         stageHistory: (historyByApp.get(row.id) ?? []).map(({ stage, at }) => ({ stage, at })),
         notes: (notesByApp.get(row.id) ?? []).map(toNote),
         createdAt: row.created_at,
@@ -85,6 +87,20 @@ export class ApplicationStore {
         patch.title ?? current.title,
         patch.company ?? current.company,
         patch.url === undefined ? current.url : patch.url,
+        this.ctx.now(),
+        id,
+      )
+    })()
+    return this.get(id)
+  }
+
+  /** Spec 007 FR-006, FR-008: only the colour and `updatedAt`; no history, same position. */
+  setColor(id: string, color: CardColor | null): Application {
+    const { db } = this.ctx
+    db.transaction(() => {
+      this.require(id)
+      db.prepare('UPDATE applications SET color = ?, updated_at = ? WHERE id = ?').run(
+        color,
         this.ctx.now(),
         id,
       )

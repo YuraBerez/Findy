@@ -1,6 +1,7 @@
 // Runtime validation of everything that crosses the IPC boundary (docs/security.md)
 import { z } from 'zod'
 import { ANALYTICS_GROUPINGS, ANALYTICS_PERIODS } from './analytics'
+import { CARD_COLORS } from './colors'
 import { isHttpUrl, LIMITS } from './limits'
 import { STAGES } from './stages'
 
@@ -20,6 +21,8 @@ export const UrlSchema = z
 export const IdSchema = z.uuid()
 export const StageSchema = z.enum(STAGES)
 export const LanguageSchema = z.enum(['en', 'uk'])
+/** Spec 007 FR-009: a palette colour, or null for no colour */
+export const CardColorSchema = z.enum(CARD_COLORS).nullable()
 export const ThemeSchema = z.enum(['system', 'light', 'dark'])
 /** Spec 002 FR-006: unique stages, and at least one stays visible */
 export const HiddenStagesSchema = z

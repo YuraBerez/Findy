@@ -1,9 +1,10 @@
 // Renderer ↔ main contract: docs/contracts/ipc.md
 import type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView } from '../domain/analytics'
+import type { CardColor } from '../domain/colors'
 import type { StageId } from '../domain/stages'
 import type { Application, Language, Note, Settings, StageChange, Theme } from '../domain/types'
 
-export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView }
+export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView, CardColor }
 export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
 export const CHANNEL_PREFIX = 'findy:'
@@ -12,6 +13,7 @@ export const IPC_METHODS = [
   'getState',
   'createApplication',
   'updateApplication',
+  'setApplicationColor',
   'moveApplication',
   'deleteApplication',
   'resetBoard',
@@ -137,6 +139,8 @@ export interface FindyApi {
   getState(): Promise<AppState>
   createApplication(input: NewApplication): Promise<AppState>
   updateApplication(id: string, patch: ApplicationChanges): Promise<AppState>
+  /** Spec 007: a palette colour, or null for none */
+  setApplicationColor(id: string, color: CardColor | null): Promise<AppState>
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>
   deleteApplication(id: string): Promise<AppState>
   /** FR-090…093: backup, then delete all applications */

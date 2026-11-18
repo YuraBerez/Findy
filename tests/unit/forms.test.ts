@@ -72,6 +72,7 @@ const app = (id: string, stage: Application['stage'], order: number): Applicatio
   url: null,
   stage,
   order,
+  color: null,
   stageHistory: [
     { stage: 'applied', at: '2026-11-10T00:00:00Z' },
     { stage, at: '2026-11-12T00:00:00Z' },
