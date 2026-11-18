@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import logo from '../../../../assets/logo.svg'
 import { SearchBox } from '../../features/search'
 import { useSettingsMenu } from '../../features/settings'
+import { useTransferMenu } from '../../features/transfer'
 import { useUpdatesMenu } from '../../features/updates'
 import type { Language, Theme } from '@shared/ipc'
 import { Button, Menu, MoreIcon, Tabs } from '@ui'
@@ -27,6 +28,9 @@ interface Props {
   autoUpdateCheck: boolean
   onCheckUpdates(): void
   onAutoUpdateCheckChange(enabled: boolean): void
+  /** Spec 008 FR-001, FR-010 */
+  onExport(): void
+  onImport(): void
 }
 
 export function Toolbar({
@@ -45,6 +49,8 @@ export function Toolbar({
   autoUpdateCheck,
   onCheckUpdates,
   onAutoUpdateCheckChange,
+  onExport,
+  onImport,
 }: Props) {
   const { t } = useTranslation()
   const settings = useSettingsMenu({ onLanguageChange, onThemeChange })
@@ -52,6 +58,12 @@ export function Toolbar({
     autoCheck: autoUpdateCheck,
     onCheck: onCheckUpdates,
     onAutoCheckChange: onAutoUpdateCheckChange,
+  })
+  const transfer = useTransferMenu({
+    enabled: storageReady,
+    canExport: applicationCount > 0,
+    onExport,
+    onImport,
   })
   return (
     <header className={styles.toolbar} aria-label={t('toolbar.label')}>
@@ -98,6 +110,8 @@ export function Toolbar({
               disabled: !storageReady,
               onSelect: onAssistant,
             },
+            { key: 'transfer-start', separator: true },
+            ...transfer,
             { key: 'updates-start', separator: true },
             // A manual check works without the database; the switch needs it (FR-001)
             ...(storageReady ? updates : updates.slice(0, 1)),

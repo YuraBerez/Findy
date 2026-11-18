@@ -2,9 +2,11 @@
 import type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView } from '../domain/analytics'
 import type { CardColor } from '../domain/colors'
 import type { StageId } from '../domain/stages'
+import type { ImportFatal, ImportRowError } from '../domain/transfer'
 import type { Application, Language, Note, Settings, StageChange, Theme } from '../domain/types'
 
 export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView, CardColor }
+export type { ImportFatal, ImportRowError }
 export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
 export const CHANNEL_PREFIX = 'findy:'
@@ -17,6 +19,9 @@ export const IPC_METHODS = [
   'moveApplication',
   'deleteApplication',
   'resetBoard',
+  'exportCsv',
+  'previewImport',
+  'confirmImport',
   'addNote',
   'updateNote',
   'deleteNote',
@@ -117,6 +122,23 @@ export type UpdateCheckResult =
   | { status: 'available'; version: string; currentVersion: string; url: string }
   | { status: 'latest'; currentVersion: string }
 
+/** Spec 008 */
+export type ExportResult = { status: 'saved'; count: number } | { status: 'cancelled' }
+
+/** Spec 008 FR-020: what an import would do; nothing has changed yet */
+export interface ImportPreview {
+  /** Pass to confirmImport; null when there is nothing to add */
+  token: string | null
+  /** The base name of the picked file, never its path (FR-031) */
+  fileName: string
+  fatal: ImportFatal | null
+  toAdd: number
+  duplicates: number
+  hidden: number
+  /** Every row error; the dialog shows the first 20 */
+  errors: ImportRowError[]
+}
+
 export interface AppInfo {
   version: string
   dataFilePath: string
@@ -145,6 +167,12 @@ export interface FindyApi {
   deleteApplication(id: string): Promise<AppState>
   /** FR-090…093: backup, then delete all applications */
   resetBoard(): Promise<AppState>
+  /** Spec 008: save dialog, then the whole board as CSV in this language */
+  exportCsv(language: Language): Promise<ExportResult>
+  /** Spec 008: open dialog, then a summary; null when the user cancels the dialog */
+  previewImport(): Promise<ImportPreview | null>
+  /** Spec 008: adds the previewed rows; NOT_FOUND for an old token */
+  confirmImport(token: string): Promise<{ state: AppState; added: number }>
   addNote(applicationId: string, text: string): Promise<AppState>
   updateNote(applicationId: string, noteId: string, text: string): Promise<AppState>
   deleteNote(applicationId: string, noteId: string): Promise<AppState>

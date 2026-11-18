@@ -1,6 +1,7 @@
 import type { CardColor } from '../../../domain/colors'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
 import { DEFAULT_STAGE, isStageId, STAGES, type StageId } from '../../../domain/stages'
+import type { ImportedApplication } from '../../../domain/transfer'
 import type { Application } from '../../../domain/types'
 import { NotFoundError } from './errors'
 import {
@@ -142,6 +143,49 @@ export class ApplicationStore {
       db.prepare('DELETE FROM applications WHERE id = ?').run(id)
       this.renumber(this.idsInStage(current.stage))
     })()
+  }
+
+  /**
+   * Spec 008 FR-017, FR-018: all or none, on top of their columns in the given order.
+   * Hidden stages are allowed (spec 008 D-6). Returns the number added.
+   */
+  importMany(items: ImportedApplication[]): number {
+    const { db } = this.ctx
+    const at = this.ctx.now()
+    db.transaction(() => {
+      const shift = db.prepare('UPDATE applications SET position = position + ? WHERE stage = ?')
+      const insert = db.prepare(
+        `INSERT INTO applications (id, title, company, url, stage, position, color, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+      const addNote = db.prepare(
+        'INSERT INTO notes (id, application_id, text, created_at, updated_at) VALUES (?, ?, ?, ?, NULL)',
+      )
+      for (const stage of STAGES) {
+        const count = items.filter((item) => item.stage === stage).length
+        if (count > 0) shift.run(count, stage)
+      }
+      const next = new Map<StageId, number>()
+      for (const item of items) {
+        const position = next.get(item.stage) ?? 0
+        next.set(item.stage, position + 1)
+        const id = this.ctx.newId()
+        insert.run(
+          id,
+          item.title,
+          item.company,
+          item.url,
+          item.stage,
+          position,
+          item.color,
+          item.createdAt,
+          at,
+        )
+        for (const change of item.stageHistory) this.addStageChange(id, change.stage, change.at)
+        for (const note of item.notes) addNote.run(this.ctx.newId(), id, note.text, note.createdAt)
+      }
+    })()
+    return items.length
   }
 
   /** FR-093: delete every application; notes and history go by ON DELETE CASCADE. */

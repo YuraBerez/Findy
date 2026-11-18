@@ -11,15 +11,16 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const [toasts, setToasts] = useState<ToastMessage[]>([])
 
+  const show = useCallback((toast: Omit<ToastMessage, 'id'>) => {
+    setToasts((current) =>
+      [...current, { ...toast, id: Date.now() + Math.random() }].slice(-MAX_VISIBLE),
+    )
+  }, [])
   const notifyError = useCallback(
-    (error: unknown) => {
-      const text = t(`errors.${errorKind(error)}`)
-      setToasts((current) =>
-        [...current, { id: Date.now() + Math.random(), text }].slice(-MAX_VISIBLE),
-      )
-    },
-    [t],
+    (error: unknown) => show({ text: t(`errors.${errorKind(error)}`) }),
+    [show, t],
   )
+  const notify = useCallback((text: string) => show({ text, tone: 'info' }), [show])
 
   // FR-005: errors that no code caught still reach the user
   useEffect(() => {
@@ -37,7 +38,7 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     (id: number) => setToasts((current) => current.filter((toast) => toast.id !== id)),
     [],
   )
-  const value = useMemo(() => ({ notifyError }), [notifyError])
+  const value = useMemo(() => ({ notifyError, notify }), [notifyError, notify])
   return (
     <NotificationsContext.Provider value={value}>
       {children}

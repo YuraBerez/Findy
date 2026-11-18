@@ -7,6 +7,8 @@ import {
   type AnalyticsView,
   type AppState,
   type CardColor,
+  type ExportResult,
+  type ImportPreview,
   type Language,
   type StageId,
   type Theme,
@@ -64,6 +66,16 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
     [onError],
   )
 
+  /** A call that does not return the state; a failure is notified and gives null */
+  const attempt = async <T>(call: () => Promise<T>): Promise<T | null> => {
+    try {
+      return await call()
+    } catch (error) {
+      onError(error)
+      return null
+    }
+  }
+
   const moveApplication = (id: string, target: { stage: StageId; index: number }) => {
     // Optimistic: show the move at once, then take the saved state from main
     setState((current) => ({
@@ -92,6 +104,22 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         run(() => window.findy.setApplicationColor(id, color)),
 
       deleteApplication: (id: string) => run(() => window.findy.deleteApplication(id)),
+      /** Spec 008 */
+      exportCsv: (language: Language): Promise<ExportResult | null> =>
+        attempt(() => window.findy.exportCsv(language)),
+      previewImport: (): Promise<ImportPreview | null> =>
+        attempt(() => window.findy.previewImport()),
+      /** Spec 008 FR-017: the number added, or null when it failed */
+      confirmImport: async (token: string): Promise<number | null> => {
+        const result = await attempt(() => window.findy.confirmImport(token))
+        if (!result) {
+          await refresh()
+          return null
+        }
+        setState(result.state)
+        return result.added
+      },
+
       /** FR-090…093: main saves a backup, then deletes every application */
       resetBoard: () => run(() => window.findy.resetBoard()),
       moveApplication,

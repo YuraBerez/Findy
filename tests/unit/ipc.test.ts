@@ -8,15 +8,19 @@ import {
   type IpcResult,
   unwrap,
 } from '../../src/shared/ipc'
+import { createTransfer } from '../../src/main/transfer'
 import { UpdateCheckError } from '../../src/main/updates'
 import { memoryRepository } from './helpers/db'
+import { fakeFiles } from './helpers/files'
 
 const okStorage = { status: 'ok' as const, dataFilePath: '/data/findy.db' }
 
 function setup(overrides: Partial<IpcDeps> = {}) {
   const { repository } = memoryRepository()
+  const files = fakeFiles()
   const deps: IpcDeps = {
     repository,
+    transfer: createTransfer({ repository, ...files.deps }),
     storage: okStorage,
     appVersion: '0.1.0',
     getSystemLocale: () => 'uk-UA',
@@ -32,7 +36,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     checkForUpdates: vi.fn(async () => ({ status: 'latest' as const, currentVersion: '0.1.0' })),
     ...overrides,
   }
-  return { deps, handlers: createHandlers(deps) }
+  return { deps, files, handlers: createHandlers(deps) }
 }
 
 const state = async (result: Promise<IpcResult<unknown>>) => unwrap(await result) as AppState
@@ -115,6 +119,35 @@ describe('IPC handlers', () => {
   ] as const)('%s rejects invalid input %j with VALIDATION', async (method, args) => {
     const result = await ctx.handlers[method](...args)
     expect(result).toMatchObject({ ok: false, error: { code: 'VALIDATION' } })
+  })
+
+  it('spec 008: exports, previews and confirms an import', async () => {
+    const h = ctx.handlers
+    await state(h.createApplication({ title: 'Dev', company: 'Acme' }))
+    expect(unwrap(await h.exportCsv('en'))).toEqual({ status: 'saved', count: 1 })
+    expect(ctx.files.files['/home/me/board.csv']).toMatch(/^\uFEFFTitle,Company/)
+
+    ctx.files.files['/home/me/board.csv'] = 'Title,Company\r\nQA,Globex\r\nDev,Acme'
+    expect(unwrap(await h.previewImport())).toMatchObject({
+      token: 'token-1',
+      fileName: 'board.csv',
+      toAdd: 1,
+      duplicates: 1,
+    })
+    const result = unwrap(await h.confirmImport('token-1')) as { state: AppState; added: number }
+    expect(result.added).toBe(1)
+    expect(result.state.applications.map((app) => app.title)).toEqual(['QA', 'Dev'])
+  })
+
+  it('spec 008: an unknown import token is NOT_FOUND; a bad language is VALIDATION', async () => {
+    expect(await ctx.handlers.confirmImport('nope')).toMatchObject({
+      ok: false,
+      error: { code: 'NOT_FOUND' },
+    })
+    expect(await ctx.handlers.exportCsv('de')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
   })
 
   it('maps unknown ids to NOT_FOUND', async () => {
@@ -305,9 +338,10 @@ describe('IPC handlers without storage (FR-054)', () => {
   })
 
   it('rejects every mutation with STORAGE', async () => {
-    const { handlers } = setup({ repository: null, storage })
+    const { handlers } = setup({ repository: null, transfer: null, storage })
     const result = await handlers.createApplication({ title: 'a', company: 'b' })
     expect(result).toMatchObject({ ok: false, error: { code: 'STORAGE' } })
+    expect(await handlers.previewImport()).toMatchObject({ ok: false, error: { code: 'STORAGE' } })
     expect(await handlers.setTheme('dark')).toMatchObject({ ok: false })
   })
 })

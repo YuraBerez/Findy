@@ -46,3 +46,4 @@ Rules:
 | 005 | [Analytics](005-analytics/spec.md) | Implemented |
 | 006 | [Update check](006-update-check/spec.md) | Implemented |
 | 007 | [Card colours](007-card-colors/spec.md) | Approved |
+| 008 | [CSV export and import](008-csv-import-export/spec.md) | Approved |

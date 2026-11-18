@@ -38,6 +38,23 @@ export class FindyBackdoor {
     })
   }
 
+  /**
+   * Spec 008: the system save and open dialogs answer with this path (null = Cancel),
+   * so a test never waits for a native dialog. Call again after a restart.
+   */
+  async answerFileDialogs(path: string | null): Promise<void> {
+    await this.app.evaluate(({ dialog }, file) => {
+      dialog.showSaveDialog = (async () =>
+        file === null
+          ? { canceled: true, filePath: '' }
+          : { canceled: false, filePath: file }) as typeof dialog.showSaveDialog
+      dialog.showOpenDialog = (async () =>
+        file === null
+          ? { canceled: true, filePaths: [] }
+          : { canceled: false, filePaths: [file] }) as typeof dialog.showOpenDialog
+    }, path)
+  }
+
   /** Deletes behind the UI's back, e.g. to simulate another window (spec 003 US-1.3) */
   async deleteApplication(title: string): Promise<void> {
     await this.page.evaluate(async (value) => {
@@ -117,6 +134,10 @@ export class FindyBackdoor {
       },
       { title, color },
     )
+  }
+
+  async resetBoard(): Promise<void> {
+    await this.page.evaluate(() => window.findy.resetBoard())
   }
 
   async setTheme(theme: Theme): Promise<void> {

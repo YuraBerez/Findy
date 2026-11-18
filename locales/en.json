@@ -259,5 +259,50 @@
     "blue": "Blue",
     "purple": "Purple",
     "grey": "Grey"
+  },
+  "transfer": {
+    "columns": {
+      "title": "Title",
+      "company": "Company",
+      "url": "Link",
+      "stage": "Stage",
+      "color": "Colour",
+      "createdAt": "Created",
+      "inStageSince": "In stage since",
+      "history": "Stage history",
+      "notes": "Notes"
+    },
+    "menuExport": "Export to CSV…",
+    "menuImport": "Import from CSV…",
+    "exported_one": "Exported {{count}} application.",
+    "exported_other": "Exported {{count}} applications.",
+    "imported_one": "Added {{count}} application.",
+    "imported_other": "Added {{count}} applications.",
+    "importTitle": "Import from CSV",
+    "toAdd_one": "{{count}} application will be added.",
+    "toAdd_other": "{{count}} applications will be added.",
+    "duplicates_one": "{{count}} duplicate will be skipped.",
+    "duplicates_other": "{{count}} duplicates will be skipped.",
+    "errors_one": "{{count}} row has errors and will be skipped:",
+    "errors_other": "{{count}} rows have errors and will be skipped:",
+    "hidden_one": "{{count}} application goes to a hidden column.",
+    "hidden_other": "{{count}} applications go to hidden columns.",
+    "nothingToAdd": "There is nothing new to add.",
+    "confirm_one": "Import {{count}} application",
+    "confirm_other": "Import {{count}} applications",
+    "rowError": "Row {{row}}, {{field}}: {{problem}}",
+    "moreErrors": "…and {{count}} more",
+    "problems": {
+      "required": "missing value",
+      "tooLong": "value too long",
+      "invalid": "value not valid"
+    },
+    "fatal": {
+      "notCsv": "This file is not a CSV table.",
+      "tooLarge": "The file is larger than {{size}}.",
+      "tooManyRows": "The file has more than {{rows}} rows.",
+      "noRows": "The file has no rows to import.",
+      "missingColumns": "Required columns are missing: {{columns}}."
+    }
   }
 }

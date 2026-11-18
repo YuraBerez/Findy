@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { AppState } from '@shared/ipc'
+import type { AppState, ImportPreview, Language } from '@shared/ipc'
 import { ConfirmDialog, panelId, tabId } from '@ui'
 import { Analytics } from '../../features/analytics'
 import { ApplicationDetails, ApplicationDialog } from '../../features/applications'
@@ -9,6 +9,7 @@ import { Board } from '../../features/board'
 import { ReportIssueButton } from '../../features/feedback'
 import { UpdateDialog, useUpdateCheck } from '../../features/updates'
 import { ColumnsDialog } from '../../features/settings'
+import { ImportDialog } from '../../features/transfer'
 import { StorageError } from '../../features/storage'
 import { Toolbar } from '../Toolbar'
 import { useNotifications } from '../notifications'
@@ -17,24 +18,37 @@ import { useViewShortcuts, VIEW_ID_PREFIX, type View } from '../views'
 import styles from './App.module.css'
 
 export function App({ initialState }: { initialState: AppState }) {
-  const { notifyError } = useNotifications()
+  const { notifyError, notify } = useNotifications()
   const { state, storageReady, actions } = useAppState(initialState, notifyError)
   const [adding, setAdding] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
   const [editingColumns, setEditingColumns] = useState(false)
   const [assistant, setAssistant] = useState(false)
+  const [importing, setImporting] = useState<ImportPreview | null>(null)
   const [query, setQuery] = useState('')
   const [view, setView] = useState<View>('board')
   const { hiddenStages } = state.settings
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const count = state.applications.length
   const opened = state.applications.find((application) => application.id === openId)
   // Spec 006: the automatic check runs once the app can read its settings
   const updates = useUpdateCheck(storageReady, actions.checkForUpdates)
   // Edge case: a found update waits until no other dialog is open
-  const dialogOpen = adding || assistant || editingColumns || resetting || Boolean(opened)
+  const dialogOpen =
+    adding || assistant || editingColumns || resetting || Boolean(opened) || Boolean(importing)
   const startAdding = () => setAdding(true)
+  // Spec 008: the file name and counts come back; a cancelled dialog gives null
+  const exportCsv = async () => {
+    const result = await actions.exportCsv(i18n.language as Language)
+    if (result?.status === 'saved') notify(t('transfer.exported', { count: result.count }))
+  }
+  const importCsv = async () => setImporting(await actions.previewImport())
+  const confirmImport = async (token: string) => {
+    setImporting(null)
+    const added = await actions.confirmImport(token)
+    if (added !== null) notify(t('transfer.imported', { count: added }))
+  }
   const showBoard = useCallback(() => setView('board'), [])
   useViewShortcuts(storageReady, setView)
   // FR-003: the board stays mounted under the analytics tab, so it keeps its state
@@ -64,6 +78,8 @@ export function App({ initialState }: { initialState: AppState }) {
         autoUpdateCheck={state.settings.autoUpdateCheck}
         onCheckUpdates={() => void updates.checkNow()}
         onAutoUpdateCheckChange={actions.setAutoUpdateCheck}
+        onExport={() => void exportCsv()}
+        onImport={() => void importCsv()}
       />
       <main className={styles.content}>
         {state.storage.status === 'error' ? (
@@ -155,6 +171,13 @@ export function App({ initialState }: { initialState: AppState }) {
             update: (noteId, text) => actions.updateNote(opened.id, noteId, text),
             remove: (noteId) => actions.deleteNote(opened.id, noteId),
           }}
+        />
+      )}
+      {importing && (
+        <ImportDialog
+          preview={importing}
+          onConfirm={(token) => void confirmImport(token)}
+          onClose={() => setImporting(null)}
         />
       )}
       {updates.result && !dialogOpen && (
