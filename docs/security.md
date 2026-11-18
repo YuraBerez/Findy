@@ -33,3 +33,8 @@ webPreferences: {
       timeout and a size limit; the answer is parsed with zod, and "Download" opens only
       `https://github.com/YuraBerez/findy/releases/tag/…` (`RELEASE_PAGE_PREFIX`). `FINDY_RELEASES_URL` replaces the
       API URL for e2e tests; a packaged app ignores it.
+- [ ] User files (spec 008): main reads or writes only a path that the user picked in
+      a system save or open dialog. The renderer never sends or receives a path: it gets
+      the file name, counts and a random token. Import checks the size (10 MB) before
+      it reads the file. Export puts an apostrophe before a cell that starts with `=`,
+      `+`, `-`, `@`, a tab or a CR, so a spreadsheet does not run it as a formula.

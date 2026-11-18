@@ -10,6 +10,7 @@ import {
 } from '@playwright/test'
 import { errorGuardFixture, type ErrorGuard } from 'playwright-e2e-kit'
 import { writeBulkDatabase, type BulkData } from '../data/bulk-database'
+import { CsvFiles } from '../data/csv-files'
 import { FindyBackdoor } from '../data/findy-backdoor'
 import { writeHistoryDatabase, type HistoryApplication } from '../data/history-database'
 import { McpTestClient } from '../data/mcp-client'
@@ -17,6 +18,7 @@ import { ReleaseServer, type FakeRelease } from '../data/release-server'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { AnalyticsScreen } from '../screens/analytics.screen'
+import { ImportDialogScreen } from '../screens/import-dialog.screen'
 import { UpdatesScreen } from '../screens/updates.screen'
 import { BoardScreen } from '../screens/board.screen'
 import { mousePointer } from './pointer'
@@ -30,6 +32,7 @@ export interface FindyPages {
   board: BoardScreen
   analytics: AnalyticsScreen
   updates: UpdatesScreen
+  importDialog: ImportDialogScreen
   dialog: ApplicationDialogScreen
   details: ApplicationDetailsScreen
   applications: ApplicationSteps
@@ -50,6 +53,8 @@ export interface Findy {
   connectMcp(): Promise<McpTestClient>
   /** The fake release API, when the test sets `latestRelease` (spec 006) */
   releases: ReleaseServer | null
+  /** CSV files for export and import (spec 008) */
+  files: CsvFiles
 }
 
 interface Options {
@@ -104,6 +109,7 @@ function pagesFor(page: Page): FindyPages {
     board,
     analytics: new AnalyticsScreen(page),
     updates: new UpdatesScreen(page),
+    importDialog: new ImportDialogScreen(page),
     dialog,
     details: new ApplicationDetailsScreen(page),
     applications: new ApplicationSteps({ board, dialog }),
@@ -164,6 +170,7 @@ export const test = base.extend<Fixtures>({
       api: new FindyBackdoor(page, electronApp),
       dataFiles: () => readdirSync(userDataDir),
       releases: releaseServer,
+      files: new CsvFiles(userDataDir),
       connectMcp: async () => {
         const client = await McpTestClient.start(await findy.api.mcpConnection(), userDataDir)
         mcpClients.push(client)

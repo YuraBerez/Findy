@@ -36,6 +36,11 @@ interface FindyApi {
   deleteApplication(id: string): Promise<AppState>;
   resetBoard(): Promise<AppState>;                    // backup first, then delete all applications (FR-090…093)
 
+  // CSV (spec 008): the paths stay in main; the system dialogs pick them
+  exportCsv(language: 'en' | 'uk'): Promise<{ status: 'saved'; count: number } | { status: 'cancelled' }>;
+  previewImport(): Promise<ImportPreview | null>;     // null: the open dialog was cancelled
+  confirmImport(token: string): Promise<{ state: AppState; added: number }>;  // NOT_FOUND: old token
+
   // Notes
   addNote(applicationId: string, text: string): Promise<AppState>;
   updateNote(applicationId: string, noteId: string, text: string): Promise<AppState>;
@@ -74,6 +79,21 @@ interface AppState {
         dataFilePath: string; backupPath: string | null };
 }
 ```
+
+```ts
+interface ImportPreview {                             // spec 008 FR-020; nothing changed yet
+  token: string | null;                               // null: nothing to add
+  fileName: string;                                   // base name only
+  fatal: null
+    | { reason: 'notCsv' | 'tooLarge' | 'tooManyRows' | 'noRows' }
+    | { reason: 'missingColumns'; columns: ('title' | 'company')[] };
+  toAdd: number; duplicates: number; hidden: number;
+  errors: { row: number; field: Column; problem: 'required' | 'tooLong' | 'invalid' }[];
+}
+```
+
+`confirmImport` plans the rows of the previewed file again against the current board
+and adds them in one transaction. A token works once; a new preview replaces it.
 
 ## Channel naming
 

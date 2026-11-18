@@ -108,13 +108,53 @@ export class BoardScreen extends BaseComponent {
     await expect(this.menu).toBeHidden()
   }
 
-  private appMenuItem(name: string): Locator {
+  private appMenuItem(name: string | RegExp): Locator {
     return this.menu.getByRole('menuitem', { name })
   }
 
   async openAppMenu(): Promise<void> {
     await this.appMenuButton.click()
     await expect(this.menu).toBeVisible()
+  }
+
+  /** Spec 008 US-1: app menu → Export to CSV… (the save dialog is answered by the test) */
+  async exportCsv(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem(/^(Export to CSV…|Експорт у CSV…)$/).click()
+  }
+
+  /** Spec 008 US-2: app menu → Import from CSV… */
+  async importCsv(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem(/^(Import from CSV…|Імпорт із CSV…)$/).click()
+  }
+
+  /**
+   * Spec 008 US-3.1: Enter opens the menu, End goes to "Reset board…" (the board must
+   * have cards), ↑ walks up past the update entries to "Import from CSV…", Enter picks it.
+   */
+  async importCsvWithKeyboard(): Promise<void> {
+    await this.appMenuButton.press('Enter')
+    await expect(this.menu).toBeVisible()
+    const path = [
+      this.appMenuItem('Reset board…'),
+      this.menu.getByRole('menuitemcheckbox', { name: 'Check for updates automatically' }),
+      this.appMenuItem('Check for updates…'),
+    ]
+    await this.menu.getByRole('menuitem').first().press('End')
+    for (const item of path) {
+      await expect(item).toBeFocused()
+      await item.press('ArrowUp')
+    }
+    const target = this.appMenuItem('Import from CSV…')
+    await expect(target).toBeFocused()
+    await target.press('Enter')
+  }
+
+  async verifyExportDisabled(): Promise<void> {
+    await this.openAppMenu()
+    await expect(this.appMenuItem(/^(Export to CSV…|Експорт у CSV…)$/)).toBeDisabled()
+    await this.closeAppMenu()
   }
 
   /** US-10: app menu → Reset board… → confirm or cancel */
@@ -201,6 +241,11 @@ export class BoardScreen extends BaseComponent {
 
   async verifyNotification(text: string): Promise<void> {
     await expect(this.page.getByRole('alert').filter({ hasText: text })).toBeVisible()
+  }
+
+  /** Spec 008 FR-008: a success message (a status, not an alert) */
+  async verifyInfo(text: string): Promise<void> {
+    await expect(this.page.getByRole('status').filter({ hasText: text })).toBeVisible()
   }
 
   async verifyNoNotification(): Promise<void> {

@@ -64,6 +64,8 @@ src/
 ├── domain/              # pure logic + zod schemas (shared)
 │   ├── stages.ts        # STAGES constant, StageId
 │   ├── colors.ts        # spec 007: CARD_COLORS, CardColor
+│   ├── csv.ts           # spec 008: CSV reader/writer, formula guard
+│   ├── transfer/        # spec 008: applications ↔ CSV rows (export table, import plan)
 │   ├── schema.ts        # zod schemas for IPC input & entities
 │   ├── board.ts         # validation + ordering rules for applications
 │   ├── analytics.ts     # spec 005: periods, buckets, stage entries, funnel, totals
@@ -83,6 +85,7 @@ src/
 │   │                        # applications.ts, notes.ts, settings.ts: one store each;
 │   │                        # rows.ts: table rows and mapping; errors.ts
 │   ├── updates.ts       # spec 006: latest release request, the update checker
+│   ├── transfer.ts      # spec 008: CSV files through system dialogs, pending import
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
 ├── preload/
@@ -96,6 +99,7 @@ src/
     │   │                # StagesChart/, Funnel/, ChartCard/ (spec 005)
     │   ├── updates/     # UpdateDialog/, useUpdateCheck, useUpdatesMenu (spec 006)
     │   ├── colors/      # useColorOptions: card colour names and tokens (spec 007)
+    │   ├── transfer/    # ImportDialog/, useTransferMenu: CSV export and import (spec 008)
     │   ├── applications/# ApplicationDialog/
     │   ├── settings/    # ThemeToggle/, LanguageSelect/
     │   └── storage/     # StorageError/
@@ -235,6 +239,20 @@ build/                   # icons, entitlements for electron-builder
   browser. Auto-install needs code signing on macOS first (D-5).
 - e2e sets `FINDY_RELEASES_URL` to a local fake server, and to a closed port when a
   test has no server, so tests never reach GitHub.
+
+### D-11 — CSV files in main, logic in the domain (spec 008)
+
+- The CSV reader/writer and the mapping to applications are pure (`domain/csv.ts`,
+  `domain/transfer/`). No CSV library: one format, ~100 lines, fully tested (§VII).
+- Main opens the system dialogs and reads or writes only the picked path
+  (`main/transfer.ts`). The renderer never sees a path.
+- Import has two steps: `previewImport` keeps the file text in main under a random
+  token; `confirmImport` plans again against the current board (an MCP change in
+  between is counted) and adds all rows in one transaction.
+- Headers and stage and colour names come from the locale files; import accepts both
+  languages and the ids.
+- e2e answers the system dialogs by replacing `dialog.showSaveDialog` and
+  `dialog.showOpenDialog` in main (`answerFileDialogs`).
 
 ## Cross-cutting docs
 

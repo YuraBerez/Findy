@@ -8,12 +8,12 @@ describe('writeCsv (spec 008 FR-007)', () => {
         ['Title', 'Company'],
         ['Dev', 'Acme, Inc'],
       ]),
-    ).toBe('﻿Title,Company\r\nDev,"Acme, Inc"\r\n')
+    ).toBe('\uFEFFTitle,Company\r\nDev,"Acme, Inc"\r\n')
   })
 
   it('quotes line breaks, quotes and spaces at the ends', () => {
     expect(writeCsv([['a\nb', 'say "hi"', ' x', 'plain']])).toBe(
-      '﻿"a\nb","say ""hi"""," x",plain\r\n',
+      '\uFEFF"a\nb","say ""hi"""," x",plain\r\n',
     )
   })
 })
@@ -33,7 +33,7 @@ describe('formula guard (NFR-002)', () => {
   })
 
   it('writes the guard into the file', () => {
-    expect(writeCsv([['=1+1']])).toBe("﻿'=1+1\r\n")
+    expect(writeCsv([['=1+1']])).toBe("\uFEFF'=1+1\r\n")
   })
 })
 
@@ -78,7 +78,7 @@ describe('readCsv (FR-011)', () => {
 
   it('returns nothing for empty text', () => {
     expect(readCsv('')).toEqual([])
-    expect(readCsv('﻿')).toEqual([])
+    expect(readCsv('\uFEFF')).toEqual([])
   })
 
   it('refuses an open quote and binary data', () => {

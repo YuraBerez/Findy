@@ -51,6 +51,14 @@ test.describe('accessibility', () => {
     await findy.pages.a11y.expectNoViolations()
   })
 
+  test('CSV import summary has no violations', { tag: '@a11y' }, async ({ findy }) => {
+    const file = findy.files.write('mine.csv', 'Title,Company\r\nDev,Acme\r\n,x\r\n')
+    await findy.api.answerFileDialogs(file)
+    await findy.pages.board.importCsv()
+    await findy.pages.importDialog.verifyShown('mine.csv', ['1 application will be added.'])
+    await findy.pages.a11y.expectNoViolations()
+  })
+
   test('columns dialog has no violations', { tag: '@a11y' }, async ({ findy }) => {
     await findy.api.setHiddenStages(['rejected'])
     await findy.refresh()

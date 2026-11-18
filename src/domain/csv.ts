@@ -1,6 +1,6 @@
 // CSV as in RFC 4180, for spec 008. Pure: no files, no Electron.
 
-const BOM = '﻿'
+const BOM = '\uFEFF'
 const CRLF = '\r\n'
 
 /** A cell starting with one of these runs as a formula in a spreadsheet (NFR-002) */

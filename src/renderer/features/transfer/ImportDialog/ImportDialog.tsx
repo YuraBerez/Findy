@@ -31,15 +31,16 @@ export function ImportDialog({ preview, onConfirm, onClose }: Props) {
   }
 
   const { token } = preview
+  // The native dialog focuses the first button: Cancel, so Enter never imports by accident
   const footer = token ? (
     <>
       <Button onClick={onClose}>{t('form.cancel')}</Button>
-      <Button variant="primary" autoFocus onClick={() => onConfirm(token)}>
+      <Button variant="primary" onClick={() => onConfirm(token)}>
         {t('transfer.confirm', { count: preview.toAdd })}
       </Button>
     </>
   ) : (
-    <Button variant="primary" autoFocus onClick={onClose}>
+    <Button variant="primary" onClick={onClose}>
       {t('common.close')}
     </Button>
   )

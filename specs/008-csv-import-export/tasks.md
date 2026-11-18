@@ -23,5 +23,5 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 4 — Verification and docs
 
-- [ ] T030 e2e with stubbed dialogs: export file content (en, uk), import summary, confirm, cancel, duplicates, own two-column table, invalid file, keyboard, round-trip; axe on the summary (US-1…US-3, NFR-001)
-- [ ] T031 Docs: contracts/ipc.md, architecture.md (D-11), security.md (file access)
+- [x] T030 e2e with stubbed dialogs: export file content (en, uk), import summary, confirm, cancel, duplicates, own two-column table, invalid file, keyboard, round-trip; axe on the summary (US-1…US-3, NFR-001)
+- [x] T031 Docs: contracts/ipc.md, architecture.md (D-11), security.md (file access)
