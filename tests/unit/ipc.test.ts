@@ -57,6 +57,7 @@ describe('IPC handlers', () => {
         mcpEnabled: false,
         analytics: { period: '30d', grouping: 'day' },
         autoUpdateCheck: false,
+        staleAfterDays: 14,
       },
       applications: [],
       storage: okStorage,
@@ -99,6 +100,7 @@ describe('IPC handlers', () => {
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
+      staleAfterDays: 14,
     })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
@@ -248,6 +250,22 @@ describe('automatic update check (spec 006 FR-002)', () => {
   })
 })
 
+describe('setStaleAfterDays (spec 010 FR-008)', () => {
+  it('saves N and returns the state', async () => {
+    const ctx = setup()
+    expect((await state(ctx.handlers.setStaleAfterDays(21))).settings.staleAfterDays).toBe(21)
+  })
+
+  it.each([2, 91, 7.5, '14', null])('rejects %s with VALIDATION', async (days) => {
+    const ctx = setup()
+    expect(await ctx.handlers.setStaleAfterDays(days)).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+    expect((await state(ctx.handlers.getState())).settings.staleAfterDays).toBe(14)
+  })
+})
+
 describe('readVacancy (spec 009)', () => {
   it('passes an http(s) link to the reader and returns its result', async () => {
     const ctx = setup()
@@ -363,6 +381,7 @@ describe('IPC handlers without storage (FR-054)', () => {
         mcpEnabled: false,
         analytics: { period: '30d', grouping: 'day' },
         autoUpdateCheck: false,
+        staleAfterDays: 14,
       },
       applications: [],
       storage,

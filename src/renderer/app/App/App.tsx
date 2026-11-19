@@ -9,6 +9,8 @@ import { Board } from '../../features/board'
 import { ReportIssueButton } from '../../features/feedback'
 import { UpdateDialog, useUpdateCheck } from '../../features/updates'
 import { ColumnsDialog } from '../../features/settings'
+import { StaleAfterDialog } from '../../features/stale'
+import { useNow } from '../../hooks/useNow'
 import { ImportDialog } from '../../features/transfer'
 import { StorageError } from '../../features/storage'
 import { Toolbar } from '../Toolbar'
@@ -27,16 +29,26 @@ export function App({ initialState }: { initialState: AppState }) {
   const [assistant, setAssistant] = useState(false)
   const [importing, setImporting] = useState<ImportPreview | null>(null)
   const [query, setQuery] = useState('')
+  const [editingStale, setEditingStale] = useState(false)
+  // Spec 010 FR-004: marks follow the time without a restart
+  const now = useNow()
   const [view, setView] = useState<View>('board')
   const { hiddenStages } = state.settings
   const { t, i18n } = useTranslation()
   const count = state.applications.length
+  const { staleAfterDays } = state.settings
   const opened = state.applications.find((application) => application.id === openId)
   // Spec 006: the automatic check runs once the app can read its settings
   const updates = useUpdateCheck(storageReady, actions.checkForUpdates)
   // Edge case: a found update waits until no other dialog is open
   const dialogOpen =
-    adding || assistant || editingColumns || resetting || Boolean(opened) || Boolean(importing)
+    adding ||
+    assistant ||
+    editingColumns ||
+    editingStale ||
+    resetting ||
+    Boolean(opened) ||
+    Boolean(importing)
   const startAdding = () => setAdding(true)
   // Spec 008: the file name and counts come back; a cancelled dialog gives null
   const exportCsv = async () => {
@@ -73,6 +85,7 @@ export function App({ initialState }: { initialState: AppState }) {
         onAssistant={() => setAssistant(true)}
         query={query}
         onQueryChange={setQuery}
+        onStaleAfter={() => setEditingStale(true)}
         view={view}
         onViewChange={setView}
         autoUpdateCheck={state.settings.autoUpdateCheck}
@@ -97,6 +110,8 @@ export function App({ initialState }: { initialState: AppState }) {
                 hiddenStages={hiddenStages}
                 onHide={(stage) => actions.setHiddenStages([...hiddenStages, stage])}
                 query={query}
+                staleAfterDays={staleAfterDays}
+                now={now}
               />
             </div>
             <div {...panel('analytics')}>
@@ -121,6 +136,15 @@ export function App({ initialState }: { initialState: AppState }) {
           onSubmit={async (application) => {
             // Spec 003 US-2: on failure the dialog stays open with the input
             if (await actions.createApplication(application)) setAdding(false)
+          }}
+        />
+      )}
+      {editingStale && (
+        <StaleAfterDialog
+          days={staleAfterDays}
+          onClose={() => setEditingStale(false)}
+          onSave={async (days) => {
+            if (await actions.setStaleAfterDays(days)) setEditingStale(false)
           }}
         />
       )}

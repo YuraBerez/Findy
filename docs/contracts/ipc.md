@@ -54,6 +54,7 @@ interface FindyApi {
     period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month';
   }): Promise<AppState>;
   setAutoUpdateCheck(enabled: boolean): Promise<AppState>;  // spec 006
+  setStaleAfterDays(days: number): Promise<AppState>;      // spec 010; VALIDATION unless a whole number 3–90
   checkForUpdates(trigger: 'manual' | 'auto'): Promise<     // spec 006
     | { status: 'available'; version: string; currentVersion: string; url: string }
     | { status: 'latest'; currentVersion: string }

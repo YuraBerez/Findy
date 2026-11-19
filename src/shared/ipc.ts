@@ -32,6 +32,7 @@ export const IPC_METHODS = [
   'setHiddenStages',
   'setAnalyticsView',
   'setAutoUpdateCheck',
+  'setStaleAfterDays',
   'checkForUpdates',
   'readVacancy',
   'setMcpEnabled',
@@ -195,6 +196,8 @@ export interface FindyApi {
    * be read or has neither (never rejects for that). VALIDATION for a non-http(s) link.
    */
   readVacancy(url: string): Promise<VacancyData | null>
+  /** Spec 010 FR-008: days after which an application is stale; VALIDATION unless 3–90 */
+  setStaleAfterDays(days: number): Promise<AppState>
   /** Spec 006 FR-002: check for updates at start */
   setAutoUpdateCheck(enabled: boolean): Promise<AppState>
   /** Spec 004: allow AI assistants (MCP) to use the board */

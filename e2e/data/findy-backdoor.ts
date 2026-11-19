@@ -225,6 +225,18 @@ export class FindyBackdoor {
     return this.page.evaluate(() => window.open('https://example.com') !== null)
   }
 
+  /**
+   * Spec 010 US-1.6: a fake clock in the window, from now on. Takes effect after the next
+   * reload (`findy.refresh()`); `advanceClock` then moves it forward and fires its timers.
+   */
+  async installClock(): Promise<void> {
+    await this.page.clock.install()
+  }
+
+  async advanceClock(ms: number): Promise<void> {
+    await this.page.clock.fastForward(ms)
+  }
+
   /** NFR-005: e.g. the minimum window size of spec 001 */
   async setWindowSize(width: number, height: number): Promise<void> {
     await this.app.evaluate(

@@ -49,7 +49,7 @@ CREATE TABLE notes (
 CREATE INDEX idx_notes_app ON notes(application_id, created_at DESC);
 
 CREATE TABLE settings (
-  key    TEXT PRIMARY KEY,                             -- 'language' | 'theme' | 'hiddenStages' (JSON) | 'mcpEnabled'
+  key    TEXT PRIMARY KEY,                             -- one row per setting: see data-model.md → Settings
   value  TEXT NOT NULL
 );
 ```

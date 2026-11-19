@@ -3,6 +3,7 @@ import { useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { CardColor } from '@domain/colors'
 import { filterApplications, toFullIndex } from '@domain/search'
+import { staleDays } from '@domain/stale'
 import { visibleStages, type StageId } from '@domain/stages'
 import type { Application } from '@shared/ipc'
 import { Button } from '@ui'
@@ -24,6 +25,9 @@ interface Props {
   onHide(stage: StageId): void
   /** FR-060: show only the cards that match */
   query: string
+  /** Spec 010: N and the current time (ticks hourly) for the stale marks */
+  staleAfterDays: number
+  now: Date
 }
 
 /** FR-001…004 and FR-020…025: stage columns with drag-and-drop (mouse and keyboard). */
@@ -37,9 +41,15 @@ export function Board({
   hiddenStages,
   onHide,
   query,
+  staleAfterDays,
+  now,
 }: Props) {
   const { t } = useTranslation()
   const visible = useMemo(() => visibleStages(hiddenStages), [hiddenStages])
+  const staleOf = useCallback(
+    (application: Application) => staleDays(application, staleAfterDays, now),
+    [staleAfterDays, now],
+  )
   const shown = useMemo(() => filterApplications(applications, query), [applications, query])
   // Positions in a filtered column become positions in the whole column
   const move = useCallback<MoveHandler>(
@@ -59,6 +69,7 @@ export function Board({
       openLink: onOpenLink,
       visible,
       hide: onHide,
+      staleDays: staleOf,
       focusId: dnd.focusId,
       clearFocus: dnd.clearFocus,
     }),
@@ -71,6 +82,7 @@ export function Board({
       onOpenLink,
       visible,
       onHide,
+      staleOf,
     ],
   )
 
@@ -112,7 +124,9 @@ export function Board({
             ))}
           </div>
           <DragOverlay>
-            {dnd.dragged && <CardContent application={dnd.dragged} overlay />}
+            {dnd.dragged && (
+              <CardContent application={dnd.dragged} staleDays={staleOf(dnd.dragged)} overlay />
+            )}
           </DragOverlay>
         </DndContext>
       </BoardActionsContext.Provider>

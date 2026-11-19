@@ -21,6 +21,8 @@ interface Props {
   onAssistant(): void
   query: string
   onQueryChange(query: string): void
+  /** Spec 010 FR-008: the dialog for N */
+  onStaleAfter(): void
   /** Spec 005 FR-001: the board or the analytics screen */
   view: View
   onViewChange(view: View): void
@@ -44,6 +46,7 @@ export function Toolbar({
   onAssistant,
   query,
   onQueryChange,
+  onStaleAfter,
   view,
   onViewChange,
   autoUpdateCheck,
@@ -103,6 +106,12 @@ export function Toolbar({
               label: t('columns.menuItem'),
               disabled: !storageReady,
               onSelect: onColumns,
+            },
+            {
+              key: 'stale-after',
+              label: t('stale.menuItem'),
+              disabled: !storageReady,
+              onSelect: onStaleAfter,
             },
             {
               key: 'assistant',
