@@ -1,7 +1,7 @@
 # Feature Spec: Add an application from a link
 
 - **ID:** 009-add-from-link
-- **Status:** Approved
+- **Status:** Implemented
 - **Approved:** 2026-11-19 (owner)
 - **Created:** 2026-11-19
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md) (US-1, FR-010), [003-error-handling](../003-error-handling/spec.md)
