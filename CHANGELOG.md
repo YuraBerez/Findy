@@ -3,6 +3,26 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.4.0] - 2026-11-19
+
+### Add an application from a link
+- Paste a vacancy link into **Add application**: Findy reads that page and fills in the **job title** and the **company**. Check the values and save; nothing is saved before you do. **Fill from link** does the same for a link that you typed.
+- It reads the job data that most job sites publish for search engines and link previews, and the page title and heading. When a page gives nothing (for example, it needs a login, or you are offline), a short message says so and you fill in the fields yourself.
+- Only that one page is read, only when you paste or press the button. No cookies, no logins and no data about you or your board are sent.
+
+### No movement
+- A card that stays in its stage for more than 14 days shows **No movement for N days**, so you know where to follow up. Offer and Rejected are never marked; only a move to another stage resets the count.
+- **⋯ → Stale after…** changes the number of days (3–90).
+
+### Job sites
+- A new **Sites** tab (Cmd/Ctrl+3) with 14 job sites: Djinni, DOU, Work.ua, robota.ua, LinkedIn Jobs, Indeed, Glassdoor, Wellfound, Remote OK, We Work Remotely, Jooble, EuroJobs, StepStone and XING.
+- Type your search once, for example *QA Engineer*: a click on a site opens its search results for it in your browser. The query is kept.
+- Add your own sites, such as a company's careers page; put `{query}` in the address where your search goes. Hide the sites that you do not use.
+- Each site shows its icon. Findy downloads it once from that site, with no data about you, and keeps it, so the tab works offline after that.
+
+### Data
+- The database gets a new version for your job sites. Findy backs it up before the update. **Findy 0.3.0 and older cannot open a database after 0.4.0 has opened it**: update every computer that uses the same data.
+
 ## [0.3.0] - 2026-11-18
 
 ### Card colours

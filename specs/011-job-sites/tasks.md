@@ -7,7 +7,7 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 0 — Constitution
 
-- [ ] T000 Amendment §II.8 (#28) merged before Phase 2
+- [x] T000 Amendment §II.8 (#28) merged before Phase 2
 
 ## Phase 1 — Domain
 

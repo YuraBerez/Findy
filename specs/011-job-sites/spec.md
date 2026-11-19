@@ -1,7 +1,7 @@
 # Feature Spec: Job sites
 
 - **ID:** 011-job-sites
-- **Status:** Approved
+- **Status:** Implemented (0.4.0)
 - **Approved:** 2026-11-19 (owner)
 - **Created:** 2026-11-19
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md) (FR-015 external links), [005-analytics](../005-analytics/spec.md) (tabs)
