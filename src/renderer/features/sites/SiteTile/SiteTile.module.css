@@ -1,0 +1,78 @@
+.tile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.open {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.open:hover {
+  background: var(--column-bg);
+}
+
+.open:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.icon,
+.letter {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.icon {
+  object-fit: contain;
+}
+
+/* A tint of the colour with the normal text colour: readable in both themes */
+.letter {
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--letter-color) 22%, var(--surface));
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name,
+.host {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.name {
+  font-weight: 600;
+}
+
+.host {
+  color: var(--fg-muted);
+  font-size: 12px;
+}
