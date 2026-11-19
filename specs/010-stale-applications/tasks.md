@@ -13,11 +13,11 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — UI
 
-- [ ] T010 `useNow` (hourly); card mark with icon in the accessible name; `BoardActions.staleDays`; en/uk plurals (FR-003, FR-004, NFR-001)
-- [ ] T011 `@ui/Button` `pressed`; `StaleToggle` in the toolbar with the count of visible columns; filter on the board with the search; off at 0; not saved (FR-005, FR-006, FR-007, FR-010)
-- [ ] T012 `StaleAfterDialog` and the app menu entry; validation; en/uk (FR-008)
+- [x] T010 `useNow` (hourly); card mark with icon in the accessible name; `BoardActions.staleDays`; en/uk plurals (FR-003, FR-004, NFR-001)
+- [x] T011 `@ui/Button` `pressed`; `StaleToggle` in the toolbar with the count of visible columns; filter on the board with the search; off at 0; not saved (FR-005, FR-006, FR-007, FR-010)
+- [x] T012 `StaleAfterDialog` and the app menu entry; validation; en/uk (FR-008)
 
 ## Phase 3 — Verification and docs
 
-- [ ] T020 e2e: US-1…US-4 with a seeded history; clock for US-1.6; axe with stale coloured cards in both themes; Ukrainian plurals; perf with 1 000 applications (NFR-001, NFR-002, SC-001)
-- [ ] T021 Docs: data-model.md (settings row), contracts/ipc.md, contracts/database.md (settings keys)
+- [x] T020 e2e: US-1…US-4 with a seeded history; clock for US-1.6; axe with stale coloured cards in both themes; Ukrainian plurals; perf with 1 000 applications (NFR-001, NFR-002, SC-001)
+- [x] T021 Docs: data-model.md (settings row), contracts/ipc.md, contracts/database.md (settings keys)

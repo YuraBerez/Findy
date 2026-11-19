@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 import type { CardColor } from '@domain/colors'
 import type { StageId } from '@domain/stages'
+import type { Application } from '@shared/ipc'
 import type { MoveTarget } from './useBoardDnd'
 
 /** What a card can do, given once by the Board instead of through every layer. */
@@ -17,6 +18,8 @@ export interface BoardActions {
   visible: readonly StageId[]
   /** Spec 002 FR-001; not offered when it is the last visible column */
   hide(stage: StageId): void
+  /** Spec 010 FR-003: days without movement when the card is stale, else null */
+  staleDays(application: Application): number | null
   /** Card to focus after it moved (it remounts in its new column) */
   focusId: string | null
   clearFocus(): void

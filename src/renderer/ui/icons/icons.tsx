@@ -141,3 +141,17 @@ export const BugIcon = (props: IconProps) => (
     <path d="M8 9a4 4 0 0 1 8 0v5a4 4 0 0 1-8 0zM12 9v9M4 13h4M16 13h4M5 7l3 2M19 7l-3 2M5 19l3-2M19 19l-3-2M9.5 5.5 8 4M14.5 5.5 16 4" />
   </Icon>
 )
+
+export const ClockIcon = (props: IconProps) => (
+  <Icon
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </Icon>
+)

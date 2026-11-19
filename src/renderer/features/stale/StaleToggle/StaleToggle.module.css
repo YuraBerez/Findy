@@ -1,0 +1,20 @@
+/* Wide window: the full text; the count alone is not shown */
+.short {
+  display: none;
+}
+
+/* Narrow window (Ukrainian at 800 px): icon and count; the text is for screen readers */
+@media (max-width: 1100px) {
+  .full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .short {
+    display: inline;
+  }
+}

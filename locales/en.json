@@ -311,5 +311,18 @@
       "noRows": "The file has no rows to import.",
       "missingColumns": "Required columns are missing: {{columns}}."
     }
+  },
+  "stale": {
+    "mark_one": "No movement for {{count}} day",
+    "mark_other": "No movement for {{count}} days",
+    "toggle": "No movement ({{count}})",
+    "menuItem": "Stale after…",
+    "dialog": {
+      "title": "Stale applications",
+      "label": "Days in a stage without movement",
+      "hint": "{{min}}–{{max}}",
+      "save": "Save",
+      "error": "Enter a whole number from {{min}} to {{max}}."
+    }
   }
 }

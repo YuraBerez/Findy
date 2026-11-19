@@ -117,6 +117,43 @@ export class BoardScreen extends BaseComponent {
     await expect(this.menu).toBeVisible()
   }
 
+  // ── Spec 010: stale applications ───────────────────────────────────────
+
+  private staleToggle(): Locator {
+    return this.toolbar.getByRole('button', { name: /^(No movement|Без руху) \(\d+\)$/ })
+  }
+
+  /** FR-005 */
+  async toggleStale(): Promise<void> {
+    await this.staleToggle().click()
+  }
+
+  /** US-4.1: the toggle is a button: Space switches it */
+  async toggleStaleWithKeyboard(): Promise<void> {
+    await this.staleToggle().press('Space')
+  }
+
+  /** FR-005: the count, on or off, and disabled at 0 */
+  async verifyStaleToggle(count: number, pressed: boolean): Promise<void> {
+    const toggle = this.staleToggle()
+    await expect(toggle).toHaveAccessibleName(new RegExp(`\\(${count}\\)$`))
+    await expect(toggle).toHaveAttribute('aria-pressed', String(pressed))
+    if (count === 0) await expect(toggle).toBeDisabled()
+    else await expect(toggle).toBeEnabled()
+  }
+
+  /** FR-003: the mark is text in the card's accessible name, or there is none */
+  async verifyStaleMark(title: string, mark: string | null): Promise<void> {
+    if (mark) await expect(this.card(title)).toHaveAccessibleName(new RegExp(` ${mark} `))
+    else await expect(this.card(title)).not.toHaveAccessibleName(/No movement|Без руху/)
+  }
+
+  /** FR-008: app menu → Stale after… */
+  async openStaleAfter(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem(/^(Stale after…|Вважати без руху після…)$/).click()
+  }
+
   /** Spec 008 US-1: app menu → Export to CSV… (the save dialog is answered by the test) */
   async exportCsv(): Promise<void> {
     await this.openAppMenu()

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import logo from '../../../../assets/logo.svg'
 import { SearchBox } from '../../features/search'
+import { StaleToggle } from '../../features/stale'
 import { useSettingsMenu } from '../../features/settings'
 import { useTransferMenu } from '../../features/transfer'
 import { useUpdatesMenu } from '../../features/updates'
@@ -21,6 +22,11 @@ interface Props {
   onAssistant(): void
   query: string
   onQueryChange(query: string): void
+  /** Spec 010: the "No movement" toggle and the dialog for N */
+  staleCount: number
+  onlyStale: boolean
+  onOnlyStaleChange(onlyStale: boolean): void
+  onStaleAfter(): void
   /** Spec 005 FR-001: the board or the analytics screen */
   view: View
   onViewChange(view: View): void
@@ -44,6 +50,10 @@ export function Toolbar({
   onAssistant,
   query,
   onQueryChange,
+  staleCount,
+  onlyStale,
+  onOnlyStaleChange,
+  onStaleAfter,
   view,
   onViewChange,
   autoUpdateCheck,
@@ -85,6 +95,13 @@ export function Toolbar({
         {view === 'board' && (
           <>
             <SearchBox value={query} onChange={onQueryChange} />
+            {storageReady && (
+              <StaleToggle
+                count={staleCount}
+                pressed={onlyStale}
+                onToggle={() => onOnlyStaleChange(!onlyStale)}
+              />
+            )}
             <Button variant="primary" onClick={onAdd} disabled={!storageReady}>
               {t('toolbar.addApplication')}
             </Button>
@@ -103,6 +120,12 @@ export function Toolbar({
               label: t('columns.menuItem'),
               disabled: !storageReady,
               onSelect: onColumns,
+            },
+            {
+              key: 'stale-after',
+              label: t('stale.menuItem'),
+              disabled: !storageReady,
+              onSelect: onStaleAfter,
             },
             {
               key: 'assistant',

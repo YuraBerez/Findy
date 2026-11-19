@@ -6,6 +6,7 @@ import { enteredStageAt } from '@domain/time'
 import type { Application } from '@shared/ipc'
 import { formatDateTime, formatSince } from '../../../format'
 import { colorToken, useColorOptions } from '../../colors'
+import { ClockIcon } from '@ui'
 import { useBoardActions } from '../BoardActions'
 import { CardActions } from '../CardActions'
 import styles from './Card.module.css'
@@ -14,6 +15,8 @@ interface CardContentProps {
   application: Application
   /** Copy that follows the pointer while dragging */
   overlay?: boolean
+  /** Spec 010 FR-003: days without movement when stale */
+  staleDays?: number | null
 }
 
 /** Spec 007 FR-005: the tint follows the card colour token */
@@ -24,7 +27,7 @@ function colorStyle(application: Application): CSSProperties | undefined {
 }
 
 /** FR-003: title, company, note count, time in the current stage. */
-export function CardContent({ application, overlay = false }: CardContentProps) {
+export function CardContent({ application, overlay = false, staleDays = null }: CardContentProps) {
   const { t, i18n } = useTranslation()
   const colors = useColorOptions()
   const since = enteredStageAt(application)
@@ -47,6 +50,13 @@ export function CardContent({ application, overlay = false }: CardContentProps) 
         <span className={styles.srOnly}>
           {t('colors.cardLabel', { color: colors.name(application.color) })}
         </span>
+      )}
+      {/* Spec 010 FR-003: text and icon, inside the handle, so it is in the card's name */}
+      {staleDays !== null && (
+        <p className={styles.stale}>
+          <ClockIcon size={14} className={styles.staleIcon} />
+          {t('stale.mark', { count: staleDays })}
+        </p>
       )}
       <footer className={styles.meta}>
         <span>{t('card.notes', { count: application.notes.length })}</span>
@@ -125,7 +135,7 @@ export function SortableCard({ application }: { application: Application }) {
         // dnd-kit swallows the click that ends a drag, so this is a real click
         onClick={() => board.open(application.id)}
       >
-        <CardContent application={application} />
+        <CardContent application={application} staleDays={board.staleDays(application)} />
       </div>
       <CardActions application={application} />
     </article>
