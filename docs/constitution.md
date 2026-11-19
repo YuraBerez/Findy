@@ -4,7 +4,7 @@ The non-negotiable principles of the project. Every spec, plan, task and pull
 request must comply. Changing this document requires its own PR with the
 `constitution` label and a short rationale.
 
-**Version:** 1.3.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6), 2026-11-19 (§II.7)
+**Version:** 1.4.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6), 2026-11-19 (§II.7, §II.8)
 
 ---
 
@@ -48,6 +48,11 @@ No production code is written without an approved spec.
    sends no user data: no cookies, stored logins, applications, notes, settings or
    identifiers. The app runs no code from the page and keeps no copy of it.
    See spec 009.
+8. **Exception — job site icons.** The app may download the icon of a job site in its
+   list of job sites once, keep it locally and try again later if it failed. The request
+   goes only to that site's host and sends no user data: no search query, no list of
+   sites, no cookies or identifiers. The app opens the sites themselves only in the
+   system browser. See spec 011.
 
 ## III. Secure Electron by default
 
