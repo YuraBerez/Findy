@@ -19,7 +19,7 @@ Each task references the requirement(s) it satisfies.
 
 - [x] T010 Migration 003 + `SitesStore` + settings `hiddenSites`, `siteQuery`; migration test on a v2 fixture; repository tests, reset keeps them (FR-012)
 - [x] T011 `main/http.ts` from `main/vacancy.ts` (no behaviour change; spec 009 tests still pass) (D-3)
-- [ ] T012 `main/siteIcons.ts`: fetcher with the host rule, retry once a day, 4 at a time, event; unit tests with fakes (FR-021…FR-023, NFR-001)
+- [x] T012 `main/siteIcons.ts`: fetcher with the host rule, retry once a day, 4 at a time, event; unit tests with fakes (FR-021…FR-023, NFR-001)
 - [ ] T013 IPC: site calls, icons, event; preload; tests (FR-010…FR-016, FR-021)
 
 ## Phase 3 — UI
