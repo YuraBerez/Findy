@@ -97,8 +97,9 @@ As a user, I want to see each site's icon, so that I find a site at a glance.
   - International: LinkedIn Jobs, Indeed, Glassdoor;
   - Remote: Wellfound, Remote OK, We Work Remotely;
   - Europe: Jooble, EuroJobs, StepStone, XING.
-  For each one, Findy MUST know the address of its search results with a query, and the
-  address of its jobs page for an empty query.
+  For each one, Findy MUST know the address of its jobs page and, when the site has one,
+  the address of its search results with a query. Wellfound, Remote OK and EuroJobs have
+  no stable search address: they always open their jobs page (checked 2026-11-19).
 - **FR-003** The user's sites MUST be in a group "My sites" after the known groups, in
   the order they were added. An empty group MUST NOT show.
 - **FR-004** Each site MUST show as a tile with its icon (FR-020), its name and its host
@@ -110,8 +111,9 @@ As a user, I want to see each site's icon, so that I find a site at a glance.
   after a restart. It MUST be trimmed; at most 200 characters.
 - **FR-006** A click on a tile, or Enter on it, MUST open the site in the system browser
   (spec 001 FR-015). With a non-empty query, it opens the site's search address with the
-  query encoded for a URL; with an empty query, the jobs page (known sites) or the
-  address without the query (the user's sites: `{query}` becomes empty).
+  query encoded for a URL; with an empty query, or for a known site without a search
+  address, the jobs page (known sites) or the address without the query (the user's
+  sites: `{query}` becomes empty).
 
 ### The user's sites
 
