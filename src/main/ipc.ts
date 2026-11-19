@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { DEFAULT_ANALYTICS_VIEW } from '../domain/analytics'
+import { STALE_DAYS } from '../domain/stale'
 import {
   AnalyticsViewSchema,
   ApplicationInputSchema,
@@ -12,6 +13,7 @@ import {
   LIMITS,
   MoveTargetSchema,
   NoteTextSchema,
+  StaleAfterDaysSchema,
   ThemeSchema,
 } from '../domain/schema'
 import type { Language, Theme } from '../domain/types'
@@ -80,6 +82,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       mcpEnabled: false,
       analytics: DEFAULT_ANALYTICS_VIEW,
       autoUpdateCheck: false,
+      staleAfterDays: STALE_DAYS.default,
     },
     applications: deps.repository?.listApplications() ?? [],
     storage: deps.storage,
@@ -165,6 +168,10 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       z.tuple([z.string().max(LIMITS.url).refine(isHttpUrl, { message: 'Only http(s) URLs' })]),
       (url) => deps.readVacancy(url),
     ),
+    setStaleAfterDays: handle(z.tuple([StaleAfterDaysSchema]), (days) => {
+      repo().setStaleAfterDays(days)
+      return state()
+    }),
     setAutoUpdateCheck: handle(z.tuple([z.boolean()]), (enabled) => {
       repo().setAutoUpdateCheck(enabled)
       return state()

@@ -44,4 +44,6 @@ export interface Settings {
   analytics: AnalyticsView
   /** Check for a newer version at start, at most once a day (spec 006); off by default */
   autoUpdateCheck: boolean
+  /** Spec 010: an application is stale after this many days in its stage (3–90, default 14) */
+  staleAfterDays: number
 }

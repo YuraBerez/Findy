@@ -4,6 +4,7 @@ import { ANALYTICS_GROUPINGS, ANALYTICS_PERIODS } from './analytics'
 import { CARD_COLORS } from './colors'
 import { isHttpUrl, LIMITS } from './limits'
 import { STAGES } from './stages'
+import { STALE_DAYS } from './stale'
 
 export { isHttpUrl, LIMITS }
 
@@ -31,6 +32,9 @@ export const HiddenStagesSchema = z
   .refine((stages) => new Set(stages).size < STAGES.length, { message: 'all_hidden' })
 
 /** Spec 005 FR-030, FR-031 */
+/** Spec 010 FR-008: a whole number of days, 3–90 */
+export const StaleAfterDaysSchema = z.number().int().min(STALE_DAYS.min).max(STALE_DAYS.max)
+
 export const AnalyticsViewSchema = z.object({
   period: z.enum(ANALYTICS_PERIODS),
   grouping: z.enum(ANALYTICS_GROUPINGS),

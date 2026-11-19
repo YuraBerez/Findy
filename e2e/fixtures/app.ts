@@ -20,6 +20,7 @@ import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { AnalyticsScreen } from '../screens/analytics.screen'
 import { ImportDialogScreen } from '../screens/import-dialog.screen'
+import { StaleDialogScreen } from '../screens/stale-dialog.screen'
 import { UpdatesScreen } from '../screens/updates.screen'
 import { BoardScreen } from '../screens/board.screen'
 import { mousePointer } from './pointer'
@@ -34,6 +35,7 @@ export interface FindyPages {
   analytics: AnalyticsScreen
   updates: UpdatesScreen
   importDialog: ImportDialogScreen
+  staleDialog: StaleDialogScreen
   dialog: ApplicationDialogScreen
   details: ApplicationDetailsScreen
   applications: ApplicationSteps
@@ -140,6 +142,7 @@ function pagesFor(page: Page): FindyPages {
     analytics: new AnalyticsScreen(page),
     updates: new UpdatesScreen(page),
     importDialog: new ImportDialogScreen(page),
+    staleDialog: new StaleDialogScreen(page),
     dialog,
     details: new ApplicationDetailsScreen(page),
     applications: new ApplicationSteps({ board, dialog }),

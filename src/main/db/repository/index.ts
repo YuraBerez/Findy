@@ -119,6 +119,11 @@ export class Repository {
     return this.settings.setAnalyticsView(view)
   }
 
+  /** Spec 010 FR-008 */
+  setStaleAfterDays(days: number): Settings {
+    return this.settings.setStaleAfterDays(days)
+  }
+
   setAutoUpdateCheck(enabled: boolean): Settings {
     return this.settings.setAutoUpdateCheck(enabled)
   }

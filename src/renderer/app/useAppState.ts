@@ -121,6 +121,9 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         return result.added
       },
 
+      /** Spec 010 FR-008 */
+      setStaleAfterDays: (days: number) => run(() => window.findy.setStaleAfterDays(days)),
+
       /** Spec 009: null when the page gives nothing; a failure is notified and gives null */
       readVacancy: (url: string): Promise<VacancyData | null> =>
         attempt(() => window.findy.readVacancy(url)),

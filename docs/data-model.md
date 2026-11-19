@@ -74,6 +74,7 @@ column does not add history.
 | `mcpEnabled` | `boolean` | `false` | Spec 004: AI assistants may use the board through MCP; row `mcpEnabled` (`'true'`/`'false'`) |
 | `hiddenStages` | `StageId[]` | `[]` | Spec 002: unique, never all stages; stored as a JSON array in the `settings` row `hiddenStages` |
 | `autoUpdateCheck` | `boolean` | `false` | Spec 006: check for a newer version at start, at most once per 24 h; row `autoUpdateCheck` (`'true'`/`'false'`). The row `lastUpdateCheckAt` (timestamp of the last check) is internal to main and not part of `Settings` |
+| `staleAfterDays` | `number` | `14` | Spec 010: an application is stale after more than this many whole days in its stage (not Offer or Rejected); a whole number 3–90 in the row `staleAfterDays`; an invalid value reads as 14. "Stale" itself is computed, never stored |
 | `analytics` | `{ period: '7d' \| '30d' \| '90d' \| 'all'; grouping: 'day' \| 'week' \| 'month' }` | `{ period: '30d', grouping: 'day' }` | Spec 005: the view of the analytics screen; a JSON object in the `settings` row `analytics`; an invalid value reads as the default |
 
 ## Invariants

@@ -78,3 +78,19 @@
   color: var(--fg-muted);
   font-size: 12px;
 }
+
+/* Spec 010: high-contrast text on every tint; the icon carries the warning colour */
+.stale {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: var(--space-2) 0 0;
+  color: var(--fg);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.staleIcon {
+  flex-shrink: 0;
+  color: var(--danger);
+}
