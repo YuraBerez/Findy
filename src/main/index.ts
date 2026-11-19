@@ -9,6 +9,7 @@ import { Repository } from './db/repository'
 import { resolveLanguage } from '../domain/language'
 import { createHandlers } from './ipc'
 import { userDataDir } from './paths'
+import { createIconFetcher } from './siteIcons'
 import { readVacancyPage } from './vacancy'
 import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
@@ -135,6 +136,18 @@ function start(): void {
     checkForUpdates,
     // Spec 009 plan D-2: Node's fetch has no cookie store, and gives redirects to check
     readVacancy: (url) => readVacancyPage(fetch, url),
+    siteIcons:
+      repository &&
+      createIconFetcher({
+        fetchFn: fetch,
+        store: repository,
+        onChange: () => {
+          for (const win of BrowserWindow.getAllWindows())
+            win.webContents.send(CHANNEL_PREFIX + 'siteIconsChanged')
+        },
+        // Spec 011 NFR-003: e2e serves icons locally; a packaged app ignores it
+        origin: app.isPackaged ? undefined : process.env.FINDY_SITE_ICONS_URL,
+      }),
     mcpConnection: () =>
       // An AppImage is mounted at a new path on every start: point at the file
       // itself, which forwards `--mcp` to Node mode

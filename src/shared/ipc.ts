@@ -37,6 +37,13 @@ export const IPC_METHODS = [
   'setStaleAfterDays',
   'checkForUpdates',
   'readVacancy',
+  'addSite',
+  'updateSite',
+  'deleteSite',
+  'setHiddenSites',
+  'setSiteQuery',
+  'getSiteIcons',
+  'refreshSiteIcons',
   'setMcpEnabled',
   'getMcpConnection',
   'getSystemLocale',
@@ -46,7 +53,13 @@ export const IPC_METHODS = [
 
 export type IpcMethod = (typeof IPC_METHODS)[number]
 
-export const IPC_EVENTS = ['languageChanged', 'storageError', 'stateChanged'] as const
+export const IPC_EVENTS = [
+  'languageChanged',
+  'storageError',
+  'stateChanged',
+  /** Spec 011: a site icon was saved; ask getSiteIcons again */
+  'siteIconsChanged',
+] as const
 export type IpcEvent = (typeof IPC_EVENTS)[number]
 
 export type IpcErrorCode = 'VALIDATION' | 'NOT_FOUND' | 'STORAGE' | 'NETWORK'
@@ -202,6 +215,19 @@ export interface FindyApi {
   readVacancy(url: string): Promise<VacancyData | null>
   /** Spec 010 FR-008: days after which an application is stale; VALIDATION unless 3–90 */
   setStaleAfterDays(days: number): Promise<AppState>
+  /** Spec 011 FR-010: VALIDATION for a bad name or address, or after 50 sites */
+  addSite(site: { name: string; url: string }): Promise<AppState>
+  /** Spec 011 FR-011: NOT_FOUND for an unknown id */
+  updateSite(id: string, site: { name: string; url: string }): Promise<AppState>
+  deleteSite(id: string): Promise<AppState>
+  /** Spec 011 FR-015 */
+  setHiddenSites(ids: KnownSiteId[]): Promise<AppState>
+  /** Spec 011 FR-005: trimmed, ≤ 200 characters */
+  setSiteQuery(query: string): Promise<AppState>
+  /** Spec 011 FR-020: host → `data:` URL of each saved icon */
+  getSiteIcons(): Promise<Record<string, string>>
+  /** Spec 011 FR-021: downloads the missing icons in the background; `siteIconsChanged` follows */
+  refreshSiteIcons(): Promise<void>
   /** Spec 006 FR-002: check for updates at start */
   setAutoUpdateCheck(enabled: boolean): Promise<AppState>
   /** Spec 004: allow AI assistants (MCP) to use the board */
