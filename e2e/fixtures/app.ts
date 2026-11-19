@@ -117,6 +117,12 @@ async function closeApp(app: ElectronApplication): Promise<void> {
 
 async function firstWindow(app: ElectronApplication): Promise<Page> {
   const page = await app.firstWindow()
+  // Only Playwright's input reaches the window. The real cursor of the OS can be over it
+  // (on CI it rests in the middle of the screen), and its moves came in during a drag:
+  // the card jumped to another column and back (issue #23)
+  await app.evaluate(({ BrowserWindow }) => {
+    for (const win of BrowserWindow.getAllWindows()) win.setIgnoreMouseEvents(true)
+  })
   // Playwright emulates a light scheme by default; let nativeTheme drive it (FR-080)
   await page.emulateMedia({ colorScheme: null })
   await page.getByTestId('app').waitFor()

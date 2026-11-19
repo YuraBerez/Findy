@@ -1,6 +1,6 @@
 import type { Locator } from '@playwright/test'
 
-/** Checks of the app state during a drag; each one fails fast, the pointer retries `ready` */
+/** Checks of the app state during a drag */
 export interface DragChecks {
   /** The drag is active (the preview follows the pointer) */
   started: () => Promise<void>
