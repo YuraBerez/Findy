@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { filterApplications } from '../../src/domain/search'
 import { isStaleAfterDays, STALE_DAYS, staleDays } from '../../src/domain/stale'
 import type { Application, StageChange } from '../../src/domain/types'
 
@@ -85,17 +84,4 @@ describe('isStaleAfterDays (FR-008)', () => {
     expect(isStaleAfterDays(days)).toBe(false),
   )
   it('defaults to 14', () => expect(STALE_DAYS.default).toBe(14))
-})
-
-describe('filterApplications with the stale toggle (FR-006)', () => {
-  const stale = app('Frontend stale', [{ stage: 'applied', at: daysAgo(30) }])
-  const fresh = app('Frontend fresh', [{ stage: 'applied', at: daysAgo(1) }])
-  const other = app('Backend stale', [{ stage: 'applied', at: daysAgo(30) }])
-  const isStale = (application: Application) => staleDays(application, 14, NOW) !== null
-
-  it('keeps only applications that match the query and the condition', () => {
-    expect(filterApplications([stale, fresh, other], '', isStale)).toEqual([stale, other])
-    expect(filterApplications([stale, fresh, other], 'front', isStale)).toEqual([stale])
-    expect(filterApplications([stale, fresh, other], 'front')).toEqual([stale, fresh])
-  })
 })

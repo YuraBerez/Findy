@@ -339,7 +339,6 @@
     "mark_few": "Без руху {{count}} дні",
     "mark_many": "Без руху {{count}} днів",
     "mark_other": "Без руху {{count}} дня",
-    "toggle": "Без руху ({{count}})",
     "menuItem": "Вважати без руху після…",
     "dialog": {
       "title": "Заявки без руху",

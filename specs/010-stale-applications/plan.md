@@ -8,9 +8,8 @@
 "Stale" is computed, not stored: a pure function in `src/domain` takes an application,
 N and the current time. N is one new settings row (`staleAfterDays`), so there is no
 migration. The renderer keeps a clock that ticks once an hour and passes "now" to the
-board; the card shows the mark, the toolbar shows the toggle with the count, and the
-board filter combines the toggle with the search. The app menu opens a small dialog
-for N. One new IPC call, `setStaleAfterDays`.
+board; the card shows the mark. The app menu opens a small dialog for N. (The toolbar
+toggle and filter were removed after review, spec D-6.) One new IPC call, `setStaleAfterDays`.
 
 ## Technical context
 
@@ -18,7 +17,7 @@ for N. One new IPC call, `setStaleAfterDays`.
 |------|--------|
 | Language | TypeScript (strict) |
 | Storage | `settings` row `staleAfterDays` (whole number as text); a missing or invalid value reads as 14 |
-| UI | React; `@ui/Button` gets a `pressed` state for the toggle; the dialog reuses `@ui/Dialog` and `@ui/TextField` |
+| UI | React; the dialog reuses `@ui/Dialog` and `@ui/TextField` |
 | Testing | Vitest (domain, settings store, IPC); e2e with a seeded history database and Playwright's clock |
 | Target platforms | Windows, macOS, Linux (no platform code) |
 
@@ -30,10 +29,10 @@ for N. One new IPC call, `setStaleAfterDays`.
 | II. Local-first | ✅ | Computed locally; no network |
 | III. Secure Electron | ✅ | One new IPC call, its input parsed with zod (whole number 3–90) |
 | IV. Cross-platform | ✅ | No platform code |
-| V. i18n | ✅ | Mark, toggle, menu item and dialog in en + uk; Ukrainian plurals for days and the count |
-| VI. Tested | ✅ | Unit: the stale rule at the edges (N, N + 1, final stages, clock back), settings parse, IPC; e2e: every acceptance scenario; perf for NFR-002 |
-| VII. Simplicity | ✅ | No new table, no stored flag, no timers per card: one clock for the app |
-| VIII. Accessible | ✅ | Toggle is a button with `aria-pressed`; mark is text + icon in the card's accessible name; dialog has a labelled number field with an error |
+| V. i18n | ✅ | Mark, menu item and dialog in en + uk; Ukrainian plurals for days |
+| VI. Tested | ✅ | Unit: the stale rule at the edges (N, N + 1, final stages, clock back), settings parse, IPC; e2e: every acceptance scenario |
+| VII. Simplicity | ✅ | No new table, no stored flag, no timers per card: one clock for the app; no filter (spec D-6) |
+| VIII. Accessible | ✅ | The mark is text + icon in the card's accessible name; the dialog has a labelled number field with an error |
 
 ## Requirement → component map
 
@@ -43,10 +42,7 @@ for N. One new IPC call, `setStaleAfterDays`.
 | FR-008, FR-009 | `Settings.staleAfterDays`; `SettingsStore.setStaleAfterDays`, parse with the range; `StaleAfterDaysSchema` (zod); IPC `setStaleAfterDays(days)` → `AppState` |
 | FR-004 | `renderer/hooks/useNow.ts`: the current time, updated once an hour; `App` passes it to the board and the toolbar |
 | FR-003, NFR-001 | `CardContent`: a mark (clock icon + "No movement for {count} days") inside the card handle, so it is in the accessible name; `BoardActions` gets `staleDays(application)` |
-| FR-005, FR-007, FR-010 | `features/stale/StaleToggle`: `@ui/Button` with `pressed`; count of stale applications in visible columns; `App` state, not saved; turns itself off when the count is 0 |
-| FR-006 | `domain/search.ts`: `filterApplications(applications, query, also)` with the stale check as `also`; `Board` maps drop positions when any filter is on |
 | FR-008 | `features/stale/StaleAfterDialog` (number field 3–90, validation, Save / Cancel) and the menu entry from `useStaleMenu` |
-| NFR-002 | e2e `performance.spec.ts`: toggle on and off with 1 000 applications |
 
 ## IPC contract change
 
@@ -69,12 +65,6 @@ setStaleAfterDays(days: number): Promise<AppState>;   // spec 010; VALIDATION un
 - **Why:** FR-004 asks for at least once an hour. One `useNow` in `App` re-renders the
   board once an hour; a move re-renders at once anyway. A timer per card would cost
   more for nothing.
-
-### D-3 — The filter joins the search in the domain
-
-- **Why:** FR-006: the toggle and the search work together. One `filterApplications`
-  with both conditions keeps the drop-position mapping (`toFullIndex`) the same for
-  both filters.
 
 ## Risks
 

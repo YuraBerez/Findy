@@ -51,10 +51,3 @@
   padding: 2px 10px;
   font-size: 13px;
 }
-
-/* A toggle that is on */
-.button[aria-pressed='true'] {
-  border-color: var(--primary);
-  background: var(--toggle-track);
-  color: var(--fg);
-}

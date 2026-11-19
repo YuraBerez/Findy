@@ -25,10 +25,9 @@ interface Props {
   onHide(stage: StageId): void
   /** FR-060: show only the cards that match */
   query: string
-  /** Spec 010: N, the current time (ticks hourly) and the "No movement" toggle */
+  /** Spec 010: N and the current time (ticks hourly) for the stale marks */
   staleAfterDays: number
   now: Date
-  onlyStale: boolean
 }
 
 /** FR-001…004 and FR-020…025: stage columns with drag-and-drop (mouse and keyboard). */
@@ -44,7 +43,6 @@ export function Board({
   query,
   staleAfterDays,
   now,
-  onlyStale,
 }: Props) {
   const { t } = useTranslation()
   const visible = useMemo(() => visibleStages(hiddenStages), [hiddenStages])
@@ -52,25 +50,15 @@ export function Board({
     (application: Application) => staleDays(application, staleAfterDays, now),
     [staleAfterDays, now],
   )
-  // Spec 010 FR-006: the toggle and the search together
-  const shown = useMemo(
-    () =>
-      filterApplications(
-        applications,
-        query,
-        onlyStale ? (application) => staleOf(application) !== null : undefined,
-      ),
-    [applications, query, onlyStale, staleOf],
-  )
-  const filtered = Boolean(query.trim()) || onlyStale
+  const shown = useMemo(() => filterApplications(applications, query), [applications, query])
   // Positions in a filtered column become positions in the whole column
   const move = useCallback<MoveHandler>(
     (id, target) =>
       onMove(
         id,
-        filtered ? { ...target, index: toFullIndex(applications, shown, id, target) } : target,
+        query.trim() ? { ...target, index: toFullIndex(applications, shown, id, target) } : target,
       ),
-    [onMove, filtered, applications, shown],
+    [onMove, query, applications, shown],
   )
   const dnd = useBoardDnd(shown, visible, move)
   const actions = useMemo<BoardActions>(

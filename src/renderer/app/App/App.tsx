@@ -1,7 +1,5 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { staleDays } from '@domain/stale'
-import { visibleStages } from '@domain/stages'
 import type { AppState, ImportPreview, Language } from '@shared/ipc'
 import { ConfirmDialog, panelId, tabId } from '@ui'
 import { Analytics } from '../../features/analytics'
@@ -31,7 +29,6 @@ export function App({ initialState }: { initialState: AppState }) {
   const [assistant, setAssistant] = useState(false)
   const [importing, setImporting] = useState<ImportPreview | null>(null)
   const [query, setQuery] = useState('')
-  const [onlyStale, setOnlyStale] = useState(false)
   const [editingStale, setEditingStale] = useState(false)
   // Spec 010 FR-004: marks follow the time without a restart
   const now = useNow()
@@ -40,16 +37,6 @@ export function App({ initialState }: { initialState: AppState }) {
   const { t, i18n } = useTranslation()
   const count = state.applications.length
   const { staleAfterDays } = state.settings
-  // FR-005, FR-010: stale applications in the visible columns
-  const staleCount = useMemo(() => {
-    const shown = visibleStages(hiddenStages)
-    return state.applications.filter(
-      (application) =>
-        shown.includes(application.stage) && staleDays(application, staleAfterDays, now) !== null,
-    ).length
-  }, [state.applications, hiddenStages, staleAfterDays, now])
-  // FR-005: with nothing stale, the toggle turns off (state adjusted while rendering)
-  if (onlyStale && staleCount === 0) setOnlyStale(false)
   const opened = state.applications.find((application) => application.id === openId)
   // Spec 006: the automatic check runs once the app can read its settings
   const updates = useUpdateCheck(storageReady, actions.checkForUpdates)
@@ -98,9 +85,6 @@ export function App({ initialState }: { initialState: AppState }) {
         onAssistant={() => setAssistant(true)}
         query={query}
         onQueryChange={setQuery}
-        staleCount={staleCount}
-        onlyStale={onlyStale}
-        onOnlyStaleChange={setOnlyStale}
         onStaleAfter={() => setEditingStale(true)}
         view={view}
         onViewChange={setView}
@@ -128,7 +112,6 @@ export function App({ initialState }: { initialState: AppState }) {
                 query={query}
                 staleAfterDays={staleAfterDays}
                 now={now}
-                onlyStale={onlyStale}
               />
             </div>
             <div {...panel('analytics')}>

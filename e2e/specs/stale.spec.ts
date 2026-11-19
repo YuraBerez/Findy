@@ -11,7 +11,6 @@ const HISTORY: HistoryApplication[] = [
   { title: 'Edge', createdDaysAgo: 14 }, // 13 or 14 whole days: never more than 14
   { title: 'Offer', createdDaysAgo: 100, moves: [['offered', 100]] },
   { title: 'Rejected', createdDaysAgo: 100, moves: [['rejected', 100]] },
-  { title: 'Hidden', createdDaysAgo: 30, moves: [['test_task', 30]] },
 ]
 
 /** The mark text for a title, from the saved state and the stale rule */
@@ -25,45 +24,19 @@ async function markOf(findy: Findy, title: string, afterDays = 14): Promise<stri
 test.describe('stale applications (spec 010)', () => {
   test.use({ history: { applications: HISTORY } })
 
-  test.beforeEach(async ({ findy }) => {
-    // FR-010: hidden columns do not count
-    await findy.api.setHiddenStages(['test_task'])
-    await findy.refresh()
-  })
-
   test(
-    'US-1, US-2: marks, the toggle with the search, a move resets',
+    'US-1: marks only cards over N days, not in final stages; a move resets',
     { tag: '@critical' },
     async ({ findy }) => {
       const { board } = findy.pages
-      await test.step('US-1.1, 1.2, 1.5: only cards over N days, not in final stages', async () => {
+      await test.step('US-1.1, 1.2, 1.5', async () => {
         await board.verifyStaleMark('Waiting', await markOf(findy, 'Waiting'))
         await board.verifyStaleMark('Also stale', await markOf(findy, 'Also stale'))
         for (const title of ['Ten days', 'Fresh', 'Edge', 'Offer', 'Rejected'])
           await board.verifyStaleMark(title, null)
-        await board.verifyStaleToggle(2, false) // "Hidden" is in a hidden column
       })
-      await test.step('US-2.2: the toggle shows only stale cards, in their columns', async () => {
-        await board.toggleStale()
-        await board.verifyStaleToggle(2, true)
-        await board.verifyCards('applied', ['Also stale'])
-        await board.verifyCards('hr_interview', ['Waiting'])
-        await board.verifyCards('offered', [])
-      })
-      await test.step('US-2.3: with the search, both must match', async () => {
-        await board.search('wait')
-        await board.verifyCards('applied', [])
-        await board.verifyCards('hr_interview', ['Waiting'])
-        await board.clearSearchWithEscape()
-      })
-      await test.step('US-1.3, US-2.4: a move resets the count; the card leaves', async () => {
+      await test.step('US-1.3: a move to another stage removes the mark at once', async () => {
         await board.moveWithMenu('Waiting', 'Technical interview')
-        await board.verifyCards('technical_interview', [])
-        await board.verifyStaleToggle(1, true)
-      })
-      await test.step('US-2.5: at 0 the toggle turns off and the board is whole', async () => {
-        await board.moveWithMenu('Also stale', 'HR interview')
-        await board.verifyStaleToggle(0, false)
         await board.verifyCards('technical_interview', ['Waiting'])
         await board.verifyStaleMark('Waiting', null)
       })
@@ -76,13 +49,6 @@ test.describe('stale applications (spec 010)', () => {
     await findy.api.setColor('Waiting', 'blue')
     await findy.refresh()
     await board.verifyStaleMark('Waiting', await markOf(findy, 'Waiting'))
-  })
-
-  test('US-2.6: the toggle is off after a restart', async ({ findy }) => {
-    await findy.pages.board.toggleStale()
-    await findy.pages.board.verifyStaleToggle(2, true)
-    const { board } = await findy.restart()
-    await board.verifyStaleToggle(2, false)
   })
 
   test('US-3: change N; invalid values are refused; N stays after a restart', async ({ findy }) => {
@@ -103,11 +69,11 @@ test.describe('stale applications (spec 010)', () => {
       await staleDialog.save()
       await staleDialog.verifyClosed()
       await board.verifyStaleMark('Ten days', await markOf(findy, 'Ten days', 7))
-      await board.verifyStaleToggle(4, false) // "Edge" (13 or 14 days) too
+      await board.verifyStaleMark('Fresh', null)
     })
     await test.step('3.2: and after a restart', async () => {
       const pages = await findy.restart()
-      await pages.board.verifyStaleToggle(4, false)
+      await pages.board.verifyStaleMark('Ten days', await markOf(findy, 'Ten days', 7))
       await pages.board.openStaleAfter()
       await pages.staleDialog.verifyOpen('7')
       await pages.staleDialog.cancel()
@@ -121,17 +87,16 @@ test.describe('stale applications (spec 010)', () => {
     await board.verifyStaleMark('Edge', null)
     await findy.api.advanceClock(2 * 24 * 60 * 60 * 1000) // the hourly tick fires
     await board.verifyStaleMark('Edge', 'No movement for 1[56] days')
-    await board.verifyStaleToggle(3, false)
   })
 
-  test('US-4.1: the toggle and the dialog work with the keyboard', async ({ findy }) => {
+  test('US-4.1: the dialog works with the keyboard', async ({ findy }) => {
     const { board, staleDialog } = findy.pages
-    await board.toggleStaleWithKeyboard()
-    await board.verifyStaleToggle(2, true)
     await board.openStaleAfter()
     await staleDialog.saveWithKeyboard('30')
     await staleDialog.verifyClosed()
-    await board.verifyStaleToggle(0, false)
+    // 19–20 and 29–30 whole days: not more than 30
+    await board.verifyStaleMark('Waiting', null)
+    await board.verifyStaleMark('Also stale', null)
   })
 
   for (const theme of ['light', 'dark'] as const) {
@@ -152,10 +117,10 @@ test.describe('stale applications (spec 010)', () => {
   test.describe('in Ukrainian', () => {
     test.use({ systemLocale: 'uk-UA' })
 
-    test('US-4.3: mark and toggle in Ukrainian; the toolbar fits 800 × 600', async ({ findy }) => {
-      const { board } = findy.pages
-      await board.verifyStaleMark('Waiting', 'Без руху \\d+ (день|дні|днів)')
-      await board.verifyStaleToggle(2, false)
+    test('US-4.3: the mark in Ukrainian with plurals; the board fits 800 × 600', async ({
+      findy,
+    }) => {
+      await findy.pages.board.verifyStaleMark('Waiting', 'Без руху \\d+ (день|дні|днів)')
       await findy.api.setWindowSize(800, 600)
       expect(await findy.api.hasHorizontalScroll()).toBe(false)
     })

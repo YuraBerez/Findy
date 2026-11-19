@@ -1,4 +1,3 @@
-import { staleDays } from '../../src/domain/stale'
 import { expect, test } from '../fixtures/app'
 
 // NFR-002: 1 000 applications and 10 000 notes; NFR-003: cold start under 3 s.
@@ -80,21 +79,6 @@ test.describe('performance with 1 000 applications', { tag: '@perf' }, () => {
         })
       })
       expect(results.analyticsPeriodMs).toBeLessThan(limit(300))
-    })
-
-    await test.step('spec 010 NFR-002: the "No movement" toggle filters 1 000 cards quickly', async () => {
-      const { analytics, board } = findy.pages
-      await analytics.openTab('Board')
-      await board.clearSearchWithEscape()
-      const now = new Date()
-      const staleApplied = (await findy.api.state()).applications.filter(
-        (item) => item.stage === 'applied' && staleDays(item, 14, now) !== null,
-      ).length
-      results.staleToggleMs = await timed(async () => {
-        await board.toggleStale()
-        await board.verifyColumnCount('applied', staleApplied)
-      })
-      expect(results.staleToggleMs).toBeLessThan(limit(300))
     })
 
     await testInfo.attach('performance.json', {

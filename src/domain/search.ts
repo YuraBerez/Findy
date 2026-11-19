@@ -11,13 +11,8 @@ export function matchesQuery(application: Application, query: string): boolean {
   )
 }
 
-/** FR-060 and spec 010 FR-006: the search query and an optional extra condition, both must match */
-export function filterApplications(
-  applications: Application[],
-  query: string,
-  also: (application: Application) => boolean = () => true,
-): Application[] {
-  return applications.filter((application) => matchesQuery(application, query) && also(application))
+export function filterApplications(applications: Application[], query: string): Application[] {
+  return applications.filter((application) => matchesQuery(application, query))
 }
 
 /**
