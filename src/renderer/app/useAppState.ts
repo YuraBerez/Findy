@@ -13,6 +13,7 @@ import {
   type StageId,
   type Theme,
   type UpdateTrigger,
+  type VacancyData,
 } from '@shared/ipc'
 
 /**
@@ -119,6 +120,10 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         setState(result.state)
         return result.added
       },
+
+      /** Spec 009: null when the page gives nothing; a failure is notified and gives null */
+      readVacancy: (url: string): Promise<VacancyData | null> =>
+        attempt(() => window.findy.readVacancy(url)),
 
       /** FR-090…093: main saves a backup, then deletes every application */
       resetBoard: () => run(() => window.findy.resetBoard()),

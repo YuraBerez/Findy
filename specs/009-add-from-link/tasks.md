@@ -22,8 +22,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — UI
 
-- [ ] T020 `useApplicationForm.fillEmpty`; `useVacancyFill` (request id, ignore old and unmounted answers) (FR-003, FR-007)
-- [ ] T021 `ApplicationDialog`: paste starts a read, "Fill from link" button, status line, message; `ApplicationFields` slot under the link field; en/uk strings (FR-001, FR-002, FR-005, FR-006, FR-008, FR-009, US-3)
+- [x] T020 `useApplicationForm.fillEmpty`; `useVacancyFill` (request id, ignore old and unmounted answers) (FR-003, FR-007)
+- [x] T021 `ApplicationDialog`: paste starts a read, "Fill from link" button, status line, message; `ApplicationFields` slot under the link field; en/uk strings (FR-001, FR-002, FR-005, FR-006, FR-008, FR-009, US-3)
 
 ## Phase 4 — Verification and docs
 
