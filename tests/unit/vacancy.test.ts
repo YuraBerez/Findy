@@ -68,12 +68,12 @@ describe('extractVacancy (spec 009 FR-004)', () => {
     expect(extractVacancy(html)).toEqual({ title: 'Designer', company: 'Initech' })
   })
 
-  it('reads Open Graph with any attribute order and quotes, as is (no site clean-up)', () => {
+  it('reads Open Graph with any attribute order and quotes', () => {
     const html = page(
-      `<meta content='Senior QA — Acme | Jobs' property='og:title'>
-       <META NAME=og:site_name CONTENT="Djinni">`,
+      `<meta content='Senior QA' property='og:title'>
+       <META NAME=og:site_name CONTENT="Acme">`,
     )
-    expect(extractVacancy(html)).toEqual({ title: 'Senior QA — Acme | Jobs', company: 'Djinni' })
+    expect(extractVacancy(html)).toEqual({ title: 'Senior QA', company: 'Acme' })
   })
 
   it('falls back to the page title, with no company', () => {
@@ -84,7 +84,7 @@ describe('extractVacancy (spec 009 FR-004)', () => {
   })
 
   it('returns nulls for a page without vacancy data', () => {
-    expect(extractVacancy(page('', '<h1>Sign in</h1>'))).toEqual({ title: null, company: null })
+    expect(extractVacancy(page('', '<p>Nothing here</p>'))).toEqual({ title: null, company: null })
     expect(extractVacancy('')).toEqual({ title: null, company: null })
     expect(extractVacancy(page(ldJson([{ '@type': 'WebSite' }, 'text', null])))).toEqual({
       title: null,
@@ -94,8 +94,11 @@ describe('extractVacancy (spec 009 FR-004)', () => {
 
   it('decodes entities, removes tags and collapses whitespace', () => {
     const html = page(
-      `<meta property="og:title" content="R&amp;D &#8212; &laquo;Lead&raquo;&nbsp;&#x41;&unknown;">` +
-        ldJson({ '@type': 'JobPosting', hiringOrganization: '  Acme <b>Ltd</b>\n\t Co ' }),
+      ldJson({
+        '@type': 'JobPosting',
+        title: 'R&amp;D &#8212; &laquo;Lead&raquo;&nbsp;&#x41;&unknown;',
+        hiringOrganization: '  Acme <b>Ltd</b>\n\t Co ',
+      }),
     )
     expect(extractVacancy(html)).toEqual({
       title: 'R&D — «Lead» A&unknown;',
@@ -130,6 +133,140 @@ describe('extractVacancy (spec 009 FR-004)', () => {
       ),
     )
     expect(extractVacancy(html)).toEqual({ title: null, company: null })
+  })
+})
+
+describe('extractVacancy: page title split (FR-004 step 2)', () => {
+  it.each([
+    ['Senior QA — Acme | Jobs', 'Jobs', undefined, 'Senior QA', 'Acme'],
+    [
+      'Python Developer - Globex - Djinni',
+      null,
+      'https://djinni.co/jobs/1',
+      'Python Developer',
+      'Globex',
+    ],
+    ['Work.ua · Designer · Initech', null, 'https://www.work.ua/jobs/1/', 'Designer', 'Initech'],
+    [
+      'Backend Engineer at Umbrella | LinkedIn',
+      'LinkedIn',
+      undefined,
+      'Backend Engineer',
+      'Umbrella',
+    ],
+    ['Senior QA at a fintech startup!', null, undefined, 'Senior QA', 'a fintech startup!'],
+    ['Front-end developer', null, undefined, 'Front-end developer', null],
+    ['Розробник :: Компанія «Світло»', null, undefined, 'Розробник', 'Компанія «Світло»'],
+  ])('%s → %s / %s', (title, site, url, jobTitle, company) => {
+    const head =
+      `<meta property="og:title" content="${title}">` +
+      (site ? `<meta property="og:site_name" content="${site}">` : '')
+    expect(extractVacancy(page(head), url)).toEqual({ title: jobTitle, company: company ?? site })
+  })
+
+  it('uses the page title when there is no link preview title', () => {
+    expect(extractVacancy(page('<title>QA Lead | Acme</title>'))).toEqual({
+      title: 'QA Lead',
+      company: 'Acme',
+    })
+  })
+
+  it('gives nothing when the title is only the site name', () => {
+    expect(extractVacancy(page('<title>Djinni</title>'), 'https://djinni.co/x')).toEqual({
+      title: null,
+      company: null,
+    })
+  })
+})
+
+describe('extractVacancy: microdata (FR-004 step 1)', () => {
+  it('reads the title and the organisation name of an itemscope JobPosting', () => {
+    const html = page(
+      '<title>Jobs</title>',
+      `<div itemscope itemtype="https://schema.org/JobPosting">
+         <h1 itemprop="title">Data Engineer</h1>
+         <div itemprop="hiringOrganization" itemscope itemtype="https://schema.org/Organization">
+           <span itemprop="name">Hooli</span>
+         </div>
+       </div>`,
+    )
+    expect(extractVacancy(html)).toEqual({ title: 'Data Engineer', company: 'Hooli' })
+  })
+
+  it('takes a content attribute and an organisation without a name element', () => {
+    const html = page(
+      '',
+      `<div itemscope itemtype="http://schema.org/JobPosting">
+         <meta itemprop="title" content="SRE">
+         <span itemprop="hiringOrganization">Pied Piper</span>
+       </div>`,
+    )
+    expect(extractVacancy(html)).toEqual({ title: 'SRE', company: 'Pied Piper' })
+  })
+
+  it('fills only what JSON-LD lacks', () => {
+    const html = page(
+      `<script type="application/ld+json">{"@type":"JobPosting","title":"From JSON-LD"}</script>`,
+      `<div itemscope itemtype="https://schema.org/JobPosting">
+         <h1 itemprop="title">From microdata</h1>
+         <span itemprop="hiringOrganization">Vandelay</span></div>`,
+    )
+    expect(extractVacancy(html)).toEqual({ title: 'From JSON-LD', company: 'Vandelay' })
+  })
+
+  it('ignores itemprop values outside a JobPosting page', () => {
+    expect(extractVacancy(page('', '<span itemprop="title">Not a job</span>'))).toEqual({
+      title: null,
+      company: null,
+    })
+  })
+})
+
+describe('extractVacancy: visible page (FR-004 step 3)', () => {
+  it('takes the main heading and the element marked as the company', () => {
+    const html = page(
+      '<title>Vacancy</title>',
+      `<header class="site">Board</header>
+       <h1 class="vacancy-title"> Mobile <em>Developer</em> </h1>
+       <a class="job-company-name" href="/c/1">Stark Industries</a>`,
+    )
+    expect(extractVacancy(html)).toEqual({ title: 'Vacancy', company: 'Stark Industries' })
+    expect(extractVacancy(html.replace('<title>Vacancy</title>', ''))).toEqual({
+      title: 'Mobile Developer',
+      company: 'Stark Industries',
+    })
+  })
+
+  it.each([
+    ['id', '<b id="employer">Wayne Enterprises</b>'],
+    ['data-qa', '<span data-qa="vacancy-company">Wayne Enterprises</span>'],
+    ['Ukrainian class', '<div class="компанія">Wayne Enterprises</div>'],
+    ['data-testid', '<p data-testid="roboтодавець роботодавець">Wayne Enterprises</p>'],
+  ])('finds the company by %s', (_case, element) => {
+    expect(extractVacancy(page('', `<h1>Ops</h1>${element}`)).company).toBe('Wayne Enterprises')
+  })
+
+  it('skips long company texts, empty ones and hidden template content', () => {
+    const html = page(
+      '',
+      `<h1>Ops</h1>
+       <script>var company = '<span class="company">Script Inc</span>'</script>
+       <template><span class="company">Template Inc</span></template>
+       <!-- <span class="company">Comment Inc</span> -->
+       <section class="about-company">${'Long text about the company. '.repeat(10)}</section>
+       <span class="company-logo"><img src="x.png"></span>
+       <span class="company">Real Inc</span>`,
+    )
+    expect(extractVacancy(html).company).toBe('Real Inc')
+  })
+
+  it('uses the site name as the company only when nothing else gives one (step 4)', () => {
+    const head = '<meta property="og:site_name" content="Djinni"><title>QA</title>'
+    expect(extractVacancy(page(head))).toEqual({ title: 'QA', company: 'Djinni' })
+    expect(extractVacancy(page(head, '<span class="company">Acme</span>'))).toEqual({
+      title: 'QA',
+      company: 'Acme',
+    })
   })
 })
 

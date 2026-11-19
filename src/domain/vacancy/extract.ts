@@ -1,129 +1,46 @@
-// Spec 009 FR-004: job title and company from the data a vacancy page publishes for
-// search engines and link previews. The HTML is only searched as text (plan D-3).
+// Spec 009 FR-004: job title and company of a vacancy page, from the most reliable
+// source that has each one. The HTML is only searched as text (plan D-3).
 import { LIMITS } from '../limits'
+import { structuredVacancy } from './structured'
+import { attributesOf, clean } from './text'
+import { splitTitle } from './title'
+import { visibleVacancy } from './visible'
 
 export interface VacancyData {
   title: string | null
   company: string | null
 }
 
-const NAMED_ENTITIES: Record<string, string> = {
-  amp: '&',
-  lt: '<',
-  gt: '>',
-  quot: '"',
-  apos: "'",
-  nbsp: ' ',
-  ndash: '–',
-  mdash: '—',
-  hellip: '…',
-  laquo: '«',
-  raquo: '»',
-  lsquo: '‘',
-  rsquo: '’',
-  ldquo: '“',
-  rdquo: '”',
-  middot: '·',
-  bull: '•',
-}
-
-function decodeEntities(text: string): string {
-  return text.replace(/&(#x[\da-f]+|#\d+|[a-z]+);/gi, (entity, body: string) => {
-    if (body[0] === '#') {
-      const code =
-        body[1] === 'x' || body[1] === 'X' ? parseInt(body.slice(2), 16) : Number(body.slice(1))
-      return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : entity
-    }
-    return NAMED_ENTITIES[body.toLowerCase()] ?? entity
-  })
-}
-
-/** Entities decoded, tags removed, whitespace collapsed, cut to the field limit; `null` when empty. */
-function clean(value: unknown, limit: number): string | null {
-  if (typeof value !== 'string') return null
-  const text = decodeEntities(value.replace(/<[^>]*>/g, ' '))
-    .replace(/\s+/g, ' ')
-    .trim()
-  if (!text) return null
-  const chars = Array.from(text) // never cut a character in half
-  return chars.length > limit ? chars.slice(0, limit).join('').trimEnd() : text
-}
-
-type Json = null | boolean | number | string | Json[] | { [key: string]: Json }
-
-function isJobPosting(node: { [key: string]: Json }): boolean {
-  const type = node['@type']
-  return Array.isArray(type) ? type.includes('JobPosting') : type === 'JobPosting'
-}
-
-/** The first `JobPosting` in a JSON-LD value: top level, in arrays or in `@graph`. */
-function findJobPosting(value: Json): { [key: string]: Json } | null {
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const found = findJobPosting(item)
-      if (found) return found
-    }
-    return null
-  }
-  if (value === null || typeof value !== 'object') return null
-  if (isJobPosting(value)) return value
-  return value['@graph'] === undefined ? null : findJobPosting(value['@graph'])
-}
-
-function organisationName(value: Json | undefined): Json | undefined {
-  if (Array.isArray(value)) return organisationName(value[0])
-  if (value !== null && typeof value === 'object') return value.name
-  return value
-}
-
-function jobPosting(html: string): VacancyData {
-  const scripts = html.matchAll(
-    /<script\b[^>]*\btype\s*=\s*["']?application\/ld\+json["']?[^>]*>([\s\S]*?)<\/script>/gi,
-  )
-  for (const [, body] of scripts) {
-    let json: Json
-    try {
-      json = JSON.parse(body!) as Json
-    } catch {
-      continue // a broken block on the page: try the next one
-    }
-    const posting = findJobPosting(json)
-    if (posting)
-      return {
-        title: clean(posting.title ?? posting.name, LIMITS.title),
-        company: clean(organisationName(posting.hiringOrganization), LIMITS.company),
-      }
-  }
-  return { title: null, company: null }
-}
-
 /** `<meta property|name="…" content="…">` values by key; the first one of a key wins. */
 function metaTags(html: string): Map<string, string> {
   const tags = new Map<string, string>()
   for (const [tag] of html.matchAll(/<meta\b[^>]*>/gi)) {
-    const attributes = new Map<string, string>()
-    for (const [, name, , double, single, bare] of tag.matchAll(
-      /([\w:-]+)\s*=\s*("([^"]*)"|'([^']*)'|([^\s"'>]+))/g,
-    ))
-      attributes.set(name!.toLowerCase(), double ?? single ?? bare ?? '')
-    const key = (attributes.get('property') ?? attributes.get('name'))?.toLowerCase()
+    const attributes = attributesOf(tag)
+    const name = (attributes.get('property') ?? attributes.get('name'))?.toLowerCase()
     const content = attributes.get('content')
-    if (key && content !== undefined && !tags.has(key)) tags.set(key, content)
+    if (name && content !== undefined && !tags.has(name)) tags.set(name, content)
   }
   return tags
 }
 
 /**
- * FR-004: job posting data first, then link preview data (`og:title`, `og:site_name`),
- * then the page title. Each field falls back on its own.
+ * FR-004, each field on its own: 1. job posting data; 2. the link preview title (else
+ * the page title) split into job title and company; 3. the main heading and an element
+ * marked as the company; 4. the link preview site name as the company.
+ * `url` is the page address: its host is a site name to drop from the title.
  */
-export function extractVacancy(html: string): VacancyData {
-  const posting = jobPosting(html)
+export function extractVacancy(html: string, url?: string): VacancyData {
   const meta = metaTags(html)
+  const siteName = clean(meta.get('og:site_name'), LIMITS.company)
   const pageTitle = /<title\b[^>]*>([\s\S]*?)<\/title>/i.exec(html)?.[1]
+  const sources = [
+    structuredVacancy(html),
+    splitTitle(meta.get('og:title')?.trim() ? meta.get('og:title') : pageTitle, siteName, url),
+    visibleVacancy(html),
+    { title: null, company: siteName },
+  ]
   return {
-    title:
-      posting.title ?? clean(meta.get('og:title'), LIMITS.title) ?? clean(pageTitle, LIMITS.title),
-    company: posting.company ?? clean(meta.get('og:site_name'), LIMITS.company),
+    title: sources.find((source) => source.title)?.title ?? null,
+    company: sources.find((source) => source.company)?.company ?? null,
   }
 }

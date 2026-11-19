@@ -74,7 +74,7 @@ export async function readVacancyPage(
       if (!HTML_TYPES.includes(type)) return null
       const bytes = await readLimited(response, limits.maxBytes)
       if (!bytes) return null
-      const data = extractVacancy(decodePage(bytes, contentType))
+      const data = extractVacancy(decodePage(bytes, contentType), current)
       return data.title || data.company ? data : null
     }
   } catch {

@@ -96,7 +96,7 @@ describe('readVacancyPage (spec 009)', () => {
     ['a redirect without Location', () => new Response(null, { status: 302 })],
     ['a PDF', () => html('%PDF-1.7', { 'content-type': 'application/pdf' })],
     ['no content type', () => new Response(POSTING)],
-    ['a page without vacancy data', () => html('<h1>Sign in</h1>')],
+    ['a page without vacancy data', () => html('<p>Sign in</p>')],
   ])('returns null for %s (FR-006)', async (_case, answer) => {
     expect(await readVacancyPage(fakeFetch(answer()), URL_)).toBeNull()
   })

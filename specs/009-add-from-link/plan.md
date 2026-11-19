@@ -37,14 +37,14 @@ starts the same read. No new dependency, no migration.
 | IV. Cross-platform | ✅ | Electron session API and `TextDecoder` on all three |
 | V. i18n | ✅ | Button, status and message in en + uk; page values are not translated |
 | VI. Tested | ✅ | Unit: every FR-004 source, entities, cut to 200, charsets, redirect and limit rules, IPC; e2e: every acceptance scenario against local pages (NFR-004) |
-| VII. Simplicity | ✅ | No HTML parser and no scraping library; generic data only (spec D-4) |
+| VII. Simplicity | ✅ | No HTML parser and no scraping library; generic rules only (spec D-4, plan D-5) |
 | VIII. Accessible | ✅ | Button reachable by Tab; status in a live region; message linked to the link field |
 
 ## Requirement → component map
 
 | Requirements | Where |
 |--------------|-------|
-| FR-004 | `domain/vacancy/extract.ts`: `extractVacancy(html)` → `{ title, company }` (each `string \| null`); JSON-LD `JobPosting` (also in `@graph` and arrays; `hiringOrganization` as an object or a string), then `og:title` / `og:site_name`, then `<title>`; entities, whitespace, cut to 200 |
+| FR-004 | `domain/vacancy/`: `extractVacancy(html, url)` takes each field from the first source that has it: `structured.ts` (JSON-LD `JobPosting` in `@graph` and arrays, then microdata `itemprop`), `title.ts` (`og:title`, else `<title>`, split at ` — `, ` - `, ` \| `, ` · `, ` :: ` or "at", without parts equal to `og:site_name` or the host), `visible.ts` (first `<h1>`; first element whose class, id, `itemprop`, `data-testid` or `data-qa` says company / employer / компанія / роботодавець, ≤ 100 characters; scripts, styles, templates and comments removed), then `og:site_name`; `text.ts`: entities, whitespace, cut to 200 |
 | Edge cases (charset) | `domain/vacancy/charset.ts`: `charsetOf(contentType, head)` from the header or `<meta charset>` / `http-equiv` in the first 1 024 bytes |
 | NFR-001, NFR-002, FR-006 | `main/vacancy.ts`: `readVacancyPage(fetchFn, url)`: manual redirects (≤ 5, `http`/`https` only), `text/html` or `application/xhtml+xml` only, 10 s timeout, stream read stopped at 2 MB, decode; every failure → `null` |
 | FR-001, FR-002 (contract) | IPC `readVacancy(url)` → `{ title, company } \| null`; zod `HttpUrlSchema`; never rejects for a network failure (FR-006 is not an error notification) |
@@ -93,13 +93,21 @@ readVacancy(url: string): Promise<{ title: string | null; company: string | null
   `useAppState.run()` like every IPC call, and only a real bug (VALIDATION) shows a
   notification.
 
+### D-5 — Generic rules in a fixed order, no site adapters
+
+- **Why:** spec D-4. A rule that knows the meaning of a source (job posting data) comes
+  before a guess (a heading, a class name). Each field takes the first source that has
+  it, so one weak source does not override a good one. A local model is not part of
+  this plan (spec D-6).
+
 ## Risks
 
 - **A site blocks requests without a browser User-Agent** → send a common desktop
   User-Agent and `Accept: text/html`. Some sites still block (Cloudflare checks), and
   then FR-006 applies.
 - **LinkedIn and others need a login** → FR-006; out of scope (spec D-4).
-- **The link preview title has site noise ("… | Jobs")** → the user edits it (spec edge
-  case). No clean-up per site.
+- **A guess is wrong** (a login page's heading "Sign in", a job board name as the
+  company) → the values are only suggestions in the form; the user checks them before
+  "Save" (FR-008).
 - **Large pages with JSON-LD at the end** → the 2 MB limit is above common job pages
   (≈ 100–500 KB).

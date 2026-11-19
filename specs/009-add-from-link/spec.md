@@ -69,11 +69,20 @@ As a user, I want the dialog to keep working when Findy cannot read the page.
   in progress.
 - **FR-003** Findy MUST fill only fields that are empty at the moment the data arrives.
   It MUST NOT change text that the user typed.
-- **FR-004** Findy MUST take the values from the vacancy data that the page publishes
-  for search engines and link previews, in this order of preference: structured job
-  posting data (job title, hiring organisation); then link preview data (title, site
-  name). Values MUST be trimmed, have HTML entities decoded and whitespace collapsed,
-  and be cut to the field limits of spec 001 (200 characters).
+- **FR-004** Findy MUST take each value from the first source that has it, in this
+  order (D-4):
+  1. structured job posting data that the page publishes for search engines (job
+     title, hiring organisation), in either of its two common forms;
+  2. the title of the page for link previews, else the page title, split into the job
+     title and the company when it has the form "Job title — Company" (also with `-`,
+     `|`, `·` or "at"), without the part that is the site's own name;
+  3. the main heading of the page as the job title, and the first page element marked
+     as a company or an employer as the company;
+  4. the site name of the link preview as the company.
+
+  Script, style and hidden template content of the page MUST NOT be read. Values MUST
+  be trimmed, have HTML entities decoded and whitespace collapsed, and be cut to the
+  field limits of spec 001 (200 characters).
 - **FR-005** While the page loads, the dialog MUST show a status next to the link field
   that screen readers announce. The other fields and the buttons stay usable.
 - **FR-006** When Findy gets no title and no company (no network, timeout, an error
@@ -102,8 +111,14 @@ As a user, I want the dialog to keep working when Findy cannot read the page.
 ## Edge cases
 
 - The page lists two vacancies in its data → the first job posting is used.
-- The link preview title is "Senior QA — Acme | Jobs" and there is no job posting data
-  → the title fills with that text as is; the user edits it. No site-specific clean-up.
+- The link preview title is "Senior QA — Acme | Jobs" with the site name "Jobs" and
+  there is no job posting data → "Senior QA" and "Acme" (FR-004 step 2).
+- A title that cannot be split ("Senior QA at a fintech startup!") → the job title gets
+  the whole text without the site name; the company comes from a later step.
+- A page that needs a login, with the heading "Sign in" and no other data → the job
+  title gets "Sign in"; the values are suggestions, and the user corrects them.
+- A job board as the site name (for example "Djinni") is used as the company only when
+  nothing else gives one (FR-004 step 4); the user corrects it.
 - The page is in Ukrainian, or the bytes are not UTF-8 but the page names its encoding
   → the text is decoded with that encoding.
 - The user pastes the same link twice → a new read each time; filled fields stay
@@ -115,6 +130,7 @@ As a user, I want the dialog to keep working when Findy cannot read the page.
 ## Out of scope
 
 - Site-specific readers (LinkedIn, Djinni, DOU and others) and logins to sites.
+- A language model, local or in the cloud (D-6).
 - Other fields: vacancy description, salary, location, a first note.
 - Reading links in the details panel, from MCP, or in CSV import.
 - A setting to turn the feature off (a read happens only on the user's action).
@@ -137,8 +153,12 @@ As a user, I want the dialog to keep working when Findy cannot read the page.
   (owner, 2026-11-19).
 - **D-3** In the existing "Add application" dialog: the values fill in, the user checks
   them and saves. No separate quick-add action (owner, 2026-11-19).
-- **D-4** Generic vacancy data only (job posting data, link preview data), no
-  site-specific readers (owner, 2026-11-19).
+- **D-4** Generic rules only, no site-specific readers: structured data, then the
+  title split, then the visible page (main heading, an element marked as a company)
+  (owner, 2026-11-19; extended the same day, before the code was done).
+- **D-6** A local model as a fallback, for pages where the rules give nothing, is a
+  possible later spec. It is decided after a test on 20–30 real vacancy pages of
+  popular job boards and company sites (owner, 2026-11-19).
 - **D-5** Defaults chosen without a question (change them before approval if needed):
   read on paste plus a "Fill from link" button; only empty fields fill in; 10 s and
   2 MB limits; at most 5 redirects; no setting to turn it off; a short inline message
