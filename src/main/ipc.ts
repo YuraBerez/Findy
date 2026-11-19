@@ -83,8 +83,11 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       analytics: DEFAULT_ANALYTICS_VIEW,
       autoUpdateCheck: false,
       staleAfterDays: STALE_DAYS.default,
+      hiddenSites: [],
+      siteQuery: '',
     },
     applications: deps.repository?.listApplications() ?? [],
+    sites: deps.repository?.listSites() ?? [],
     storage: deps.storage,
   })
 

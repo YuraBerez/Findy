@@ -58,8 +58,11 @@ describe('IPC handlers', () => {
         analytics: { period: '30d', grouping: 'day' },
         autoUpdateCheck: false,
         staleAfterDays: 14,
+        hiddenSites: [],
+        siteQuery: '',
       },
       applications: [],
+      sites: [],
       storage: okStorage,
     })
   })
@@ -101,6 +104,8 @@ describe('IPC handlers', () => {
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
       staleAfterDays: 14,
+      hiddenSites: [],
+      siteQuery: '',
     })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
@@ -382,8 +387,11 @@ describe('IPC handlers without storage (FR-054)', () => {
         analytics: { period: '30d', grouping: 'day' },
         autoUpdateCheck: false,
         staleAfterDays: 14,
+        hiddenSites: [],
+        siteQuery: '',
       },
       applications: [],
+      sites: [],
       storage,
     })
   })

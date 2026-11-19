@@ -63,7 +63,7 @@ describe('migration 002: card colour (spec 007 FR-011)', () => {
     migrate(db, () => {}, MIGRATIONS.slice(0, 1))
     db.prepare(v1Row).run()
 
-    migrate(db, () => {})
+    migrate(db, () => {}, MIGRATIONS.slice(0, 2))
 
     expect(getUserVersion(db)).toBe(2)
     expect(db.prepare('SELECT title, color FROM applications').get()).toEqual({
@@ -78,6 +78,44 @@ describe('migration 002: card colour (spec 007 FR-011)', () => {
     db.prepare(v1Row).run()
     db.prepare("UPDATE applications SET color = 'grey'").run()
     expect(() => db.prepare("UPDATE applications SET color = 'pink'").run()).toThrow(/CHECK/)
+  })
+})
+
+describe('migration 003: job sites (spec 011 FR-012)', () => {
+  it('keeps v2 data and adds empty site tables', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {}, MIGRATIONS.slice(0, 2))
+    db.prepare(
+      `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at, color)
+       VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, '2026-11-01T00:00:00.000Z', '2026-11-01T00:00:00.000Z', 'red')`,
+    ).run()
+
+    migrate(db, () => {})
+
+    expect(getUserVersion(db)).toBe(3)
+    expect(db.prepare('SELECT title, color FROM applications').get()).toEqual({
+      title: 'Dev',
+      color: 'red',
+    })
+    expect(db.prepare('SELECT COUNT(*) AS n FROM job_sites').get()).toEqual({ n: 0 })
+    expect(db.prepare('SELECT COUNT(*) AS n FROM site_icons').get()).toEqual({ n: 0 })
+  })
+
+  it('checks names, addresses and icon status', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {})
+    const site = db.prepare(
+      "INSERT INTO job_sites (id, name, url, position, created_at) VALUES (?, ?, 'https://a.com', 0, 'now')",
+    )
+    expect(() => site.run('1', '')).toThrow(/CHECK/)
+    expect(() => site.run('2', 'x'.repeat(61))).toThrow(/CHECK/)
+    expect(() =>
+      db
+        .prepare(
+          "INSERT INTO site_icons (host, status, checked_at) VALUES ('a.com', 'maybe', 'now')",
+        )
+        .run(),
+    ).toThrow(/CHECK/)
   })
 })
 

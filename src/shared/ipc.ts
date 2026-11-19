@@ -4,11 +4,13 @@ import type { CardColor } from '../domain/colors'
 import type { StageId } from '../domain/stages'
 import type { ImportFatal, ImportRowError } from '../domain/transfer'
 import type { VacancyData } from '../domain/vacancy'
+import type { CustomSite, KnownSiteId } from '../domain/sites'
 import type { Application, Language, Note, Settings, StageChange, Theme } from '../domain/types'
 
 export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView, CardColor }
 export type { ImportFatal, ImportRowError }
 export type { VacancyData }
+export type { CustomSite, KnownSiteId }
 export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
 export const CHANNEL_PREFIX = 'findy:'
@@ -109,6 +111,8 @@ export type StorageStatus =
 export interface AppState {
   settings: Settings
   applications: Application[]
+  /** Spec 011: the user's job sites, in the order they were added */
+  sites: CustomSite[]
   storage: StorageStatus
 }
 

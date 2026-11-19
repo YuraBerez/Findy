@@ -1,6 +1,7 @@
 import { DEFAULT_ANALYTICS_VIEW, type AnalyticsView } from '../../../domain/analytics'
 import { AnalyticsViewSchema, HiddenStagesSchema } from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
+import { isKnownSiteId, SITE_LIMITS, type KnownSiteId } from '../../../domain/sites'
 import { isStaleAfterDays, STALE_DAYS } from '../../../domain/stale'
 import type { Language, Settings, Theme } from '../../../domain/types'
 import { HiddenStageError } from './errors'
@@ -26,6 +27,8 @@ export class SettingsStore {
       analytics: parseAnalyticsView(map.get('analytics')),
       autoUpdateCheck: map.get('autoUpdateCheck') === 'true',
       staleAfterDays: parseStaleAfterDays(map.get('staleAfterDays')),
+      hiddenSites: parseHiddenSites(map.get('hiddenSites')),
+      siteQuery: (map.get('siteQuery') ?? '').slice(0, SITE_LIMITS.query),
     }
   }
 
@@ -51,6 +54,16 @@ export class SettingsStore {
 
   setAutoUpdateCheck(enabled: boolean): Settings {
     return this.set('autoUpdateCheck', String(enabled))
+  }
+
+  /** Spec 011 FR-015 */
+  setHiddenSites(ids: KnownSiteId[]): Settings {
+    return this.set('hiddenSites', JSON.stringify([...new Set(ids)]))
+  }
+
+  /** Spec 011 FR-005 */
+  setSiteQuery(query: string): Settings {
+    return this.set('siteQuery', query)
   }
 
   setStaleAfterDays(days: number): Settings {
@@ -110,4 +123,14 @@ function parseAnalyticsView(raw: string | undefined): AnalyticsView {
 function parseStaleAfterDays(value: string | undefined): number {
   const days = Number(value)
   return value !== undefined && isStaleAfterDays(days) ? days : STALE_DAYS.default
+}
+
+/** Spec 011: known site ids only; a site removed in a later version is dropped */
+function parseHiddenSites(value: string | undefined): KnownSiteId[] {
+  try {
+    const parsed: unknown = JSON.parse(value ?? '[]')
+    return Array.isArray(parsed) ? [...new Set(parsed.filter(isKnownSiteId))] : []
+  } catch {
+    return []
+  }
 }

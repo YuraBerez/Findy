@@ -14,3 +14,11 @@ export class NotFoundError extends Error {
     this.name = 'NotFoundError'
   }
 }
+
+/** Spec 011 FR-013: the user has the most sites allowed */
+export class SiteLimitError extends Error {
+  constructor(readonly max: number) {
+    super(`At most ${max} sites of your own`)
+    this.name = 'SiteLimitError'
+  }
+}

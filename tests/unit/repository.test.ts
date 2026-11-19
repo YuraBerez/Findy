@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { HiddenStageError, NotFoundError, type Repository } from '../../src/main/db/repository'
+import {
+  HiddenStageError,
+  NotFoundError,
+  SiteLimitError,
+  type Repository,
+} from '../../src/main/db/repository'
 import { memoryRepository } from './helpers/db'
 
 let repo: Repository
@@ -269,6 +274,8 @@ describe('settings', () => {
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
       staleAfterDays: 14,
+      hiddenSites: [],
+      siteQuery: '',
     })
   })
 
@@ -283,6 +290,8 @@ describe('settings', () => {
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
       staleAfterDays: 14,
+      hiddenSites: [],
+      siteQuery: '',
     })
     expect(repo.setTheme('light').theme).toBe('light')
   })
@@ -297,6 +306,8 @@ describe('settings', () => {
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
       staleAfterDays: 14,
+      hiddenSites: [],
+      siteQuery: '',
     })
   })
 })
@@ -349,6 +360,87 @@ describe('stale settings (spec 010)', () => {
   })
 })
 
+describe('job sites (spec 011)', () => {
+  const acme = { name: 'Acme careers', url: 'https://acme.com/careers?q={query}' }
+
+  it('adds, lists in order, updates and deletes the user sites (FR-010…FR-012)', () => {
+    const first = repo.addSite(acme)
+    const second = repo.addSite({ name: 'Board', url: 'https://jobs.example.com/' })
+    expect(repo.listSites()).toEqual([first, second])
+    expect(repo.updateSite(first.id, { name: 'Acme', url: 'https://acme.com/' })).toEqual({
+      id: first.id,
+      name: 'Acme',
+      url: 'https://acme.com/',
+    })
+    repo.deleteSite(second.id)
+    expect(repo.listSites()).toEqual([{ id: first.id, name: 'Acme', url: 'https://acme.com/' }])
+  })
+
+  it('new sites go after the last one, also after a delete', () => {
+    const a = repo.addSite({ ...acme, name: 'A' })
+    const b = repo.addSite({ ...acme, name: 'B' })
+    repo.deleteSite(a.id)
+    const c = repo.addSite({ ...acme, name: 'C' })
+    expect(repo.listSites().map((site) => site.id)).toEqual([b.id, c.id])
+  })
+
+  it('NOT_FOUND for an unknown site', () => {
+    expect(() => repo.updateSite('nope', acme)).toThrow(NotFoundError)
+    expect(() => repo.deleteSite('nope')).toThrow(NotFoundError)
+  })
+
+  it('allows at most 50 sites (FR-013)', () => {
+    for (let i = 0; i < 50; i++) repo.addSite({ ...acme, name: `Site ${i}` })
+    expect(() => repo.addSite(acme)).toThrow(SiteLimitError)
+    expect(repo.listSites()).toHaveLength(50)
+  })
+
+  it('stores hidden known sites and the query; drops unknown ids (FR-005, FR-015)', () => {
+    expect(repo.getSettings()).toMatchObject({ hiddenSites: [], siteQuery: '' })
+    repo.setHiddenSites(['linkedin', 'indeed', 'linkedin'])
+    repo.setSiteQuery('QA Engineer')
+    expect(repo.getSettings()).toMatchObject({
+      hiddenSites: ['linkedin', 'indeed'],
+      siteQuery: 'QA Engineer',
+    })
+    db.prepare(
+      'UPDATE settings SET value = \'["linkedin","myspace",1]\' WHERE key = \'hiddenSites\'',
+    ).run()
+    expect(repo.getSettings().hiddenSites).toEqual(['linkedin'])
+    db.prepare("UPDATE settings SET value = 'not json' WHERE key = 'hiddenSites'").run()
+    expect(repo.getSettings().hiddenSites).toEqual([])
+  })
+
+  it('saves icons and failed tries by host', () => {
+    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47])
+    repo.saveSiteIcon('djinni.co', 'image/png', png)
+    repo.markSiteIconFailed('dou.ua')
+    expect(repo.siteIcons()).toEqual([
+      {
+        host: 'djinni.co',
+        status: 'ok',
+        mime: 'image/png',
+        data: png,
+        checkedAt: expect.any(String),
+      },
+      { host: 'dou.ua', status: 'failed', mime: null, data: null, checkedAt: expect.any(String) },
+    ])
+    repo.saveSiteIcon('dou.ua', 'image/png', png)
+    expect(repo.siteIcons().find((icon) => icon.host === 'dou.ua')!.status).toBe('ok')
+  })
+
+  it('a reset of the board keeps sites, icons, hidden sites and the query (FR-012)', () => {
+    repo.addSite(acme)
+    repo.saveSiteIcon('acme.com', 'image/png', new Uint8Array([1]))
+    repo.setHiddenSites(['xing'])
+    repo.setSiteQuery('QA')
+    repo.resetBoard()
+    expect(repo.listSites()).toHaveLength(1)
+    expect(repo.siteIcons()).toHaveLength(1)
+    expect(repo.getSettings()).toMatchObject({ hiddenSites: ['xing'], siteQuery: 'QA' })
+  })
+})
+
 describe('transactions (FR-052)', () => {
   it('rolls back the whole create when a constraint fails', () => {
     repo.createApplication(input('A'))
@@ -379,6 +471,8 @@ describe('resetBoard (FR-093)', () => {
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
       staleAfterDays: 14,
+      hiddenSites: [],
+      siteQuery: '',
     })
   })
 })
