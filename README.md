@@ -20,6 +20,8 @@ apply until you get an offer.
 
 ![Analytics: applications sent, stages over time, funnel and totals](docs/screenshots/analytics-en.png)
 
+![Job sites: one search query, opened on any job site](docs/screenshots/sites-en.png)
+
 ## Features
 
 - **Kanban board of your job search.** Every application is a card; columns are
@@ -32,7 +34,11 @@ apply until you get an offer.
 - **Drag and drop** cards between stages (keyboard works too).
 - **Notes on every application.** Who you talked to, salary discussed, next steps.
 - **One click to the vacancy.** Cards with a link open it in your browser.
+- **Add from a link.** Paste a vacancy link and Findy fills in the job title and the
+  company from the page.
 - **Card colours.** Mark cards with one of 7 colours from the card's **⋯** menu.
+- **No movement.** Cards that stay in a stage for more than 14 days (you choose the
+  number) are marked, so you know where to follow up.
 - **Details panel.** Edit an application and see its stage history as a timeline.
 - **Stage history.** Each card shows how long it has been in its stage.
 - **Analytics.** See how many applications you send per day, week or month, how many
@@ -43,11 +49,16 @@ apply until you get an offer.
 - **CSV export and import.** Save the whole board to a file that opens in any
   spreadsheet, or add applications from your own table (**⋯ → Export to CSV…**,
   **Import from CSV…**). Import shows a summary first and never changes existing cards.
+- **Job sites.** A **Sites** tab with 14 job sites (Djinni, DOU, Work.ua, LinkedIn,
+  Indeed and more): type your search once and open it on any site in one click. Add
+  your own sites and hide the ones you do not use.
 - **English and Ukrainian** interface, **light and dark** theme.
 - **Start over.** Reset the board in one step; Findy keeps a backup first.
 - **Private by design.** Works offline, no account, no telemetry. Your data lives in a
-  local SQLite database on your computer. The only network request Findy can make is
-  the update check, and only when you start it or turn it on; it sends no data.
+  local SQLite database on your computer. Findy goes online only for what you ask:
+  the update check (when you start it or turn it on), the vacancy page whose link you
+  paste, and the icons of job sites (once each). None of these sends data about you or
+  your board.
 - **Windows, macOS and Linux.**
 
 ## Download

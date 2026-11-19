@@ -54,7 +54,12 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       url: 'https://example.com/jobs/3',
       notes: ['Take-home: small kanban app, 3 days.'],
     },
-    { title: 'Frontend Lead', company: 'Example Company 5', stage: 'technical_interview', days: 9 },
+    {
+      title: 'Frontend Lead',
+      company: 'Example Company 5',
+      stage: 'technical_interview',
+      days: 18,
+    },
     {
       title: 'Software Engineer',
       company: 'Example Company 6',
@@ -106,7 +111,7 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
       title: 'Frontend Lead',
       company: 'Компанія-приклад 5',
       stage: 'technical_interview',
-      days: 9,
+      days: 18, // spec 010: shows the "No movement" mark
     },
     {
       title: 'Software Engineer',
@@ -170,6 +175,12 @@ for (const lang of ['en', 'uk'] as const) {
     await page.getByRole('button', { name: new RegExp(`^${DATA[lang][2]!.title}`) }).click()
     await page.getByTestId('details').waitFor()
     await page.screenshot({ path: join(OUT, `details-${lang}.png`) })
+
+    // Spec 011: the Sites tab with a query (icons need the network: letters here)
+    await page.keyboard.press('Escape')
+    await page.getByRole('tab', { name: lang === 'en' ? 'Sites' : 'Сайти' }).click()
+    await page.getByRole('searchbox').last().fill('Frontend Developer')
+    await page.screenshot({ path: join(OUT, `sites-${lang}.png`) })
   })
 }
 

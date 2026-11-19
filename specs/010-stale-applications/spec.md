@@ -1,7 +1,7 @@
 # Feature Spec: Stale applications
 
 - **ID:** 010-stale-applications
-- **Status:** Implemented
+- **Status:** Implemented (0.4.0)
 - **Approved:** 2026-11-19 (owner)
 - **Created:** 2026-11-19
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md) (FR-003 time in stage, US-8 search), [002-hidden-columns](../002-hidden-columns/spec.md)
