@@ -23,9 +23,9 @@ Each task references the requirement(s) it satisfies.
 ## Phase 3 — UI
 
 - [x] T020 `useApplicationForm.fillEmpty`; `useVacancyFill` (request id, ignore old and unmounted answers) (FR-003, FR-007)
-- [x] T021 `ApplicationDialog`: paste starts a read, "Fill from link" button, status line, message; `ApplicationFields` slot under the link field; en/uk strings (FR-001, FR-002, FR-005, FR-006, FR-008, FR-009, US-3)
+- [x] T021 `ApplicationDialog`: paste starts a read, "Fill from link" button, status line, message; `ApplicationFields` slot under the link field; en/uk strings (FR-001, FR-002, FR-005, FR-006, FR-008, FR-009, FR-010, US-3)
 
 ## Phase 4 — Verification and docs
 
-- [ ] T030 e2e with a local page server: US-1.1–1.5, US-2.1–2.3, US-3.1–3.2; axe on the dialog with the message (NFR-003, NFR-004, SC-001, SC-002)
-- [ ] T031 Docs: contracts/ipc.md, architecture.md (D-12), security.md (outbound network)
+- [x] T030 e2e with a local page server: US-1.1–1.5, US-2.1–2.3, US-3.1–3.2; axe on the dialog with the message (NFR-003, NFR-004, SC-001, SC-002)
+- [x] T031 Docs: contracts/ipc.md, architecture.md (D-12), security.md (outbound network)

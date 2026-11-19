@@ -59,6 +59,9 @@ interface FindyApi {
     | { status: 'latest'; currentVersion: string }
     | null                                                  // 'auto' only: off, not due, or failed
   >;                                                        // 'manual' rejects with NETWORK
+  readVacancy(url: string): Promise<                       // spec 009; VALIDATION: not http(s)
+    { title: string | null; company: string | null } | null // null: no data, no network, not HTML
+  >;                                                        // never rejects for a failed read
   setMcpEnabled(enabled: boolean): Promise<AppState>;    // spec 004
   getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009  // spec 002; rejects all-hidden and duplicates
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;

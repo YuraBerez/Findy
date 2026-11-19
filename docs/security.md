@@ -28,11 +28,17 @@ webPreferences: {
 - [ ] Single-instance lock (`app.requestSingleInstanceLock`).
 - [ ] No `remote` module, no `eval`, no `dangerouslySetInnerHTML` for user content.
 - [ ] Electron kept on a supported major version (Dependabot).
-- [ ] Outbound network: only the update check (constitution §II.6, spec 006), from main
+- [ ] Outbound network: only the update check and the vacancy page (next item). The
+      update check (constitution §II.6, spec 006) runs from main
       with `net.fetch`, never from the renderer. It is a GET with no user data, a 10 s
       timeout and a size limit; the answer is parsed with zod, and "Download" opens only
       `https://github.com/YuraBerez/findy/releases/tag/…` (`RELEASE_PAGE_PREFIX`). `FINDY_RELEASES_URL` replaces the
       API URL for e2e tests; a packaged app ignores it.
+- [ ] Vacancy pages (constitution §II.7, spec 009), never from the renderer: main reads only the link that the
+      user pasted or asked to read, with Node's `fetch` (no cookie store), `credentials:
+      'omit'` and no user data. Each redirect is checked: at most 5, only `http`/`https`.
+      Only HTML is read, at most 2 MB in 10 s. The page is searched as text: never
+      rendered, never run, never stored.
 - [ ] User files (spec 008): main reads or writes only a path that the user picked in
       a system save or open dialog. The renderer never sends or receives a path: it gets
       the file name, counts and a random token. Import checks the size (10 MB) before

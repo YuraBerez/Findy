@@ -95,6 +95,10 @@ As a user, I want the dialog to keep working when Findy cannot read the page.
   usual "Save" button (spec 001 US-1).
 - **FR-009** This feature is only in the "Add application" dialog. The details panel
   does not read links.
+- **FR-010** Until a read starts, the line under the link field MUST say that a pasted
+  vacancy link fills in the job title and the company (added 2026-11-19 at the owner's
+  request). The status of FR-005 and the message of FR-006 replace it; a changed link
+  shows it again.
 
 ## Non-functional requirements
 

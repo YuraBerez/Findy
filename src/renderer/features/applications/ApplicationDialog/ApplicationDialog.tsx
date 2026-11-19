@@ -26,7 +26,8 @@ export function ApplicationDialog({ hiddenStages, onClose, onSubmit, onReadVacan
   const [saving, setSaving] = useState(false)
   const vacancy = useVacancyFill(onReadVacancy, form.fillEmpty)
   const vacancyStatus = {
-    idle: '',
+    // Until a read starts: what the link field can do (spec 009 US-1)
+    idle: t('form.vacancy.hint'),
     reading: t('form.vacancy.reading'),
     filled: t('form.vacancy.filled'),
     notFound: t('form.vacancy.notFound'),

@@ -10,7 +10,7 @@ export const VACANCY_LIMITS = {
 
 const HTML_TYPES = ['text/html', 'application/xhtml+xml']
 
-/** A `fetch` of a session with no cookies (plan D-2); injected, so tests use fakes */
+/** Node's `fetch`: no cookie store, manual redirects (plan D-2); injected, so tests use fakes */
 export type VacancyFetch = (url: string, init: RequestInit) => Promise<Response>
 
 /** The body up to `maxBytes`; `null` when it is larger (the read stops there). */

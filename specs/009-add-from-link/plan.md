@@ -7,7 +7,7 @@
 
 The page data is read in main and parsed by pure code in `src/domain`. The renderer
 only sends the pasted link and gets back a title and a company, or "nothing found".
-Main makes one GET in an in-memory session with no cookies. It follows redirects
+Main makes one GET with Node's `fetch`, which has no cookie store. It follows redirects
 itself, at most 5 and only to `http`/`https`. It stops after 10 s or 2 MB, and decodes
 the bytes with the charset of the page. The domain reads job posting data
 (schema.org `JobPosting` in JSON-LD), then link preview data (Open Graph), then
@@ -21,7 +21,7 @@ starts the same read. No new dependency, no migration.
 |------|--------|
 | Language | TypeScript (strict) |
 | HTML | Own extraction in `domain/vacancy/` (JSON-LD blocks, `<meta>` tags, `<title>`, entities) with regular expressions: no DOM, no HTML parser library |
-| Network | Electron `session.fromPartition('vacancy')` (in memory, no cookies) `fetch` with `redirect: 'manual'` and `credentials: 'omit'`; injected, so unit tests use fakes |
+| Network | Node's `fetch` in main (no cookie store) with `redirect: 'manual'` and `credentials: 'omit'`; injected, so unit tests use fakes |
 | Charset | `TextDecoder` with the charset from `Content-Type` or `<meta charset>`; UTF-8 when unknown |
 | Storage | None |
 | Testing | Vitest (extraction, decoding, fetch rules with fake responses, IPC); e2e with a local HTTP server of test pages |
@@ -72,13 +72,17 @@ readVacancy(url: string): Promise<{ title: string | null; company: string | null
   the page's code, and the spec does not allow that (NFR-001). Pure extraction is fully
   unit-testable.
 
-### D-2 — In-memory session, manual redirects
+### D-2 — Node's `fetch`, manual redirects
 
-- **Chosen:** `session.fromPartition('vacancy')` (no `persist:` prefix, so nothing is
-  written to disk), `credentials: 'omit'`, `redirect: 'manual'`. Main checks each
-  `Location`.
-- **Why:** NFR-001: no cookies or stored login, and no redirect to `file:` or other
-  schemes. The default session would share cookies with the app window.
+- **Options considered:** Electron `net.fetch` or a session `fetch` (in-memory
+  partition); Electron `net.request` with a `redirect` event; Node's `fetch`.
+- **Chosen:** Node's `fetch` in main, `redirect: 'manual'`, `credentials: 'omit'`.
+  Main checks each `Location`.
+- **Why:** NFR-001: no cookies or stored login (Node's `fetch` has no cookie store),
+  and no redirect to `file:` or other schemes. Electron's `fetch` throws "Redirect was
+  cancelled" with `redirect: 'manual'` (checked on Electron 45), so it cannot check
+  each redirect. Trade-off: Node's `fetch` does not use the system proxy and
+  certificate settings; behind such a proxy a read fails and FR-006 applies.
 
 ### D-3 — Regular expressions, not an HTML parser
 

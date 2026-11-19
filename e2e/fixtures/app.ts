@@ -15,6 +15,7 @@ import { FindyBackdoor } from '../data/findy-backdoor'
 import { writeHistoryDatabase, type HistoryApplication } from '../data/history-database'
 import { McpTestClient } from '../data/mcp-client'
 import { ReleaseServer, type FakeRelease } from '../data/release-server'
+import { VacancyServer } from '../data/vacancy-server'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { AnalyticsScreen } from '../screens/analytics.screen'
@@ -76,6 +77,8 @@ interface Options {
 interface Fixtures extends Options {
   userDataDir: string
   releaseServer: ReleaseServer | null
+  /** Spec 009: local vacancy pages; started only by the tests that use it */
+  vacancyPages: VacancyServer
   electronApp: ElectronApplication
   errorGuard: ErrorGuard
   findy: Findy
@@ -156,6 +159,13 @@ export const test = base.extend<Fixtures>({
     const server = latestRelease ? await ReleaseServer.start(latestRelease) : null
     await use(server)
     await server?.close()
+  },
+
+  // eslint-disable-next-line no-empty-pattern -- Playwright needs the destructuring
+  vacancyPages: async ({}, use) => {
+    const server = await VacancyServer.start()
+    await use(server)
+    await server.close()
   },
 
   userDataDir: async ({ databaseFile, bulkData, history }, use) => {
