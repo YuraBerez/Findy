@@ -4,7 +4,7 @@ The non-negotiable principles of the project. Every spec, plan, task and pull
 request must comply. Changing this document requires its own PR with the
 `constitution` label and a short rationale.
 
-**Version:** 1.2.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6)
+**Version:** 1.3.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6), 2026-11-19 (§II.7)
 
 ---
 
@@ -42,6 +42,12 @@ No production code is written without an approved spec.
    the user turns on the automatic check (off by default). The request sends no user
    data: no applications, notes, settings, identifiers or usage data. The app does
    not download or install anything. See spec 006.
+7. **Exception — vacancy link.** When the user pastes a vacancy link in the app, or
+   asks the app to fill the application from it, the app may read that one page to
+   fill in the job title and the company. The request goes only to that link and
+   sends no user data: no cookies, stored logins, applications, notes, settings or
+   identifiers. The app runs no code from the page and keeps no copy of it.
+   See spec 009.
 
 ## III. Secure Electron by default
 
