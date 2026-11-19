@@ -41,6 +41,9 @@ the failed tests run once more (`playwright test --last-failed`).
   open an issue; a test that stays flaky gets the `@quarantine` tag (the kit skips
   it, `E2E_QUARANTINE=include` runs it) until it is fixed.
 - A test that fails again is a real failure: the job is red.
+- When a test failed, the job uploads the artifact `e2e-traces-<os>` (14 days): the
+  traces of the first run in `e2e-traces/first-run/` and of the rerun in
+  `test-results/`. Read the trace (`npx playwright show-trace <trace.zip>`) before a fix.
 
 Coverage scope: `src/domain`, `src/main` (except the entry points
 `src/main/index.ts` and `src/main/mcp/cli.ts`) and `src/shared`. UI and preload are covered by e2e tests.
