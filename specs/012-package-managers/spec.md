@@ -1,7 +1,7 @@
 # Feature Spec: Install with Homebrew and Scoop; verifiable releases
 
 - **ID:** 012-package-managers
-- **Status:** Approved
+- **Status:** Implemented (0.4.1)
 - **Approved:** 2026-11-19 (owner)
 - **Created:** 2026-11-19
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md) (FR-070…FR-072 installers), [006-update-check](../006-update-check/spec.md)

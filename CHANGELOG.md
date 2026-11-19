@@ -3,6 +3,20 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.4.1] - 2026-11-19
+
+### Install with Homebrew and Scoop
+- macOS: `brew tap yuraberez/findy`, `brew trust yuraberez/findy`, `brew install --cask findy`. `brew upgrade --cask findy` gets new versions. Homebrew does not turn off the macOS check: open Findy the first time as **First start** in the README says.
+- Windows: `scoop bucket add findy https://github.com/YuraBerez/scoop-findy`, `scoop install findy`. No administrator rights; `scoop update findy` gets new versions.
+- Both follow published releases and update themselves within a day. Uninstalling keeps your data.
+
+### Portable Windows build
+- Each release now has `Findy-<version>-Windows-portable.zip`: unzip it and run `Findy.exe`, no installer.
+
+### Check a download
+- Each release has `SHA256SUMS.txt` with the SHA-256 sum of every file.
+- Every file has a GitHub build attestation: `gh attestation verify <file> --repo YuraBerez/findy` confirms that the release workflow built it from this repository.
+
 ## [0.4.0] - 2026-11-19
 
 ### Add an application from a link
