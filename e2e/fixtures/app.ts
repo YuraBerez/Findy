@@ -94,6 +94,27 @@ async function launch(
   return electron.launch({ args, env })
 }
 
+/**
+ * Closes the app; kills it if it does not exit in time. On a busy CI runner (Windows)
+ * `close()` hung until the test timed out, and later tests failed in a row (issue #23).
+ */
+async function closeApp(app: ElectronApplication): Promise<void> {
+  const closed = app.close().then(
+    () => true,
+    () => false,
+  )
+  let timer: NodeJS.Timeout | undefined
+  const timeout = new Promise<false>((resolve) => (timer = setTimeout(resolve, 10_000, false)))
+  const ok = await Promise.race([closed, timeout])
+  clearTimeout(timer)
+  if (ok) return
+  const child = app.process()
+  if (child.exitCode !== null || child.signalCode !== null) return
+  const exited = new Promise((resolve) => child.once('exit', resolve))
+  child.kill()
+  await exited // the next launch needs the single-instance lock and the database
+}
+
 async function firstWindow(app: ElectronApplication): Promise<Page> {
   const page = await app.firstWindow()
   // Playwright emulates a light scheme by default; let nativeTheme drive it (FR-080)
@@ -144,7 +165,7 @@ export const test = base.extend<Fixtures>({
   electronApp: async ({ userDataDir, systemLocale, releaseServer }, use) => {
     const app = await launch(userDataDir, systemLocale, releaseServer)
     await use(app)
-    await app.close().catch(() => {})
+    await closeApp(app)
   },
 
   // The kit's error guard watches `context`: give it the Electron window's context
@@ -181,7 +202,7 @@ export const test = base.extend<Fixtures>({
         await window.getByTestId('app').waitFor()
       },
       restart: async () => {
-        await app.close()
+        await closeApp(app)
         app = await launch(userDataDir, systemLocale, releaseServer)
         await errorGuard.watch(app.context())
         window = await firstWindow(app)
@@ -192,6 +213,6 @@ export const test = base.extend<Fixtures>({
     }
     await use(findy)
     for (const client of mcpClients) await client.close().catch(() => {})
-    if (app !== electronApp) await app.close().catch(() => {})
+    if (app !== electronApp) await closeApp(app)
   },
 })

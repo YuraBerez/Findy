@@ -342,12 +342,18 @@ export class BoardScreen extends BaseComponent {
       y = cardBox.y - columnBox.y + cardBox.height * 0.25
     }
     const to = { x: columnBox.x + columnBox.width / 2, y: columnBox.y + y }
-    await this.pointer.drag(this.card(title), to, async () => {
+    await this.pointer.drag(this.card(title), to, {
+      started: () => expect(this.page.getByTestId('drag-preview')).toBeVisible(),
       // The drop is ready when the app shows it: the card's preview is in the target
-      // column, and in front of the right card when there is one
-      await expect(this.card(title, column)).toHaveCount(1)
-      if ('before' in target)
-        await expect(this.card(target.before)).toHaveAttribute('data-over', 'true')
+      // column, and in front of the right card when there is one. Short timeouts:
+      // the pointer moves again and retries
+      ready: async () => {
+        await expect(this.card(title, column)).toHaveCount(1, { timeout: 1_000 })
+        if ('before' in target)
+          await expect(this.card(target.before)).toHaveAttribute('data-over', 'true', {
+            timeout: 1_000,
+          })
+      },
     })
   }
 

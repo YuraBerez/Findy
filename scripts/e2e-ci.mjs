@@ -2,9 +2,12 @@
 // failed tests once more. Passed on the rerun → flaky: a warning in the PR and the
 // job summary, the job stays green. Failed again → a real failure, the job is red.
 import { spawnSync } from 'node:child_process'
-import { appendFileSync, existsSync, readFileSync } from 'node:fs'
+import { appendFileSync, cpSync, existsSync, readFileSync } from 'node:fs'
 
 const RERUN_REPORT = 'test-results/rerun.json'
+// Playwright empties test-results/ when the rerun starts: keep the traces of the
+// first failures here for the workflow artifact
+const FIRST_RUN_COPY = 'e2e-traces/first-run'
 
 const playwright = (args, env = {}) =>
   spawnSync('npx', ['playwright', 'test', ...args], {
@@ -15,6 +18,8 @@ const playwright = (args, env = {}) =>
 
 const first = playwright([])
 if (first === 0) process.exit(0)
+// Tells the workflow to upload the traces, also when the rerun passes
+if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, 'failures=true\n')
 
 const lastRun = 'test-results/.last-run.json'
 const failed = existsSync(lastRun)
@@ -22,6 +27,7 @@ const failed = existsSync(lastRun)
   : []
 if (failed.length === 0) process.exit(first) // the run broke before tests, nothing to rerun
 
+cpSync('test-results', FIRST_RUN_COPY, { recursive: true })
 console.log(`\n${failed.length} test(s) failed. Running them once more (flaky policy).\n`)
 const rerun = playwright(['--last-failed', '--reporter=list,json'], {
   PLAYWRIGHT_JSON_OUTPUT_NAME: RERUN_REPORT,

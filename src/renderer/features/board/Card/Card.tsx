@@ -32,6 +32,7 @@ export function CardContent({ application, overlay = false }: CardContentProps) 
     <div
       className={styles.body}
       data-overlay={overlay || undefined}
+      data-testid={overlay ? 'drag-preview' : undefined}
       data-color={(overlay && application.color) || undefined}
       style={overlay ? colorStyle(application) : undefined}
     >

@@ -60,7 +60,18 @@ jobs:
           [ -S /tmp/.X11-unix/X99 ] || { echo "Xvfb did not start"; exit 1; }
           echo "DISPLAY=:99" >> "$GITHUB_ENV"
       - name: E2E tests (failed tests rerun once at the end)
+        id: e2e
         run: npm run test:e2e:ci
+      # Traces of failed tests, also of flaky ones (the rerun passed): read them before a fix
+      - name: Upload traces of failed tests
+        if: always() && steps.e2e.outputs.failures == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-traces-${{ matrix.os }}
+          path: |
+            e2e-traces/
+            test-results/
+          retention-days: 14
       - name: Package (unpacked)
         run: npm run dist:dir
         env:
