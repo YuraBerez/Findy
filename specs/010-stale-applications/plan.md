@@ -1,7 +1,7 @@
 # Implementation Plan: Stale applications
 
 - **Spec:** [spec.md](spec.md) · **Architecture:** [docs/architecture.md](../../docs/architecture.md)
-- **Status:** Draft
+- **Status:** Approved
 
 ## Summary
 
