@@ -70,15 +70,53 @@ download, with no way to open it. `smoke:packaged` runs
 
 1. Maintainer bumps version, updates `CHANGELOG.md`, merges to `main`.
 2. Pushes tag `vX.Y.Z`.
-3. Matrix job builds on the three runners and uploads artifacts to a **draft**
-   GitHub Release (`electron-builder --publish always`, `GH_TOKEN`).
-4. Maintainer smoke-tests each artifact, then publishes the release.
+3. Matrix job builds on the three runners and uploads the files to a **draft**
+   GitHub Release: two `.dmg`, the Windows installer and the portable ZIP (spec 012),
+   the AppImage and the `.deb`. Each runner records a build provenance attestation
+   for its files (`actions/attest-build-provenance`).
+4. The `checksums` job downloads every file of the draft and uploads
+   `SHA256SUMS.txt`.
+5. Maintainer smoke-tests each artifact, then publishes the release.
+6. Within a day, the [Homebrew tap](https://github.com/YuraBerez/homebrew-findy) and the
+   [Scoop bucket](https://github.com/YuraBerez/scoop-findy) move to the published
+   version: their daily workflow checks the files against `SHA256SUMS.txt` and commits
+   the new version and sums. Run their "Follow Findy releases" workflow by hand to do
+   it at once. They never read a draft or a pre-release.
+
+Users can check a download with `SHA256SUMS.txt` or
+`gh attestation verify <file> --repo YuraBerez/findy` (README → Check a download).
 
 ## Signing
 
-Not in MVP (architecture D-5). README explains:
-- macOS: right-click → Open, or `xattr -dr com.apple.quarantine /Applications/Findy.app`.
-- Windows: SmartScreen → "More info" → "Run anyway".
+Not yet (architecture D-5, spec 012 D-4, D-5). The README explains the first start:
+macOS "Open Anyway" in Privacy & Security, Windows SmartScreen "More info → Run
+anyway". The Homebrew cask shows the same steps and does not remove the quarantine.
 
-When signing is added, secrets go to GitHub Actions secrets
-(`CSC_LINK`, `CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`).
+### Turning on macOS signing and notarisation (when there is an Apple Developer ID)
+
+1. Join the Apple Developer Program; create a **Developer ID Application** certificate
+   and export it with its key as a `.p12`.
+2. Create an App Store Connect API key (Users and Access → Integrations) with the
+   Developer role.
+3. Add the repository secrets: `CSC_LINK` (the `.p12`, base64), `CSC_KEY_PASSWORD`,
+   `APPLE_API_KEY` (the `.p8` content), `APPLE_API_KEY_ID`, `APPLE_API_ISSUER`.
+4. In `electron-builder.yml`: remove `identity: '-'`, set `hardenedRuntime: true` and
+   `notarize: true`, and add the entitlements Electron needs
+   (`com.apple.security.cs.allow-jit`, `allow-unsigned-executable-memory`).
+5. In `release.yml`: stop setting `CSC_IDENTITY_AUTO_DISCOVERY: false` on macOS, and
+   write `APPLE_API_KEY` to a file for electron-builder.
+6. Check a build on a Mac that never ran Findy: it opens with no warning, and
+   `spctl -a -vv /Applications/Findy.app` says *Notarized Developer ID*. Then the cask
+   can drop its caveats and go to the official `homebrew/cask`.
+
+### Turning on Windows signing (SignPath Foundation)
+
+1. Apply for the free open-source program at signpath.org with the repository link;
+   the project must build its releases in public CI (it does).
+2. After approval, add the SignPath organization, project and signing policy, and the
+   `SIGNPATH_API_TOKEN` secret.
+3. In `release.yml`, after the Windows build: upload the unsigned `.exe` and `.zip`
+   as a workflow artifact and call `signpath/github-action-submit-signing-request`;
+   upload the signed files to the release instead of the unsigned ones.
+4. Check that the files show the publisher in their properties. SmartScreen warnings
+   go away as the signed files gain reputation.

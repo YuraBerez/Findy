@@ -70,7 +70,46 @@ Installers are on the [Releases](https://github.com/YuraBerez/findy/releases) pa
 | Windows 10/11 (x64) | `Findy-Setup-x.y.z.exe` |
 | Mac with Apple Silicon (M1, M2, M3, M4…) | `Findy-x.y.z-macOS-Apple-Silicon.dmg` |
 | Mac with an Intel processor | `Findy-x.y.z-macOS-Intel.dmg` |
+| Windows, portable (no install) | `Findy-x.y.z-Windows-portable.zip` |
 | Linux (x64) | `Findy-x.y.z.AppImage` or `findy_x.y.z_amd64.deb` |
+
+Findy needs macOS 13 Ventura or later, or Windows 10/11 (64-bit).
+
+### Install with Homebrew (macOS)
+
+```bash
+brew tap yuraberez/findy
+brew trust yuraberez/findy
+brew install --cask findy
+```
+
+`brew trust` is needed once: Homebrew loads casks from taps outside its own catalogue
+only after you trust them. Update with `brew upgrade --cask findy`. The
+[tap](https://github.com/YuraBerez/homebrew-findy) follows each published release within
+a day. The first start still needs the steps below.
+
+### Install with Scoop (Windows)
+
+```powershell
+scoop bucket add findy https://github.com/YuraBerez/scoop-findy
+scoop install findy
+```
+
+Update with `scoop update findy`. The [bucket](https://github.com/YuraBerez/scoop-findy)
+installs the portable build for your user, without administrator rights (from Findy
+0.4.1).
+
+### Check a download
+
+Each release (from 0.4.1) has `SHA256SUMS.txt` with the sum of every file, and GitHub
+records which workflow and commit built each one:
+
+```bash
+shasum -a 256 -c SHA256SUMS.txt --ignore-missing      # macOS, Linux
+gh attestation verify Findy-x.y.z-macOS-Apple-Silicon.dmg --repo YuraBerez/findy
+```
+
+On Windows: `Get-FileHash Findy-Setup-x.y.z.exe` and compare with `SHA256SUMS.txt`.
 
 ### First start: the builds are not signed yet
 

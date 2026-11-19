@@ -69,7 +69,46 @@ Findy збирає всі заявки на одній дошці: від від
 | Windows 10/11 (x64) | `Findy-Setup-x.y.z.exe` |
 | Mac з Apple Silicon (M1, M2, M3, M4…) | `Findy-x.y.z-macOS-Apple-Silicon.dmg` |
 | Mac з процесором Intel | `Findy-x.y.z-macOS-Intel.dmg` |
+| Windows, портативна версія (без встановлення) | `Findy-x.y.z-Windows-portable.zip` |
 | Linux (x64) | `Findy-x.y.z.AppImage` або `findy_x.y.z_amd64.deb` |
+
+Findy потребує macOS 13 Ventura чи новішої або Windows 10/11 (64-біт).
+
+### Встановлення через Homebrew (macOS)
+
+```bash
+brew tap yuraberez/findy
+brew trust yuraberez/findy
+brew install --cask findy
+```
+
+`brew trust` потрібен один раз: Homebrew завантажує cask зі сторонніх tap лише після
+того, як ви їм довірилися. Оновлення: `brew upgrade --cask findy`.
+[Tap](https://github.com/YuraBerez/homebrew-findy) переходить на кожен опублікований
+реліз протягом доби. Перший запуск усе одно потребує кроків нижче.
+
+### Встановлення через Scoop (Windows)
+
+```powershell
+scoop bucket add findy https://github.com/YuraBerez/scoop-findy
+scoop install findy
+```
+
+Оновлення: `scoop update findy`. [Bucket](https://github.com/YuraBerez/scoop-findy)
+встановлює портативну версію для вашого користувача, без прав адміністратора (починаючи
+з Findy 0.4.1).
+
+### Перевірка завантаження
+
+Кожен реліз (починаючи з 0.4.1) містить `SHA256SUMS.txt` із контрольною сумою кожного
+файлу, а GitHub фіксує, який workflow і коміт зібрали кожен із них:
+
+```bash
+shasum -a 256 -c SHA256SUMS.txt --ignore-missing      # macOS, Linux
+gh attestation verify Findy-x.y.z-macOS-Apple-Silicon.dmg --repo YuraBerez/findy
+```
+
+У Windows: `Get-FileHash Findy-Setup-x.y.z.exe` і порівняйте з `SHA256SUMS.txt`.
 
 ### Перший запуск: збірки поки не підписані
 
