@@ -16,11 +16,13 @@ import { writeHistoryDatabase, type HistoryApplication } from '../data/history-d
 import { McpTestClient } from '../data/mcp-client'
 import { ReleaseServer, type FakeRelease } from '../data/release-server'
 import { VacancyServer } from '../data/vacancy-server'
+import { IconServer } from '../data/icon-server'
 import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { AnalyticsScreen } from '../screens/analytics.screen'
 import { ImportDialogScreen } from '../screens/import-dialog.screen'
 import { StaleDialogScreen } from '../screens/stale-dialog.screen'
+import { SitesScreen } from '../screens/sites.screen'
 import { UpdatesScreen } from '../screens/updates.screen'
 import { BoardScreen } from '../screens/board.screen'
 import { mousePointer } from './pointer'
@@ -36,6 +38,7 @@ export interface FindyPages {
   updates: UpdatesScreen
   importDialog: ImportDialogScreen
   staleDialog: StaleDialogScreen
+  sites: SitesScreen
   dialog: ApplicationDialogScreen
   details: ApplicationDetailsScreen
   applications: ApplicationSteps
@@ -74,11 +77,14 @@ interface Options {
   history: { applications: HistoryApplication[] } | undefined
   /** Serve this as the latest release through a local server (spec 006, plan D-4) */
   latestRelease: FakeRelease | undefined
+  /** Spec 011: hosts whose icon a local server gives; an object (see `history`) */
+  siteIcons: { hosts: string[] } | undefined
 }
 
 interface Fixtures extends Options {
   userDataDir: string
   releaseServer: ReleaseServer | null
+  iconServer: IconServer | null
   /** Spec 009: local vacancy pages; started only by the tests that use it */
   vacancyPages: VacancyServer
   electronApp: ElectronApplication
@@ -90,12 +96,15 @@ async function launch(
   userDataDir: string,
   systemLocale: string,
   releases: ReleaseServer | null,
+  icons: IconServer | null,
 ): Promise<ElectronApplication> {
   const args = ['.', `--lang=${systemLocale}`]
   if (process.env.CI && process.platform === 'linux') args.push('--no-sandbox')
   const env: Record<string, string> = { ...process.env, FINDY_USER_DATA_DIR: userDataDir }
   // Never reach the real GitHub from a test: without a fake server, point at a closed port
   env.FINDY_RELEASES_URL = releases?.url ?? 'http://127.0.0.1:9/latest'
+  // Spec 011 NFR-003: nor the job sites
+  env.FINDY_SITE_ICONS_URL = icons?.url ?? 'http://127.0.0.1:9'
   return electron.launch({ args, env })
 }
 
@@ -143,6 +152,7 @@ function pagesFor(page: Page): FindyPages {
     updates: new UpdatesScreen(page),
     importDialog: new ImportDialogScreen(page),
     staleDialog: new StaleDialogScreen(page),
+    sites: new SitesScreen(page),
     dialog,
     details: new ApplicationDetailsScreen(page),
     applications: new ApplicationSteps({ board, dialog }),
@@ -157,6 +167,13 @@ export const test = base.extend<Fixtures>({
   bulkData: [undefined, { option: true }],
   history: [undefined, { option: true }],
   latestRelease: [undefined, { option: true }],
+  siteIcons: [undefined, { option: true }],
+
+  iconServer: async ({ siteIcons }, use) => {
+    const server = siteIcons ? await IconServer.start(siteIcons.hosts) : null
+    await use(server)
+    await server?.close()
+  },
 
   releaseServer: async ({ latestRelease }, use) => {
     const server = latestRelease ? await ReleaseServer.start(latestRelease) : null
@@ -181,8 +198,8 @@ export const test = base.extend<Fixtures>({
     rmSync(dir, { recursive: true, force: true, maxRetries: 20, retryDelay: 250 })
   },
 
-  electronApp: async ({ userDataDir, systemLocale, releaseServer }, use) => {
-    const app = await launch(userDataDir, systemLocale, releaseServer)
+  electronApp: async ({ userDataDir, systemLocale, releaseServer, iconServer }, use) => {
+    const app = await launch(userDataDir, systemLocale, releaseServer, iconServer)
     await use(app)
     await closeApp(app)
   },
@@ -199,7 +216,7 @@ export const test = base.extend<Fixtures>({
   errorGuard: errorGuardFixture(),
 
   findy: async (
-    { electronApp, page, userDataDir, systemLocale, errorGuard, releaseServer },
+    { electronApp, page, userDataDir, systemLocale, errorGuard, releaseServer, iconServer },
     use,
   ) => {
     let app = electronApp
@@ -222,7 +239,7 @@ export const test = base.extend<Fixtures>({
       },
       restart: async () => {
         await closeApp(app)
-        app = await launch(userDataDir, systemLocale, releaseServer)
+        app = await launch(userDataDir, systemLocale, releaseServer, iconServer)
         await errorGuard.watch(app.context())
         window = await firstWindow(app)
         findy.pages = pagesFor(window)

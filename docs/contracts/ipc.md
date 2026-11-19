@@ -60,6 +60,14 @@ interface FindyApi {
     | { status: 'latest'; currentVersion: string }
     | null                                                  // 'auto' only: off, not due, or failed
   >;                                                        // 'manual' rejects with NETWORK
+  // Job sites (spec 011)
+  addSite(site: { name: string; url: string }): Promise<AppState>;   // VALIDATION; at most 50
+  updateSite(id: string, site: { name: string; url: string }): Promise<AppState>;  // NOT_FOUND
+  deleteSite(id: string): Promise<AppState>;                         // NOT_FOUND
+  setHiddenSites(ids: KnownSiteId[]): Promise<AppState>;
+  setSiteQuery(query: string): Promise<AppState>;                    // trimmed, ≤ 200
+  getSiteIcons(): Promise<Record<string, string>>;                   // host → data: URL
+  refreshSiteIcons(): Promise<void>;          // downloads missing icons in the background
   readVacancy(url: string): Promise<                       // spec 009; VALIDATION: not http(s)
     { title: string | null; company: string | null } | null // null: no data, no network, not HTML
   >;                                                        // never rejects for a failed read
@@ -77,6 +85,7 @@ interface AppState {
     mcpEnabled: boolean; autoUpdateCheck: boolean; analytics: { period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month' };
   };
   applications: Application[];
+  sites: CustomSite[];                     // spec 011: the user's job sites
   storage:
     | { status: 'ok'; dataFilePath: string }
     | { status: 'error'; error: 'corrupt' | 'newer_version' | 'open_failed';
@@ -111,6 +120,7 @@ and adds them in one transaction. A token works once; a new preview replaces it.
 | `findy:languageChanged` | `'en' \| 'uk'` | Language changed from the native app menu |
 | `findy:storageError` | `{ message }` | Background save failed |
 | `findy:stateChanged` | — | Another process (the MCP server) changed the database; reload (spec 004) |
+| `findy:siteIconsChanged` | — | Main saved a site icon; call `getSiteIcons` again (spec 011) |
 
 Renderer subscribes via `window.findy.on(event, handler)` which returns an
 unsubscribe function.

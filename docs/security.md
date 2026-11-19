@@ -28,7 +28,8 @@ webPreferences: {
 - [ ] Single-instance lock (`app.requestSingleInstanceLock`).
 - [ ] No `remote` module, no `eval`, no `dangerouslySetInnerHTML` for user content.
 - [ ] Electron kept on a supported major version (Dependabot).
-- [ ] Outbound network: only the update check and the vacancy page (next item). The
+- [ ] Outbound network: only the update check, the vacancy page and the job site icons
+      (next items). The
       update check (constitution §II.6, spec 006) runs from main
       with `net.fetch`, never from the renderer. It is a GET with no user data, a 10 s
       timeout and a size limit; the answer is parsed with zod, and "Download" opens only
@@ -39,6 +40,12 @@ webPreferences: {
       'omit'` and no user data. Each redirect is checked: at most 5, only `http`/`https`.
       Only HTML is read, at most 2 MB in 10 s. The page is searched as text: never
       rendered, never run, never stored.
+- [ ] Job site icons (constitution §II.8, spec 011), never from the renderer: main asks
+      only the site's own host (or a subdomain / `www.` of it) with Node's `fetch`, no
+      cookies and no user data; at most 5 checked redirects; 5 s; at most 100 KB. The
+      type comes from the bytes (PNG, ICO, JPEG, GIF, WebP); SVG is refused, so an icon
+      cannot carry a script. Icons reach the renderer as `data:` images. Sites open only
+      in the system browser (`openExternal`).
 - [ ] User files (spec 008): main reads or writes only a path that the user picked in
       a system save or open dialog. The renderer never sends or receives a path: it gets
       the file name, counts and a random token. Import checks the size (10 MB) before

@@ -24,12 +24,12 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — UI
 
-- [ ] T020 Third tab and Ctrl/Cmd+3 (FR-001)
-- [ ] T021 `SitesView`: query field (saved), groups, tiles with icon or letter, open in the browser (FR-003…FR-006, FR-020, FR-023)
-- [ ] T022 The user's sites: add / edit dialog, delete with confirmation; known sites: hide and "Show hidden sites" (FR-010…FR-016)
-- [ ] T023 en/uk strings; 800 × 600 layout (US-5, NFR-002)
+- [x] T020 Third tab and Ctrl/Cmd+3 (FR-001)
+- [x] T021 `SitesView`: query field (saved), groups, tiles with icon or letter, open in the browser (FR-003…FR-006, FR-020, FR-023)
+- [x] T022 The user's sites: add / edit dialog, delete with confirmation; known sites: hide and "Show hidden sites" (FR-010…FR-016)
+- [x] T023 en/uk strings; 800 × 600 layout (US-5, NFR-002)
 
 ## Phase 4 — Verification and docs
 
-- [ ] T030 e2e with a local icon server and captured links: US-1…US-5; axe; offline icons; check the blocked search formats by hand in the dev app (NFR-002, NFR-003, SC-001, SC-002)
-- [ ] T031 Docs: data-model.md, contracts/database.md (schema v3), contracts/ipc.md, architecture.md (D-13), security.md
+- [x] T030 e2e with a local icon server and captured links: US-1…US-5; axe; offline icons; check the blocked search formats by hand in the dev app (NFR-002, NFR-003, SC-001, SC-002)
+- [x] T031 Docs: data-model.md, contracts/database.md (schema v3), contracts/ipc.md, architecture.md (D-13), security.md

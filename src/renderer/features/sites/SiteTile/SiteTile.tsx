@@ -29,7 +29,14 @@ export function SiteTile({ name, host, icon, onOpen, actions }: Props) {
     <li className={styles.tile}>
       <button type="button" className={styles.open} onClick={onOpen}>
         {icon ? (
-          <img className={styles.icon} src={icon} alt="" width={32} height={32} />
+          <img
+            className={styles.icon}
+            src={icon}
+            alt=""
+            width={32}
+            height={32}
+            data-testid="site-icon"
+          />
         ) : (
           <span
             className={styles.letter}

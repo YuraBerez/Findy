@@ -35,8 +35,8 @@ export class AnalyticsScreen extends BaseComponent {
     this.funnel = this.card(/^(Funnel|Воронка)$/)
   }
 
-  private tab(name: string): Locator {
-    return this.tabs.getByRole('tab', { name })
+  private tab(name: string | RegExp): Locator {
+    return this.tabs.getByRole('tab', { name, exact: typeof name === 'string' })
   }
 
   private card(title: string | RegExp): Locator {
@@ -49,7 +49,7 @@ export class AnalyticsScreen extends BaseComponent {
 
   // ── Tabs (US-1) ────────────────────────────────────────────────────────
 
-  async openTab(name: string): Promise<void> {
+  async openTab(name: string | RegExp): Promise<void> {
     await this.tab(name).click()
   }
 
@@ -57,12 +57,12 @@ export class AnalyticsScreen extends BaseComponent {
     await this.tab(name).press(key)
   }
 
-  /** FR-002: Ctrl+1 / Ctrl+2, Cmd on macOS; pressed on the selected tab */
-  async pressShortcut(digit: 1 | 2): Promise<void> {
+  /** FR-002: Ctrl+1 / 2 / 3 (spec 011 FR-001), Cmd on macOS; pressed on the selected tab */
+  async pressShortcut(digit: 1 | 2 | 3): Promise<void> {
     await this.tabs.getByRole('tab', { selected: true }).press(`ControlOrMeta+${digit}`)
   }
 
-  async verifySelectedTab(name: string, focused = false): Promise<void> {
+  async verifySelectedTab(name: string | RegExp, focused = false): Promise<void> {
     await expect(this.tab(name)).toHaveAttribute('aria-selected', 'true')
     if (focused) await expect(this.tab(name)).toBeFocused()
   }
