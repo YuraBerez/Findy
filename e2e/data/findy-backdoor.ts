@@ -1,4 +1,5 @@
 import type { ElectronApplication, Page } from '@playwright/test'
+import { withClipboardLock } from './clipboard-lock'
 import type {
   AnalyticsView,
   AppState,
@@ -26,6 +27,22 @@ export class FindyBackdoor {
     private readonly page: Page,
     private readonly app: ElectronApplication,
   ) {}
+
+  /**
+   * Spec 009: `paste` runs with `text` on the system clipboard. Workers take turns, and
+   * the clipboard gets its old text back, so a local run does not lose what you copied.
+   */
+  async withClipboard(text: string, paste: () => Promise<void>): Promise<void> {
+    await withClipboardLock(async () => {
+      const previous = await this.app.evaluate(({ clipboard }) => clipboard.readText())
+      await this.app.evaluate(({ clipboard }, value) => clipboard.writeText(value), text)
+      try {
+        await paste()
+      } finally {
+        await this.app.evaluate(({ clipboard }, value) => clipboard.writeText(value), previous)
+      }
+    })
+  }
 
   /** Replaces shell.openExternal in main, so a test can see links without a browser. */
   async captureExternalLinks(): Promise<void> {

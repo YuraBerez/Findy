@@ -11,6 +11,8 @@ export interface ApplicationForm {
 
 type Field = 'title' | 'company' | 'url'
 
+const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
 /** The "New application" dialog (US-1). */
 export class ApplicationDialogScreen extends BaseComponent {
   private readonly dialog: Locator
@@ -18,18 +20,54 @@ export class ApplicationDialogScreen extends BaseComponent {
   private readonly stageSelect: Locator
   private readonly submitButton: Locator
   private readonly cancelButton: Locator
+  private readonly fillFromLinkButton: Locator
 
   constructor(page: Page) {
     super(page)
-    this.dialog = page.getByRole('dialog', { name: 'New application' })
+    this.dialog = page.getByRole('dialog', { name: /^(New application|Нова заявка)$/ })
     this.fields = {
-      title: this.dialog.getByLabel('Job title'),
-      company: this.dialog.getByLabel('Company'),
-      url: this.dialog.getByLabel(/^Vacancy link/),
+      title: this.dialog.getByLabel(/^(Job title|Назва посади)$/),
+      company: this.dialog.getByLabel(/^(Company|Компанія)$/),
+      url: this.dialog.getByLabel(/^(Vacancy link|Посилання на вакансію)/),
     }
     this.stageSelect = this.dialog.getByLabel('Stage')
     this.submitButton = this.dialog.getByRole('button', { name: 'Add' })
     this.cancelButton = this.dialog.getByRole('button', { name: 'Cancel' })
+    this.fillFromLinkButton = this.dialog.getByRole('button', {
+      name: /^(Fill from link|Заповнити з посилання)$/,
+    })
+  }
+
+  // ── Spec 009: fill from a vacancy link ──────────────────────────────────
+
+  /** Pastes the clipboard over the link field with the keyboard; it holds `text` (FR-001) */
+  async pasteLink(text: string): Promise<void> {
+    await this.fields.url.press('ControlOrMeta+a')
+    await this.fields.url.press('ControlOrMeta+v')
+    await expect(this.fields.url).toHaveValue(text)
+  }
+
+  async fillFromLink(): Promise<void> {
+    await this.fillFromLinkButton.click()
+  }
+
+  /** US-3.1: Tab from the link field reaches the button; Enter uses it */
+  async fillFromLinkWithKeyboard(): Promise<void> {
+    await this.fields.url.press('Tab')
+    await expect(this.fillFromLinkButton).toBeFocused()
+    await this.fillFromLinkButton.press('Enter')
+  }
+
+  async verifyFillFromLinkEnabled(enabled: boolean): Promise<void> {
+    if (enabled) await expect(this.fillFromLinkButton).toBeEnabled()
+    else await expect(this.fillFromLinkButton).toBeDisabled()
+  }
+
+  /** FR-005, FR-006: the status under the link field ('' for none); it describes the field */
+  async verifyLinkStatus(text: string): Promise<void> {
+    const status = this.dialog.getByRole('status')
+    await expect(status).toHaveText(text)
+    if (text) await expect(this.fields.url).toHaveAccessibleDescription(new RegExp(escape(text)))
   }
 
   async fill(form: ApplicationForm): Promise<void> {
@@ -83,9 +121,7 @@ export class ApplicationDialogScreen extends BaseComponent {
 
   async verifyInvalid(field: Field, message: string): Promise<void> {
     await expect(this.fields[field]).toHaveAttribute('aria-invalid', 'true')
-    await expect(this.fields[field]).toHaveAccessibleDescription(
-      new RegExp(message.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
-    )
+    await expect(this.fields[field]).toHaveAccessibleDescription(new RegExp(escape(message)))
   }
 
   async verifyValid(field: Field): Promise<void> {

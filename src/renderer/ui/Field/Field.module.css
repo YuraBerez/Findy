@@ -20,6 +20,17 @@
   font-size: 12px;
 }
 
+.status {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+/* Stays in the tree while empty (a live region), without the gap of the flex column */
+.status:empty {
+  margin-top: -4px;
+}
+
 .hidden {
   position: absolute;
   width: 1px;

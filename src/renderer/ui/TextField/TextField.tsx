@@ -6,6 +6,8 @@ interface BaseProps {
   label: string
   hint?: string
   error?: string
+  /** Live text under the control (see Field) */
+  status?: string
   hideLabel?: boolean
 }
 
@@ -17,12 +19,13 @@ export function TextField({
   label,
   hint,
   error,
+  status,
   hideLabel,
   multiline,
   ...props
 }: InputProps | TextareaProps) {
   return (
-    <Field label={label} hint={hint} error={error} hideLabel={hideLabel}>
+    <Field label={label} hint={hint} error={error} status={status} hideLabel={hideLabel}>
       {(control) =>
         multiline ? (
           <textarea

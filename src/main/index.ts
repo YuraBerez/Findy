@@ -9,6 +9,7 @@ import { Repository } from './db/repository'
 import { resolveLanguage } from '../domain/language'
 import { createHandlers } from './ipc'
 import { userDataDir } from './paths'
+import { readVacancyPage } from './vacancy'
 import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
@@ -132,6 +133,8 @@ function start(): void {
     },
     applyLanguage: applyMenu,
     checkForUpdates,
+    // Spec 009 plan D-2: Node's fetch has no cookie store, and gives redirects to check
+    readVacancy: (url) => readVacancyPage(fetch, url),
     mcpConnection: () =>
       // An AppImage is mounted at a new path on every start: point at the file
       // itself, which forwards `--mcp` to Node mode

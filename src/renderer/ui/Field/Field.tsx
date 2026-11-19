@@ -14,6 +14,11 @@ interface Props {
   hint?: string
   /** Message under the control; marks it invalid */
   error?: string
+  /**
+   * Live text under the control that describes it, e.g. progress. Pass '' while there is
+   * nothing to say: a live region must exist before its text changes to be announced.
+   */
+  status?: string
   id?: string
   /** Keep the label for assistive technology only, when the context already says it */
   hideLabel?: boolean
@@ -21,12 +26,21 @@ interface Props {
 }
 
 /** Label, hint and error around any control, with the ARIA wiring done once. */
-export function Field({ label, hint, error, id: givenId, hideLabel = false, children }: Props) {
+export function Field({
+  label,
+  hint,
+  error,
+  status,
+  id: givenId,
+  hideLabel = false,
+  children,
+}: Props) {
   const generated = useId()
   const id = givenId ?? generated
   const hintId = hint ? `${id}-hint` : undefined
   const errorId = error ? `${id}-error` : undefined
-  const describedBy = [errorId, hintId].filter(Boolean).join(' ')
+  const statusId = status ? `${id}-status` : undefined
+  const describedBy = [errorId, statusId, hintId].filter(Boolean).join(' ')
 
   return (
     <div className={styles.field}>
@@ -47,6 +61,11 @@ export function Field({ label, hint, error, id: givenId, hideLabel = false, chil
       {error && (
         <p id={errorId} className={styles.error}>
           {error}
+        </p>
+      )}
+      {status !== undefined && (
+        <p id={`${id}-status`} className={styles.status} role="status">
+          {status}
         </p>
       )}
     </div>

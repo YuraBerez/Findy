@@ -254,6 +254,23 @@ build/                   # icons, entitlements for electron-builder
 - e2e answers the system dialogs by replacing `dialog.showSaveDialog` and
   `dialog.showOpenDialog` in main (`answerFileDialogs`).
 
+### D-12 — Vacancy pages read in main, parsed in the domain (spec 009)
+
+- The second network request that Findy itself makes (constitution §II.7): only when
+  the user pastes a link or uses "Fill from link" in the add dialog.
+- Main reads the page with Node's `fetch` (`main/vacancy.ts`): no cookie store,
+  `redirect: 'manual'` with each `Location` checked (≤ 5, `http`/`https` only),
+  HTML types only, 10 s and 2 MB limits. Electron's `fetch` cannot check redirects one
+  by one. The renderer CSP does not change.
+- `domain/vacancy/` finds the job title and the company as text, without a DOM or a
+  library: job posting data (JSON-LD, microdata), the page title split without the
+  site name, the main heading and an element marked as the company, then the site
+  name. Each field takes the first source that has it. No site-specific rules.
+- `readVacancy` resolves with `null` for every failed read: the dialog shows a short
+  message, not an error notification.
+- e2e serves test pages from a local server (`VacancyServer`) and pastes through the
+  system clipboard, one worker at a time (`withClipboard`).
+
 ## Cross-cutting docs
 
 - [constitution.md](constitution.md) — project principles

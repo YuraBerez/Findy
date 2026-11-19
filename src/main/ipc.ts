@@ -7,7 +7,9 @@ import {
   CardColorSchema,
   HiddenStagesSchema,
   IdSchema,
+  isHttpUrl,
   LanguageSchema,
+  LIMITS,
   MoveTargetSchema,
   NoteTextSchema,
   ThemeSchema,
@@ -22,6 +24,7 @@ import type {
   McpConnection,
   UpdateCheckResult,
   UpdateTrigger,
+  VacancyData,
 } from '../shared/ipc'
 import { HiddenStageError, NotFoundError, type Repository } from './db/repository'
 import { isSafeExternalUrl } from './security'
@@ -46,6 +49,8 @@ export interface IpcDeps {
   transfer: Transfer | null
   /** Spec 006: main/updates.ts#createUpdateChecker */
   checkForUpdates(trigger: UpdateTrigger): Promise<UpdateCheckResult | null>
+  /** Spec 009: main/vacancy.ts#readVacancyPage with a session without cookies */
+  readVacancy(url: string): Promise<VacancyData | null>
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -155,6 +160,10 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     checkForUpdates: handle(z.tuple([z.enum(['manual', 'auto'])]), (trigger) =>
       deps.checkForUpdates(trigger),
+    ),
+    readVacancy: handle(
+      z.tuple([z.string().max(LIMITS.url).refine(isHttpUrl, { message: 'Only http(s) URLs' })]),
+      (url) => deps.readVacancy(url),
     ),
     setAutoUpdateCheck: handle(z.tuple([z.boolean()]), (enabled) => {
       repo().setAutoUpdateCheck(enabled)

@@ -59,6 +59,13 @@
       "required": "Fill in this field.",
       "tooLong": "Use {{max}} characters or fewer.",
       "invalidUrl": "Enter a link that starts with http:// or https://."
+    },
+    "vacancy": {
+      "hint": "Paste a vacancy link: Findy fills in the job title and the company.",
+      "fill": "Fill from link",
+      "reading": "Reading the vacancy page…",
+      "filled": "Filled in from the page. Check the values.",
+      "notFound": "Could not get the job title or the company from this page. Fill them in yourself."
     }
   },
   "dnd": {

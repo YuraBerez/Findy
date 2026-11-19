@@ -47,3 +47,4 @@ Rules:
 | 006 | [Update check](006-update-check/spec.md) | Implemented |
 | 007 | [Card colours](007-card-colors/spec.md) | Implemented |
 | 008 | [CSV export and import](008-csv-import-export/spec.md) | Implemented |
+| 009 | [Add an application from a link](009-add-from-link/spec.md) | Approved |

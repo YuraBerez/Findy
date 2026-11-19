@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   validateApplicationForm,
   type ApplicationFormValues,
@@ -14,6 +14,11 @@ export function useApplicationForm(initial: ApplicationFormValues) {
   const errorText = useFieldErrorText()
   const [values, setValues] = useState(initial)
   const [errors, setErrors] = useState<FormErrors>({})
+  // The values of the last render, for answers that arrive later (spec 009 FR-003)
+  const latest = useRef(values)
+  useEffect(() => {
+    latest.current = values
+  }, [values])
 
   const set = (field: keyof ApplicationFormValues, value: string) => {
     setValues((current) => ({ ...current, [field]: value }))
@@ -23,6 +28,14 @@ export function useApplicationForm(initial: ApplicationFormValues) {
       delete next[field as keyof FormErrors]
       return next
     })
+  }
+
+  /** Spec 009 FR-003: fills only the fields that are empty now; typed text stays */
+  const fillEmpty = (data: Partial<Record<'title' | 'company', string | null>>) => {
+    for (const field of ['title', 'company'] as const) {
+      const value = data[field]
+      if (value && !latest.current[field].trim()) set(field, value)
+    }
   }
 
   /** Valid data, or `null` after showing the errors and focusing the first invalid field. */
@@ -35,7 +48,13 @@ export function useApplicationForm(initial: ApplicationFormValues) {
     return null
   }
 
-  return { values, set, validate, errorText: (field: keyof FormErrors) => errorText(errors[field]) }
+  return {
+    values,
+    set,
+    fillEmpty,
+    validate,
+    errorText: (field: keyof FormErrors) => errorText(errors[field]),
+  }
 }
 
 export type ApplicationFormState = ReturnType<typeof useApplicationForm>

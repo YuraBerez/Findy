@@ -117,6 +117,7 @@ export function App({ initialState }: { initialState: AppState }) {
         <ApplicationDialog
           hiddenStages={hiddenStages}
           onClose={() => setAdding(false)}
+          onReadVacancy={actions.readVacancy}
           onSubmit={async (application) => {
             // Spec 003 US-2: on failure the dialog stays open with the input
             if (await actions.createApplication(application)) setAdding(false)
