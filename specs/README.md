@@ -48,3 +48,4 @@ Rules:
 | 007 | [Card colours](007-card-colors/spec.md) | Implemented |
 | 008 | [CSV export and import](008-csv-import-export/spec.md) | Implemented |
 | 009 | [Add an application from a link](009-add-from-link/spec.md) | Approved |
+| 011 | [Job sites](011-job-sites/spec.md) | Approved |
