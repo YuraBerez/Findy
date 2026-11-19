@@ -9,6 +9,7 @@ import {
   type CardColor,
   type ExportResult,
   type ImportPreview,
+  type KnownSiteId,
   type Language,
   type StageId,
   type Theme,
@@ -38,6 +39,17 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
 
   // Spec 004 FR-006: an AI assistant changed the board through MCP
   useEffect(() => window.findy.on('stateChanged', () => void refresh()), [])
+
+  // Spec 011 FR-020: icons of the job sites, host → data: URL; reloaded when main saves one
+  const [siteIcons, setSiteIcons] = useState<Record<string, string>>({})
+  const loadSiteIcons = useCallback(async () => {
+    try {
+      setSiteIcons(await window.findy.getSiteIcons())
+    } catch (error) {
+      onError(error)
+    }
+  }, [onError])
+  useEffect(() => window.findy.on('siteIconsChanged', () => void loadSiteIcons()), [loadSiteIcons])
 
   const run = async (call: () => Promise<AppState>): Promise<boolean> => {
     try {
@@ -88,6 +100,7 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
 
   return {
     state,
+    siteIcons,
     storageReady: state.storage.status === 'ok',
     actions: {
       createApplication: (application: ValidApplication) =>
@@ -119,6 +132,19 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         }
         setState(result.state)
         return result.added
+      },
+
+      /** Spec 011 */
+      addSite: (site: { name: string; url: string }) => run(() => window.findy.addSite(site)),
+      updateSite: (id: string, site: { name: string; url: string }) =>
+        run(() => window.findy.updateSite(id, site)),
+      deleteSite: (id: string) => run(() => window.findy.deleteSite(id)),
+      setHiddenSites: (ids: KnownSiteId[]) => run(() => window.findy.setHiddenSites(ids)),
+      setSiteQuery: (query: string) => run(() => window.findy.setSiteQuery(query)),
+      /** FR-021: the saved icons now, the missing ones when main has them */
+      refreshSiteIcons: async () => {
+        await loadSiteIcons()
+        await attempt(() => window.findy.refreshSiteIcons())
       },
 
       /** Spec 010 FR-008 */

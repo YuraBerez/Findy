@@ -13,6 +13,7 @@ import { StaleAfterDialog } from '../../features/stale'
 import { useNow } from '../../hooks/useNow'
 import { ImportDialog } from '../../features/transfer'
 import { StorageError } from '../../features/storage'
+import { SitesView } from '../../features/sites'
 import { Toolbar } from '../Toolbar'
 import { useNotifications } from '../notifications'
 import { useAppState } from '../useAppState'
@@ -21,7 +22,7 @@ import styles from './App.module.css'
 
 export function App({ initialState }: { initialState: AppState }) {
   const { notifyError, notify } = useNotifications()
-  const { state, storageReady, actions } = useAppState(initialState, notifyError)
+  const { state, siteIcons, storageReady, actions } = useAppState(initialState, notifyError)
   const [adding, setAdding] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
@@ -122,6 +123,23 @@ export function App({ initialState }: { initialState: AppState }) {
                   view={state.settings.analytics}
                   onViewChange={actions.setAnalyticsView}
                   onShowBoard={showBoard}
+                />
+              )}
+            </div>
+            <div {...panel('sites')}>
+              {view === 'sites' && (
+                <SitesView
+                  sites={state.sites}
+                  hiddenSites={state.settings.hiddenSites}
+                  query={state.settings.siteQuery}
+                  icons={siteIcons}
+                  onQueryChange={(query) => void actions.setSiteQuery(query)}
+                  onOpen={(url) => void actions.openLink(url)}
+                  onAdd={actions.addSite}
+                  onUpdate={actions.updateSite}
+                  onDelete={(id) => void actions.deleteSite(id)}
+                  onHiddenChange={(ids) => void actions.setHiddenSites(ids)}
+                  onShown={() => void actions.refreshSiteIcons()}
                 />
               )}
             </div>

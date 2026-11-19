@@ -4,6 +4,7 @@ import { ANALYTICS_GROUPINGS, ANALYTICS_PERIODS } from './analytics'
 import { CARD_COLORS } from './colors'
 import { isHttpUrl, LIMITS } from './limits'
 import { STAGES } from './stages'
+import { KNOWN_SITE_IDS, SITE_LIMITS, validateSiteForm } from './sites'
 import { STALE_DAYS } from './stale'
 
 export { isHttpUrl, LIMITS }
@@ -32,6 +33,26 @@ export const HiddenStagesSchema = z
   .refine((stages) => new Set(stages).size < STAGES.length, { message: 'all_hidden' })
 
 /** Spec 005 FR-030, FR-031 */
+/** Spec 011 FR-010: the same rules as the form (domain/sites/validate.ts) */
+export const SiteInputSchema = z
+  .object({ name: z.string(), url: z.string() })
+  .transform((value, ctx) => {
+    const result = validateSiteForm(value)
+    if (result.ok) return result.data
+    for (const [field, error] of Object.entries(result.errors))
+      ctx.addIssue({ code: 'custom', path: [field], message: error.code })
+    return z.NEVER
+  })
+
+/** Spec 011 FR-015: known site ids, without repeats */
+export const HiddenSitesSchema = z
+  .array(z.enum(KNOWN_SITE_IDS as [string, ...string[]]))
+  .max(KNOWN_SITE_IDS.length)
+  .refine((ids) => new Set(ids).size === ids.length, { message: 'duplicate site' })
+
+/** Spec 011 FR-005 */
+export const SiteQuerySchema = z.string().trim().max(SITE_LIMITS.query)
+
 /** Spec 010 FR-008: a whole number of days, 3–90 */
 export const StaleAfterDaysSchema = z.number().int().min(STALE_DAYS.min).max(STALE_DAYS.max)
 

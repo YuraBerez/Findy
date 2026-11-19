@@ -58,7 +58,8 @@
     "errors": {
       "required": "Fill in this field.",
       "tooLong": "Use {{max}} characters or fewer.",
-      "invalidUrl": "Enter a link that starts with http:// or https://."
+      "invalidUrl": "Enter a link that starts with http:// or https://.",
+      "queryPlacement": "Put {query} once, after the site address (for example …?q={query})."
     },
     "vacancy": {
       "hint": "Paste a vacancy link: Findy fills in the job title and the company.",
@@ -189,7 +190,8 @@
   "views": {
     "label": "Views",
     "board": "Board",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "sites": "Sites"
   },
   "analytics": {
     "showTable": "Show as table",
@@ -322,6 +324,43 @@
       "hint": "{{min}}–{{max}}",
       "save": "Save",
       "error": "Enter a whole number from {{min}} to {{max}}."
+    }
+  },
+  "sites": {
+    "query": {
+      "label": "Search query",
+      "hint": "For every site",
+      "placeholder": "For example, QA Engineer"
+    },
+    "groups": {
+      "ukraine": "Ukraine",
+      "international": "International",
+      "remote": "Remote",
+      "europe": "Europe",
+      "mine": "My sites"
+    },
+    "actions": "Actions for {{name}}",
+    "hide": "Hide",
+    "show": "Show",
+    "showSite": "Show {{name}}",
+    "edit": "Edit",
+    "delete": "Delete",
+    "add": "Add site",
+    "limit": "At most {{max}} sites of your own",
+    "hidden_one": "Show hidden sites ({{count}})",
+    "hidden_other": "Show hidden sites ({{count}})",
+    "dialog": {
+      "addTitle": "New site",
+      "editTitle": "Edit site",
+      "name": "Name",
+      "url": "Address",
+      "urlHint": "Put {query} where your search goes",
+      "save": "Save"
+    },
+    "deleteConfirm": {
+      "title": "Delete this site?",
+      "message": "“{{name}}” will be removed from My sites.",
+      "confirm": "Delete"
     }
   }
 }

@@ -58,6 +58,28 @@ Version 2 (`002-card-color`, spec 007) adds `applications.color` with `ALTER TAB
 ADD COLUMN`; rows from version 1 get `NULL` (no colour). In version 2 databases the
 column is the last one of `applications`.
 
+Version 3 (`003-job-sites`, spec 011) adds two tables:
+
+```sql
+CREATE TABLE job_sites (
+  id         TEXT PRIMARY KEY,
+  name       TEXT NOT NULL CHECK (length(name) BETWEEN 1 AND 60),
+  url        TEXT NOT NULL CHECK (length(url) BETWEEN 1 AND 2048),
+  position   INTEGER NOT NULL,
+  created_at TEXT NOT NULL
+);
+CREATE TABLE site_icons (
+  host       TEXT PRIMARY KEY,
+  mime       TEXT,
+  data       BLOB,
+  status     TEXT NOT NULL CHECK (status IN ('ok', 'failed')),
+  checked_at TEXT NOT NULL
+);
+```
+
+A board reset does not touch them. Findy 0.3.0 cannot open a version 3 database (it
+shows the "newer version" error and leaves the file as it is).
+
 Column ↔ entity mapping is in [data-model.md](../data-model.md)
 (`position` ↔ `order`, snake_case ↔ camelCase).
 

@@ -27,3 +27,10 @@
   align-items: center;
   gap: var(--space-2);
 }
+
+/* Narrow window (Ukrainian at 800 px, three tabs): the logo stays; the window title has the name */
+@media (max-width: 1000px) {
+  .name {
+    display: none;
+  }
+}

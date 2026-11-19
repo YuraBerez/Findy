@@ -75,7 +75,29 @@ column does not add history.
 | `hiddenStages` | `StageId[]` | `[]` | Spec 002: unique, never all stages; stored as a JSON array in the `settings` row `hiddenStages` |
 | `autoUpdateCheck` | `boolean` | `false` | Spec 006: check for a newer version at start, at most once per 24 h; row `autoUpdateCheck` (`'true'`/`'false'`). The row `lastUpdateCheckAt` (timestamp of the last check) is internal to main and not part of `Settings` |
 | `staleAfterDays` | `number` | `14` | Spec 010: an application is stale after more than this many whole days in its stage (not Offer or Rejected); a whole number 3–90 in the row `staleAfterDays`; an invalid value reads as 14. "Stale" itself is computed, never stored |
+| `hiddenSites` | `KnownSiteId[]` | `[]` | Spec 011: known job sites the user hid; a JSON array in the row `hiddenSites`; ids that a later version does not know are dropped |
+| `siteQuery` | `string` | `''` | Spec 011 FR-005: the search query of the Sites tab, trimmed, ≤ 200 characters; row `siteQuery` |
 | `analytics` | `{ period: '7d' \| '30d' \| '90d' \| 'all'; grouping: 'day' \| 'week' \| 'month' }` | `{ period: '30d', grouping: 'day' }` | Spec 005: the view of the analytics screen; a JSON object in the `settings` row `analytics`; an invalid value reads as the default |
+
+## CustomSite (spec 011)
+
+A job site the user added. The known sites are a constant list in code
+(`domain/sites/known.ts`), not data.
+
+| Field | Type | Required | Rules |
+|-------|------|----------|-------|
+| `id` | UUID | yes | |
+| `name` | string | yes | trimmed, 1–60 characters |
+| `url` | string | yes | `http`/`https`, ≤ 2 048; may hold `{query}` once, not in the host |
+
+At most 50; listed in the order they were added (table `job_sites`, `position`).
+
+## SiteIcon (spec 011)
+
+The saved icon of a site host (table `site_icons`), main only; the renderer gets
+`data:` URLs. `status` is `ok` (with `mime` and `data`: PNG, ICO, JPEG, GIF or WebP,
+≤ 100 KB) or `failed` (tried again after 24 h); `checked_at` is the last try. A board
+reset touches neither table.
 
 ## Invariants
 

@@ -1,0 +1,39 @@
+.view {
+  height: 100%;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.query {
+  max-width: 420px;
+}
+
+.group {
+  margin-top: var(--space-4);
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.title {
+  margin: 0 0 var(--space-2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.heading .title {
+  margin: 0;
+}
+
+/* NFR-002: tiles wrap; at 800 px they still fit */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}

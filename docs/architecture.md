@@ -271,6 +271,22 @@ build/                   # icons, entitlements for electron-builder
 - e2e serves test pages from a local server (`VacancyServer`) and pastes through the
   system clipboard, one worker at a time (`withClipboard`).
 
+### D-13 — Job sites: data in the domain, icons by host in the database (spec 011)
+
+- The known sites are a constant list (`domain/sites/known.ts`): a jobs page and an
+  optional search template with `{query}` and an encoding (`component`, `plus`,
+  `slug`). One function builds every address; a tile opens it through `openExternal`.
+- The user's sites are the table `job_sites` (migration 003); hidden known sites and the
+  query are settings rows.
+- Icons (constitution §II.8) are downloaded by main (`main/siteIcons.ts`) with the
+  shared `fetchLimited` (`main/http.ts`, also used by spec 009): the declared icon of the
+  home page, else `/favicon.ico`; same site only; type from the bytes (no SVG);
+  100 KB, 5 s; a failed host is tried again after 24 h. Saved by host in `site_icons`
+  and sent to the renderer as `data:` URLs (`getSiteIcons`), so the CSP does not
+  change and `AppState` stays small.
+- e2e sets `FINDY_SITE_ICONS_URL` to a local server, or to a closed port, so tests
+  never reach the sites.
+
 ## Cross-cutting docs
 
 - [constitution.md](constitution.md) — project principles

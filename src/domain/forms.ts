@@ -13,7 +13,11 @@ export interface ApplicationFormValues {
 }
 
 export type FieldError =
-  { code: 'required' } | { code: 'tooLong'; max: number } | { code: 'invalidUrl' }
+  | { code: 'required' }
+  | { code: 'tooLong'; max: number }
+  | { code: 'invalidUrl' }
+  /** Spec 011 FR-010: `{query}` twice, or in the host */
+  | { code: 'queryPlacement' }
 
 export type FormErrors = Partial<Record<'title' | 'company' | 'url', FieldError>>
 

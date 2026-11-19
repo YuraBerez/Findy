@@ -2,6 +2,7 @@
 import type { AnalyticsView } from './analytics'
 import type { CardColor } from './colors'
 import type { StageId } from './stages'
+import type { KnownSiteId } from './sites'
 
 export type Language = 'en' | 'uk'
 export type Theme = 'system' | 'light' | 'dark'
@@ -46,4 +47,8 @@ export interface Settings {
   autoUpdateCheck: boolean
   /** Spec 010: an application is stale after this many days in its stage (3–90, default 14) */
   staleAfterDays: number
+  /** Spec 011: known job sites the user hid */
+  hiddenSites: KnownSiteId[]
+  /** Spec 011 FR-005: the search query of the Sites tab (≤ 200 characters) */
+  siteQuery: string
 }

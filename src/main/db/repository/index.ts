@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { Database } from 'better-sqlite3'
 import type { AnalyticsView } from '../../../domain/analytics'
 import type { CardColor } from '../../../domain/colors'
+import type { CustomSite, KnownSiteId, SiteFormValues } from '../../../domain/sites'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
 import type { ImportedApplication } from '../../../domain/transfer'
@@ -9,8 +10,10 @@ import type { Application, Language, Note, Settings, Theme } from '../../../doma
 import { ApplicationStore } from './applications'
 import { NoteStore } from './notes'
 import { SettingsStore } from './settings'
+import { SitesStore, type SiteIcon } from './sites'
 
-export { HiddenStageError, NotFoundError } from './errors'
+export { HiddenStageError, NotFoundError, SiteLimitError } from './errors'
+export type { SiteIcon } from './sites'
 
 export interface RepositoryOptions {
   now?: () => string
@@ -28,6 +31,7 @@ export class Repository {
   private readonly applications: ApplicationStore
   private readonly notes: NoteStore
   private readonly settings: SettingsStore
+  private readonly sites: SitesStore
 
   constructor(db: Database, options: RepositoryOptions = {}) {
     const ctx = {
@@ -38,6 +42,7 @@ export class Repository {
     this.settings = new SettingsStore(ctx)
     this.applications = new ApplicationStore(ctx, this.settings)
     this.notes = new NoteStore(ctx, this.applications)
+    this.sites = new SitesStore(ctx)
   }
 
   // ── Applications ─────────────────────────────────────────────────────────
@@ -91,6 +96,44 @@ export class Repository {
 
   deleteNote(applicationId: string, noteId: string): void {
     this.notes.delete(applicationId, noteId)
+  }
+
+  // ── Job sites (spec 011) ─────────────────────────────────────────────────
+
+  listSites(): CustomSite[] {
+    return this.sites.list()
+  }
+
+  addSite(site: SiteFormValues): CustomSite {
+    return this.sites.add(site)
+  }
+
+  updateSite(id: string, site: SiteFormValues): CustomSite {
+    return this.sites.update(id, site)
+  }
+
+  deleteSite(id: string): void {
+    this.sites.delete(id)
+  }
+
+  siteIcons(): SiteIcon[] {
+    return this.sites.icons()
+  }
+
+  saveSiteIcon(host: string, mime: string, data: Uint8Array): void {
+    this.sites.saveIcon(host, mime, data)
+  }
+
+  markSiteIconFailed(host: string): void {
+    this.sites.markIconFailed(host)
+  }
+
+  setHiddenSites(ids: KnownSiteId[]): Settings {
+    return this.settings.setHiddenSites(ids)
+  }
+
+  setSiteQuery(query: string): Settings {
+    return this.settings.setSiteQuery(query)
   }
 
   // ── Settings ─────────────────────────────────────────────────────────────
