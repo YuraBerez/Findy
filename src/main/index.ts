@@ -2,13 +2,14 @@ import { randomUUID } from 'node:crypto'
 import { spawn } from 'node:child_process'
 import { readFile, stat, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { app, BrowserWindow, dialog, ipcMain, nativeTheme, net, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, nativeTheme, net, session, shell } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
 import { resolveLanguage } from '../domain/language'
 import { createHandlers } from './ipc'
 import { userDataDir } from './paths'
+import { readVacancyPage } from './vacancy'
 import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
@@ -132,6 +133,9 @@ function start(): void {
     },
     applyLanguage: applyMenu,
     checkForUpdates,
+    // Spec 009 plan D-2: in memory (no `persist:`), so no cookies or logins of other sessions
+    readVacancy: (url) =>
+      readVacancyPage((input, init) => session.fromPartition('vacancy').fetch(input, init), url),
     mcpConnection: () =>
       // An AppImage is mounted at a new path on every start: point at the file
       // itself, which forwards `--mcp` to Node mode

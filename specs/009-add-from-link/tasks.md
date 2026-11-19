@@ -16,8 +16,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — Main
 
-- [ ] T010 `main/vacancy.ts` `readVacancyPage`: in-memory session, no cookies, manual redirects (≤ 5, http/https), HTML types only, 10 s, 2 MB, decode; unit tests with fake responses (NFR-001, NFR-002, FR-006)
-- [ ] T011 IPC `readVacancy` (zod, contract types, preload); tests: valid, invalid link → VALIDATION, failure → `null` (FR-001, FR-006)
+- [x] T010 `main/vacancy.ts` `readVacancyPage`: in-memory session, no cookies, manual redirects (≤ 5, http/https), HTML types only, 10 s, 2 MB, decode; unit tests with fake responses (NFR-001, NFR-002, FR-006)
+- [x] T011 IPC `readVacancy` (zod, contract types, preload); tests: valid, invalid link → VALIDATION, failure → `null` (FR-001, FR-006)
 
 ## Phase 3 — UI
 

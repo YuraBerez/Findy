@@ -3,10 +3,12 @@ import type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView } from '../domai
 import type { CardColor } from '../domain/colors'
 import type { StageId } from '../domain/stages'
 import type { ImportFatal, ImportRowError } from '../domain/transfer'
+import type { VacancyData } from '../domain/vacancy'
 import type { Application, Language, Note, Settings, StageChange, Theme } from '../domain/types'
 
 export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView, CardColor }
 export type { ImportFatal, ImportRowError }
+export type { VacancyData }
 export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
 export const CHANNEL_PREFIX = 'findy:'
@@ -31,6 +33,7 @@ export const IPC_METHODS = [
   'setAnalyticsView',
   'setAutoUpdateCheck',
   'checkForUpdates',
+  'readVacancy',
   'setMcpEnabled',
   'getMcpConnection',
   'getSystemLocale',
@@ -187,6 +190,11 @@ export interface FindyApi {
    * to null when the automatic check is off, not due, or failed.
    */
   checkForUpdates(trigger: UpdateTrigger): Promise<UpdateCheckResult | null>
+  /**
+   * Spec 009: job title and company of a pasted vacancy page; null when the page cannot
+   * be read or has neither (never rejects for that). VALIDATION for a non-http(s) link.
+   */
+  readVacancy(url: string): Promise<VacancyData | null>
   /** Spec 006 FR-002: check for updates at start */
   setAutoUpdateCheck(enabled: boolean): Promise<AppState>
   /** Spec 004: allow AI assistants (MCP) to use the board */
