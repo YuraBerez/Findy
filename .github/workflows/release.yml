@@ -30,6 +30,11 @@ jobs:
   build:
     name: Installers (${{ matrix.os }})
     needs: draft
+    # Spec 012 FR-010: build provenance attestations for every installer
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -68,7 +73,38 @@ jobs:
           # Names a user understands (.github/release-downloads.md links to them)
           for dmg in dist/*-arm64.dmg; do mv "$dmg" "${dmg%-arm64.dmg}-macOS-Apple-Silicon.dmg"; done
           for dmg in dist/*-x64.dmg; do mv "$dmg" "${dmg%-x64.dmg}-macOS-Intel.dmg"; done
-          files=(dist/*.dmg dist/*.exe dist/*.AppImage dist/*.deb)
+          # Spec 012 FR-003: the portable archive for Scoop (win.artifactName says "Setup")
+          for zip in dist/*-Setup-*.zip; do mv "$zip" "dist/Findy-${TAG#v}-Windows-portable.zip"; done
+          files=(dist/*.dmg dist/*.exe dist/*.zip dist/*.AppImage dist/*.deb)
           [ ${#files[@]} -gt 0 ] || { echo "No installers in dist/"; ls dist; exit 1; }
           printf '%s\n' "${files[@]}"
           gh release upload "$TAG" "${files[@]}" --clobber
+      - name: Attest the build provenance (spec 012 FR-010)
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            dist/*.dmg
+            dist/*.exe
+            dist/*.zip
+            dist/*.AppImage
+            dist/*.deb
+
+  checksums:
+    name: SHA256SUMS.txt
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Spec 012 FR-009: one file with the sum of every download, for users and for
+      # the Homebrew tap and the Scoop bucket (they check their downloads against it)
+      - name: Sum the release files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir files && cd files
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern '*' --skip-existing
+          rm -f SHA256SUMS.txt
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          [ "$(wc -l < SHA256SUMS.txt)" -ge 6 ] || { echo "Expected at least 6 files"; exit 1; }
+          gh release upload "$TAG" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber

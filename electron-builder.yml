@@ -27,6 +27,9 @@ win:
   target:
     - target: nsis
       arch: [x64]
+    # Spec 012 FR-003: a portable archive for Scoop; renamed in release.yml
+    - target: zip
+      arch: [x64]
   artifactName: ${productName}-Setup-${version}.${ext}
 nsis:
   oneClick: false
