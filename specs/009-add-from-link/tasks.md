@@ -11,8 +11,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Domain
 
-- [ ] T001 [P] `domain/vacancy/extract.ts`: JSON-LD `JobPosting` (`@graph`, arrays, organisation as object or string), Open Graph, `<title>`; entities, whitespace, cut to 200; unit tests (FR-004, edge cases)
-- [ ] T002 [P] `domain/vacancy/charset.ts`: charset from `Content-Type` and `<meta>`; unit tests (edge cases)
+- [x] T001 [P] `domain/vacancy/extract.ts`: JSON-LD `JobPosting` (`@graph`, arrays, organisation as object or string), Open Graph, `<title>`; entities, whitespace, cut to 200; unit tests (FR-004, edge cases)
+- [x] T002 [P] `domain/vacancy/charset.ts`: charset from `Content-Type` and `<meta>`; unit tests (edge cases)
 
 ## Phase 2 — Main
 
