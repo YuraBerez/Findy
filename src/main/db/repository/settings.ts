@@ -1,6 +1,7 @@
 import { DEFAULT_ANALYTICS_VIEW, type AnalyticsView } from '../../../domain/analytics'
 import { AnalyticsViewSchema, HiddenStagesSchema } from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
+import { isStaleAfterDays, STALE_DAYS } from '../../../domain/stale'
 import type { Language, Settings, Theme } from '../../../domain/types'
 import { HiddenStageError } from './errors'
 import type { StoreContext } from './rows'
@@ -24,6 +25,7 @@ export class SettingsStore {
       mcpEnabled: map.get('mcpEnabled') === 'true',
       analytics: parseAnalyticsView(map.get('analytics')),
       autoUpdateCheck: map.get('autoUpdateCheck') === 'true',
+      staleAfterDays: parseStaleAfterDays(map.get('staleAfterDays')),
     }
   }
 
@@ -49,6 +51,10 @@ export class SettingsStore {
 
   setAutoUpdateCheck(enabled: boolean): Settings {
     return this.set('autoUpdateCheck', String(enabled))
+  }
+
+  setStaleAfterDays(days: number): Settings {
+    return this.set('staleAfterDays', String(days))
   }
 
   /** Spec 006 FR-004: when the last update check ran; not part of Settings */
@@ -98,4 +104,10 @@ function parseAnalyticsView(raw: string | undefined): AnalyticsView {
   } catch {
     return DEFAULT_ANALYTICS_VIEW
   }
+}
+
+/** Spec 010 FR-009: a missing or damaged value reads as the default */
+function parseStaleAfterDays(value: string | undefined): number {
+  const days = Number(value)
+  return value !== undefined && isStaleAfterDays(days) ? days : STALE_DAYS.default
 }

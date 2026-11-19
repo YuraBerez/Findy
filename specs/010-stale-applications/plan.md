@@ -44,7 +44,7 @@ for N. One new IPC call, `setStaleAfterDays`.
 | FR-004 | `renderer/hooks/useNow.ts`: the current time, updated once an hour; `App` passes it to the board and the toolbar |
 | FR-003, NFR-001 | `CardContent`: a mark (clock icon + "No movement for {count} days") inside the card handle, so it is in the accessible name; `BoardActions` gets `staleDays(application)` |
 | FR-005, FR-007, FR-010 | `features/stale/StaleToggle`: `@ui/Button` with `pressed`; count of stale applications in visible columns; `App` state, not saved; turns itself off when the count is 0 |
-| FR-006 | `domain/search.ts`: `filterApplications(applications, { query, onlyStale })`; `Board` maps drop positions when any filter is on |
+| FR-006 | `domain/search.ts`: `filterApplications(applications, query, also)` with the stale check as `also`; `Board` maps drop positions when any filter is on |
 | FR-008 | `features/stale/StaleAfterDialog` (number field 3–90, validation, Save / Cancel) and the menu entry from `useStaleMenu` |
 | NFR-002 | e2e `performance.spec.ts`: toggle on and off with 1 000 applications |
 

@@ -268,6 +268,7 @@ describe('settings', () => {
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
+      staleAfterDays: 14,
     })
   })
 
@@ -281,6 +282,7 @@ describe('settings', () => {
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
+      staleAfterDays: 14,
     })
     expect(repo.setTheme('light').theme).toBe('light')
   })
@@ -294,6 +296,7 @@ describe('settings', () => {
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
+      staleAfterDays: 14,
     })
   })
 })
@@ -327,6 +330,25 @@ describe('update check settings (spec 006)', () => {
   })
 })
 
+describe('stale settings (spec 010)', () => {
+  it('stores N; 14 by default (FR-008, FR-009)', () => {
+    expect(repo.getSettings().staleAfterDays).toBe(14)
+    expect(repo.setStaleAfterDays(7).staleAfterDays).toBe(7)
+    expect(repo.getSettings().staleAfterDays).toBe(7)
+  })
+
+  it.each(['abc', '2', '91', '7.5', ''])('reads a damaged value %j as 14', (value) => {
+    db.prepare("INSERT INTO settings VALUES ('staleAfterDays', ?)").run(value)
+    expect(repo.getSettings().staleAfterDays).toBe(14)
+  })
+
+  it('keeps N after a reset of the board (FR-009)', () => {
+    repo.setStaleAfterDays(30)
+    repo.resetBoard()
+    expect(repo.getSettings().staleAfterDays).toBe(30)
+  })
+})
+
 describe('transactions (FR-052)', () => {
   it('rolls back the whole create when a constraint fails', () => {
     repo.createApplication(input('A'))
@@ -356,6 +378,7 @@ describe('resetBoard (FR-093)', () => {
       mcpEnabled: false,
       analytics: { period: '30d', grouping: 'day' },
       autoUpdateCheck: false,
+      staleAfterDays: 14,
     })
   })
 })

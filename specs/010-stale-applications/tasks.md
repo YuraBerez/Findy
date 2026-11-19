@@ -7,9 +7,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Domain and storage
 
-- [ ] T001 [P] `domain/stale.ts`: `staleDays`, `STALE_DAYS`, final stages; unit tests at N, N + 1, final stages, clock back, after a move (FR-001, FR-002)
-- [ ] T002 [P] `domain/search.ts`: `filterApplications` with `onlyStale`; unit tests with the search (FR-006)
-- [ ] T003 `Settings.staleAfterDays`: store parse and set, `StaleAfterDaysSchema`, IPC `setStaleAfterDays`; tests: default, invalid row, range, VALIDATION, reset keeps it (FR-008, FR-009)
+- [x] T001 [P] `domain/stale.ts`: `staleDays`, `STALE_DAYS`, final stages; unit tests at N, N + 1, final stages, clock back, after a move (FR-001, FR-002)
+- [x] T002 [P] `domain/search.ts`: `filterApplications` with `onlyStale`; unit tests with the search (FR-006)
+- [x] T003 `Settings.staleAfterDays`: store parse and set, `StaleAfterDaysSchema`, IPC `setStaleAfterDays`; tests: default, invalid row, range, VALIDATION, reset keeps it (FR-008, FR-009)
 
 ## Phase 2 — UI
 
