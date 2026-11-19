@@ -58,7 +58,8 @@
     "errors": {
       "required": "Fill in this field.",
       "tooLong": "Use {{max}} characters or fewer.",
-      "invalidUrl": "Enter a link that starts with http:// or https://."
+      "invalidUrl": "Enter a link that starts with http:// or https://.",
+      "queryPlacement": "Put {query} once, after the site address (for example …?q={query})."
     },
     "vacancy": {
       "hint": "Paste a vacancy link: Findy fills in the job title and the company.",

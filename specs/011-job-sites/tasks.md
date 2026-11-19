@@ -11,9 +11,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Domain
 
-- [ ] T001 [P] `domain/sites/known.ts` and `url.ts`: the 14 sites, groups, `siteUrl` with the three encodings; unit tests for every site with an empty query, spaces, Ukrainian letters, `&`, `#`, `/` (FR-002, FR-006)
-- [ ] T002 [P] `domain/sites/validate.ts` and the zod schemas: name, address, `{query}` rules, 50 sites; unit tests (FR-010, FR-013)
-- [ ] T003 [P] `domain/sites/icons.ts`: declared icon from HTML, image type from bytes; unit tests (FR-022)
+- [x] T001 [P] `domain/sites/known.ts` and `url.ts`: the 14 sites, groups, `siteUrl` with the three encodings; unit tests for every site with an empty query, spaces, Ukrainian letters, `&`, `#`, `/` (FR-002, FR-006)
+- [x] T002 [P] `domain/sites/validate.ts` and the zod schemas: name, address, `{query}` rules, 50 sites; unit tests (FR-010, FR-013)
+- [x] T003 [P] `domain/sites/icons.ts`: declared icon from HTML, image type from bytes; unit tests (FR-022)
 
 ## Phase 2 — Main
 
