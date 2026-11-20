@@ -6,7 +6,9 @@
 
 [English](README.md)
 
-> **Статус: 0.2.0, з аналітикою та перевіркою оновлень.** Завантажити можна на сторінці
+[![Підтримати Findy на Ko-fi](https://img.shields.io/badge/%D0%9F%D1%96%D0%B4%D1%82%D1%80%D0%B8%D0%BC%D0%B0%D1%82%D0%B8%20Findy%20%D0%BD%D0%B0-Ko--fi-0A66C2?logo=ko-fi&logoColor=white)](https://ko-fi.com/findyapp)
+
+> **Статус: 0.4.1.** Завантажити можна на сторінці
 > [Releases](https://github.com/YuraBerez/findy/releases). Будемо раді відгукам: кнопка
 > *Знайшли проблему?* у застосунку.
 
