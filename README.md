@@ -220,6 +220,14 @@ It is a standard SQLite database: back it up to keep your board, or open it
 with any SQLite tool. To get your applications as a table, use **⋯ → Export to CSV…**. The schema is documented in
 [docs/contracts/database.md](docs/contracts/database.md).
 
+## Support Findy
+
+Findy is free and stays free. The macOS builds are not notarised yet, because that
+needs an Apple Developer membership ($99 a year); until then, macOS asks once on the
+first start. If Findy helps your job search, you can
+[sponsor it on GitHub](https://github.com/sponsors/YuraBerez): the first goal is that
+membership, so Findy opens on a Mac without a warning.
+
 ## Contributing
 
 Contributions are welcome: code, translations, bug reports, ideas.
