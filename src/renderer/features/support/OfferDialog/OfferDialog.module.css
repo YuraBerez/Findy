@@ -1,0 +1,4 @@
+/* "Don't ask again" is the quiet choice, so it stands apart on the left */
+.dontAsk {
+  margin-right: auto;
+}

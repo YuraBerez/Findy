@@ -117,6 +117,12 @@ export class BoardScreen extends BaseComponent {
     await expect(this.menu).toBeVisible()
   }
 
+  /** Spec 013 FR-007: app menu → Support Findy… */
+  async supportFindy(): Promise<void> {
+    await this.openAppMenu()
+    await this.appMenuItem(/^(Support Findy…|Підтримати Findy…)$/).click()
+  }
+
   // ── Spec 010: stale applications ───────────────────────────────────────
 
   /** FR-003: the mark is text in the card's accessible name, or there is none */
@@ -496,6 +502,11 @@ export class BoardScreen extends BaseComponent {
 
   async verifyNoEmptyState(): Promise<void> {
     await expect(this.emptyState).toBeHidden()
+  }
+
+  /** The card is in that column, wherever a drop put it */
+  async verifyCardsInclude(stage: StageId, title: string): Promise<void> {
+    await expect(this.card(title, this.column(stage))).toHaveCount(1)
   }
 
   async verifyCards(stage: StageId, titles: string[]): Promise<void> {

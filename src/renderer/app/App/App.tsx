@@ -10,10 +10,12 @@ import { ReportIssueButton } from '../../features/feedback'
 import { UpdateDialog, useUpdateCheck } from '../../features/updates'
 import { ColumnsDialog } from '../../features/settings'
 import { StaleAfterDialog } from '../../features/stale'
+import { OfferDialog } from '../../features/support'
 import { useNow } from '../../hooks/useNow'
 import { ImportDialog } from '../../features/transfer'
 import { StorageError } from '../../features/storage'
 import { SitesView } from '../../features/sites'
+import { SUPPORT_URL } from '@shared/project'
 import { Toolbar } from '../Toolbar'
 import { useNotifications } from '../notifications'
 import { useAppState } from '../useAppState'
@@ -22,7 +24,10 @@ import styles from './App.module.css'
 
 export function App({ initialState }: { initialState: AppState }) {
   const { notifyError, notify } = useNotifications()
-  const { state, siteIcons, storageReady, actions } = useAppState(initialState, notifyError)
+  const { state, siteIcons, storageReady, offerAsked, actions } = useAppState(
+    initialState,
+    notifyError,
+  )
   const [adding, setAdding] = useState(false)
   const [openId, setOpenId] = useState<string | null>(null)
   const [resetting, setResetting] = useState(false)
@@ -87,6 +92,7 @@ export function App({ initialState }: { initialState: AppState }) {
         query={query}
         onQueryChange={setQuery}
         onStaleAfter={() => setEditingStale(true)}
+        onSupport={() => void actions.openLink(SUPPORT_URL)}
         view={view}
         onViewChange={setView}
         autoUpdateCheck={state.settings.autoUpdateCheck}
@@ -223,7 +229,15 @@ export function App({ initialState }: { initialState: AppState }) {
           onClose={() => setImporting(null)}
         />
       )}
-      {updates.result && !dialogOpen && (
+      {offerAsked && !dialogOpen && (
+        // Spec 013: after a move to Offer; waits for the details panel (plan D-3)
+        <OfferDialog
+          onAnswer={actions.answerOfferQuestion}
+          onOpenLink={(url) => void actions.openLink(url)}
+          onClose={actions.closeOfferQuestion}
+        />
+      )}
+      {updates.result && !dialogOpen && !offerAsked && (
         <UpdateDialog
           result={updates.result}
           onClose={updates.dismiss}

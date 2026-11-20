@@ -13,9 +13,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — UI
 
-- [ ] T010 `useAppState`: open the dialog after a confirmed move to Offer; wait for the details panel (FR-001, plan D-3)
-- [ ] T011 `features/support/OfferDialog`: three steps, links, Esc = Not now, focus; en/uk (FR-003, FR-008, FR-009)
-- [ ] T012 Toolbar ⋯ menu: **Support Findy…** (FR-007)
+- [x] T010 `useAppState`: open the dialog after a confirmed move to Offer; wait for the details panel (FR-001, plan D-3)
+- [x] T011 `features/support/OfferDialog`: three steps, links, Esc = Not now, focus; en/uk (FR-003, FR-008, FR-009)
+- [x] T012 Toolbar ⋯ menu: **Support Findy…** (FR-007)
 
 ## Phase 3 — Verification and docs
 
