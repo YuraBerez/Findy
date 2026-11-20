@@ -51,3 +51,4 @@ Rules:
 | 010 | [Stale applications](010-stale-applications/spec.md) | Implemented (0.4.0) |
 | 011 | [Job sites](011-job-sites/spec.md) | Implemented (0.4.0) |
 | 012 | [Install with Homebrew and Scoop; verifiable releases](012-package-managers/spec.md) | Implemented (0.4.1) |
+| 013 | [Congratulate on an offer and ask for support](013-offer-thanks/spec.md) | Approved |

@@ -64,6 +64,7 @@ describe('IPC handlers', () => {
         staleAfterDays: 14,
         hiddenSites: [],
         siteQuery: '',
+        offerQuestionAnswered: false,
       },
       applications: [],
       sites: [],
@@ -110,6 +111,7 @@ describe('IPC handlers', () => {
       staleAfterDays: 14,
       hiddenSites: [],
       siteQuery: '',
+      offerQuestionAnswered: false,
     })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
@@ -360,6 +362,24 @@ describe('setStaleAfterDays (spec 010 FR-008)', () => {
   })
 })
 
+describe('answerOfferQuestion (spec 013 FR-004)', () => {
+  it('remembers the answer and returns the state', async () => {
+    const ctx = setup()
+    expect((await state(ctx.handlers.getState())).settings.offerQuestionAnswered).toBe(false)
+    expect((await state(ctx.handlers.answerOfferQuestion())).settings.offerQuestionAnswered).toBe(
+      true,
+    )
+  })
+
+  it('rejects arguments with VALIDATION', async () => {
+    const ctx = setup()
+    expect(await ctx.handlers.answerOfferQuestion('no')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+})
+
 describe('readVacancy (spec 009)', () => {
   it('passes an http(s) link to the reader and returns its result', async () => {
     const ctx = setup()
@@ -478,6 +498,7 @@ describe('IPC handlers without storage (FR-054)', () => {
         staleAfterDays: 14,
         hiddenSites: [],
         siteQuery: '',
+        offerQuestionAnswered: false,
       },
       applications: [],
       sites: [],

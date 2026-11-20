@@ -51,7 +51,11 @@ export function Dialog({
     // The browser returns focus on dialog.close(), but this dialog is unmounted
     // instead, so return it ourselves (e.g. to the card that opened the details)
     const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    if (dialog && !dialog.open) dialog.showModal()
+    if (dialog && !dialog.open) {
+      dialog.showModal()
+      // showModal() focuses the first control; the dialog's own choice wins
+      dialog.querySelector<HTMLElement>('[data-autofocus]')?.focus()
+    }
     return () => {
       if (previous?.isConnected) previous.focus()
     }

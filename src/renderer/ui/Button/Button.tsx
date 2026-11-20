@@ -16,6 +16,9 @@ export function Button({
   return (
     <button
       type={type}
+      // React focuses an autoFocus button before a <dialog> opens, which is too early;
+      // Dialog finds it by this attribute after showModal()
+      data-autofocus={props.autoFocus || undefined}
       className={[styles.button, styles[variant], size === 'small' && styles.small, className]
         .filter(Boolean)
         .join(' ')}

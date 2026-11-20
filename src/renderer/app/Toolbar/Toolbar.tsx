@@ -23,6 +23,8 @@ interface Props {
   onQueryChange(query: string): void
   /** Spec 010 FR-008: the dialog for N */
   onStaleAfter(): void
+  /** Spec 013 FR-007 */
+  onSupport(): void
   /** Spec 005 FR-001: the board or the analytics screen */
   view: View
   onViewChange(view: View): void
@@ -47,6 +49,7 @@ export function Toolbar({
   query,
   onQueryChange,
   onStaleAfter,
+  onSupport,
   view,
   onViewChange,
   autoUpdateCheck,
@@ -124,6 +127,7 @@ export function Toolbar({
             { key: 'updates-start', separator: true },
             // A manual check works without the database; the switch needs it (FR-001)
             ...(storageReady ? updates : updates.slice(0, 1)),
+            { key: 'support', label: t('support.menuItem'), onSelect: onSupport },
             { key: 'updates-end', separator: true },
             {
               key: 'reset',

@@ -29,6 +29,7 @@ export class SettingsStore {
       staleAfterDays: parseStaleAfterDays(map.get('staleAfterDays')),
       hiddenSites: parseHiddenSites(map.get('hiddenSites')),
       siteQuery: (map.get('siteQuery') ?? '').slice(0, SITE_LIMITS.query),
+      offerQuestionAnswered: map.get('offerQuestionAnswered') === 'true',
     }
   }
 
@@ -68,6 +69,11 @@ export class SettingsStore {
 
   setStaleAfterDays(days: number): Settings {
     return this.set('staleAfterDays', String(days))
+  }
+
+  /** Spec 013 FR-004 */
+  answerOfferQuestion(): Settings {
+    return this.set('offerQuestionAnswered', 'true')
   }
 
   /** Spec 006 FR-004: when the last update check ran; not part of Settings */

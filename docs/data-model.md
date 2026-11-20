@@ -77,6 +77,7 @@ column does not add history.
 | `staleAfterDays` | `number` | `14` | Spec 010: an application is stale after more than this many whole days in its stage (not Offer or Rejected); a whole number 3–90 in the row `staleAfterDays`; an invalid value reads as 14. "Stale" itself is computed, never stored |
 | `hiddenSites` | `KnownSiteId[]` | `[]` | Spec 011: known job sites the user hid; a JSON array in the row `hiddenSites`; ids that a later version does not know are dropped |
 | `siteQuery` | `string` | `''` | Spec 011 FR-005: the search query of the Sites tab, trimmed, ≤ 200 characters; row `siteQuery` |
+| `offerQuestionAnswered` | `boolean` | `false` | Spec 013 FR-004: the question after an offer has a final answer and is never asked again; row `offerQuestionAnswered` (`'true'`); another value reads as `false`. The answer itself is not stored |
 | `analytics` | `{ period: '7d' \| '30d' \| '90d' \| 'all'; grouping: 'day' \| 'week' \| 'month' }` | `{ period: '30d', grouping: 'day' }` | Spec 005: the view of the analytics screen; a JSON object in the `settings` row `analytics`; an invalid value reads as the default |
 
 ## CustomSite (spec 011)

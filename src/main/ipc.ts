@@ -97,6 +97,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       staleAfterDays: STALE_DAYS.default,
       hiddenSites: [],
       siteQuery: '',
+      offerQuestionAnswered: false,
     },
     applications: deps.repository?.listApplications() ?? [],
     sites: deps.repository?.listSites() ?? [],
@@ -216,6 +217,10 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     setStaleAfterDays: handle(z.tuple([StaleAfterDaysSchema]), (days) => {
       repo().setStaleAfterDays(days)
+      return state()
+    }),
+    answerOfferQuestion: handle(none, () => {
+      repo().answerOfferQuestion()
       return state()
     }),
     setAutoUpdateCheck: handle(z.tuple([z.boolean()]), (enabled) => {

@@ -51,4 +51,6 @@ export interface Settings {
   hiddenSites: KnownSiteId[]
   /** Spec 011 FR-005: the search query of the Sites tab (≤ 200 characters) */
   siteQuery: string
+  /** Spec 013 FR-004: the offer question has a final answer; it is never asked again */
+  offerQuestionAnswered: boolean
 }

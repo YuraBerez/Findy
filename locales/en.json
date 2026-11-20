@@ -164,6 +164,7 @@
     "zoom": "Zoom",
     "close": "Close",
     "projectPage": "Findy on GitHub",
+    "support": "Support Findy…",
     "copyright": "Open-source, MIT licence"
   },
   "search": {
@@ -362,5 +363,21 @@
       "message": "“{{name}}” will be removed from My sites.",
       "confirm": "Delete"
     }
+  },
+  "support": {
+    "menuItem": "Support Findy…",
+    "offerTitle": "Congratulations on your offer!",
+    "offerQuestion": "Did Findy help with your job search?",
+    "yes": "Yes",
+    "notReally": "Not really",
+    "notNow": "Not now",
+    "dontAsk": "Don't ask again",
+    "thanksTitle": "Thank you!",
+    "thanksText": "Findy is free and open source, and it is made in spare time. If it helped you, you can support its development, or star it on GitHub so more people find it.",
+    "kofi": "Support on Ko-fi",
+    "star": "Star on GitHub",
+    "feedbackTitle": "Thanks for your answer",
+    "feedbackText": "What would make Findy more useful? Tell us on GitHub: we read every idea.",
+    "feedback": "Tell us what to improve"
   }
 }

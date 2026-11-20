@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyMove } from '@domain/board'
+import { asksAboutOffer, isMoveToOffer } from '@domain/offer'
 import type { ValidApplication } from '@domain/forms'
 import {
   errorKind,
@@ -89,19 +90,32 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
     }
   }
 
-  const moveApplication = (id: string, target: { stage: StageId; index: number }) => {
+  // Spec 013: the offer dialog is open; only moves made here set it, never MCP or an import
+  const [offerAsked, setOfferAsked] = useState(false)
+  // FR-010: one more confetti for each confirmed move to Offer
+  const [offerCount, setOfferCount] = useState(0)
+
+  const moveApplication = async (id: string, target: { stage: StageId; index: number }) => {
+    const from = state.applications.find((application) => application.id === id)?.stage
+    const answered = state.settings.offerQuestionAnswered
     // Optimistic: show the move at once, then take the saved state from main
     setState((current) => ({
       ...current,
       applications: applyMove(current.applications, id, target, new Date().toISOString()),
     }))
-    return run(() => window.findy.moveApplication(id, target))
+    const moved = await run(() => window.findy.moveApplication(id, target))
+    // FR-001: only after main saved the move
+    if (moved && from && isMoveToOffer(from, target.stage)) setOfferCount((count) => count + 1)
+    if (moved && from && asksAboutOffer(from, target.stage, answered)) setOfferAsked(true)
+    return moved
   }
 
   return {
     state,
     siteIcons,
     storageReady: state.storage.status === 'ok',
+    offerAsked,
+    offerCount,
     actions: {
       createApplication: (application: ValidApplication) =>
         run(() => window.findy.createApplication(application)),
@@ -146,6 +160,11 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         await loadSiteIcons()
         await attempt(() => window.findy.refreshSiteIcons())
       },
+
+      /** Spec 013: Not now, or the dialog is done */
+      closeOfferQuestion: () => setOfferAsked(false),
+      /** Spec 013 FR-004: a final answer; the dialog stays open for its next step */
+      answerOfferQuestion: () => run(() => window.findy.answerOfferQuestion()),
 
       /** Spec 010 FR-008 */
       setStaleAfterDays: (days: number) => run(() => window.findy.setStaleAfterDays(days)),

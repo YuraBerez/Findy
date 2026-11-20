@@ -171,6 +171,11 @@ export class Repository {
     return this.settings.setAutoUpdateCheck(enabled)
   }
 
+  /** Spec 013 FR-004 */
+  answerOfferQuestion(): Settings {
+    return this.settings.answerOfferQuestion()
+  }
+
   getLastUpdateCheck(): string | null {
     return this.settings.getLastUpdateCheck()
   }

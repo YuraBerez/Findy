@@ -21,6 +21,7 @@ import { ApplicationDetailsScreen } from '../screens/application-details.screen'
 import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { AnalyticsScreen } from '../screens/analytics.screen'
 import { ImportDialogScreen } from '../screens/import-dialog.screen'
+import { OfferDialogScreen } from '../screens/offer-dialog.screen'
 import { StaleDialogScreen } from '../screens/stale-dialog.screen'
 import { SitesScreen } from '../screens/sites.screen'
 import { UpdatesScreen } from '../screens/updates.screen'
@@ -38,6 +39,7 @@ export interface FindyPages {
   updates: UpdatesScreen
   importDialog: ImportDialogScreen
   staleDialog: StaleDialogScreen
+  offerDialog: OfferDialogScreen
   sites: SitesScreen
   dialog: ApplicationDialogScreen
   details: ApplicationDetailsScreen
@@ -152,6 +154,7 @@ function pagesFor(page: Page): FindyPages {
     updates: new UpdatesScreen(page),
     importDialog: new ImportDialogScreen(page),
     staleDialog: new StaleDialogScreen(page),
+    offerDialog: new OfferDialogScreen(page),
     sites: new SitesScreen(page),
     dialog,
     details: new ApplicationDetailsScreen(page),
