@@ -42,6 +42,11 @@ export class SitesScreen extends BaseComponent {
     await this.query.blur() // FR-005: saved when the field loses focus
   }
 
+  /** Type without leaving the field, so only the delayed save can keep the text */
+  async typeQuery(text: string): Promise<void> {
+    await this.query.fill(text)
+  }
+
   async verifyQuery(text: string): Promise<void> {
     await expect(this.query).toHaveValue(text)
   }

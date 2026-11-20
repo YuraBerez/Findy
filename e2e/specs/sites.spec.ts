@@ -36,6 +36,19 @@ test.describe('job sites (spec 011)', () => {
         await pages.analytics.openTab('Sites')
         await pages.sites.verifyQuery('QA & Тест')
       })
+      await test.step('FR-005: a query typed just before a tab change is kept', async () => {
+        const { analytics, sites } = findy.pages
+        await sites.typeQuery('QA Lead')
+        await analytics.pressShortcut(1)
+        await analytics.pressShortcut(3)
+        await sites.verifyQuery('QA Lead')
+      })
+      await test.step('FR-005: a query typed just before a restart is kept', async () => {
+        await findy.pages.sites.typeQuery('QA Manager')
+        const pages = await findy.restart()
+        await pages.analytics.openTab('Sites')
+        await pages.sites.verifyQuery('QA Manager')
+      })
     },
   )
 
