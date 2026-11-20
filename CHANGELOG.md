@@ -3,6 +3,19 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.5.0] - 2026-11-20
+
+### Congratulations on an offer
+- Move an application to **Offer** and confetti falls over the window. There is no confetti when your system is set to reduce motion.
+- The first time, Findy also asks if it helped with your job search. **Yes** shows how to support the project (Ko-fi) or star it on GitHub; **Not really** opens a page to tell us what to improve; **Not now** asks again on your next offer; **Don't ask again** ends it. Your answer stays on your computer.
+- Only moves that you make in the app count: not a CSV import and not an AI assistant.
+
+### Support Findy
+- **⋯ → Support Findy…** and **Help → Support Findy…** open the project's Ko-fi page. Findy stays free; the first goal is an Apple Developer membership, so Findy opens on a Mac without a warning.
+
+### Fixes
+- Dialogs now put the focus on their main button when they open (for example, **Download** in the update dialog).
+
 ## [0.4.1] - 2026-11-19
 
 ### Install with Homebrew and Scoop

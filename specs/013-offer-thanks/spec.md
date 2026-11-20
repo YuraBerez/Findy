@@ -1,7 +1,7 @@
 # Feature Spec: Congratulate on an offer and ask for support
 
 - **ID:** 013-offer-thanks
-- **Status:** Approved
+- **Status:** Implemented (0.5.0)
 - **Approved:** 2026-11-20 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-20
