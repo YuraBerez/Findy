@@ -51,7 +51,8 @@ As a user, I want to find how to support Findy without waiting for an offer.
 
 1. **Given** the board, **When** the user opens the **⋯** menu, **Then** it has
    **Support Findy…**, which opens the Ko-fi page in the system browser.
-2. **Given** the About dialog, **Then** it has a **Support Findy** link to the same page.
+2. **Given** the app's native Help menu, **Then** it has **Support Findy…**, which opens
+   the same page. (About is the system's own panel and cannot hold a link: plan D-2.)
 
 ## Functional requirements
 
@@ -71,8 +72,8 @@ As a user, I want to find how to support Findy without waiting for an offer.
   any other data, anywhere. Opening a page in the browser sends nothing from Findy.
 - **FR-006** All links (Ko-fi, the GitHub repository, the feedback page) MUST open in
   the system browser and come from the project's single list of addresses.
-- **FR-007** The ⋯ menu MUST have **Support Findy…**, and the About dialog a **Support
-  Findy** link, both opening the Ko-fi page.
+- **FR-007** The ⋯ menu and the native Help menu MUST have **Support Findy…**, which
+  opens the Ko-fi page.
 - **FR-008** All texts MUST be in English and Ukrainian.
 - **FR-009** The dialog MUST be keyboard accessible: focus moves into it when it opens,
   Esc means **Not now**, and focus returns to the moved card when it closes.
@@ -91,6 +92,7 @@ As a user, I want to find how to support Findy without waiting for an offer.
 - The user moves an application to Offer and back at once → the dialog is still shown
   (the move happened); the user can select **Not now**.
 - Offline → the dialog works; the browser shows its own page if there is no network.
+- The move is made in the details panel → the dialog opens when the panel closes.
 - The Offer column is hidden → a move to it from the card menu or details panel still
   counts.
 
@@ -105,7 +107,7 @@ As a user, I want to find how to support Findy without waiting for an offer.
 - **SC-001** A user who gets an offer sees the question once and reaches the Ko-fi
   page in two clicks.
 - **SC-002** A user who never gets an offer never sees a request for money, except the
-  menu item and the About link.
+  menu items.
 
 ## Decisions
 
@@ -116,7 +118,8 @@ As a user, I want to find how to support Findy without waiting for an offer.
 - **D-3** Only moves the user makes in the app count; not CSV import or MCP
   (owner, 2026-11-20).
 - **D-4** A permanent **Support Findy…** item in the ⋯ menu and a link in About
-  (owner, 2026-11-20).
+  (owner, 2026-11-20). Changed in planning: the link is in the native Help menu, because
+  About cannot hold a link (plan D-2).
 - **D-5** No constitution change: the answer stays local (§II.1–2), and the pages open
   in the system browser (§III.4).
 
