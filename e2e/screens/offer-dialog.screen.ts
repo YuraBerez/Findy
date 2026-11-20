@@ -7,10 +7,23 @@ type Link = 'Support on Ko-fi' | 'Star on GitHub' | 'Tell us what to improve'
 /** Spec 013: the dialog after a move to Offer, in English. */
 export class OfferDialogScreen extends BaseComponent {
   private readonly dialog: Locator
+  private readonly confetti: Locator
 
   constructor(page: Page) {
     super(page)
     this.dialog = page.getByTestId('offer-dialog')
+    this.confetti = page.getByTestId('confetti')
+  }
+
+  /** US-3.1: it plays, then it is gone after at most 3 s (FR-010) */
+  async verifyConfetti(): Promise<void> {
+    await expect(this.confetti).toBeVisible()
+    await expect(this.confetti).toHaveCount(0, { timeout: 5_000 })
+  }
+
+  /** FR-012 */
+  async verifyNoConfetti(): Promise<void> {
+    await expect(this.confetti).toHaveCount(0)
   }
 
   /** US-1.1, FR-009: the question, with the focus on Yes */

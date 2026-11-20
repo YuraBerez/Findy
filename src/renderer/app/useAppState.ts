@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyMove } from '@domain/board'
-import { asksAboutOffer } from '@domain/offer'
+import { asksAboutOffer, isMoveToOffer } from '@domain/offer'
 import type { ValidApplication } from '@domain/forms'
 import {
   errorKind,
@@ -92,6 +92,8 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
 
   // Spec 013: the offer dialog is open; only moves made here set it, never MCP or an import
   const [offerAsked, setOfferAsked] = useState(false)
+  // FR-010: one more confetti for each confirmed move to Offer
+  const [offerCount, setOfferCount] = useState(0)
 
   const moveApplication = async (id: string, target: { stage: StageId; index: number }) => {
     const from = state.applications.find((application) => application.id === id)?.stage
@@ -103,6 +105,7 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
     }))
     const moved = await run(() => window.findy.moveApplication(id, target))
     // FR-001: only after main saved the move
+    if (moved && from && isMoveToOffer(from, target.stage)) setOfferCount((count) => count + 1)
     if (moved && from && asksAboutOffer(from, target.stage, answered)) setOfferAsked(true)
     return moved
   }
@@ -112,6 +115,7 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
     siteIcons,
     storageReady: state.storage.status === 'ok',
     offerAsked,
+    offerCount,
     actions: {
       createApplication: (application: ValidApplication) =>
         run(() => window.findy.createApplication(application)),

@@ -46,6 +46,8 @@ test.describe('performance with 1 000 applications', { tag: '@perf' }, () => {
         await findy.pages.board.verifyColumnCount('offered', 144)
       })
       expect(results.moveMs).toBeLessThan(limit(1000))
+      // Spec 013: the first move to Offer asks if Findy helped
+      await findy.pages.offerDialog.answer('Not now')
     })
 
     await test.step('search filters 1 000 cards quickly', async () => {

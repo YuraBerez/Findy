@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { asksAboutOffer } from '../../src/domain/offer'
+import { asksAboutOffer, isMoveToOffer } from '../../src/domain/offer'
 
 describe('asksAboutOffer (spec 013 FR-001, FR-002)', () => {
   it('asks after a move from another stage to Offer', () => {
@@ -18,5 +18,13 @@ describe('asksAboutOffer (spec 013 FR-001, FR-002)', () => {
 
   it('never asks after a final answer (FR-004)', () => {
     expect(asksAboutOffer('applied', 'offered', true)).toBe(false)
+  })
+})
+
+describe('isMoveToOffer (spec 013 FR-010)', () => {
+  it('is true from another stage only', () => {
+    expect(isMoveToOffer('technical_interview', 'offered')).toBe(true)
+    expect(isMoveToOffer('offered', 'offered')).toBe(false)
+    expect(isMoveToOffer('applied', 'rejected')).toBe(false)
   })
 })

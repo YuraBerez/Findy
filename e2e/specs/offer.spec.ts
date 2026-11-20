@@ -156,6 +156,36 @@ test.describe('congratulate on an offer (spec 013)', () => {
     })
   })
 
+  test('US-3: confetti for every offer, also after an answer; none with reduced motion', async ({
+    findy,
+  }) => {
+    const { board, offerDialog } = findy.pages
+    await findy.api.seed([
+      { title: 'First', stage: 'applied' },
+      { title: 'Second', stage: 'applied' },
+      { title: 'Third', stage: 'applied' },
+    ])
+    await findy.refresh()
+
+    await test.step('3.1, 3.2: with the question; the dialog still works', async () => {
+      await board.moveWithMenu('First', 'Offer')
+      await offerDialog.verifyAsked()
+      await offerDialog.answer("Don't ask again")
+      await offerDialog.verifyConfetti()
+    })
+    await test.step('3.1: again after the answer, without a dialog', async () => {
+      await board.moveWithMenu('Second', 'Offer')
+      await offerDialog.verifyNoDialog()
+      await offerDialog.verifyConfetti()
+    })
+    await test.step('3.3: none when the system reduces motion', async () => {
+      await findy.api.reduceMotion()
+      await board.moveWithMenu('Third', 'Offer')
+      await board.verifyCards('offered', ['Third', 'Second', 'First'])
+      await offerDialog.verifyNoConfetti()
+    })
+  })
+
   test('US-2.1: app menu → Support Findy… opens Ko-fi', async ({ findy }) => {
     await findy.api.captureExternalLinks()
     await findy.pages.board.supportFindy()

@@ -55,6 +55,7 @@ interface FindyApi {
   }): Promise<AppState>;
   setAutoUpdateCheck(enabled: boolean): Promise<AppState>;  // spec 006
   setStaleAfterDays(days: number): Promise<AppState>;      // spec 010; VALIDATION unless a whole number 3–90
+  answerOfferQuestion(): Promise<AppState>;                // spec 013; the offer question is never asked again
   checkForUpdates(trigger: 'manual' | 'auto'): Promise<     // spec 006
     | { status: 'available'; version: string; currentVersion: string; url: string }
     | { status: 'latest'; currentVersion: string }

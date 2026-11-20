@@ -151,13 +151,15 @@ export class BoardScreen extends BaseComponent {
 
   /**
    * Spec 008 US-3.1: Enter opens the menu, End goes to "Reset board…" (the board must
-   * have cards), ↑ walks up past the update entries to "Import from CSV…", Enter picks it.
+   * have cards), ↑ walks up past "Support Findy…" and the update entries to "Import from
+   * CSV…", Enter picks it.
    */
   async importCsvWithKeyboard(): Promise<void> {
     await this.appMenuButton.press('Enter')
     await expect(this.menu).toBeVisible()
     const path = [
       this.appMenuItem('Reset board…'),
+      this.appMenuItem('Support Findy…'),
       this.menu.getByRole('menuitemcheckbox', { name: 'Check for updates automatically' }),
       this.appMenuItem('Check for updates…'),
     ]

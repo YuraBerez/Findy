@@ -18,7 +18,7 @@ from `src/shared/project.ts` and open through the existing `openExternal` call.
 | Item | Choice |
 |------|--------|
 | Language | TypeScript (strict) |
-| Storage | `settings` row `offerQuestionAnswered` (`'1'`); a missing or other value reads as `false` |
+| Storage | `settings` row `offerQuestionAnswered` (`'true'`); a missing or other value reads as `false` |
 | UI | React; the dialog reuses `@ui/Dialog` and `@ui/Button` |
 | Testing | Vitest (domain rule, settings store, IPC, native menu); e2e for every acceptance scenario |
 | Target platforms | Windows, macOS, Linux (no platform code) |
@@ -45,6 +45,7 @@ from `src/shared/project.ts` and open through the existing `openExternal` call.
 | FR-001, edge cases | `useAppState.moveApplication`: after a successful move, sets `offerAsk` when `asksAboutOffer` is true; one flag, so several moves give one dialog |
 | FR-003, FR-009 | `features/support/OfferDialog`: step 1 (congratulations, Yes / Not really / Not now, Don't ask again), step 2a (Ko-fi, GitHub star), step 2b (feedback) |
 | FR-006 | `shared/project.ts`: `SUPPORT_URL` (Ko-fi); `PROJECT_URL` for the star; `NEW_ISSUE_URL` for feedback |
+| FR-010…FR-012 | `features/support/Confetti`: a fixed canvas, `pointer-events: none`, `aria-hidden`; about 150 pieces in the chart colours, gravity and drift, removed after 3 s; nothing when `prefers-reduced-motion: reduce`. `useAppState` counts confirmed moves to Offer (`isMoveToOffer`), and each count restarts it |
 | FR-007 | Toolbar ⋯ menu: **Support Findy…**; native Help menu: **Support Findy…** (see D-2) |
 
 ## IPC contract change

@@ -17,7 +17,9 @@ Each task references the requirement(s) it satisfies.
 - [x] T011 `features/support/OfferDialog`: three steps, links, Esc = Not now, focus; en/uk (FR-003, FR-008, FR-009)
 - [x] T012 Toolbar ⋯ menu: **Support Findy…** (FR-007)
 
+- [x] T013 `features/support/Confetti`: a canvas over the window, no dependency, brand colours, ≤ 3 s, no pointer events, `aria-hidden`; none with reduced motion; `useAppState` counts each move to Offer (FR-010…FR-012)
+
 ## Phase 3 — Verification and docs
 
-- [ ] T020 e2e: US-1 scenarios 1–6 (drag, keyboard, details panel), CSV import and MCP do not open it, US-2; axe on the dialog in both themes; uk at 800 × 600 (SC-001, SC-002)
-- [ ] T021 Docs: data-model.md (settings row), contracts/ipc.md, contracts/database.md (settings keys)
+- [x] T020 e2e: US-3 (confetti, reduced motion); US-1 scenarios 1–6 (drag, keyboard, details panel), CSV import and MCP do not open it, US-2; axe on the dialog in both themes; uk at 800 × 600 (SC-001, SC-002)
+- [x] T021 Docs: data-model.md (settings row), contracts/ipc.md, contracts/database.md (settings keys)

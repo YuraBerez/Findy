@@ -238,6 +238,11 @@ export class FindyBackdoor {
   }
 
   /** NFR-005: e.g. the minimum window size of spec 001 */
+  /** Spec 013 FR-012: the system setting to reduce motion */
+  async reduceMotion(): Promise<void> {
+    await this.page.emulateMedia({ reducedMotion: 'reduce' })
+  }
+
   async setWindowSize(width: number, height: number): Promise<void> {
     await this.app.evaluate(
       ({ BrowserWindow }, size) =>

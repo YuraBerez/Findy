@@ -10,7 +10,7 @@ import { ReportIssueButton } from '../../features/feedback'
 import { UpdateDialog, useUpdateCheck } from '../../features/updates'
 import { ColumnsDialog } from '../../features/settings'
 import { StaleAfterDialog } from '../../features/stale'
-import { OfferDialog } from '../../features/support'
+import { Confetti, OfferDialog } from '../../features/support'
 import { useNow } from '../../hooks/useNow'
 import { ImportDialog } from '../../features/transfer'
 import { StorageError } from '../../features/storage'
@@ -24,7 +24,7 @@ import styles from './App.module.css'
 
 export function App({ initialState }: { initialState: AppState }) {
   const { notifyError, notify } = useNotifications()
-  const { state, siteIcons, storageReady, offerAsked, actions } = useAppState(
+  const { state, siteIcons, storageReady, offerAsked, offerCount, actions } = useAppState(
     initialState,
     notifyError,
   )
@@ -248,6 +248,8 @@ export function App({ initialState }: { initialState: AppState }) {
         />
       )}
       <ReportIssueButton onOpenLink={actions.openLink} />
+      {/* Spec 013 FR-010: a new key plays it again for the next offer */}
+      {offerCount > 0 && <Confetti key={offerCount} />}
     </div>
   )
 }

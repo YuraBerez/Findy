@@ -54,6 +54,19 @@ As a user, I want to find how to support Findy without waiting for an offer.
 2. **Given** the app's native Help menu, **Then** it has **Support Findy…**, which opens
    the same page. (About is the system's own panel and cannot hold a link: plan D-2.)
 
+### US-3 — Confetti for every offer (P2)
+
+As a user who got an offer, I want a short celebration, so that the moment feels good.
+
+**Acceptance scenarios**
+
+1. **Given** any move of an application to Offer in the app (FR-001, FR-002), **Then**
+   confetti falls over the window for a few seconds, also when the question was
+   answered before.
+2. **Given** the confetti, **Then** the user can keep working: it does not block a
+   click, a key or a screen reader, and the offer dialog (if any) shows at the same time.
+3. **Given** the system setting to reduce motion, **Then** there is no confetti.
+
 ## Functional requirements
 
 - **FR-001** The app MUST show the offer dialog after a move of an application to
@@ -77,6 +90,12 @@ As a user, I want to find how to support Findy without waiting for an offer.
 - **FR-008** All texts MUST be in English and Ukrainian.
 - **FR-009** The dialog MUST be keyboard accessible: focus moves into it when it opens,
   Esc means **Not now**, and focus returns to the moved card when it closes.
+- **FR-010** Each move to Offer that FR-001 and FR-002 count MUST play confetti for at
+  most 3 seconds, whatever the answer to the question is (US-3).
+- **FR-011** The confetti MUST NOT take clicks, keys or focus and MUST be hidden from
+  assistive technology.
+- **FR-012** With the system setting to reduce motion, the app MUST NOT play the
+  confetti.
 
 ## Non-functional requirements
 
@@ -122,6 +141,8 @@ As a user, I want to find how to support Findy without waiting for an offer.
   About cannot hold a link (plan D-2).
 - **D-5** No constitution change: the answer stays local (§II.1–2), and the pages open
   in the system browser (§III.4).
+- **D-6** Confetti on every move to Offer in the app, not only with the question;
+  none when the system reduces motion (owner, 2026-11-20).
 
 ## Open questions
 
