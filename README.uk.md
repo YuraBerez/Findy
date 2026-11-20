@@ -15,6 +15,8 @@
 Надсилаєте десятки резюме й забуваєте, з якою компанією на якому ви етапі?
 Findy збирає всі заявки на одній дошці: від відгуку на вакансію до оферу.
 
+[![Findy за 40 секунд (відео на YouTube)](https://img.youtube.com/vi/6CEthFABoIE/maxresdefault.jpg)](https://www.youtube.com/watch?v=6CEthFABoIE)
+
 ![Дошка Findy: заявки в колонках етапів](docs/screenshots/board-uk.png)
 
 ![Деталі заявки з нотатками, полями та історією етапів](docs/screenshots/details-uk.png)

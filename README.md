@@ -16,6 +16,8 @@ Sending dozens of applications and losing track of which company is at which
 stage? Findy keeps every application on a single board, from the moment you
 apply until you get an offer.
 
+[![Findy in 40 seconds (video on YouTube)](https://img.youtube.com/vi/6CEthFABoIE/maxresdefault.jpg)](https://www.youtube.com/watch?v=6CEthFABoIE)
+
 ![Findy board: applications in stage columns](docs/screenshots/board-en.png)
 
 ![Application details with notes, fields and stage history](docs/screenshots/details-en.png)
