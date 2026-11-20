@@ -14,6 +14,7 @@ describe('native menu (FR-044, FR-072)', () => {
       platform: 'darwin',
       isDev: false,
       openProjectPage: vi.fn(),
+      openSupportPage: vi.fn(),
     })
     expect(labels(template)).toEqual(['Findy', 'Редагування', 'Вигляд', 'Вікно', 'Довідка'])
     const edit = submenu(template[1])
@@ -27,6 +28,7 @@ describe('native menu (FR-044, FR-072)', () => {
       platform: 'win32',
       isDev: true,
       openProjectPage: vi.fn(),
+      openSupportPage: vi.fn(),
     })
     expect(labels(template)).toEqual(['File', 'Edit', 'View', 'Window', 'Help'])
     const all = template.flatMap((top) => [top, ...submenu(top)])
@@ -43,10 +45,25 @@ describe('native menu (FR-044, FR-072)', () => {
       platform: 'linux',
       isDev: false,
       openProjectPage,
+      openSupportPage: vi.fn(),
     })
     expect(submenu(template[2]).map((item) => item.role)).not.toContain('toggleDevTools')
     const project = submenu(template[4])[0]!
     ;(project.click as () => void)()
     expect(openProjectPage).toHaveBeenCalled()
+  })
+
+  it('opens the support page from Help (spec 013 FR-007)', () => {
+    const openSupportPage = vi.fn()
+    const template = buildMenuTemplate({
+      t: createMainTranslator('uk'),
+      platform: 'darwin',
+      isDev: false,
+      openProjectPage: vi.fn(),
+      openSupportPage,
+    })
+    const support = submenu(template[4]).find((item) => item.label === 'Підтримати Findy…')!
+    ;(support.click as () => void)()
+    expect(openSupportPage).toHaveBeenCalled()
   })
 })

@@ -1,7 +1,7 @@
 import { app, Menu, shell } from 'electron'
 import type { Language } from '../domain/types'
 import { createMainTranslator } from './i18n'
-import { PROJECT_URL } from '../shared/project'
+import { PROJECT_URL, SUPPORT_URL } from '../shared/project'
 import { buildMenuTemplate } from './menuTemplate'
 
 /** Builds and installs the native menu in `language`; call again after a change (FR-044). */
@@ -18,6 +18,7 @@ export function applyMenu(language: Language): void {
     platform: process.platform,
     isDev: !app.isPackaged,
     openProjectPage: () => void shell.openExternal(PROJECT_URL),
+    openSupportPage: () => void shell.openExternal(SUPPORT_URL),
   })
   Menu.setApplicationMenu(Menu.buildFromTemplate(template))
 }

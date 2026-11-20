@@ -7,6 +7,8 @@ interface Options {
   /** Reload and DevTools only while developing */
   isDev: boolean
   openProjectPage(): void
+  /** Spec 013 FR-007 */
+  openSupportPage(): void
 }
 
 /**
@@ -19,6 +21,7 @@ export function buildMenuTemplate({
   platform,
   isDev,
   openProjectPage,
+  openSupportPage,
 }: Options): MenuItemConstructorOptions[] {
   const mac = platform === 'darwin'
   const item = (
@@ -87,6 +90,7 @@ export function buildMenuTemplate({
     label: t('menu.help'),
     submenu: [
       { label: t('menu.projectPage'), click: openProjectPage },
+      { label: t('menu.support'), click: openSupportPage },
       // On macOS "About" lives in the app menu
       ...(mac ? [] : [{ type: 'separator' as const }, item('about', 'about')]),
     ],

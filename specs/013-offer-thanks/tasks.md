@@ -7,9 +7,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Domain and storage
 
-- [ ] T001 [P] `domain/offer.ts`: `asksAboutOffer`; unit tests: to Offer, Offer → Offer, to other stages, answered (FR-001, FR-002)
-- [ ] T002 [P] `Settings.offerQuestionAnswered`: store parse and set, IPC `answerOfferQuestion`; tests: default, invalid row, reset keeps it (FR-004, NFR-002)
-- [ ] T003 [P] `SUPPORT_URL` in `shared/project.ts`; native Help menu **Support Findy…**; menu template test; en/uk (FR-006, FR-007)
+- [x] T001 [P] `domain/offer.ts`: `asksAboutOffer`; unit tests: to Offer, Offer → Offer, to other stages, answered (FR-001, FR-002)
+- [x] T002 [P] `Settings.offerQuestionAnswered`: store parse and set, IPC `answerOfferQuestion`; tests: default, invalid row, reset keeps it (FR-004, NFR-002)
+- [x] T003 [P] `SUPPORT_URL` in `shared/project.ts`; native Help menu **Support Findy…**; menu template test; en/uk (FR-006, FR-007)
 
 ## Phase 2 — UI
 

@@ -35,6 +35,7 @@ export const IPC_METHODS = [
   'setAnalyticsView',
   'setAutoUpdateCheck',
   'setStaleAfterDays',
+  'answerOfferQuestion',
   'checkForUpdates',
   'readVacancy',
   'addSite',
@@ -215,6 +216,8 @@ export interface FindyApi {
   readVacancy(url: string): Promise<VacancyData | null>
   /** Spec 010 FR-008: days after which an application is stale; VALIDATION unless 3–90 */
   setStaleAfterDays(days: number): Promise<AppState>
+  /** Spec 013 FR-004: the offer question is answered; it is never asked again */
+  answerOfferQuestion(): Promise<AppState>
   /** Spec 011 FR-010: VALIDATION for a bad name or address, or after 50 sites */
   addSite(site: { name: string; url: string }): Promise<AppState>
   /** Spec 011 FR-011: NOT_FOUND for an unknown id */

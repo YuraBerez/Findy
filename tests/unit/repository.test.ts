@@ -276,6 +276,7 @@ describe('settings', () => {
       staleAfterDays: 14,
       hiddenSites: [],
       siteQuery: '',
+      offerQuestionAnswered: false,
     })
   })
 
@@ -292,6 +293,7 @@ describe('settings', () => {
       staleAfterDays: 14,
       hiddenSites: [],
       siteQuery: '',
+      offerQuestionAnswered: false,
     })
     expect(repo.setTheme('light').theme).toBe('light')
   })
@@ -308,6 +310,7 @@ describe('settings', () => {
       staleAfterDays: 14,
       hiddenSites: [],
       siteQuery: '',
+      offerQuestionAnswered: false,
     })
   })
 })
@@ -360,6 +363,25 @@ describe('stale settings (spec 010)', () => {
   })
 })
 
+describe('offer question (spec 013)', () => {
+  it('is not answered by default; an answer is kept (FR-004)', () => {
+    expect(repo.getSettings().offerQuestionAnswered).toBe(false)
+    expect(repo.answerOfferQuestion().offerQuestionAnswered).toBe(true)
+    expect(repo.getSettings().offerQuestionAnswered).toBe(true)
+  })
+
+  it.each(['false', '1', ''])('reads another value %j as not answered', (value) => {
+    db.prepare("INSERT INTO settings VALUES ('offerQuestionAnswered', ?)").run(value)
+    expect(repo.getSettings().offerQuestionAnswered).toBe(false)
+  })
+
+  it('keeps the answer after a reset of the board (NFR-002)', () => {
+    repo.answerOfferQuestion()
+    repo.resetBoard()
+    expect(repo.getSettings().offerQuestionAnswered).toBe(true)
+  })
+})
+
 describe('job sites (spec 011)', () => {
   const acme = { name: 'Acme careers', url: 'https://acme.com/careers?q={query}' }
 
@@ -402,6 +424,7 @@ describe('job sites (spec 011)', () => {
     expect(repo.getSettings()).toMatchObject({
       hiddenSites: ['linkedin', 'indeed'],
       siteQuery: 'QA Engineer',
+      offerQuestionAnswered: false,
     })
     db.prepare(
       'UPDATE settings SET value = \'["linkedin","myspace",1]\' WHERE key = \'hiddenSites\'',
@@ -473,6 +496,7 @@ describe('resetBoard (FR-093)', () => {
       staleAfterDays: 14,
       hiddenSites: [],
       siteQuery: '',
+      offerQuestionAnswered: false,
     })
   })
 })
