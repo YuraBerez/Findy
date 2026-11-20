@@ -6,7 +6,9 @@
 
 [Українською](README.uk.md)
 
-> **Status: 0.2.0, with analytics and an update check.** Download it from
+[![Support Findy on Ko-fi](https://img.shields.io/badge/Support%20Findy%20on-Ko--fi-0A66C2?logo=ko-fi&logoColor=white)](https://ko-fi.com/findyapp)
+
+> **Status: 0.4.1.** Download it from
 > [Releases](https://github.com/YuraBerez/findy/releases). Feedback is welcome: use the
 > *Found an issue?* button in the app.
 
