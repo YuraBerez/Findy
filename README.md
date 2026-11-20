@@ -225,7 +225,7 @@ with any SQLite tool. To get your applications as a table, use **⋯ → Export 
 Findy is free and stays free. The macOS builds are not notarised yet, because that
 needs an Apple Developer membership ($99 a year); until then, macOS asks once on the
 first start. If Findy helps your job search, you can
-[sponsor it on GitHub](https://github.com/sponsors/YuraBerez): the first goal is that
+[support it on Ko-fi](https://ko-fi.com/findyapp): the first goal is that
 membership, so Findy opens on a Mac without a warning.
 
 ## Contributing
