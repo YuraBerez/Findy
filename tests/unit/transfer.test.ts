@@ -18,6 +18,9 @@ const labelsOf = (locale: typeof en): TransferLabels => ({
   columns: locale.transfer.columns,
   stages: locale.stages,
   colors: locale.colors,
+  periods: locale.fields.periods,
+  workFormats: locale.fields.workFormats,
+  channels: locale.fields.channels,
 })
 const EN = labelsOf(en)
 const UK = labelsOf(uk as typeof en)
@@ -113,6 +116,15 @@ describe('exportTable (FR-003…FR-006)', () => {
       'In stage since',
       'Stage history',
       'Notes',
+      'Salary from',
+      'Salary to',
+      'Currency',
+      'Salary period',
+      'Work format',
+      'Location',
+      'Source',
+      'Contact name',
+      'Contact details',
     ])
     expect(rows.map((row) => row[0])).toEqual(['First', 'Second', 'Hidden'])
     expect(rows[0]).toEqual([
@@ -125,6 +137,7 @@ describe('exportTable (FR-003…FR-006)', () => {
       '2026-11-05T11:00:00+02:00',
       '2026-11-01T10:00:00+02:00 — Applied\n2026-11-05T11:00:00+02:00 — HR interview',
       '[2026-11-06T12:00:00+02:00]\nCall on Friday\n\n[2026-11-02T12:00:00+02:00]\nSent CV\nwith letter',
+      ...Array(9).fill(''),
     ])
     expect(rows[1]!.slice(2, 5)).toEqual(['', 'HR interview', ''])
   })
@@ -302,6 +315,65 @@ describe('planImport (FR-012…FR-016)', () => {
   })
 })
 
+describe('extra fields (spec 014 FR-041, FR-042)', () => {
+  const plan = (csv: string) => planImport(readCsv(csv), context())
+  const header =
+    'Title,Company,Salary from,Salary to,Currency,Salary period,Work format,Location,Source,Contact name,Contact details'
+
+  it('reads every field, in both languages and as ids', () => {
+    const result = plan(
+      `${header}\r\n` +
+        'a,x,3 000,4000,usd,Per month,Remote,Lviv,Djinni,Olena,t.me/olena\r\n' +
+        'b,x,,50000,UAH,На рік,гібрид,,Реферал,,\r\n' +
+        'c,x,,,EUR,,office,,Acme careers,,',
+    )
+    expect(result.errors).toEqual([])
+    expect(result.items.map((item) => item.fields)).toEqual([
+      {
+        salary: { min: 3000, max: 4000, currency: 'USD', period: 'month' },
+        workFormat: 'remote',
+        location: 'Lviv',
+        source: { kind: 'site', id: 'djinni' },
+        contactName: 'Olena',
+        contactDetails: 't.me/olena',
+      },
+      {
+        ...EMPTY_FIELDS,
+        salary: { min: null, max: 50000, currency: 'UAH', period: 'year' },
+        workFormat: 'hybrid',
+        source: { kind: 'channel', id: 'referral' },
+      },
+      // FR-003: a currency without an amount is not a salary
+      { ...EMPTY_FIELDS, workFormat: 'office', source: { kind: 'custom', name: 'Acme careers' } },
+    ])
+  })
+
+  it('skips rows that break the rules, with the field and the reason (FR-014)', () => {
+    const result = plan(
+      `${header}\r\n` +
+        'a,x,3k,,USD,month,,,,,\r\n' +
+        'b,x,5000,4000,USD,month,,,,,\r\n' +
+        'c,x,100,,,,,,,,\r\n' +
+        'd,x,100,,JPY,week,,,,,\r\n' +
+        `e,x,,,,,moon,${'x'.repeat(101)},${'x'.repeat(61)},${'x'.repeat(101)},${'x'.repeat(201)}`,
+    )
+    expect(result.items).toEqual([])
+    expect(result.errors).toEqual([
+      { row: 2, field: 'salaryMin', problem: 'invalid' },
+      { row: 3, field: 'salaryMin', problem: 'invalid' },
+      { row: 4, field: 'currency', problem: 'required' },
+      { row: 4, field: 'salaryPeriod', problem: 'required' },
+      { row: 5, field: 'currency', problem: 'invalid' },
+      { row: 5, field: 'salaryPeriod', problem: 'invalid' },
+      { row: 6, field: 'workFormat', problem: 'invalid' },
+      { row: 6, field: 'source', problem: 'tooLong' },
+      { row: 6, field: 'location', problem: 'tooLong' },
+      { row: 6, field: 'contactName', problem: 'tooLong' },
+      { row: 6, field: 'contactDetails', problem: 'tooLong' },
+    ])
+  })
+})
+
 describe('round trip (FR-019, SC-001)', () => {
   const board = [
     app({
@@ -325,8 +397,21 @@ describe('round trip (FR-019, SC-001)', () => {
         },
         { id: 'a', text: '+380 phone', createdAt: '2026-10-02T09:00:00.000Z', updatedAt: null },
       ],
+      // Spec 014 FR-043
+      salary: { min: 3000, max: 4000, currency: 'EUR', period: 'year' },
+      workFormat: 'hybrid',
+      location: 'Kyiv, "UA"',
+      source: { kind: 'channel', id: 'recruiter' },
+      contactName: 'Olena',
+      contactDetails: '=t.me/olena',
     }),
-    app({ title: 'Plain', stage: 'rejected' }),
+    app({
+      title: 'Mine',
+      stage: 'offered',
+      source: { kind: 'custom', name: 'Acme careers' },
+      salary: { min: null, max: 10, currency: 'UAH', period: 'month' },
+    }),
+    app({ title: 'Plain', stage: 'rejected', source: { kind: 'site', id: 'djinni' } }),
   ]
 
   for (const [name, labels] of [
@@ -338,17 +423,26 @@ describe('round trip (FR-019, SC-001)', () => {
       const result = planImport(readCsv(csv), context({ hiddenStages: ['rejected'] }))
       expect(result.errors).toEqual([])
       expect(result.items).toEqual(
-        board.map(({ title, company, url, stage, color, createdAt, stageHistory, notes }) => ({
-          title,
-          company,
-          url,
-          stage,
-          color,
-          fields: EMPTY_FIELDS,
-          createdAt,
-          stageHistory,
-          notes: notes.map(({ text, createdAt }) => ({ text, createdAt })),
-        })),
+        board.map(
+          ({ title, company, url, stage, color, createdAt, stageHistory, notes, ...rest }) => ({
+            title,
+            company,
+            url,
+            stage,
+            color,
+            fields: {
+              salary: rest.salary,
+              workFormat: rest.workFormat,
+              location: rest.location,
+              source: rest.source,
+              contactName: rest.contactName,
+              contactDetails: rest.contactDetails,
+            },
+            createdAt,
+            stageHistory,
+            notes: notes.map(({ text, createdAt }) => ({ text, createdAt })),
+          }),
+        ),
       )
       expect(result.hidden).toBe(1)
     })

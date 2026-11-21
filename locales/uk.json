@@ -290,7 +290,16 @@
       "createdAt": "Створено",
       "inStageSince": "На етапі з",
       "history": "Історія етапів",
-      "notes": "Нотатки"
+      "notes": "Нотатки",
+      "salaryMin": "Зарплата від",
+      "salaryMax": "Зарплата до",
+      "currency": "Валюта",
+      "salaryPeriod": "Період зарплати",
+      "workFormat": "Формат роботи",
+      "location": "Локація",
+      "source": "Джерело",
+      "contactName": "Контактна особа",
+      "contactDetails": "Як звʼязатися"
     },
     "menuExport": "Експорт у CSV…",
     "menuImport": "Імпорт із CSV…",

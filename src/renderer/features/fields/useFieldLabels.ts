@@ -17,9 +17,10 @@ export function useFieldLabels() {
   // One object per language, so a memo that depends on it stays valid
   const channels = useMemo(
     () =>
-      Object.fromEntries(
-        SOURCE_CHANNELS.map((id) => [id, t(`fields.channels.${id}`)]),
-      ) as Record<SourceChannel, string>,
+      Object.fromEntries(SOURCE_CHANNELS.map((id) => [id, t(`fields.channels.${id}`)])) as Record<
+        SourceChannel,
+        string
+      >,
     [t],
   )
 

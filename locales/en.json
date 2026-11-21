@@ -282,7 +282,16 @@
       "createdAt": "Created",
       "inStageSince": "In stage since",
       "history": "Stage history",
-      "notes": "Notes"
+      "notes": "Notes",
+      "salaryMin": "Salary from",
+      "salaryMax": "Salary to",
+      "currency": "Currency",
+      "salaryPeriod": "Salary period",
+      "workFormat": "Work format",
+      "location": "Location",
+      "source": "Source",
+      "contactName": "Contact name",
+      "contactDetails": "Contact details"
     },
     "menuExport": "Export to CSV…",
     "menuImport": "Import from CSV…",

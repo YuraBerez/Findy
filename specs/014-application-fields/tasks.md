@@ -40,7 +40,7 @@ Each task references the requirement(s) it satisfies.
 ## Phase 5 — US-5: search, CSV, MCP (P2)
 
 - [x] T040 [P] Search matches location, source, contact; unit tests (FR-040)
-- [ ] T041 [P] CSV export and import of the 9 columns, source from the link on import;
+- [x] T041 [P] CSV export and import of the 9 columns, source from the link on import;
   unit tests (FR-041…FR-043, FR-022)
 - [x] T042 [P] MCP tools: fields in results, input on add and update; unit tests
   (FR-044, FR-022)
