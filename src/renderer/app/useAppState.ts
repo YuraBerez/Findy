@@ -4,12 +4,14 @@ import { applyMove } from '@domain/board'
 import { asksAboutOffer, isMoveToOffer } from '@domain/offer'
 import type { ApplicationFields } from '@domain/fields'
 import type { ValidApplication } from '@domain/forms'
+import type { NextStep } from '@domain/nextStep'
 import {
   errorKind,
   type AnalyticsView,
   type AppState,
   type CardColor,
   type ExportResult,
+  type SaveFileResult,
   type SaveSkillResult,
   type ImportPreview,
   type KnownSiteId,
@@ -131,6 +133,19 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         const current = state.applications.find((application) => application.id === id)
         return current && current.stage !== stage ? moveApplication(id, { stage, index: 0 }) : true
       },
+
+      /** Spec 015 FR-010: a new or changed step; null removes it (no note) */
+      setNextStep: (id: string, step: NextStep | null) =>
+        run(() => window.findy.updateApplication(id, { nextStep: step })),
+      /** Spec 015 FR-012: the note is written in the UI language */
+      completeNextStep: (id: string) =>
+        run(() => window.findy.completeNextStep(id, i18n.language as Language)),
+      /** Spec 015 FR-040: null when it failed (already notified) */
+      saveNextStepCalendar: (id: string): Promise<SaveFileResult | null> =>
+        attempt(() => window.findy.saveNextStepCalendar(id)),
+      /** Spec 015 FR-030 */
+      setRemindersEnabled: (enabled: boolean) =>
+        run(() => window.findy.setRemindersEnabled(enabled)),
 
       /** Spec 007 FR-004 */
       setApplicationColor: (id: string, color: CardColor | null) =>

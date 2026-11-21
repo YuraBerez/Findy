@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import logo from '../../../../assets/logo.svg'
 import { SearchBox } from '../../features/search'
+import { useRemindersMenu } from '../../features/nextStep'
 import { useSettingsMenu } from '../../features/settings'
 import { useTransferMenu } from '../../features/transfer'
 import { useUpdatesMenu } from '../../features/updates'
@@ -35,6 +36,9 @@ interface Props {
   /** Spec 008 FR-001, FR-010 */
   onExport(): void
   onImport(): void
+  /** Spec 015 FR-030 */
+  remindersEnabled: boolean
+  onRemindersChange(enabled: boolean): void
 }
 
 export function Toolbar({
@@ -57,6 +61,8 @@ export function Toolbar({
   onAutoUpdateCheckChange,
   onExport,
   onImport,
+  remindersEnabled,
+  onRemindersChange,
 }: Props) {
   const { t } = useTranslation()
   const settings = useSettingsMenu({ onLanguageChange, onThemeChange })
@@ -65,6 +71,7 @@ export function Toolbar({
     onCheck: onCheckUpdates,
     onAutoCheckChange: onAutoUpdateCheckChange,
   })
+  const reminders = useRemindersMenu(remindersEnabled, onRemindersChange)
   const transfer = useTransferMenu({
     enabled: storageReady,
     canExport: applicationCount > 0,
@@ -102,7 +109,7 @@ export function Toolbar({
           label={t('toolbar.menu')}
           items={[
             // Language and theme live in the menu, so the toolbar stays calm
-            ...(storageReady ? settings : []),
+            ...(storageReady ? [...settings, reminders] : []),
             { key: 'settings-end', separator: true },
             {
               key: 'columns',

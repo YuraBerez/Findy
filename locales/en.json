@@ -471,7 +471,12 @@
       "later": "{{day}}",
       "laterAt": "{{day}}, {{time}}"
     },
-    "cardLabel": "Next step: {{text}}, {{when}} ({{mark}})"
+    "cardLabel": "Next step: {{text}}, {{when}} ({{mark}})",
+    "status": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "tomorrow": "Tomorrow"
+    }
   },
   "reminders": {
     "menuItem": "Reminders",

@@ -497,7 +497,12 @@
       "later": "{{day}}",
       "laterAt": "{{day}}, {{time}}"
     },
-    "cardLabel": "Наступний крок: {{text}}, {{when}} ({{mark}})"
+    "cardLabel": "Наступний крок: {{text}}, {{when}} ({{mark}})",
+    "status": {
+      "overdue": "Прострочено",
+      "today": "Сьогодні",
+      "tomorrow": "Завтра"
+    }
   },
   "reminders": {
     "menuItem": "Нагадування",

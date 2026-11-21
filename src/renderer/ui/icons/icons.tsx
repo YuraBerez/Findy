@@ -155,3 +155,33 @@ export const ClockIcon = (props: IconProps) => (
     <path d="M12 7v5l3 2" />
   </Icon>
 )
+
+/** Spec 015: a next step on the card and in the details */
+export const CalendarIcon = (props: IconProps) => (
+  <Icon
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <rect x="3.5" y="5" width="17" height="15" rx="2" />
+    <path d="M3.5 10h17M8 3v4M16 3v4" />
+  </Icon>
+)
+
+/** Spec 015 FR-021: an overdue step, not only by colour */
+export const AlertIcon = (props: IconProps) => (
+  <Icon
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="M10.3 4.3 2.6 18a2 2 0 0 0 1.7 3h15.4a2 2 0 0 0 1.7-3L13.7 4.3a2 2 0 0 0-3.4 0z" />
+    <path d="M12 10v4M12 17.5v.01" />
+  </Icon>
+)
