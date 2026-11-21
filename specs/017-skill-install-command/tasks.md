@@ -15,4 +15,4 @@
 
 ## Phase 3 — Polish
 
-- [ ] T090 Full gate
+- [x] T090 Full gate
