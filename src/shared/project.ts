@@ -16,6 +16,13 @@ export const RELEASE_PAGE_PREFIX = `${PROJECT_URL}/releases/tag/`
 
 export const releasePageUrl = (tag: string): string => `${RELEASE_PAGE_PREFIX}${tag}`
 
+/**
+ * A release page of this repository. GitHub names are not case-sensitive and the API
+ * gives the current spelling, so 0.5.0 (`YuraBerez/findy`) refused every answer.
+ */
+export const isReleasePage = (url: string): boolean =>
+  url.toLowerCase().startsWith(RELEASE_PAGE_PREFIX.toLowerCase())
+
 /** Spec 006 FR-005: the latest published, stable release (drafts and pre-releases excluded) */
 export const LATEST_RELEASE_API_URL = `https://api.github.com/repos/${REPOSITORY}/releases/latest`
 

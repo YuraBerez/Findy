@@ -5,7 +5,7 @@ import {
   UpdateCheckError,
   type LatestRelease,
 } from '../../src/main/updates'
-import { LATEST_RELEASE_API_URL, releasePageUrl } from '../../src/shared/project'
+import { LATEST_RELEASE_API_URL, PROJECT_URL, releasePageUrl } from '../../src/shared/project'
 
 const PAGE = releasePageUrl('v0.2.0')
 const release = (extra: object = {}) => ({
@@ -35,6 +35,14 @@ describe('fetchLatestRelease (spec 006 FR-005, FR-011, FR-012)', () => {
     expect(init.signal).toBeInstanceOf(AbortSignal)
   })
 
+  it('accepts the release page in any letter case of the repository name (FR-005)', async () => {
+    const page = `${PROJECT_URL.toLowerCase()}/releases/tag/v0.2.0`
+    expect(await fetchLatestRelease(fakeFetch(release({ html_url: page })))).toEqual({
+      version: '0.2.0',
+      url: page,
+    })
+  })
+
   it('uses another URL when given (e2e)', async () => {
     const fetchFn = fakeFetch(release())
     await fetchLatestRelease(fetchFn, { url: 'http://127.0.0.1:9/latest' })
@@ -51,6 +59,11 @@ describe('fetchLatestRelease (spec 006 FR-005, FR-011, FR-012)', () => {
     [
       'a page outside the repository',
       fakeFetch(release({ html_url: 'https://evil.example/findy/releases/1' })),
+      /repository/,
+    ],
+    [
+      'a page of a repository with a longer name',
+      fakeFetch(release({ html_url: `${PROJECT_URL}-fork/releases/tag/v0.2.0` })),
       /repository/,
     ],
     ['a huge answer', fakeFetch('x'.repeat(1_000_001)), /too large/],

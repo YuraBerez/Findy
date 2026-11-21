@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { isHttpUrl } from '../domain/limits'
 import { isCheckDue, isNewer, normalizeVersion } from '../domain/updates'
 import type { UpdateCheckResult, UpdateTrigger } from '../shared/ipc'
-import { LATEST_RELEASE_API_URL, RELEASE_PAGE_PREFIX } from '../shared/project'
+import { isReleasePage, LATEST_RELEASE_API_URL } from '../shared/project'
 
 const TIMEOUT_MS = 10_000
 const MAX_CHARS = 1_000_000
@@ -69,7 +69,7 @@ export async function fetchLatestRelease(
   if (release.draft || release.prerelease) throw new UpdateCheckError('Not a stable release')
   const version = normalizeVersion(release.tag_name)
   if (!version) throw new UpdateCheckError(`Not a version: ${release.tag_name}`)
-  if (!isHttpUrl(release.html_url) || !release.html_url.startsWith(RELEASE_PAGE_PREFIX))
+  if (!isHttpUrl(release.html_url) || !isReleasePage(release.html_url))
     throw new UpdateCheckError('The release page is not in this repository')
   return { version, url: release.html_url }
 }
