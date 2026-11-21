@@ -161,4 +161,85 @@ test.describe('application fields (spec 014)', () => {
     await details.openContactLink()
     expect(await findy.api.openedLinks()).toEqual(['https://t.me/olena_hr'])
   })
+
+  test('US-5: search, CSV and the AI assistant know the fields', async ({ findy }) => {
+    const { board, importDialog } = findy.pages
+    const salary = { min: 3000, max: 4000, currency: 'EUR' as const, period: 'month' as const }
+    await findy.api.seed([
+      {
+        title: 'Dev',
+        url: 'https://djinni.co/jobs/1/',
+        fields: { salary, workFormat: 'remote', location: 'Lviv', contactName: 'Olena' },
+      },
+      { title: 'QA' },
+    ])
+    await findy.refresh()
+
+    await test.step('US-5.1: search finds the location and the contact', async () => {
+      await board.search('lviv')
+      await board.verifyCards('applied', ['Dev'])
+      await board.search('olena')
+      await board.verifyCards('applied', ['Dev'])
+      await board.search('djinni')
+      await board.verifyCards('applied', ['Dev'])
+      await board.clearSearchWithEscape()
+    })
+
+    await test.step('US-5.2: a CSV round trip keeps every field', async () => {
+      const before = (await findy.api.state()).applications.map(({ title, ...app }) => ({
+        title,
+        salary: app.salary,
+        workFormat: app.workFormat,
+        location: app.location,
+        source: app.source,
+        contactName: app.contactName,
+      }))
+      await findy.api.answerFileDialogs(findy.files.path('board.csv'))
+      await board.exportCsv()
+      expect(findy.files.read('board.csv')).toContain(
+        '3000,4000,EUR,Per month,Remote,Lviv,Djinni,Olena,',
+      )
+      await findy.api.resetBoard()
+      await findy.refresh()
+      await board.importCsv()
+      await importDialog.confirm('Import 2 applications')
+      const after = (await findy.api.state()).applications.map(({ title, ...app }) => ({
+        title,
+        salary: app.salary,
+        workFormat: app.workFormat,
+        location: app.location,
+        source: app.source,
+        contactName: app.contactName,
+      }))
+      expect(after).toEqual(before)
+    })
+
+    await test.step('US-5.3: a file without the new columns imports as before', async () => {
+      await findy.api.resetBoard()
+      await findy.refresh()
+      await findy.api.answerFileDialogs(
+        findy.files.write('old.csv', 'Title,Company,Link\r\nOld,Acme,https://example.com/1'),
+      )
+      await board.importCsv()
+      await importDialog.confirm('Import 1 application')
+      const [old] = (await findy.api.state()).applications
+      expect(old).toMatchObject({ title: 'Old', salary: null, source: null, location: null })
+    })
+
+    await test.step('US-5.4: the assistant reads and changes the salary', async () => {
+      await findy.api.setMcpEnabled(true)
+      const mcp = await findy.connectMcp()
+      const listed = await mcp.call('list_applications', {})
+      const [item] = (listed.data as { applications: { id: string; salary: unknown }[] })
+        .applications
+      expect(item).toMatchObject({ salary: null })
+      await mcp.call('update_application', {
+        id: item!.id,
+        salary: { min: 5000, max: null, currency: 'USD', period: 'month' },
+      })
+      await expect(async () => board.verifyCardFieldsLine('Old', /^from \$5,000\/mo$/)).toPass({
+        timeout: 2_500,
+      })
+    })
+  })
 })

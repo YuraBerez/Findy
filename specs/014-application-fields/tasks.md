@@ -44,7 +44,7 @@ Each task references the requirement(s) it satisfies.
   unit tests (FR-041…FR-043, FR-022)
 - [x] T042 [P] MCP tools: fields in results, input on add and update; unit tests
   (FR-044, FR-022)
-- [ ] T043 e2e: search, CSV round trip and old file, MCP update (US-5)
+- [x] T043 e2e: search, CSV round trip and old file, MCP update (US-5)
 
 ## Phase 6 — Polish
 
