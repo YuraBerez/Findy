@@ -1,7 +1,7 @@
 # Feature Spec: A skill for AI assistants that use Findy
 
 - **ID:** 016-mcp-skill
-- **Status:** Approved
+- **Status:** Implemented (unreleased, #40); FR-011 and US-2.1 replaced by [017](../017-skill-install-command/spec.md)
 - **Approved:** 2026-11-21 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-21
