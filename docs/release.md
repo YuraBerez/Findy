@@ -55,6 +55,16 @@ pushes and deletion. Pull requests are merged with squash.
 Performance (NFR-002, NFR-003) is an e2e spec with 1 000 applications and 10 000
 notes (`e2e/specs/performance.spec.ts`, tag `@perf`); limits are 3× on CI runners.
 
+## Repository rules
+
+- `main` is protected: every change comes through a pull request (no direct push), the four
+  CI checks above must pass, every review thread must be resolved, and the history stays
+  linear. Force push and deletion are blocked. The rules apply to admins too: no merge
+  around CI.
+- Pull requests merge only with **squash**; GitHub deletes the branch after the merge.
+- The ruleset "Release tags" lets only admins create, move or delete `v*` tags, because a
+  tag starts the release workflow.
+
 ## Release — `.github/workflows/release.yml`
 
 Release notes start with "Which file to download" (`.github/release-downloads.md`,

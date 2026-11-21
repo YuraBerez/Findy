@@ -1,7 +1,7 @@
 # Feature Spec: One settings window
 
 - **ID:** 018-settings
-- **Status:** Approved
+- **Status:** Implemented
 - **Approved:** 2026-11-21 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-21

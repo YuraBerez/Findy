@@ -3,6 +3,39 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.6.0] - 2026-11-21
+
+### Next step and reminders
+- Give an application its next step: a short text, a date and, if you want, a time. Open the card and choose **Add next step**, or **⋯ → Next step…** on the card.
+- The card shows **Today**, **Tomorrow**, a short date or **Overdue** (with its own icon). A card in Rejected keeps its step but shows no mark.
+- **Done** removes the step and adds a note "Done: … (date, time)". **Remove step** adds no note.
+- While Findy runs, it shows a system notification **15 minutes** and **1 minute** before a step that has a time. A click opens the application. Turn reminders off in **⋯ → Settings… → Reminders**. On macOS, allow notifications for Findy in **System Settings → Notifications**.
+- **Add to calendar** saves the step as an `.ics` file for Google Calendar, Apple Calendar or Outlook: a one-hour event, or an all-day event without a time.
+- Search, CSV (two new columns) and the AI assistant tools also know the step.
+
+### Salary, work format, location, source and contact
+- Each application can keep a salary range with a currency (USD, EUR, UAH, GBP, PLN) and a period, the work format (remote, office, hybrid), a location, where you found the vacancy, and the recruiter with their contact.
+- The card shows the work format and the salary. The source fills in from a job site link.
+- Search, CSV export and import, and the AI assistant tools know the new fields.
+
+### One settings window
+- **⋯ → Settings…** or **Cmd/Ctrl+,** opens one window with a side list: General (language, theme System / Light / Dark), Board (columns, days without movement), Reminders, Updates and AI assistant.
+- The **⋯** menu now holds only actions. "Columns…", "Stale after…", the language submenu, the theme switch and "AI assistant access…" moved into the window.
+
+### A skill for AI assistants
+- The Findy skill tells Claude (or another assistant with Agent Skills) how to use Findy's MCP tools: add applications, update them after an interview, review your job search, prepare for an interview.
+- Claude Code: install it with one command from **⋯ → Settings… → AI assistant** or the README; run it again to update. Claude Desktop and claude.ai: **Save skill…** and upload the file.
+
+### Changes
+- The offer question has no **Not now** button any more. Close it with ×, Esc or a click outside, and it asks again on your next offer.
+- Dialogs have one scroll area and space below the last line.
+
+### Fixes
+- The search query of the **Sites** tab is kept when you change the tab or quit right after typing.
+
+### Data
+- The database gets two new versions (application fields, next step). Findy backs it up before the update. **Findy 0.5.0 and older cannot open a database after 0.6.0 has opened it**: update every computer that uses the same data.
+
 ## [0.5.0] - 2026-11-20
 
 ### Congratulations on an offer
