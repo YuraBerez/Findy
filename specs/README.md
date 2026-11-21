@@ -52,3 +52,5 @@ Rules:
 | 011 | [Job sites](011-job-sites/spec.md) | Implemented (0.4.0) |
 | 012 | [Install with Homebrew and Scoop; verifiable releases](012-package-managers/spec.md) | Implemented (0.4.1) |
 | 013 | [Congratulate on an offer and ask for support](013-offer-thanks/spec.md) | Implemented (0.5.0) |
+| 014 | [More application fields](014-application-fields/spec.md) | Approved (2026-11-21) |
+| 015 | [Next step and reminders](015-next-step/spec.md) | Approved (2026-11-21) |
