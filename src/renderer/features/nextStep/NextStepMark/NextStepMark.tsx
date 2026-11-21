@@ -19,7 +19,7 @@ export function NextStepMark({ step, now }: Props) {
   return (
     <p className={styles.mark} data-status={status} data-testid="card-next-step" title={step.text}>
       <Icon size={14} className={styles.icon} />
-      <span aria-hidden="true" className={styles.text}>
+      <span aria-hidden="true" className={styles.text} data-testid="card-next-step-text">
         {text}
       </span>
       <span className={styles.srOnly}>{labels.label(step, now)}</span>

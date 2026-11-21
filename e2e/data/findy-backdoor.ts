@@ -8,6 +8,7 @@ import type {
   Language,
   McpConnection,
   NewApplication,
+  NextStepChange,
   StageId,
   Theme,
 } from '../../src/shared/ipc'
@@ -19,6 +20,14 @@ export interface SeedApplication {
   stage?: StageId
   /** Spec 014 */
   fields?: ApplicationFieldChanges
+  /** Spec 015 */
+  nextStep?: NextStepChange['nextStep']
+}
+
+/** Spec 015: a system notification that main showed */
+export interface ShownNotification {
+  title: string
+  body: string
 }
 
 /**
@@ -80,6 +89,53 @@ export class FindyBackdoor {
     }, path)
   }
 
+  /**
+   * Spec 015: main records its system notifications instead of showing them, also where
+   * the system has none (a CI runner). `clickNotification` clicks a recorded one.
+   */
+  async recordNotifications(): Promise<void> {
+    await this.app.evaluate(({ Notification }) => {
+      const store = globalThis as { shownNotifications?: Electron.Notification[] }
+      store.shownNotifications = []
+      Notification.isSupported = () => true
+      Notification.prototype.show = function (this: Electron.Notification) {
+        store.shownNotifications!.push(this)
+      }
+    })
+  }
+
+  notifications(): Promise<ShownNotification[]> {
+    return this.app.evaluate(() =>
+      (
+        (globalThis as { shownNotifications?: Electron.Notification[] }).shownNotifications ?? []
+      ).map(({ title, body }) => ({ title, body })),
+    )
+  }
+
+  async clickNotification(index: number): Promise<void> {
+    await this.app.evaluate((_electron, at) => {
+      const store = globalThis as { shownNotifications?: Electron.Notification[] }
+      store.shownNotifications![at]!.emit('click')
+    }, index)
+  }
+
+  /** Spec 015 */
+  async setNextStep(title: string, nextStep: NextStepChange['nextStep']): Promise<void> {
+    await this.page.evaluate(
+      async ({ title, nextStep }) => {
+        const state = await window.findy.getState()
+        const application = state.applications.find((item) => item.title === title)
+        if (!application) throw new Error(`No application "${title}"`)
+        await window.findy.updateApplication(application.id, { nextStep })
+      },
+      { title, nextStep },
+    )
+  }
+
+  async setRemindersEnabled(enabled: boolean): Promise<void> {
+    await this.page.evaluate((value) => window.findy.setRemindersEnabled(value), enabled)
+  }
+
   /** Deletes behind the UI's back, e.g. to simulate another window (spec 003 US-1.3) */
   async deleteApplication(title: string): Promise<void> {
     await this.page.evaluate(async (value) => {
@@ -132,6 +188,7 @@ export class FindyBackdoor {
           url: item.url ?? null,
           stage: item.stage,
           ...item.fields,
+          nextStep: item.nextStep,
         })
       }
     }, items)

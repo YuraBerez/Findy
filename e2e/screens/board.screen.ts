@@ -123,6 +123,50 @@ export class BoardScreen extends BaseComponent {
     await this.appMenuItem(/^(Support Findy…|Підтримати Findy…)$/).click()
   }
 
+  // ── Spec 015: next step ────────────────────────────────────────────────
+
+  /** FR-020: the visible mark text; null = no mark */
+  async verifyStepMark(title: string, mark: RegExp | null): Promise<void> {
+    const shown = this.card(title).getByTestId('card-next-step')
+    if (mark === null) await expect(shown).toHaveCount(0)
+    else await expect(this.card(title).getByTestId('card-next-step-text')).toHaveText(mark)
+  }
+
+  /** FR-022: the step is in the card's accessible name */
+  async verifyStepInName(title: string, text: RegExp): Promise<void> {
+    await expect(this.card(title)).toHaveAccessibleName(text)
+  }
+
+  /** FR-021: overdue has its own icon state, not only a colour */
+  async verifyStepOverdue(title: string): Promise<void> {
+    await expect(this.card(title).getByTestId('card-next-step')).toHaveAttribute(
+      'data-status',
+      'overdue',
+    )
+  }
+
+  /** FR-013: card ⋯ → Next step… */
+  async openStepFromMenu(title: string): Promise<void> {
+    await this.openCardMenu(title)
+    await this.menu.getByRole('menuitem', { name: /^(Next step…|Наступний крок…)$/ }).click()
+  }
+
+  /** FR-030: app menu → Reminders */
+  async toggleReminders(): Promise<void> {
+    await this.openAppMenu()
+    await this.menu.getByRole('menuitemcheckbox', { name: /^(Reminders|Нагадування)$/ }).click()
+    // A switch keeps the menu open
+    await this.closeAppMenu()
+  }
+
+  async verifyRemindersSwitch(on: boolean): Promise<void> {
+    await this.openAppMenu()
+    await expect(
+      this.menu.getByRole('menuitemcheckbox', { name: /^(Reminders|Нагадування)$/ }),
+    ).toHaveAttribute('aria-checked', String(on))
+    await this.closeAppMenu()
+  }
+
   // ── Spec 010: stale applications ───────────────────────────────────────
 
   /** FR-003: the mark is text in the card's accessible name, or there is none */
@@ -585,7 +629,11 @@ export class BoardScreen extends BaseComponent {
 
   /** The card menu: the "Move to" stages, then "Colour" (spec 007) */
   async verifyMenuItems(stages: string[]): Promise<void> {
-    await expect(this.menu.getByRole('menuitem')).toHaveText([...stages, /^(Colour|Колір)/])
+    await expect(this.menu.getByRole('menuitem')).toHaveText([
+      ...stages,
+      /^(Next step…|Наступний крок…)$/,
+      /^(Colour|Колір)/,
+    ])
   }
 
   async verifyMenuItemFocused(name: string): Promise<void> {

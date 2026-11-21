@@ -30,34 +30,34 @@ Each task references the requirement(s) it satisfies.
 
 - [x] T020 Form values and validation in `domain/nextStep/form.ts`, with unit tests
   (FR-001, FR-011, US-1.3)
-- [ ] T021 `NextStepSection` in the details panel: add, edit, done, remove; en + uk
+- [x] T021 `NextStepSection` in the details panel: add, edit, done, remove; en + uk
   (FR-010…FR-012)
-- [ ] T022 Card menu "Next step…" opens the details at the step (FR-013)
-- [ ] T023 e2e: add, edit, validation, remove, done (US-1, US-3)
+- [x] T022 Card menu "Next step…" opens the details at the step (FR-013)
+- [x] T023 e2e: add, edit, validation, remove, done (US-1, US-3)
 
 ## Phase 4 — US-2: see what is due (P1)
 
-- [ ] T030 Card mark with icon, text and accessible name; no mark in Rejected; en + uk
+- [x] T030 Card mark with icon, text and accessible name; no mark in Rejected; en + uk
   (FR-020…FR-022, FR-024)
-- [ ] T031 `useNow` waits for the next status change (FR-023)
-- [ ] T032 e2e: today, tomorrow, later, overdue, Rejected, stale together (US-2)
+- [x] T031 `useNow` waits for the next status change (FR-023)
+- [x] T032 e2e: today, tomorrow, later, overdue, Rejected, stale together (US-2)
 
 ## Phase 5 — US-4: reminders (P1)
 
 - [x] T040 `main/reminders.ts`: 15 and 1 minute before,
   once per key, no other lead times, off switch; unit tests with a fake clock (FR-032…FR-036)
-- [ ] T041 Wiring in `main/index.ts`: `Notification`, click → window and
+- [x] T041 Wiring in `main/index.ts`: `Notification`, click → window and
   `openApplication`, `powerMonitor`, checks after IPC and MCP changes (FR-035, FR-037)
-- [ ] T042 "Reminders" toggle in the ⋯ menu; renderer opens the details on
+- [x] T042 "Reminders" toggle in the ⋯ menu; renderer opens the details on
   `openApplication`; en + uk (FR-030, FR-035)
-- [ ] T043 e2e: reminder before a step, click opens the details, toggle off (US-4)
+- [x] T043 e2e: reminder before a step, click opens the details, toggle off (US-4)
 
 ## Phase 6 — US-5: calendar file (P2)
 
 - [x] T050 `calendarEvent`, `calendarFileName`, with unit tests (FR-040, FR-041)
 - [x] T051 `main/calendar.ts` + IPC `saveNextStepCalendar`, unit tests; "Add to calendar"
   button (FR-040…FR-042)
-- [ ] T052 e2e: save the file, check the event (US-5)
+- [x] T052 e2e: save the file, check the event (US-5)
 
 ## Phase 7 — US-6: search, CSV, MCP (P2)
 
@@ -65,8 +65,8 @@ Each task references the requirement(s) it satisfies.
 - [x] T061 [P] CSV export and import of the 2 columns; unit tests (FR-051…FR-053)
 - [x] T062 [P] MCP tools: step in results, input on add and update; skill text; unit tests
   (FR-054)
-- [ ] T063 e2e: search, CSV round trip, MCP sets a step (US-6)
+- [x] T063 e2e: search, CSV round trip, MCP sets a step (US-6)
 
 ## Phase 8 — Polish
 
-- [ ] T090 README features list (en, uk); axe in both themes; full gate
+- [x] T090 README features list (en, uk); axe in both themes; full gate

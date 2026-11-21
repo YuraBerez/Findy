@@ -30,6 +30,15 @@ const SELECTS = {
   source: 'Source',
 } as const
 
+/** Spec 015: the step form as a user types it; date `YYYY-MM-DD`, time `HH:MM` */
+export interface NextStepForm {
+  text?: string
+  date?: string
+  time?: string
+}
+
+const STEP_INPUTS = { text: 'Step', date: 'Date', time: /^Time/ } as const
+
 /** The details side panel of one application (US-4) with its notes (US-3). */
 export class ApplicationDetailsScreen extends BaseComponent {
   private readonly panel: Locator
@@ -61,6 +70,14 @@ export class ApplicationDetailsScreen extends BaseComponent {
     this.notes = this.panel.getByTestId('note')
     this.confirm = page.getByRole('alertdialog')
     this.colors = this.panel.getByRole('radiogroup', { name: 'Colour' })
+  }
+
+  private stepSection(): Locator {
+    return this.panel.getByRole('region', { name: /^(Next step|Наступний крок)$/ })
+  }
+
+  private stepButton(name: string): Locator {
+    return this.stepSection().getByRole('button', { name, exact: true })
   }
 
   private note(text: string): Locator {
@@ -129,6 +146,64 @@ export class ApplicationDetailsScreen extends BaseComponent {
   /** A key combination inside the open panel, e.g. an app shortcut (spec 005 FR-002) */
   async pressShortcut(keys: string): Promise<void> {
     await this.heading.press(keys)
+  }
+
+  // ── Next step (spec 015) ───────────────────────────────────────────────
+
+  /** FR-010: "Add next step" (or "Edit"), fill the form, save */
+  async addNextStep(form: NextStepForm): Promise<void> {
+    await this.stepButton('Add next step').click()
+    await this.fillNextStep(form)
+  }
+
+  async editNextStep(form: NextStepForm): Promise<void> {
+    await this.stepButton('Edit').click()
+    await this.fillNextStep(form)
+  }
+
+  /** Fills the open step form and saves it */
+  async fillNextStep(form: NextStepForm): Promise<void> {
+    for (const [field, label] of Object.entries(STEP_INPUTS)) {
+      const value = form[field as keyof NextStepForm]
+      if (value !== undefined) await this.stepSection().getByLabel(label).fill(value)
+    }
+    await this.stepButton('Save step').click()
+  }
+
+  async completeNextStep(): Promise<void> {
+    await this.stepButton('Done').click()
+  }
+
+  async removeNextStep(): Promise<void> {
+    await this.stepButton('Remove step').click()
+  }
+
+  async addStepToCalendar(): Promise<void> {
+    await this.stepButton('Add to calendar').click()
+  }
+
+  async verifyNextStep(text: string, when: RegExp): Promise<void> {
+    const shown = this.stepSection().getByTestId('next-step')
+    await expect(shown).toContainText(text)
+    await expect(shown).toContainText(when)
+  }
+
+  async verifyNoNextStep(): Promise<void> {
+    await expect(this.stepSection().getByTestId('next-step')).toHaveCount(0)
+    await expect(this.stepButton('Add next step')).toBeVisible()
+  }
+
+  /** US-1.3: the error next to a step field */
+  async verifyStepError(field: keyof NextStepForm, message: string): Promise<void> {
+    const input = this.stepSection().getByLabel(STEP_INPUTS[field])
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input).toHaveAccessibleDescription(message)
+  }
+
+  /** FR-013: opened from the card menu, the focus is on the step */
+  async verifyStepFocused(control: 'form' | 'edit'): Promise<void> {
+    if (control === 'form') await expect(this.stepSection().getByLabel('Step')).toBeFocused()
+    else await expect(this.stepButton('Edit')).toBeFocused()
   }
 
   // ── Notes ──────────────────────────────────────────────────────────────
@@ -232,7 +307,7 @@ export class ApplicationDetailsScreen extends BaseComponent {
     await expect(this.openVacancyButton).toBeHidden()
   }
 
-  async verifyNotes(texts: string[]): Promise<void> {
+  async verifyNotes(texts: (string | RegExp)[]): Promise<void> {
     await expect(this.notes.getByRole('paragraph')).toHaveText(texts)
   }
 

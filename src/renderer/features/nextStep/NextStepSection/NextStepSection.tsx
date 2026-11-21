@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { stepStatus, type NextStep } from '@domain/nextStep'
 import { Badge, Button, CalendarIcon, CheckIcon, PencilIcon, Section, TextField } from '@ui'
@@ -31,14 +31,8 @@ export function NextStepSection({
   focus = false,
 }: Props) {
   const { t } = useTranslation()
+  // FR-013: opened from the card menu, the form opens at once when there is no step
   const [editing, setEditing] = useState(focus && !step)
-  const first = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    if (focus && step) first.current?.focus()
-    // Only when the panel opens
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <Section title={t('nextStep.title')}>
@@ -54,14 +48,14 @@ export function NextStepSection({
         <StepView
           step={step}
           now={now}
-          firstRef={first}
+          focus={focus}
           onEdit={() => setEditing(true)}
           onDone={onDone}
           onRemove={onRemove}
           onAddToCalendar={onAddToCalendar}
         />
       ) : (
-        <Button ref={first} onClick={() => setEditing(true)}>
+        <Button onClick={() => setEditing(true)}>
           <CalendarIcon size={14} />
           {t('nextStep.add')}
         </Button>
@@ -73,22 +67,15 @@ export function NextStepSection({
 interface StepViewProps {
   step: NextStep
   now: Date
-  firstRef: React.RefObject<HTMLButtonElement | null>
+  /** FR-013: the dialog focuses "Edit" when it opens */
+  focus: boolean
   onEdit(): void
   onDone(): void
   onRemove(): void
   onAddToCalendar(): void
 }
 
-function StepView({
-  step,
-  now,
-  firstRef,
-  onEdit,
-  onDone,
-  onRemove,
-  onAddToCalendar,
-}: StepViewProps) {
+function StepView({ step, now, focus, onEdit, onDone, onRemove, onAddToCalendar }: StepViewProps) {
   const { t } = useTranslation()
   const labels = useStepLabels()
   const status = stepStatus(step, now)
@@ -104,7 +91,7 @@ function StepView({
           <CheckIcon size={14} />
           {t('nextStep.done')}
         </Button>
-        <Button ref={firstRef} size="small" onClick={onEdit}>
+        <Button size="small" autoFocus={focus} onClick={onEdit}>
           <PencilIcon size={14} />
           {t('nextStep.edit')}
         </Button>
@@ -146,6 +133,8 @@ function NextStepForm({ step, onSave, onCancel }: FormProps) {
         error={form.errorText('text')}
         autoComplete="off"
         autoFocus
+        // The details dialog focuses it when it opens with the form (FR-013)
+        data-autofocus
         onChange={(event) => form.set('text', event.target.value)}
       />
       <div className={styles.when}>
