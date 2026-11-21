@@ -10,6 +10,7 @@ import {
   type AppState,
   type CardColor,
   type ExportResult,
+  type SaveSkillResult,
   type ImportPreview,
   type KnownSiteId,
   type Language,
@@ -185,6 +186,9 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       updateNote: (id: string, noteId: string, text: string) =>
         run(() => window.findy.updateNote(id, noteId, text)),
       deleteNote: (id: string, noteId: string) => run(() => window.findy.deleteNote(id, noteId)),
+
+      /** Spec 016 FR-021: null when it failed (already notified) */
+      saveSkill: (): Promise<SaveSkillResult | null> => attempt(() => window.findy.saveSkill()),
 
       /** FR-015: main opens http(s) links in the system browser only */
       openLink: async (url: string) => {

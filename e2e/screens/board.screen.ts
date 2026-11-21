@@ -266,6 +266,16 @@ export class BoardScreen extends BaseComponent {
   }
 
   /** Spec 008 FR-008: a success message (a status, not an alert) */
+  /** Spec 016 FR-021 */
+  async saveSkill(): Promise<void> {
+    await this.assistantDialog.getByRole('button', { name: 'Save skill…' }).click()
+  }
+
+  /** Spec 016 FR-023 */
+  async openSkillInstall(): Promise<void> {
+    await this.assistantDialog.getByRole('button', { name: 'How to install' }).click()
+  }
+
   async verifyInfo(text: string): Promise<void> {
     await expect(this.page.getByRole('status').filter({ hasText: text })).toBeVisible()
   }

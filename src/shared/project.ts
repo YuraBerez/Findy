@@ -18,3 +18,6 @@ export const releasePageUrl = (tag: string): string => `${RELEASE_PAGE_PREFIX}${
 
 /** Spec 006 FR-005: the latest published, stable release (drafts and pre-releases excluded) */
 export const LATEST_RELEASE_API_URL = `https://api.github.com/repos/${REPOSITORY}/releases/latest`
+
+/** Spec 016 FR-023: the README section with the steps to install the skill */
+export const SKILL_INSTALL_URL = `${PROJECT_URL}#install-the-findy-skill`

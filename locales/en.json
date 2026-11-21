@@ -188,7 +188,12 @@
     "copy": "Copy",
     "copied": "Copied",
     "otherTitle": "Other MCP clients",
-    "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI and other apps that run local (stdio) MCP servers use this command."
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI and other apps that run local (stdio) MCP servers use this command.",
+    "skillTitle": "Skill for your assistant",
+    "skillHint": "A skill teaches Claude and other assistants how to use Findy: the tools, the safe steps and the typical tasks. Save it and add it to your assistant.",
+    "saveSkill": "Save skill…",
+    "skillInstall": "How to install",
+    "skillSaved": "Skill saved. Add it to your assistant."
   },
   "views": {
     "label": "Views",

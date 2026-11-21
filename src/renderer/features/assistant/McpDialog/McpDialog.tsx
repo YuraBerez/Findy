@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { McpConnection } from '@shared/ipc'
-import { CodeBlock, Dialog, Switch } from '@ui'
+import { Button, CodeBlock, Dialog, ExternalLinkIcon, Switch } from '@ui'
 import styles from './McpDialog.module.css'
 
 interface Props {
   enabled: boolean
   onChange(enabled: boolean): void
+  /** Spec 016 FR-021 */
+  onSaveSkill(): void
+  /** Spec 016 FR-023: the README steps in the browser */
+  onOpenInstall(): void
   onClose(): void
 }
 
 const quote = (value: string) => (/[\s"]/.test(value) ? JSON.stringify(value) : value)
 
-/** Spec 004 US-1, FR-009: turn assistant access on/off and show how to connect. */
-export function McpDialog({ enabled, onChange, onClose }: Props) {
+/** Spec 004 US-1, FR-009: turn assistant access on/off and show how to connect; spec 016: the skill. */
+export function McpDialog({ enabled, onChange, onSaveSkill, onOpenInstall, onClose }: Props) {
   const { t } = useTranslation()
   const [connection, setConnection] = useState<McpConnection | null>(null)
 
@@ -65,6 +69,16 @@ export function McpDialog({ enabled, onChange, onClose }: Props) {
           />
         </>
       )}
+      {/* Spec 016 FR-020, FR-022: also with access off, so the user can prepare */}
+      <h3 className={styles.heading}>{t('mcp.skillTitle')}</h3>
+      <p className={styles.hint}>{t('mcp.skillHint')}</p>
+      <div className={styles.actions}>
+        <Button onClick={onSaveSkill}>{t('mcp.saveSkill')}</Button>
+        <Button variant="ghost" onClick={onOpenInstall}>
+          <ExternalLinkIcon size={14} />
+          {t('mcp.skillInstall')}
+        </Button>
+      </div>
     </Dialog>
   )
 }
