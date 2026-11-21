@@ -35,6 +35,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     }),
     checkForUpdates: vi.fn(async () => ({ status: 'latest' as const, currentVersion: '0.1.0' })),
     readVacancy: vi.fn(async () => ({ title: 'Frontend Developer', company: 'Acme' })),
+    saveSkill: vi.fn(async () => ({ status: 'saved' as const })),
     siteIcons: {
       icons: vi.fn(() => ({ 'djinni.co': 'data:image/png;base64,AA==' })),
       refresh: vi.fn(async () => {}),
@@ -389,6 +390,26 @@ describe('answerOfferQuestion (spec 013 FR-004)', () => {
   it('rejects arguments with VALIDATION', async () => {
     const ctx = setup()
     expect(await ctx.handlers.answerOfferQuestion('no')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+})
+
+describe('saveSkill (spec 016)', () => {
+  it('saves without a database and reports a failed write as STORAGE (FR-021, FR-022)', async () => {
+    const { handlers } = setup({ repository: null, transfer: null })
+    expect(unwrap(await handlers.saveSkill())).toEqual({ status: 'saved' })
+    const failing = setup({
+      saveSkill: vi.fn(async () => {
+        throw new Error('EACCES')
+      }),
+    })
+    expect(await failing.handlers.saveSkill()).toMatchObject({
+      ok: false,
+      error: { code: 'STORAGE' },
+    })
+    expect(await failing.handlers.saveSkill('extra')).toMatchObject({
       ok: false,
       error: { code: 'VALIDATION' },
     })

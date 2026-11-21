@@ -28,6 +28,7 @@ import type {
   IpcMethod,
   IpcResult,
   McpConnection,
+  SaveSkillResult,
   UpdateCheckResult,
   UpdateTrigger,
   VacancyData,
@@ -60,6 +61,8 @@ export interface IpcDeps {
   siteIcons: { icons(): Record<string, string>; refresh(hosts: string[]): Promise<void> } | null
   /** Spec 009: main/vacancy.ts#readVacancyPage with a session without cookies */
   readVacancy(url: string): Promise<VacancyData | null>
+  /** Spec 016: main/skill#createSkillSaver; needs no database */
+  saveSkill(): Promise<SaveSkillResult>
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -232,6 +235,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       return state()
     }),
     getMcpConnection: handle(none, () => deps.mcpConnection()),
+    saveSkill: handle(none, () => deps.saveSkill()),
     setTheme: handle(z.tuple([ThemeSchema]), (theme) => {
       repo().setTheme(theme)
       deps.applyTheme(theme)

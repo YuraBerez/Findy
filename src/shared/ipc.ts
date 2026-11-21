@@ -48,6 +48,7 @@ export const IPC_METHODS = [
   'refreshSiteIcons',
   'setMcpEnabled',
   'getMcpConnection',
+  'saveSkill',
   'getSystemLocale',
   'openExternal',
   'getAppInfo',
@@ -146,6 +147,9 @@ export type UpdateCheckResult =
   | { status: 'latest'; currentVersion: string }
 
 /** Spec 008 */
+/** Spec 016 FR-021 */
+export type SaveSkillResult = { status: 'saved' } | { status: 'cancelled' }
+
 export type ExportResult = { status: 'saved'; count: number } | { status: 'cancelled' }
 
 /** Spec 008 FR-020: what an import would do; nothing has changed yet */
@@ -241,6 +245,8 @@ export interface FindyApi {
   setMcpEnabled(enabled: boolean): Promise<AppState>
   /** Spec 004 FR-009: how an MCP client starts Findy's server */
   getMcpConnection(): Promise<McpConnection>
+  /** Spec 016: the skill archive through the system save dialog; STORAGE when the write fails */
+  saveSkill(): Promise<SaveSkillResult>
   getSystemLocale(): Promise<string>
   openExternal(url: string): Promise<void>
   getAppInfo(): Promise<AppInfo>

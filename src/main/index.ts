@@ -15,6 +15,8 @@ import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
+import skillText from '../../skills/findy/SKILL.md?raw'
+import { createSkillSaver } from './skill'
 import { createTransfer } from './transfer'
 import { createUpdateChecker, fetchLatestRelease } from './updates'
 
@@ -122,11 +124,27 @@ function start(): void {
       newToken: randomUUID,
     })
 
+  // Spec 016: the skill of this version; saving needs no database and no network
+  const skill = createSkillSaver({
+    version: app.getVersion(),
+    skillText,
+    pickSavePath: async (defaultPath) => {
+      const owner = BrowserWindow.getFocusedWindow()
+      const options = { defaultPath, filters: [{ name: 'ZIP', extensions: ['zip'] }] }
+      const result = await (owner
+        ? dialog.showSaveDialog(owner, options)
+        : dialog.showSaveDialog(options))
+      return result.canceled ? null : (result.filePath ?? null)
+    },
+    writeBytes: (path, data) => writeFile(path, data),
+  })
+
   const handlers = createHandlers({
     repository,
     transfer,
     storage,
     appVersion: app.getVersion(),
+    saveSkill: () => skill.save(),
     getSystemLocale: () => app.getLocale(),
     openExternal: (url) => shell.openExternal(url),
     applyTheme: (theme) => {
