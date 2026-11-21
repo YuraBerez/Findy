@@ -511,6 +511,10 @@
     "summary_few": "{{count}} кроки на сьогодні або прострочені.",
     "summary_many": "{{count}} кроків на сьогодні або прострочених.",
     "summary_other": "{{count}} кроку на сьогодні або прострочених.",
-    "step": "{{title}} · {{company}}, о {{time}}"
+    "step": "{{title}} · {{company}}, о {{time}}",
+    "stepTitle_one": "Через {{count}} хв: {{text}}",
+    "stepTitle_few": "Через {{count}} хв: {{text}}",
+    "stepTitle_many": "Через {{count}} хв: {{text}}",
+    "stepTitle_other": "Через {{count}} хв: {{text}}"
   }
 }

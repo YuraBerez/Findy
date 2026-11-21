@@ -44,7 +44,7 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 5 — US-4: reminders (P1)
 
-- [ ] T040 `main/reminders.ts`: summary at start and at midnight, 15 minutes before,
+- [ ] T040 `main/reminders.ts`: summary at start and at midnight, 15 and 1 minute before,
   once per key, wake from sleep, off switch; unit tests with a fake clock (FR-031…FR-036)
 - [ ] T041 Wiring in `main/index.ts`: `Notification`, click → window and
   `openApplication`, `powerMonitor`, checks after IPC and MCP changes (FR-035, FR-037)

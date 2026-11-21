@@ -81,7 +81,9 @@ them when Findy is in the background.
 1. **Given** two steps for today and one overdue step, **When** I start Findy, **Then**
    one system notification says that I have 3 steps for today or overdue.
 2. **Given** a step today at 15:00 and Findy is open, **When** it is 14:45, **Then** a
-   system notification shows the step text, the job title and the company.
+   system notification "In 15 min: <step text>" shows, with the job title and the
+   company. **When** it is 14:59, **Then** a second notification "In 1 min: <step text>"
+   shows.
 3. **When** I click a notification, **Then** the Findy window comes to the front; for a
    notification about one step, the details of that application open.
 4. **Given** I turn off "Reminders" in the app menu, **Then** Findy shows no system
@@ -160,12 +162,15 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
 - **FR-031** When Reminders are on and at least one step is due today or overdue, Findy
   MUST show one summary notification: when the app starts, and at local midnight while
   the app runs. The text MUST give the count with correct plurals.
-- **FR-032** When Reminders are on, Findy MUST show a notification 15 minutes before a
-  step that has a time, while the app runs. If the computer wakes from sleep after that
-  moment but before the step time, Findy MUST show it at once. After the step time,
+- **FR-032** When Reminders are on, Findy MUST show a notification 15 minutes and another
+  1 minute before a step that has a time, while the app runs. The title MUST say how many
+  minutes are left and give the step text ("In 15 min: …"). If the app starts or the
+  computer wakes from sleep after one of these moments but before the step time, Findy
+  MUST show the reminder of the latest moment at once, not both. After the step time,
   Findy MUST NOT show it.
-- **FR-033** Findy MUST show each FR-032 notification once for a given step date and
-  time. If the user changes the date or the time, the step MUST get a new reminder.
+- **FR-033** Findy MUST show each FR-032 notification once for a given step date, time
+  and lead time. If the user changes the date or the time, the step MUST get new
+  reminders.
 - **FR-034** Steps of applications in Rejected MUST NOT count in FR-031 and MUST NOT get
   FR-032 notifications. Steps in hidden columns (spec 002) MUST count.
 - **FR-035** A click on a notification MUST bring the window to the front. For an FR-032
@@ -217,8 +222,8 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
 
 - The app is closed at the step time: no notification at that time. The next start shows
   the summary (FR-031), and the card says "Overdue".
-- The app starts 5 minutes before a step at 15:00: the FR-032 notification shows at once,
-  in addition to the summary.
+- The app starts 5 minutes before a step at 15:00: the FR-032 notification shows at once
+  ("In 5 min: …"), in addition to the summary; the 1-minute reminder follows at 14:59.
 - The user edits a past step to a future date: it is no longer overdue and gets a new
   reminder.
 - The computer clock changes or the time zone changes: the marks and reminders use the
@@ -233,7 +238,7 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
   the "Done" note.
 - Reminders while Findy is closed, a tray icon, start at login.
 - Two-way sync with a calendar service, a calendar feed, invites.
-- A user choice of the reminder lead time (fixed at 15 minutes).
+- A user choice of the reminder lead times (fixed at 15 minutes and 1 minute).
 - A filter or a view "Due this week".
 
 ## Success criteria
@@ -256,6 +261,9 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
   step with a time (owner). "Add to calendar" saves an `.ics` file (owner).
 - **D-5** A move to Offer or Rejected keeps the step. In Rejected the step has no mark and
   no reminders (owner).
+- **D-7** Two reminders before a step with a time: 15 minutes to get ready and 1 minute
+  to not miss the start, with "In N min: <step>" as the title (owner, 2026-11-21, after a
+  review of the first build).
 - **D-6** Steps are local wall-clock times, because an interview at 15:00 is set in the
   user's own time; a time zone change is rare for this app.
 

@@ -325,7 +325,7 @@ build/                   # icons, entitlements for electron-builder
 - `nextStep` is a whole value in the create and update patch, so MCP shares the rules.
   "Done" is its own call (`completeNextStep`): it clears the step and adds a note in one
   transaction, with the note text written by main in the UI language.
-- `main/reminders.ts` shows the system notifications. It checks every 30 seconds, after
+- `main/reminders.ts` shows the system notifications. It checks every 10 seconds (reminders 15 minutes and 1 minute before a step), after
   each IPC call, after an MCP change and when the computer wakes, because renderer timers
   slow down in a hidden window. Shown reminders are kept in memory for the run.
 - The renderer clock (`hooks/useNow`) waits until the next moment a card mark changes

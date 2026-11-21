@@ -11,8 +11,8 @@ import {
 import type { Language } from '../domain/types'
 import type { Translate } from './i18n'
 
-/** Plan D-3: often enough for a 15-minute reminder, and it catches a wake from sleep */
-export const CHECK_INTERVAL_MS = 30_000
+/** Plan D-3: often enough for the 1-minute reminder, and it catches a wake from sleep */
+export const CHECK_INTERVAL_MS = 10_000
 
 export interface ReminderNotice {
   title: string
@@ -55,14 +55,15 @@ export function createReminders(deps: RemindersDeps) {
         applicationId: null,
       })
 
-    // FR-032, FR-033: once per step date and time
-    for (const ref of dueReminders(refs, now)) {
-      const key = reminderKey(ref)
+    // FR-032, FR-033: once per step date, time and lead
+    for (const due of dueReminders(refs, now)) {
+      const key = reminderKey(due)
       if (shown.has(key)) continue
       shown.add(key)
+      const { ref } = due
       // FR-036: the step text, the job title and the company; never the notes
       deps.show({
-        title: ref.nextStep.text,
+        title: t('reminders.stepTitle', { count: due.minutes, text: ref.nextStep.text }),
         body: t('reminders.step', {
           title: ref.title,
           company: ref.company,
@@ -75,7 +76,7 @@ export function createReminders(deps: RemindersDeps) {
 
   return {
     check,
-    /** Checks now and then every 30 seconds; returns the stop function */
+    /** Checks now and then every 10 seconds; returns the stop function */
     start(): () => void {
       check()
       const timer = setInterval(check, CHECK_INTERVAL_MS)

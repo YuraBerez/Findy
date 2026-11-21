@@ -24,7 +24,7 @@ No new dependency.
 | Storage | 3 nullable columns on `applications` (migration 005); setting row `remindersEnabled` |
 | Dates | Local wall-clock strings `YYYY-MM-DD` and `HH:MM` (spec D-6); `new Date(y, m, d, h, min)` gives the moment in the current time zone |
 | Formatting | `Intl.DateTimeFormat` in `domain/nextStep/format.ts`, shared by the renderer (marks, details) and main (the "Done" note, notifications) |
-| Notifications | Electron `Notification` in main; a 30-second check, plus a check after each IPC call, after an MCP change and on `powerMonitor` `resume` |
+| Notifications | Electron `Notification` in main; a 10-second check, plus a check after each IPC call, after an MCP change and on `powerMonitor` `resume` |
 | Calendar file | iCalendar (RFC 5545) text built in the domain: floating local time, or `VALUE=DATE` for an all-day event |
 | Testing | Vitest: domain, migration, repository, IPC, reminders with a fake clock, calendar, MCP, CSV; e2e for US-1…US-6 |
 | Target platforms | Windows, macOS, Linux; `Notification.isSupported()` guards FR-037 |
@@ -146,15 +146,15 @@ together, time only with a date) stays in zod; a row that breaks it reads as no 
 - **Chosen:** main.
 - **Why:** Chromium slows timers in a hidden or minimized window, so a 15-minute
   reminder could come late. Main owns the database and `Notification`, and it sees the
-  MCP changes. A 30-second check is cheap with `listNextSteps()` (NFR-005), and it catches
+  MCP changes. A 10-second check is cheap with `listNextSteps()` (NFR-005), and it catches
   a wake from sleep (FR-032) without exact timers.
 
 ### D-4 — Shown reminders in memory
 
 - **Options considered:** store the keys of shown reminders; keep them in memory.
-- **Chosen:** memory: a set of `id|date|time` keys for this run.
-- **Why:** FR-033 needs "once per date and time"; a changed date or time is a new key.
-  After a restart inside the 15 minutes the reminder can show once more. That is rare and
+- **Chosen:** memory: a set of `id|date|time|lead` keys for this run.
+- **Why:** FR-033 needs "once per date, time and lead time"; a changed date or time is a
+  new key. After a restart inside the 15 minutes the reminder can show once more. That is rare and
   harmless, and the spec edge case asks for a reminder at start anyway.
 
 ### D-5 — Floating local time in the calendar file

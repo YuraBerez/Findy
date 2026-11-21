@@ -268,7 +268,7 @@ function start(): void {
 
   createWindow()
 
-  // Spec 015 FR-031, FR-032: the summary at start, then a check every 30 seconds and on wake
+  // Spec 015 FR-031, FR-032: the summary at start, then a check every 10 seconds and on wake
   if (reminders) {
     const stop = reminders.start()
     powerMonitor.on('resume', reminders.check)
