@@ -56,3 +56,4 @@ Rules:
 | 015 | [Next step and reminders](015-next-step/spec.md) | Approved (2026-11-21) |
 | 016 | [A skill for AI assistants that use Findy](016-mcp-skill/spec.md) | Implemented (#40) |
 | 017 | [Install the skill with one command](017-skill-install-command/spec.md) | Implemented (#41) |
+| 018 | [One settings window](018-settings/spec.md) | Draft |
