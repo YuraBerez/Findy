@@ -87,6 +87,7 @@ src/
 │   │                        # rows.ts: table rows and mapping; errors.ts
 │   ├── updates.ts       # spec 006: latest release request, the update checker
 │   ├── transfer.ts      # spec 008: CSV files through system dialogs, pending import
+│   ├── skill/           # spec 016: the skill archive (zip writer, save through the dialog)
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
 ├── preload/
@@ -119,6 +120,7 @@ e2e/                     # Playwright + playwright-e2e-kit (D-6)
 ├── screens/             # page objects: private locators, verbs, verify…()
 ├── fixtures/app.ts      # one Electron app + isolated database per test
 └── data/                # back door: seed and read through window.findy
+skills/findy/SKILL.md    # spec 016: the skill for AI assistants (bundled into main)
 build/                   # icons, entitlements for electron-builder
 .github/workflows/       # ci.yml, release.yml
 ```
@@ -299,6 +301,17 @@ build/                   # icons, entitlements for electron-builder
   `create`, `update` and `importMany`, so the app, CSV import and MCP share one rule.
 - CSV and MCP read a source as text (`parseSourceText`): a known site or channel by id or
   name, else a custom name.
+
+### D-15 — The skill for assistants is a bundled text file (spec 016)
+
+- `skills/findy/SKILL.md` (Agent Skills format) is the only copy. Main imports it with
+  Vite's `?raw`, so each build holds the skill of its version and saving needs no network
+  and no resource path.
+- `saveSkill` writes a zip of stored entries (`main/skill/zip.ts`, CRC-32 from `node:zlib`):
+  `findy/SKILL.md` at the root, as an upload to Claude Desktop expects. No zip library.
+- `tests/unit/skill.test.ts` compares the `### <tool>` headings under `## Tools` with
+  `createTools`, so the skill cannot fall behind the MCP tools.
+- The release workflow packs the same folder with `zip`.
 
 ## Cross-cutting docs
 

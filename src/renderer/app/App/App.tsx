@@ -16,7 +16,7 @@ import { useNow } from '../../hooks/useNow'
 import { ImportDialog } from '../../features/transfer'
 import { StorageError } from '../../features/storage'
 import { SitesView } from '../../features/sites'
-import { SUPPORT_URL } from '@shared/project'
+import { SKILL_INSTALL_URL, SUPPORT_URL } from '@shared/project'
 import { Toolbar } from '../Toolbar'
 import { useNotifications } from '../notifications'
 import { useAppState } from '../useAppState'
@@ -177,6 +177,11 @@ export function App({ initialState }: { initialState: AppState }) {
         <McpDialog
           enabled={state.settings.mcpEnabled}
           onChange={actions.setMcpEnabled}
+          onSaveSkill={async () => {
+            const result = await actions.saveSkill()
+            if (result?.status === 'saved') notify(t('mcp.skillSaved'))
+          }}
+          onOpenInstall={() => actions.openLink(SKILL_INSTALL_URL)}
           onClose={() => setAssistant(false)}
         />
       )}

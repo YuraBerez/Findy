@@ -13,5 +13,7 @@
 
 **With a package manager:** `brew tap yuraberez/findy && brew trust yuraberez/findy && brew install --cask findy` (macOS) · `scoop bucket add findy https://github.com/YuraBerez/scoop-findy && scoop install findy` (Windows).
 
+**AI assistant skill:** [findy-skill-VERSION.zip](https://github.com/YuraBerez/findy/releases/download/vVERSION/findy-skill-VERSION.zip) teaches Claude and other assistants to use Findy through MCP (README → Install the Findy skill).
+
 **Check a download:** compare it with `SHA256SUMS.txt`, or run `gh attestation verify <file> --repo YuraBerez/findy`.
 

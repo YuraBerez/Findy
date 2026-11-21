@@ -194,7 +194,12 @@
     "copy": "Копіювати",
     "copied": "Скопійовано",
     "otherTitle": "Інші MCP-клієнти",
-    "otherHint": "Gemini CLI (~/.gemini/settings.json, розділ \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI та інші застосунки з локальними (stdio) MCP-серверами використовують цю команду."
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, розділ \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI та інші застосунки з локальними (stdio) MCP-серверами використовують цю команду.",
+    "skillTitle": "Скіл для асистента",
+    "skillHint": "Скіл навчає Claude та інших асистентів працювати з Findy: інструменти, безпечні кроки й типові задачі. Збережіть його й додайте до свого асистента.",
+    "saveSkill": "Зберегти скіл…",
+    "skillInstall": "Як встановити",
+    "skillSaved": "Скіл збережено. Додайте його до свого асистента."
   },
   "views": {
     "label": "Розділи",

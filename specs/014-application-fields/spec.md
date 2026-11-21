@@ -1,7 +1,7 @@
 # Feature Spec: More application fields
 
 - **ID:** 014-application-fields
-- **Status:** Approved
+- **Status:** Implemented (unreleased, #39)
 - **Approved:** 2026-11-21 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-21
