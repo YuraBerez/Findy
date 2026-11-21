@@ -3,6 +3,19 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.6.1] - 2026-11-21
+
+### Fixes
+- **Check for updates** works again when GitHub spells the project name in other letter case. **Findy 0.5.0 always says that it cannot check for updates: download 0.6.1 from the Releases page once.** Findy 0.6.0 and later check as usual.
+- If Findy cannot read the AI assistant connection, **⋯ → Settings… → AI assistant** now shows an error notification. Before, the connection steps did not show and there was no message.
+
+### Security
+- The app accepts calls to its data only from its own window.
+
+### For contributors
+- ESLint now checks the code layers: the pure domain, no zod in the window code, and the order `ui` → `hooks` → `features` → `app`.
+- `docs/architecture.md` shows the current project structure.
+
 ## [0.6.0] - 2026-11-21
 
 ### Next step and reminders
