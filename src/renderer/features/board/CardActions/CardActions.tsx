@@ -40,6 +40,12 @@ export function CardActions({ application }: { application: Application }) {
               onSelect: () => board.move(application.id, { stage, index: 0 }),
             })),
           { key: 'color-separator', separator: true },
+          // Spec 015 FR-013
+          {
+            key: 'next-step',
+            label: t('nextStep.menuItem'),
+            onSelect: () => board.openStep(application.id),
+          },
           {
             key: 'color',
             submenu: true,

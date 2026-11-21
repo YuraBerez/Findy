@@ -11,6 +11,7 @@ import {
   type WorkFormat,
 } from '../fields'
 import { isHttpUrl, LIMITS } from '../limits'
+import { parseStepDateText, stepTextProblem, type NextStep } from '../nextStep'
 import { firstVisibleStage, STAGES, type StageId } from '../stages'
 import type { Application, StageChange } from '../types'
 import { COLUMNS, normalizeName, type Column, type TransferLabels } from './columns'
@@ -40,6 +41,8 @@ export interface ImportedApplication {
   color: CardColor | null
   /** Spec 014 */
   fields: ApplicationFields
+  /** Spec 015 */
+  nextStep: NextStep | null
   createdAt: string
   stageHistory: StageChange[]
   /** Newest first, as on the board */
@@ -168,6 +171,19 @@ function readFields(
   }
 }
 
+/** Spec 015 FR-052: both cells or neither; a text without a valid date skips the row */
+function readNextStep(cell: (column: Column) => string, fail: Fail): NextStep | null {
+  const text = cell('nextStep').trim()
+  const dateText = cell('nextStepDate').trim()
+  if (!text && !dateText) return null
+  const when = dateText ? parseStepDateText(dateText) : null
+  const problem = stepTextProblem(text)
+  if (problem) fail('nextStep', problem === 'oneLine' ? 'invalid' : problem)
+  if (!dateText) fail('nextStepDate', 'required')
+  else if (!when) fail('nextStepDate', 'invalid')
+  return problem || !when ? null : { text, ...when }
+}
+
 const HISTORY_LINE = /^(\S+)\s+[—–-]\s+(.+)$/
 
 /**
@@ -259,6 +275,7 @@ export function planImport(rows: string[][], context: ImportContext): ImportPlan
     if (!notes) fail('notes', 'tooLong')
 
     const fields = readFields(cell, fail, { periodOf, workFormatOf, channelNames })
+    const nextStep = readNextStep(cell, fail)
 
     if (rowErrors.length > 0 || !stage || color === undefined || !notes) {
       plan.errors.push(...rowErrors)
@@ -285,6 +302,7 @@ export function planImport(rows: string[][], context: ImportContext): ImportPlan
       stage,
       color,
       fields,
+      nextStep,
       createdAt,
       stageHistory: history,
       notes,

@@ -50,6 +50,10 @@ fails; tell the user and ask which stage to use.
   user's own site. If you leave it out on a new application with a job site link, Findy
   fills it in.
 - `contactName` and `contactDetails`: the recruiter and how to reach them.
+- `nextStep`: the one next step, `{ text, date, time }`. `text` is one line (up to 200
+  characters), `date` is `YYYY-MM-DD`, and `time` is `HH:MM` (24 h) or left out for all
+  day. Both are the user's local time. Findy shows it on the card and reminds the user.
+  A new value replaces the old one; `null` clears it.
 - Read only: `stage`, `stageName`, `inStageSince` (when it entered its stage), notes,
   stage history, `createdAt`, `updatedAt`.
 
@@ -63,7 +67,8 @@ if you are not sure that a stage is visible.
 ### list_applications
 
 All applications in board order, without note texts. Optional `stage` (an id) and
-`query` (text in the title, the company, the location, the source or the contact). Use it
+`query` (text in the title, the company, the location, the source, the contact or the
+next step). Use it
 to find an application by company before you change it, and for a review.
 
 ### get_application
@@ -135,7 +140,9 @@ The user says "I had the technical interview at Globex, they asked about React".
 2. If the stage changed, call `move_application`.
 3. Call `add_note` with what the user said: the date, the people, the questions, the
    next steps.
-4. If the user gave a salary or a contact, call `update_application`.
+4. If the user gave a salary or a contact, call `update_application`. If the user named
+   the next step with a date ("the final call is on Tuesday at 11:00"), set `nextStep`
+   too. Turn a relative day into a date and say the date in your answer.
 5. Confirm (rule 5).
 
 ### Review the job search
@@ -147,7 +154,8 @@ The user asks "How is my job search going?".
 3. List the applications outside Offer and Rejected that have been in their stage for more
    than 14 days (from `inStageSince`; 14 days is Findy's default for "no movement").
    Suggest a follow-up for each, for example a short message to the contact.
-4. Name the offers and the interviews in progress.
+4. Name the next steps that are due today or overdue (from `nextStep`), then the offers
+   and the interviews in progress.
 5. Keep it short: a few lines and a list. Do not change anything.
 
 ### Prepare for an interview

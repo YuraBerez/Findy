@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { DEFAULT_ANALYTICS_VIEW } from '../domain/analytics'
+import { formatStepWhen } from '../domain/nextStep'
 import { STALE_DAYS } from '../domain/stale'
 import {
   AnalyticsViewSchema,
@@ -28,13 +29,16 @@ import type {
   IpcMethod,
   IpcResult,
   McpConnection,
+  SaveFileResult,
   SaveSkillResult,
   UpdateCheckResult,
   UpdateTrigger,
   VacancyData,
 } from '../shared/ipc'
 import { KNOWN_SITES, siteHost } from '../domain/sites'
+import type { CalendarSaver } from './calendar'
 import { HiddenStageError, NotFoundError, SiteLimitError, type Repository } from './db/repository'
+import { createMainTranslator } from './i18n'
 import { isSafeExternalUrl } from './security'
 import type { Transfer } from './transfer'
 import { UpdateCheckError } from './updates'
@@ -63,6 +67,8 @@ export interface IpcDeps {
   readVacancy(url: string): Promise<VacancyData | null>
   /** Spec 016: main/skill#createSkillSaver; needs no database */
   saveSkill(): Promise<SaveSkillResult>
+  /** Spec 015: main/calendar.ts#createCalendarSaver */
+  calendar: Pick<CalendarSaver, 'save'>
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -101,6 +107,7 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     },
     applications: deps.repository?.listApplications() ?? [],
     sites: deps.repository?.listSites() ?? [],
@@ -128,6 +135,23 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     updateApplication: handle(z.tuple([IdSchema, ApplicationPatchSchema]), (id, patch) => {
       repo().updateApplication(id, patch)
+      return state()
+    }),
+    // Spec 015 FR-012: main writes the note, so the language and the date format agree
+    completeNextStep: handle(z.tuple([IdSchema, LanguageSchema]), (id, language) => {
+      const t = createMainTranslator(language)
+      repo().completeNextStep(id, (step) =>
+        t('nextStep.doneNote', { text: step.text, when: formatStepWhen(step, language) }),
+      )
+      return state()
+    }),
+    saveNextStepCalendar: handle(z.tuple([IdSchema]), (id): Promise<SaveFileResult> => {
+      const application = repo().getApplication(id)
+      if (!application.nextStep) throw new NotFoundError('Next step of application', id)
+      return deps.calendar.save(application, application.nextStep)
+    }),
+    setRemindersEnabled: handle(z.tuple([z.boolean()]), (enabled) => {
+      repo().setRemindersEnabled(enabled)
       return state()
     }),
     // Spec 007 D-1: not part of the patch, so the MCP update tool cannot set it

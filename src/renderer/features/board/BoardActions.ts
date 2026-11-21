@@ -12,6 +12,8 @@ export interface BoardActions {
   setColor(id: string, color: CardColor | null): void
   /** FR-025: open the card's details */
   open(id: string): void
+  /** Spec 015 FR-013: open the details at the next step */
+  openStep(id: string): void
   /** FR-016: open the vacancy in the system browser */
   openLink(url: string): void
   /** Columns on the board, in order: the only valid move targets (spec 002) */
@@ -20,6 +22,8 @@ export interface BoardActions {
   hide(stage: StageId): void
   /** Spec 010 FR-003: days without movement when the card is stale, else null */
   staleDays(application: Application): number | null
+  /** Spec 015 FR-020, FR-023: the clock of the step marks */
+  now: Date
   /** Card to focus after it moved (it remounts in its new column) */
   focusId: string | null
   clearFocus(): void

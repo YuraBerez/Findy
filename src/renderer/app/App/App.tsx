@@ -1,6 +1,7 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { lastCurrency } from '@domain/fields'
+import { nextStatusChange } from '@domain/nextStep'
 import type { AppState, ImportPreview, Language } from '@shared/ipc'
 import { ConfirmDialog, panelId, tabId } from '@ui'
 import { Analytics } from '../../features/analytics'
@@ -30,16 +31,41 @@ export function App({ initialState }: { initialState: AppState }) {
     notifyError,
   )
   const [adding, setAdding] = useState(false)
+  const [view, setView] = useState<View>('board')
   const [openId, setOpenId] = useState<string | null>(null)
+  // Spec 015 FR-013: the details opened at the next step
+  const [openAtStep, setOpenAtStep] = useState(false)
+  const open = useCallback((id: string | null, atStep = false) => {
+    setOpenId(id)
+    setOpenAtStep(atStep)
+  }, [])
   const [resetting, setResetting] = useState(false)
   const [editingColumns, setEditingColumns] = useState(false)
   const [assistant, setAssistant] = useState(false)
   const [importing, setImporting] = useState<ImportPreview | null>(null)
   const [query, setQuery] = useState('')
   const [editingStale, setEditingStale] = useState(false)
-  // Spec 010 FR-004: marks follow the time without a restart
-  const now = useNow()
-  const [view, setView] = useState<View>('board')
+  // Spec 010 FR-004, spec 015 FR-023: marks follow the time without a restart
+  const now = useNow(
+    useCallback(
+      (at: Date) =>
+        nextStatusChange(
+          state.applications.map((application) => application.nextStep),
+          at,
+        ),
+      [state.applications],
+    ),
+  )
+  // Spec 015 FR-035: a click on a step notification
+  useEffect(
+    () =>
+      window.findy.on('openApplication', (id) => {
+        if (typeof id !== 'string') return
+        setView('board')
+        open(id)
+      }),
+    [open],
+  )
   const { hiddenStages } = state.settings
   const { t, i18n } = useTranslation()
   const count = state.applications.length
@@ -101,6 +127,8 @@ export function App({ initialState }: { initialState: AppState }) {
         onAutoUpdateCheckChange={actions.setAutoUpdateCheck}
         onExport={() => void exportCsv()}
         onImport={() => void importCsv()}
+        remindersEnabled={state.settings.remindersEnabled}
+        onRemindersChange={actions.setRemindersEnabled}
       />
       <main className={styles.content}>
         {state.storage.status === 'error' ? (
@@ -112,7 +140,8 @@ export function App({ initialState }: { initialState: AppState }) {
                 applications={state.applications}
                 onAdd={startAdding}
                 onMove={actions.moveApplication}
-                onOpen={setOpenId}
+                onOpen={open}
+                onOpenStep={(id) => open(id, true)}
                 onOpenLink={actions.openLink}
                 onColorChange={actions.setApplicationColor}
                 hiddenStages={hiddenStages}
@@ -203,7 +232,7 @@ export function App({ initialState }: { initialState: AppState }) {
           onCancel={() => setResetting(false)}
           onConfirm={async () => {
             setResetting(false)
-            setOpenId(null)
+            open(null)
             await actions.resetBoard()
           }}
         />
@@ -212,10 +241,10 @@ export function App({ initialState }: { initialState: AppState }) {
         <ApplicationDetails
           key={opened.id}
           application={opened}
-          onClose={() => setOpenId(null)}
+          onClose={() => open(null)}
           onSave={(changes) => actions.updateApplication(opened.id, changes)}
           onDelete={async () => {
-            setOpenId(null)
+            open(null)
             await actions.deleteApplication(opened.id)
           }}
           onOpenLink={actions.openLink}
@@ -223,6 +252,17 @@ export function App({ initialState }: { initialState: AppState }) {
           hiddenStages={hiddenStages}
           sites={state.sites}
           defaultCurrency={lastCurrency(state.applications)}
+          nextStep={{
+            now,
+            focus: openAtStep,
+            save: (step) => actions.setNextStep(opened.id, step),
+            remove: () => void actions.setNextStep(opened.id, null),
+            done: () => void actions.completeNextStep(opened.id),
+            addToCalendar: async () => {
+              const result = await actions.saveNextStepCalendar(opened.id)
+              if (result?.status === 'saved') notify(t('nextStep.calendarSaved'))
+            },
+          }}
           notes={{
             add: (text) => actions.addNote(opened.id, text),
             update: (noteId, text) => actions.updateNote(opened.id, noteId, text),

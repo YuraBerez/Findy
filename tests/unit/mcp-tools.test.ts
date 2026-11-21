@@ -184,3 +184,38 @@ describe('MCP tools (spec 004)', () => {
     })
   })
 })
+
+describe('next step in the MCP tools (spec 015 FR-054)', () => {
+  beforeEach(() => {
+    repo.setMcpEnabled(true)
+  })
+
+  it('sets, returns, finds and clears the step', () => {
+    const { application } = call('add_application', {
+      title: 'Dev',
+      company: 'Acme',
+      nextStep: { text: 'HR call', date: '2026-11-24', time: '11:00' },
+    }) as { application: { id: string; nextStep: unknown } }
+    expect(application.nextStep).toEqual({ text: 'HR call', date: '2026-11-24', time: '11:00' })
+
+    const listed = call('list_applications', { query: 'hr call' }) as {
+      applications: { nextStep: unknown }[]
+    }
+    expect(listed.applications.map((app) => app.nextStep)).toEqual([application.nextStep])
+
+    const updated = call('update_application', { id: application.id, nextStep: null }) as {
+      application: { nextStep: unknown }
+    }
+    expect(updated.application.nextStep).toBeNull()
+  })
+
+  it('rejects a step with a bad date', () => {
+    expect(() =>
+      call('add_application', {
+        title: 'Dev',
+        company: 'Acme',
+        nextStep: { text: 'HR call', date: 'Tuesday' },
+      }),
+    ).toThrow()
+  })
+})

@@ -193,6 +193,7 @@ describe('application fields (spec 014)', () => {
         stage: 'applied',
         color: null,
         fields: { ...EMPTY_FIELDS, salary, location: 'Lviv' },
+        nextStep: null,
         createdAt: '2026-10-01T08:00:00.000Z',
         stageHistory: [{ stage: 'applied', at: '2026-10-01T08:00:00.000Z' }],
         notes: [],
@@ -214,6 +215,7 @@ describe('importApplications (spec 008)', () => {
     stage,
     color: 'blue' as const,
     fields: EMPTY_FIELDS,
+    nextStep: null,
     createdAt: '2026-10-01T08:00:00.000Z',
     stageHistory: [
       { stage: 'applied' as const, at: '2026-10-01T08:00:00.000Z' },
@@ -372,6 +374,7 @@ describe('settings', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
   })
 
@@ -389,6 +392,7 @@ describe('settings', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
     expect(repo.setTheme('light').theme).toBe('light')
   })
@@ -406,6 +410,7 @@ describe('settings', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
   })
 })
@@ -520,6 +525,7 @@ describe('job sites (spec 011)', () => {
       hiddenSites: ['linkedin', 'indeed'],
       siteQuery: 'QA Engineer',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
     db.prepare(
       'UPDATE settings SET value = \'["linkedin","myspace",1]\' WHERE key = \'hiddenSites\'',
@@ -592,6 +598,7 @@ describe('resetBoard (FR-093)', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
   })
 })

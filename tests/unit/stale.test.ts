@@ -20,6 +20,7 @@ const app = (
   order: 0,
   color: null,
   ...EMPTY_FIELDS,
+  nextStep: null,
   stageHistory: history,
   notes: [],
   createdAt: history[0]!.at,

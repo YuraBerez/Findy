@@ -2,17 +2,31 @@ import { randomUUID } from 'node:crypto'
 import { spawn } from 'node:child_process'
 import { readFile, stat, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { app, BrowserWindow, dialog, ipcMain, nativeTheme, net, shell } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  dialog,
+  ipcMain,
+  nativeTheme,
+  net,
+  Notification,
+  powerMonitor,
+  shell,
+  type FileFilter,
+} from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { backupDatabase, openDatabase } from './db/connection'
 import { Repository } from './db/repository'
 import { resolveLanguage } from '../domain/language'
+import { createCalendarSaver } from './calendar'
+import { createMainTranslator } from './i18n'
 import { createHandlers } from './ipc'
 import { userDataDir } from './paths'
 import { createIconFetcher } from './siteIcons'
 import { readVacancyPage } from './vacancy'
 import { watchExternalChanges } from './watch'
 import { applyMenu } from './menu'
+import { createReminders, type ReminderNotice } from './reminders'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
 import skillText from '../../skills/findy/SKILL.md?raw'
@@ -64,6 +78,46 @@ function createWindow(): BrowserWindow {
   return win
 }
 
+/** A path from the system save dialog, owned by the focused window; null when cancelled */
+async function pickSavePath(defaultPath: string, filter: FileFilter): Promise<string | null> {
+  const owner = BrowserWindow.getFocusedWindow()
+  const options = { defaultPath, filters: [filter] }
+  const result = await (owner
+    ? dialog.showSaveDialog(owner, options)
+    : dialog.showSaveDialog(options))
+  return result.canceled ? null : (result.filePath ?? null)
+}
+
+/** The app window to the front, also from the Dock or another app */
+function showWindow(): BrowserWindow | undefined {
+  const [win] = BrowserWindow.getAllWindows()
+  if (!win) return undefined
+  if (win.isMinimized()) win.restore()
+  win.show()
+  win.focus()
+  return win
+}
+
+/** Spec 015: the shown notifications; kept so that a click still arrives after GC */
+const notifications = new Set<Notification>()
+
+/** Spec 015 FR-035, FR-037: a blocked or unsupported notification fails silently */
+function showNotice(notice: ReminderNotice): void {
+  if (!Notification.isSupported()) return
+  try {
+    const notification = new Notification({ title: notice.title, body: notice.body })
+    notifications.add(notification)
+    notification.on('click', () => {
+      const win = showWindow()
+      if (win) win.webContents.send(CHANNEL_PREFIX + 'openApplication', notice.applicationId)
+    })
+    notification.on('close', () => notifications.delete(notification))
+    notification.show()
+  } catch {
+    // FR-037: Findy works as usual without notifications
+  }
+}
+
 function start(): void {
   if (devIcon && process.platform === 'darwin') app.dock?.setIcon(devIcon)
   const opened = openDatabase(app.getPath('userData'))
@@ -101,14 +155,7 @@ function start(): void {
     repository &&
     createTransfer({
       repository,
-      pickSavePath: async (defaultPath) => {
-        const owner = BrowserWindow.getFocusedWindow()
-        const options = { defaultPath, filters: csvFilter }
-        const result = await (owner
-          ? dialog.showSaveDialog(owner, options)
-          : dialog.showSaveDialog(options))
-        return result.canceled ? null : (result.filePath ?? null)
-      },
+      pickSavePath: (defaultPath) => pickSavePath(defaultPath, csvFilter[0]!),
       pickOpenPath: async () => {
         const owner = BrowserWindow.getFocusedWindow()
         const options = { properties: ['openFile' as const], filters: csvFilter }
@@ -128,16 +175,31 @@ function start(): void {
   const skill = createSkillSaver({
     version: app.getVersion(),
     skillText,
-    pickSavePath: async (defaultPath) => {
-      const owner = BrowserWindow.getFocusedWindow()
-      const options = { defaultPath, filters: [{ name: 'ZIP', extensions: ['zip'] }] }
-      const result = await (owner
-        ? dialog.showSaveDialog(owner, options)
-        : dialog.showSaveDialog(options))
-      return result.canceled ? null : (result.filePath ?? null)
-    },
+    pickSavePath: (defaultPath) => pickSavePath(defaultPath, { name: 'ZIP', extensions: ['zip'] }),
     writeBytes: (path, data) => writeFile(path, data),
   })
+
+  // Spec 015 FR-040: the calendar file; no network
+  const calendar = createCalendarSaver({
+    pickSavePath: (defaultPath) =>
+      pickSavePath(defaultPath, { name: 'iCalendar', extensions: ['ics'] }),
+    writeText: (path, text) => writeFile(path, text, 'utf8'),
+    now: () => new Date(),
+  })
+
+  // Spec 015 FR-031…FR-037: only the app process shows notifications, never the MCP server
+  const reminders =
+    repository &&
+    createReminders({
+      listSteps: () => repository.listNextSteps(),
+      enabled: () => repository.getSettings().remindersEnabled,
+      translator: () => {
+        const language = resolveLanguage(repository.getSettings().language, app.getLocale())
+        return { t: createMainTranslator(language), language }
+      },
+      show: showNotice,
+      now: () => new Date(),
+    })
 
   const handlers = createHandlers({
     repository,
@@ -145,6 +207,7 @@ function start(): void {
     storage,
     appVersion: app.getVersion(),
     saveSkill: () => skill.save(),
+    calendar,
     getSystemLocale: () => app.getLocale(),
     openExternal: (url) => shell.openExternal(url),
     applyTheme: (theme) => {
@@ -177,9 +240,12 @@ function start(): void {
     },
   })
   for (const method of IPC_METHODS) {
-    ipcMain.handle(CHANNEL_PREFIX + method, (_event, ...args: unknown[]) =>
-      handlers[method](...args),
-    )
+    ipcMain.handle(CHANNEL_PREFIX + method, async (_event, ...args: unknown[]) => {
+      const result = await handlers[method](...args)
+      // Spec 015: a step set 10 minutes ahead gets its reminder at once
+      reminders?.check()
+      return result
+    })
   }
 
   // Spec 004 FR-006: show changes made by the MCP server in the open window
@@ -189,6 +255,7 @@ function start(): void {
       () => {
         for (const win of BrowserWindow.getAllWindows())
           win.webContents.send(CHANNEL_PREFIX + 'stateChanged')
+        reminders?.check()
       },
     )
     app.on('will-quit', stop)
@@ -199,6 +266,13 @@ function start(): void {
   })
 
   createWindow()
+
+  // Spec 015 FR-032: a check at start, then every 10 seconds and on wake
+  if (reminders) {
+    const stop = reminders.start()
+    powerMonitor.on('resume', reminders.check)
+    app.on('will-quit', stop)
+  }
 }
 
 /**
@@ -225,11 +299,7 @@ else if (!app.requestSingleInstanceLock()) {
   app.quit()
 } else {
   app.on('second-instance', () => {
-    const [win] = BrowserWindow.getAllWindows()
-    if (win) {
-      if (win.isMinimized()) win.restore()
-      win.focus()
-    }
+    showWindow()
   })
 
   void app.whenReady().then(() => {

@@ -16,8 +16,8 @@ A job search has many dates: an HR call on Tuesday, a test task due on Friday, a
 answer to an offer by next week. Today Findy shows how long a card stays in a stage,
 but not what comes next. This spec adds one "next step" to an application: a short text
 and a date, with an optional time. The card shows a mark such as "Today" or "Overdue".
-While Findy is open, it shows a system notification at start with the steps for today,
-and 15 minutes before a step that has a time. The user can save a step as a calendar
+While Findy is open, it shows a system notification 15 minutes and 1 minute before a
+step that has a time. The user can save a step as a calendar
 file and open it in any calendar app.
 
 ## User stories
@@ -78,16 +78,16 @@ them when Findy is in the background.
 
 **Acceptance scenarios**
 
-1. **Given** two steps for today and one overdue step, **When** I start Findy, **Then**
-   one system notification says that I have 3 steps for today or overdue.
-2. **Given** a step today at 15:00 and Findy is open, **When** it is 14:45, **Then** a
-   system notification shows the step text, the job title and the company.
-3. **When** I click a notification, **Then** the Findy window comes to the front; for a
-   notification about one step, the details of that application open.
-4. **Given** I turn off "Reminders" in the app menu, **Then** Findy shows no system
+1. **Given** a step today at 15:00 and Findy is open, **When** it is 14:45, **Then** a
+   system notification "In 15 min: <step text>" shows, with the job title and the
+   company. **When** it is 14:59, **Then** a second notification "In 1 min: <step text>"
+   shows.
+2. **When** I click a notification, **Then** the Findy window comes to the front, and the
+   details of that application open.
+3. **Given** I turn off "Reminders" in the app menu, **Then** Findy shows no system
    notifications. The card marks still show.
-5. **Given** no step for today and no overdue step, **When** I start Findy, **Then** no
-   notification shows.
+4. **Given** a step at 15:00, **When** I start Findy at 14:57, **Then** no notification
+   shows until 14:59 ("In 1 min").
 
 ### US-5 — Add the step to my calendar (Priority: P2)
 
@@ -157,19 +157,21 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
 
 - **FR-030** The app menu MUST have a "Reminders" check item. It MUST be on by default
   and saved with the other settings. A board reset MUST NOT change it.
-- **FR-031** When Reminders are on and at least one step is due today or overdue, Findy
-  MUST show one summary notification: when the app starts, and at local midnight while
-  the app runs. The text MUST give the count with correct plurals.
-- **FR-032** When Reminders are on, Findy MUST show a notification 15 minutes before a
-  step that has a time, while the app runs. If the computer wakes from sleep after that
-  moment but before the step time, Findy MUST show it at once. After the step time,
-  Findy MUST NOT show it.
-- **FR-033** Findy MUST show each FR-032 notification once for a given step date and
-  time. If the user changes the date or the time, the step MUST get a new reminder.
-- **FR-034** Steps of applications in Rejected MUST NOT count in FR-031 and MUST NOT get
-  FR-032 notifications. Steps in hidden columns (spec 002) MUST count.
-- **FR-035** A click on a notification MUST bring the window to the front. For an FR-032
-  notification, it MUST also open that application's details.
+- **FR-031** Removed (D-8): no summary notification at start or at midnight. The card
+  marks show the due steps.
+- **FR-032** When Reminders are on, Findy MUST show a notification 15 minutes and another
+  1 minute before a step that has a time, while the app runs. The title MUST say how many
+  minutes are left and give the step text: "In 15 min: …" or "In 1 min: …". Findy MUST
+  NOT show other lead times: a reminder whose moment passed more than a minute ago (the
+  app was closed or the computer slept) is skipped. After the step time, Findy MUST NOT
+  show any.
+- **FR-033** Findy MUST show each FR-032 notification once for a given step date, time
+  and lead time. If the user changes the date or the time, the step MUST get new
+  reminders.
+- **FR-034** Steps of applications in Rejected MUST NOT get FR-032 notifications. Steps in
+  hidden columns (spec 002) MUST get them.
+- **FR-035** A click on a notification MUST bring the window to the front and open that
+  application's details.
 - **FR-036** Notifications MUST NOT show the content of notes. They MAY show the step
   text, the job title and the company.
 - **FR-037** If the operating system blocks notifications, Findy MUST work as usual,
@@ -215,10 +217,10 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
 
 ## Edge cases
 
-- The app is closed at the step time: no notification at that time. The next start shows
-  the summary (FR-031), and the card says "Overdue".
-- The app starts 5 minutes before a step at 15:00: the FR-032 notification shows at once,
-  in addition to the summary.
+- The app is closed at the step time: no notification. At the next start the card says
+  "Overdue".
+- The app starts 5 minutes before a step at 15:00: no notification at once; "In 1 min"
+  shows at 14:59.
 - The user edits a past step to a future date: it is no longer overdue and gets a new
   reminder.
 - The computer clock changes or the time zone changes: the marks and reminders use the
@@ -233,15 +235,15 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
   the "Done" note.
 - Reminders while Findy is closed, a tray icon, start at login.
 - Two-way sync with a calendar service, a calendar feed, invites.
-- A user choice of the reminder lead time (fixed at 15 minutes).
+- A user choice of the reminder lead times (fixed at 15 minutes and 1 minute).
 - A filter or a view "Due this week".
 
 ## Success criteria
 
 - **SC-001** A user sees every step that is due today on the board without opening a
   card.
-- **SC-002** With Findy open, a user gets a notification before every step that has a
-  time.
+- **SC-002** With Findy open, a user gets a notification 15 minutes and 1 minute before
+  every step that has a time.
 - **SC-003** A calendar file from Findy opens as a correct event in Google Calendar,
   Apple Calendar and Outlook.
 
@@ -253,9 +255,14 @@ As a job seeker, I want to add the step to my calendar, so that my phone reminds
 - **D-3** Reminders: a card mark plus system notifications only while Findy runs; the
   user can turn them off (owner).
 - **D-4** Notifications at start (and at midnight) as one summary, and 15 minutes before a
-  step with a time (owner). "Add to calendar" saves an `.ics` file (owner).
+  step with a time (owner). Changed by D-7 and D-8. "Add to calendar" saves an `.ics` file (owner).
 - **D-5** A move to Offer or Rejected keeps the step. In Rejected the step has no mark and
   no reminders (owner).
+- **D-7** Two reminders before a step with a time: 15 minutes to get ready and 1 minute
+  to not miss the start, with "In N min: <step>" as the title (owner, 2026-11-21, after a
+  review of the first build).
+- **D-8** Only the two reminders: no summary at start or at midnight, and no reminder
+  with another number of minutes after a late start (owner, 2026-11-21, review).
 - **D-6** Steps are local wall-clock times, because an interview at 15:00 is set in the
   user's own time; a time zone change is rare for this app.
 

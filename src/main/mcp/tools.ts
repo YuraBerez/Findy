@@ -15,6 +15,7 @@ import {
   ApplicationPatchSchema,
   IdSchema,
   LIMITS,
+  NextStepSchema,
   NoteTextSchema,
   StageSchema,
   UrlSchema,
@@ -82,6 +83,14 @@ const fieldsInput = {
   contactDetails: ApplicationFieldsShape.contactDetails.describe(
     'How to reach the contact: email, phone, Telegram or a link',
   ),
+  // Spec 015 FR-054
+  nextStep: NextStepSchema.nullable()
+    .optional()
+    .describe(
+      'The one next step: { text, date, time? }. text: one line, up to 200 characters. ' +
+        'date: "YYYY-MM-DD"; time: "HH:MM" (24 h), both in the user\'s local time; no time ' +
+        'means all day. It replaces the current step; null clears it.',
+    ),
 }
 
 export class McpAccessDisabledError extends Error {
@@ -129,6 +138,7 @@ function summary(application: Application) {
     source: application.source && sourceName(application.source, CHANNEL_NAMES),
     contactName: application.contactName,
     contactDetails: application.contactDetails,
+    nextStep: application.nextStep,
     notes: application.notes.length,
     createdAt: application.createdAt,
     updatedAt: application.updatedAt,
@@ -182,14 +192,17 @@ export function createTools(repository: Repository): ToolDefinition[] {
       title: 'List job applications',
       description:
         'Job applications on the board, in board order. Optional filters: a stage id, and a text that must ' +
-        'appear in the title, the company, the location, the source or the contact (case-insensitive).',
+        'appear in the title, the company, the location, the source, the contact or the next step ' +
+        '(case-insensitive).',
       inputSchema: {
         stage: StageSchema.optional().describe(`Only this stage. One of: ${stageList}`),
         query: z
           .string()
           .max(200)
           .optional()
-          .describe('Text in the title, the company, the location, the source or the contact'),
+          .describe(
+            'Text in the title, the company, the location, the source, the contact or the next step',
+          ),
       },
       annotations: { readOnlyHint: true },
       run: ({ stage, query }) => ({
@@ -248,7 +261,7 @@ export function createTools(repository: Repository): ToolDefinition[] {
       title: 'Update a job application',
       description:
         'Changes the title, the company, the vacancy link, the salary, the work format, the location, ' +
-        'the source or the contact. Only the given fields change; null clears a field. ' +
+        'the source, the contact or the next step. Only the given fields change; null clears a field. ' +
         'Use move_application to change the stage.',
       inputSchema: { id: IdSchema, ...ApplicationPatchSchema.shape, ...fieldsInput },
       annotations: { idempotentHint: true },

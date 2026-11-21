@@ -4,11 +4,13 @@ import { formValuesOf, type ValidApplication } from '@domain/forms'
 import type { CardColor } from '@domain/colors'
 import { fieldsFormValuesOf, type ApplicationFields, type Currency } from '@domain/fields'
 import type { CustomSite } from '@domain/sites'
+import type { NextStep } from '@domain/nextStep'
 import { visibleStages } from '@domain/stages'
 import type { Application, StageId } from '@shared/ipc'
 import { Badge, Button, ColorPicker, ConfirmDialog, Dialog, ExternalLinkIcon, Section } from '@ui'
 import { formatDateTime } from '../../../format'
 import { useColorOptions } from '../../colors'
+import { NextStepSection } from '../../nextStep'
 import { NotesPanel, type NoteActions } from '../../notes'
 import { ApplicationExtraFields } from '../ApplicationExtraFields'
 import { ApplicationFields as MainFields } from '../ApplicationFields'
@@ -32,6 +34,16 @@ interface Props {
   sites: readonly CustomSite[]
   /** Spec 014 FR-012: the currency of a new salary */
   defaultCurrency: Currency
+  /** Spec 015: the next step; saved at once, not with "Save changes" */
+  nextStep: {
+    now: Date
+    /** FR-013: opened from the card menu */
+    focus: boolean
+    save(step: NextStep): Promise<boolean>
+    remove(): void
+    done(): void
+    addToCalendar(): void
+  }
 }
 
 /** US-4: view and edit an application, its notes (US-3) and stage history; delete it. */
@@ -46,6 +58,7 @@ export function ApplicationDetails({
   hiddenStages,
   sites,
   defaultCurrency,
+  nextStep,
 }: Props) {
   const { t, i18n } = useTranslation()
   const colors = useColorOptions()
@@ -92,6 +105,16 @@ export function ApplicationDetails({
         </Button>
       }
     >
+      <NextStepSection
+        step={application.nextStep}
+        now={nextStep.now}
+        focus={nextStep.focus}
+        onSave={nextStep.save}
+        onRemove={nextStep.remove}
+        onDone={nextStep.done}
+        onAddToCalendar={nextStep.addToCalendar}
+      />
+
       <NotesPanel notes={application.notes} actions={notes} />
 
       <Section title={t('details.fields')}>

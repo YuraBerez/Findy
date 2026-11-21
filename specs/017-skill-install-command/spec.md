@@ -1,7 +1,7 @@
 # Feature Spec: Install the skill with one command
 
 - **ID:** 017-skill-install-command
-- **Status:** Approved
+- **Status:** Implemented
 - **Approved:** 2026-11-21 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-21

@@ -40,6 +40,10 @@ apply until you get an offer.
 - **Salary, work format and contact.** Keep the salary range, remote/office/hybrid, the
   location, the source and the recruiter on each application. The card shows the work
   format and the salary. The source fills in from a job site link.
+- **Next step and reminders.** Give an application its next step with a date and a time.
+  The card shows "Today", "Tomorrow" or "Overdue". While Findy runs, it reminds you 15
+  minutes and 1 minute before the step. **Add to calendar** saves the step as an `.ics`
+  file. On macOS, allow notifications for Findy in **System Settings → Notifications**.
 - **One click to the vacancy.** Cards with a link open it in your browser.
 - **Add from a link.** Paste a vacancy link and Findy fills in the job title and the
   company from the page.
