@@ -1,7 +1,7 @@
 import { join } from 'node:path'
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, type IpcMainInvokeEvent } from 'electron'
 import { CHANNEL_PREFIX, type IpcEvent } from '../../shared/ipc'
-import { isAllowedNavigation } from '../security'
+import { isAllowedNavigation, isAppSender } from '../security'
 
 const devServerUrl = process.env.ELECTRON_RENDERER_URL
 
@@ -53,4 +53,9 @@ export function showWindow(): BrowserWindow | undefined {
 /** An event to every window (docs/contracts/ipc.md) */
 export function sendToWindows(event: IpcEvent): void {
   for (const win of BrowserWindow.getAllWindows()) win.webContents.send(CHANNEL_PREFIX + event)
+}
+
+/** docs/security.md: an IPC call from the app page, not from any other frame */
+export function isFromApp(event: IpcMainInvokeEvent): boolean {
+  return isAppSender(event.senderFrame?.url, devServerUrl)
 }

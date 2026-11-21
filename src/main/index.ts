@@ -4,11 +4,12 @@ import { app, BrowserWindow, ipcMain, nativeTheme, powerMonitor } from 'electron
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { resolveLanguage } from '../domain/language'
 import { createServices } from './app/services'
-import { createWindow, devIcon, sendToWindows, showWindow } from './app/window'
+import { createWindow, devIcon, isFromApp, sendToWindows, showWindow } from './app/window'
 import { openDatabase } from './db/connection'
 import { Repository } from './db/repository'
 import { applyMenu, setSettingsAction } from './menu'
 import { userDataDir } from './paths'
+import { UNKNOWN_SENDER } from './security'
 import { runSmokeTest } from './smoke'
 import { watchExternalChanges } from './watch'
 
@@ -34,7 +35,8 @@ function start(): void {
 
   const { handlers, reminders } = createServices(opened, repository, MCP_SCRIPT)
   for (const method of IPC_METHODS) {
-    ipcMain.handle(CHANNEL_PREFIX + method, async (_event, ...args: unknown[]) => {
+    ipcMain.handle(CHANNEL_PREFIX + method, async (event, ...args: unknown[]) => {
+      if (!isFromApp(event)) return UNKNOWN_SENDER
       const result = await handlers[method](...args)
       // Spec 015: a step set 10 minutes ahead gets its reminder at once
       reminders?.check()

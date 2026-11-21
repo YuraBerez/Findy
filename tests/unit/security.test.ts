@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { isAllowedNavigation, isSafeExternalUrl } from '../../src/main/security'
+import {
+  isAllowedNavigation,
+  isAppSender,
+  isSafeExternalUrl,
+  UNKNOWN_SENDER,
+} from '../../src/main/security'
 
 describe('isSafeExternalUrl (FR-015)', () => {
   it.each([
@@ -29,5 +34,25 @@ describe('isAllowedNavigation', () => {
 
   it('rejects garbage', () => {
     expect(isAllowedNavigation('not a url', undefined)).toBe(false)
+  })
+})
+
+describe('isAppSender (docs/security.md)', () => {
+  it('accepts only the app page', () => {
+    expect(isAppSender('file:///app/out/renderer/index.html', undefined)).toBe(true)
+    expect(isAppSender('https://evil.example/', undefined)).toBe(false)
+    expect(isAppSender('http://localhost:5173/', 'http://localhost:5173')).toBe(true)
+    expect(isAppSender('http://localhost:9999/', 'http://localhost:5173')).toBe(false)
+  })
+
+  it('rejects a sender frame that is already gone', () => {
+    expect(isAppSender(undefined, undefined)).toBe(false)
+  })
+
+  it('answers an unknown sender with a validation error', () => {
+    expect(UNKNOWN_SENDER).toEqual({
+      ok: false,
+      error: { code: 'VALIDATION', message: 'Unknown sender' },
+    })
   })
 })
