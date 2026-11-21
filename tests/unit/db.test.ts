@@ -90,7 +90,7 @@ describe('migration 003: job sites (spec 011 FR-012)', () => {
        VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, '2026-11-01T00:00:00.000Z', '2026-11-01T00:00:00.000Z', 'red')`,
     ).run()
 
-    migrate(db, () => {})
+    migrate(db, () => {}, MIGRATIONS.slice(0, 3))
 
     expect(getUserVersion(db)).toBe(3)
     expect(db.prepare('SELECT title, color FROM applications').get()).toEqual({
@@ -116,6 +116,58 @@ describe('migration 003: job sites (spec 011 FR-012)', () => {
         )
         .run(),
     ).toThrow(/CHECK/)
+  })
+})
+
+describe('migration 004: application fields (spec 014)', () => {
+  it('keeps v3 data; the new fields are empty', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {}, MIGRATIONS.slice(0, 3))
+    db.prepare(
+      `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at, color)
+       VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, '2026-11-01T00:00:00.000Z', '2026-11-01T00:00:00.000Z', 'red')`,
+    ).run()
+
+    migrate(db, () => {})
+
+    expect(getUserVersion(db)).toBe(4)
+    expect(
+      db
+        .prepare(
+          'SELECT title, color, salary_min, salary_currency, work_format, location, source_kind, contact_name FROM applications',
+        )
+        .get(),
+    ).toEqual({
+      title: 'Dev',
+      color: 'red',
+      salary_min: null,
+      salary_currency: null,
+      work_format: null,
+      location: null,
+      source_kind: null,
+      contact_name: null,
+    })
+  })
+
+  it('checks every new column', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {})
+    db.prepare(
+      `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at)
+       VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, 'now', 'now')`,
+    ).run()
+    const set = (sql: string) => () => db.prepare(`UPDATE applications SET ${sql}`).run()
+    expect(set('salary_min = -1')).toThrow(/CHECK/)
+    expect(set('salary_max = 1000000001')).toThrow(/CHECK/)
+    expect(set("salary_currency = 'JPY'")).toThrow(/CHECK/)
+    expect(set("salary_period = 'week'")).toThrow(/CHECK/)
+    expect(set("work_format = 'moon'")).toThrow(/CHECK/)
+    expect(set(`location = '${'x'.repeat(101)}'`)).toThrow(/CHECK/)
+    expect(set("source_kind = 'friend'")).toThrow(/CHECK/)
+    expect(set(`source_value = '${'x'.repeat(61)}'`)).toThrow(/CHECK/)
+    expect(set("contact_name = ''")).toThrow(/CHECK/)
+    expect(set(`contact_details = '${'x'.repeat(201)}'`)).toThrow(/CHECK/)
+    expect(set("salary_min = 0, salary_currency = 'UAH', work_format = 'hybrid'")).not.toThrow()
   })
 })
 

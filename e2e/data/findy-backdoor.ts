@@ -2,6 +2,7 @@ import type { ElectronApplication, Page } from '@playwright/test'
 import { withClipboardLock } from './clipboard-lock'
 import type {
   AnalyticsView,
+  ApplicationFieldChanges,
   AppState,
   CardColor,
   Language,
@@ -16,6 +17,8 @@ export interface SeedApplication {
   company?: string
   url?: string | null
   stage?: StageId
+  /** Spec 014 */
+  fields?: ApplicationFieldChanges
 }
 
 /**
@@ -123,6 +126,7 @@ export class FindyBackdoor {
           company: item.company ?? 'Acme',
           url: item.url ?? null,
           stage: item.stage,
+          ...item.fields,
         })
       }
     }, items)
@@ -151,6 +155,18 @@ export class FindyBackdoor {
       },
       { title, color },
     )
+  }
+
+  /** Spec 011: a site of the user, behind the UI */
+  async addSite(name: string, url: string): Promise<void> {
+    await this.page.evaluate((site) => window.findy.addSite(site), { name, url })
+  }
+
+  async deleteSite(name: string): Promise<void> {
+    await this.page.evaluate(async (value) => {
+      const state = await window.findy.getState()
+      await window.findy.deleteSite(state.sites.find((site) => site.name === value)!.id)
+    }, name)
   }
 
   async resetBoard(): Promise<void> {

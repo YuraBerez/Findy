@@ -1,6 +1,7 @@
 // Renderer ↔ main contract: docs/contracts/ipc.md
 import type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView } from '../domain/analytics'
 import type { CardColor } from '../domain/colors'
+import type { ApplicationFields } from '../domain/fields'
 import type { StageId } from '../domain/stages'
 import type { ImportFatal, ImportRowError } from '../domain/transfer'
 import type { VacancyData } from '../domain/vacancy'
@@ -166,14 +167,17 @@ export interface AppInfo {
   dataFilePath: string
 }
 
-export interface NewApplication {
+/** Spec 014: `null` clears a field; a missing field stays as it is */
+export type ApplicationFieldChanges = Partial<ApplicationFields>
+
+export interface NewApplication extends ApplicationFieldChanges {
   title: string
   company: string
   url?: string | null
   stage?: StageId
 }
 
-export interface ApplicationChanges {
+export interface ApplicationChanges extends ApplicationFieldChanges {
   title?: string
   company?: string
   url?: string | null

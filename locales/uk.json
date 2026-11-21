@@ -63,7 +63,9 @@
       "required": "Заповніть це поле.",
       "tooLong": "Не більше {{max}} символів.",
       "invalidUrl": "Введіть посилання, що починається з http:// або https://.",
-      "queryPlacement": "Вкажіть {query} один раз, після адреси сайту (наприклад, …?q={query})."
+      "queryPlacement": "Вкажіть {query} один раз, після адреси сайту (наприклад, …?q={query}).",
+      "invalidAmount": "Введіть ціле число, наприклад 3000.",
+      "salaryOrder": "«Зарплата від» не може бути більшою за «Зарплата до»."
     },
     "vacancy": {
       "hint": "Вставте посилання на вакансію — Findy заповнить посаду й компанію.",
@@ -288,7 +290,16 @@
       "createdAt": "Створено",
       "inStageSince": "На етапі з",
       "history": "Історія етапів",
-      "notes": "Нотатки"
+      "notes": "Нотатки",
+      "salaryMin": "Зарплата від",
+      "salaryMax": "Зарплата до",
+      "currency": "Валюта",
+      "salaryPeriod": "Період зарплати",
+      "workFormat": "Формат роботи",
+      "location": "Локація",
+      "source": "Джерело",
+      "contactName": "Контактна особа",
+      "contactDetails": "Як звʼязатися"
     },
     "menuExport": "Експорт у CSV…",
     "menuImport": "Імпорт із CSV…",
@@ -405,5 +416,47 @@
     "feedbackTitle": "Дякуємо за відповідь",
     "feedbackText": "Що зробило б Findy кориснішим? Напишіть нам на GitHub: ми читаємо кожну ідею.",
     "feedback": "Розповісти, що покращити"
+  },
+  "fields": {
+    "salary": "Зарплата",
+    "salaryFrom": "Зарплата від",
+    "salaryTo": "Зарплата до",
+    "currency": "Валюта",
+    "period": "Період",
+    "periods": {
+      "month": "На місяць",
+      "year": "На рік"
+    },
+    "periodShort": {
+      "month": "/міс",
+      "year": "/рік"
+    },
+    "salaryFromOnly": "від {{amount}}",
+    "salaryToOnly": "до {{amount}}",
+    "workFormat": "Формат роботи",
+    "workFormats": {
+      "remote": "Віддалено",
+      "office": "Офіс",
+      "hybrid": "Гібрид"
+    },
+    "notSet": "Не вказано",
+    "location": "Локація",
+    "locationHint": "Місто, країна або часовий пояс",
+    "source": "Джерело",
+    "sourceGroups": {
+      "sites": "Сайти вакансій",
+      "mySites": "Мої сайти",
+      "channels": "Інші джерела"
+    },
+    "channels": {
+      "referral": "Реферал",
+      "company_site": "Сайт компанії",
+      "recruiter": "Рекрутер написав",
+      "other": "Інше"
+    },
+    "contactName": "Контактна особа",
+    "contactDetails": "Як звʼязатися",
+    "contactDetailsHint": "Email, телефон, Telegram або посилання",
+    "openContact": "Відкрити посилання контакту"
   }
 }

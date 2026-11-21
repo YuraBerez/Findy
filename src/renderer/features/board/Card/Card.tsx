@@ -6,6 +6,7 @@ import { enteredStageAt } from '@domain/time'
 import type { Application } from '@shared/ipc'
 import { formatDateTime, formatSince } from '../../../format'
 import { colorToken, useColorOptions } from '../../colors'
+import { useFieldLabels } from '../../fields'
 import { ClockIcon } from '@ui'
 import { useBoardActions } from '../BoardActions'
 import { CardActions } from '../CardActions'
@@ -26,11 +27,13 @@ function colorStyle(application: Application): CSSProperties | undefined {
     : undefined
 }
 
-/** FR-003: title, company, note count, time in the current stage. */
+/** FR-003: title, company, note count, time in the current stage; spec 014 FR-030. */
 export function CardContent({ application, overlay = false, staleDays = null }: CardContentProps) {
   const { t, i18n } = useTranslation()
   const colors = useColorOptions()
+  const fields = useFieldLabels()
   const since = enteredStageAt(application)
+  const line = fields.cardLine(application)
   return (
     <div
       className={styles.body}
@@ -45,6 +48,12 @@ export function CardContent({ application, overlay = false, staleDays = null }: 
       <p className={styles.company} title={application.company}>
         {application.company}
       </p>
+      {/* Spec 014 FR-030: work format and salary, inside the handle, so in the card's name */}
+      {line && (
+        <p className={styles.fields} title={line} data-testid="card-fields">
+          {line}
+        </p>
+      )}
       {/* FR-010: the colour is in the card's accessible name, not only seen */}
       {application.color && (
         <span className={styles.srOnly}>

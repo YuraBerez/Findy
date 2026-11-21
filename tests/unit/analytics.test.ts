@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { EMPTY_FIELDS } from '../../src/domain/fields'
 import {
   analytics,
   bucketStart,
@@ -27,6 +28,7 @@ function appWith(created: string, stageHistory: { stage: StageId; at: string }[]
     stage: stageHistory.at(-1)!.stage,
     order: 0,
     color: null,
+    ...EMPTY_FIELDS,
     stageHistory,
     notes: [],
     createdAt: created,

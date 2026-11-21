@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { EMPTY_FIELDS } from '../../src/domain/fields'
 import { isStaleAfterDays, STALE_DAYS, staleDays } from '../../src/domain/stale'
 import type { Application, StageChange } from '../../src/domain/types'
 
@@ -18,6 +19,7 @@ const app = (
   stage: history.at(-1)!.stage,
   order: 0,
   color: null,
+  ...EMPTY_FIELDS,
   stageHistory: history,
   notes: [],
   createdAt: history[0]!.at,

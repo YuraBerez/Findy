@@ -524,6 +524,13 @@ export class BoardScreen extends BaseComponent {
     for (const text of texts) await expect(this.card(title)).toContainText(text)
   }
 
+  /** Spec 014 FR-030: the line with the work format and the salary; null = no line */
+  async verifyCardFieldsLine(title: string, line: RegExp | null): Promise<void> {
+    const shown = this.card(title).getByTestId('card-fields')
+    if (line === null) await expect(shown).toHaveCount(0)
+    else await expect(shown).toHaveText(line)
+  }
+
   /** Spec 007 FR-005, FR-010: the tint, and the colour name for assistive technology */
   async verifyCardColor(title: string, color: CardColor | null, name?: string): Promise<void> {
     if (color === null) {

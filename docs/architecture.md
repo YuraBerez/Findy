@@ -64,6 +64,7 @@ src/
 ├── domain/              # pure logic + zod schemas (shared)
 │   ├── stages.ts        # STAGES constant, StageId
 │   ├── colors.ts        # spec 007: CARD_COLORS, CardColor
+│   ├── fields/          # spec 014: salary, work format, source rules (zod-free)
 │   ├── csv.ts           # spec 008: CSV reader/writer, formula guard
 │   ├── transfer/        # spec 008: applications ↔ CSV rows (export table, import plan)
 │   ├── schema.ts        # zod schemas for IPC input & entities
@@ -286,6 +287,18 @@ build/                   # icons, entitlements for electron-builder
   change and `AppState` stays small.
 - e2e sets `FINDY_SITE_ICONS_URL` to a local server, or to a closed port, so tests
   never reach the sites.
+
+### D-14 — Extra fields as columns, the source rule in the repository (spec 014)
+
+- The fields are nullable columns of `applications` (migration 004), not a key-value table:
+  they are fixed and each has a CHECK.
+- `salary` and `source` are whole values in the domain: a patch replaces them or sets
+  `null`. The rules across columns live in `domain/fields/` and zod, because `ADD COLUMN`
+  cannot add a table CHECK.
+- `ApplicationStore` fills in an empty source from the link with `sourceFromUrl` in
+  `create`, `update` and `importMany`, so the app, CSV import and MCP share one rule.
+- CSV and MCP read a source as text (`parseSourceText`): a known site or channel by id or
+  name, else a custom name.
 
 ## Cross-cutting docs
 

@@ -59,7 +59,9 @@
       "required": "Fill in this field.",
       "tooLong": "Use {{max}} characters or fewer.",
       "invalidUrl": "Enter a link that starts with http:// or https://.",
-      "queryPlacement": "Put {query} once, after the site address (for example …?q={query})."
+      "queryPlacement": "Put {query} once, after the site address (for example …?q={query}).",
+      "invalidAmount": "Enter a whole number, for example 3000.",
+      "salaryOrder": "“Salary from” must not be larger than “Salary to”."
     },
     "vacancy": {
       "hint": "Paste a vacancy link: Findy fills in the job title and the company.",
@@ -280,7 +282,16 @@
       "createdAt": "Created",
       "inStageSince": "In stage since",
       "history": "Stage history",
-      "notes": "Notes"
+      "notes": "Notes",
+      "salaryMin": "Salary from",
+      "salaryMax": "Salary to",
+      "currency": "Currency",
+      "salaryPeriod": "Salary period",
+      "workFormat": "Work format",
+      "location": "Location",
+      "source": "Source",
+      "contactName": "Contact name",
+      "contactDetails": "Contact details"
     },
     "menuExport": "Export to CSV…",
     "menuImport": "Import from CSV…",
@@ -379,5 +390,47 @@
     "feedbackTitle": "Thanks for your answer",
     "feedbackText": "What would make Findy more useful? Tell us on GitHub: we read every idea.",
     "feedback": "Tell us what to improve"
+  },
+  "fields": {
+    "salary": "Salary",
+    "salaryFrom": "Salary from",
+    "salaryTo": "Salary to",
+    "currency": "Currency",
+    "period": "Period",
+    "periods": {
+      "month": "Per month",
+      "year": "Per year"
+    },
+    "periodShort": {
+      "month": "/mo",
+      "year": "/yr"
+    },
+    "salaryFromOnly": "from {{amount}}",
+    "salaryToOnly": "up to {{amount}}",
+    "workFormat": "Work format",
+    "workFormats": {
+      "remote": "Remote",
+      "office": "Office",
+      "hybrid": "Hybrid"
+    },
+    "notSet": "Not set",
+    "location": "Location",
+    "locationHint": "City, country or time zone",
+    "source": "Source",
+    "sourceGroups": {
+      "sites": "Job sites",
+      "mySites": "My sites",
+      "channels": "Other sources"
+    },
+    "channels": {
+      "referral": "Referral",
+      "company_site": "Company website",
+      "recruiter": "Recruiter contacted me",
+      "other": "Other"
+    },
+    "contactName": "Contact name",
+    "contactDetails": "Contact details",
+    "contactDetailsHint": "Email, phone, Telegram or a link",
+    "openContact": "Open the contact link"
   }
 }

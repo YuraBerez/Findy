@@ -80,6 +80,26 @@ CREATE TABLE site_icons (
 A board reset does not touch them. Findy 0.3.0 cannot open a version 3 database (it
 shows the "newer version" error and leaves the file as it is).
 
+Version 4 (`004-application-fields`, spec 014) adds nullable columns to `applications`
+with `ALTER TABLE … ADD COLUMN`; rows from version 3 get `NULL`:
+
+```sql
+salary_min      INTEGER CHECK (salary_min IS NULL OR salary_min BETWEEN 0 AND 1000000000),
+salary_max      INTEGER CHECK (salary_max IS NULL OR salary_max BETWEEN 0 AND 1000000000),
+salary_currency TEXT    CHECK (salary_currency IS NULL OR salary_currency IN ('USD','EUR','UAH','GBP','PLN')),
+salary_period   TEXT    CHECK (salary_period IS NULL OR salary_period IN ('month','year')),
+work_format     TEXT    CHECK (work_format IS NULL OR work_format IN ('remote','office','hybrid')),
+location        TEXT    CHECK (location IS NULL OR length(location) BETWEEN 1 AND 100),
+source_kind     TEXT    CHECK (source_kind IS NULL OR source_kind IN ('site','custom','channel')),
+source_value    TEXT    CHECK (source_value IS NULL OR length(source_value) BETWEEN 1 AND 60),
+contact_name    TEXT    CHECK (contact_name IS NULL OR length(contact_name) BETWEEN 1 AND 100),
+contact_details TEXT    CHECK (contact_details IS NULL OR length(contact_details) BETWEEN 1 AND 200)
+```
+
+The rules across columns (`salary_min ≤ salary_max`, currency and period only with an
+amount) are checked in main before the write. A `source_value` that this version does
+not know reads as no source.
+
 Column ↔ entity mapping is in [data-model.md](../data-model.md)
 (`position` ↔ `order`, snake_case ↔ camelCase).
 

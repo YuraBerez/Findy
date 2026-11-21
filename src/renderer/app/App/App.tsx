@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { lastCurrency } from '@domain/fields'
 import type { AppState, ImportPreview, Language } from '@shared/ipc'
 import { ConfirmDialog, panelId, tabId } from '@ui'
 import { Analytics } from '../../features/analytics'
@@ -215,6 +216,8 @@ export function App({ initialState }: { initialState: AppState }) {
           onOpenLink={actions.openLink}
           onColorChange={(color) => actions.setApplicationColor(opened.id, color)}
           hiddenStages={hiddenStages}
+          sites={state.sites}
+          defaultCurrency={lastCurrency(state.applications)}
           notes={{
             add: (text) => actions.addNote(opened.id, text),
             update: (noteId, text) => actions.updateNote(opened.id, noteId, text),

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { EMPTY_FIELDS } from '../../src/domain/fields'
 import { filterApplications, matchesQuery, toFullIndex } from '../../src/domain/search'
 import type { Application } from '../../src/domain/types'
 
@@ -16,11 +17,19 @@ const app = (
   stage,
   order,
   color: null,
+  ...EMPTY_FIELDS,
   stageHistory: [{ stage, at: '2026-11-10T00:00:00Z' }],
   notes: [],
   createdAt: '2026-11-10T00:00:00Z',
   updatedAt: '2026-11-10T00:00:00Z',
 })
+
+const CHANNELS = {
+  referral: 'Referral',
+  company_site: 'Company website',
+  recruiter: 'Recruiter contacted me',
+  other: 'Other',
+}
 
 describe('search (FR-060)', () => {
   const acme = app('1', 'Frontend Developer', 'Acme', 0)
@@ -28,16 +37,46 @@ describe('search (FR-060)', () => {
   const uk = app('3', 'Розробник', 'Нова Пошта', 2)
 
   it('matches title or company, case-insensitive, trimmed', () => {
-    expect(matchesQuery(acme, 'acm')).toBe(true)
-    expect(matchesQuery(acme, '  FRONTEND ')).toBe(true)
-    expect(matchesQuery(acme, 'globex')).toBe(false)
-    expect(matchesQuery(uk, 'пошта')).toBe(true)
-    expect(matchesQuery(uk, 'РОЗРОБ')).toBe(true)
+    expect(matchesQuery(acme, 'acm', CHANNELS)).toBe(true)
+    expect(matchesQuery(acme, '  FRONTEND ', CHANNELS)).toBe(true)
+    expect(matchesQuery(acme, 'globex', CHANNELS)).toBe(false)
+    expect(matchesQuery(uk, 'пошта', CHANNELS)).toBe(true)
+    expect(matchesQuery(uk, 'РОЗРОБ', CHANNELS)).toBe(true)
   })
 
   it('an empty query shows everything', () => {
-    expect(filterApplications([acme, globex], '   ')).toEqual([acme, globex])
-    expect(filterApplications([acme, globex], 'acm')).toEqual([acme])
+    expect(filterApplications([acme, globex], '   ', CHANNELS)).toEqual([acme, globex])
+    expect(filterApplications([acme, globex], 'acm', CHANNELS)).toEqual([acme])
+  })
+})
+
+describe('search in the extra fields (spec 014 FR-040)', () => {
+  const dev = {
+    ...app('1', 'Dev', 'Acme', 0),
+    location: 'Lviv',
+    contactName: 'Olena',
+    contactDetails: 'olena@acme.com',
+    salary: { min: 3000, max: null, currency: 'USD' as const, period: 'month' as const },
+  }
+  it('matches location, contact and the source name, not amounts', () => {
+    expect(matchesQuery(dev, 'lviv', CHANNELS)).toBe(true)
+    expect(matchesQuery(dev, 'OLENA', CHANNELS)).toBe(true)
+    expect(matchesQuery(dev, '@acme.com', CHANNELS)).toBe(true)
+    expect(matchesQuery(dev, '3000', CHANNELS)).toBe(false)
+    expect(matchesQuery({ ...dev, source: { kind: 'site', id: 'djinni' } }, 'djin', CHANNELS)).toBe(
+      true,
+    )
+    expect(
+      matchesQuery(
+        { ...dev, source: { kind: 'custom', name: 'Acme careers' } },
+        'careers',
+        CHANNELS,
+      ),
+    ).toBe(true)
+    expect(
+      matchesQuery({ ...dev, source: { kind: 'channel', id: 'referral' } }, 'refer', CHANNELS),
+    ).toBe(true)
+    expect(matchesQuery({ ...dev, source: null }, 'refer', CHANNELS)).toBe(false)
   })
 })
 

@@ -26,10 +26,10 @@ interface FindyApi {
   // Applications
   createApplication(input: {
     title: string; company: string; url?: string | null; stage?: StageId;
-  }): Promise<AppState>;
+  } & ApplicationFields): Promise<AppState>;           // no source → from the link (spec 014 FR-020)
   updateApplication(id: string, patch: {
     title?: string; company?: string; url?: string | null;
-  }): Promise<AppState>;
+  } & ApplicationFields): Promise<AppState>;
   setApplicationColor(id: string,                       // spec 007; not in updateApplication,
     color: CardColor | null): Promise<AppState>;         // so the MCP update tool cannot set it
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>;
@@ -91,6 +91,13 @@ interface AppState {
     | { status: 'ok'; dataFilePath: string }
     | { status: 'error'; error: 'corrupt' | 'newer_version' | 'open_failed';
         dataFilePath: string; backupPath: string | null };
+}
+```
+
+```ts
+interface ApplicationFields {                         // spec 014; null clears, missing keeps
+  salary?: Salary | null; workFormat?: WorkFormat | null; location?: string | null;
+  source?: ApplicationSource | null; contactName?: string | null; contactDetails?: string | null;
 }
 ```
 

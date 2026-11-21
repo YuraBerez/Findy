@@ -1,4 +1,5 @@
 import { groupByStage } from '../board'
+import { sourceName } from '../fields'
 import { STAGES } from '../stages'
 import { enteredStageAt } from '../time'
 import type { Application } from '../types'
@@ -31,6 +32,16 @@ export function exportTable(
       .map((change) => date(change.at) + HISTORY_SEPARATOR + labels.stages[change.stage])
       .join('\n'),
     application.notes.map((note) => `[${date(note.createdAt)}]\n${note.text}`).join('\n\n'),
+    // Spec 014 FR-041
+    application.salary?.min?.toString() ?? '',
+    application.salary?.max?.toString() ?? '',
+    application.salary?.currency ?? '',
+    application.salary ? labels.periods[application.salary.period] : '',
+    application.workFormat ? labels.workFormats[application.workFormat] : '',
+    application.location ?? '',
+    application.source ? sourceName(application.source, labels.channels) : '',
+    application.contactName ?? '',
+    application.contactDetails ?? '',
   ])
   return [COLUMNS.map((column) => labels.columns[column]), ...rows]
 }
