@@ -311,7 +311,8 @@ build/                   # icons, entitlements for electron-builder
   `findy/SKILL.md` at the root, as an upload to Claude Desktop expects. No zip library.
 - `tests/unit/skill.test.ts` compares the `### <tool>` headings under `## Tools` with
   `createTools`, so the skill cannot fall behind the MCP tools.
-- The release workflow packs the same folder with `zip`.
+- Claude Code users install it with one command from the main branch
+  (`shared/skill.ts#skillInstallCommand`, spec 017); the release has no skill archive.
 
 ## Cross-cutting docs
 

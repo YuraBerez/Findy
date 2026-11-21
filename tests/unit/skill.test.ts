@@ -116,6 +116,14 @@ describe('skill saver (FR-021)', () => {
 })
 
 describe('install command (spec 017)', () => {
+  it('the README in both languages shows both commands as the app builds them (FR-007)', () => {
+    for (const name of ['README.md', 'README.uk.md']) {
+      const readme = readFileSync(join(__dirname, '../..', name), 'utf8')
+      expect(readme, name).toContain(skillInstallCommand('posix'))
+      expect(readme, name).toContain(skillInstallCommand('powershell'))
+    }
+  })
+
   it('posix: one line, the main branch file, a temp file moved only after a good download', () => {
     const command = skillInstallCommand('posix')
     expect(command).not.toContain('\n')

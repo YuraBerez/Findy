@@ -26,16 +26,6 @@ jobs:
           # "Which file to download" first, then the changes
           { sed "s/VERSION/$version/g" .github/release-downloads.md; cat changes.md; } > notes.md
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --draft --title "Findy $TAG" --notes-file notes.md
-      - name: Upload the skill for AI assistants (spec 016 FR-011)
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
-        run: |
-          # FR-012: the findy folder at the root of the archive, as Claude expects
-          archive="findy-skill-${TAG#v}.zip"
-          (cd skills && zip -r -X "../$archive" findy)
-          unzip -l "$archive"
-          gh release upload "$TAG" "$archive" --clobber
 
   build:
     name: Installers (${{ matrix.os }})
