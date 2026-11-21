@@ -1,5 +1,6 @@
 import { groupByStage } from '../board'
 import { sourceName } from '../fields'
+import { stepDateText } from '../nextStep'
 import { STAGES } from '../stages'
 import { enteredStageAt } from '../time'
 import type { Application } from '../types'
@@ -42,6 +43,9 @@ export function exportTable(
     application.source ? sourceName(application.source, labels.channels) : '',
     application.contactName ?? '',
     application.contactDetails ?? '',
+    // Spec 015 FR-051
+    application.nextStep?.text ?? '',
+    application.nextStep ? stepDateText(application.nextStep) : '',
   ])
   return [COLUMNS.map((column) => labels.columns[column]), ...rows]
 }

@@ -5,6 +5,7 @@ import type { Application } from './types'
 /**
  * FR-060: case-insensitive match of the title or the company; an empty query matches all.
  * Spec 014 FR-040: also the location, the source name and the contact, not amounts.
+ * Spec 015 FR-050: also the text of the next step.
  * `channelNames` names the sources that are not a job site, in the language of the user.
  */
 export function matchesQuery(
@@ -22,6 +23,7 @@ export function matchesQuery(
     source && sourceName(source, channelNames),
     application.contactName,
     application.contactDetails,
+    application.nextStep?.text,
   ].some((text) => text?.toLocaleLowerCase().includes(needle))
 }
 

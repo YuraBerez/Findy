@@ -18,6 +18,7 @@ const app = (
   order,
   color: null,
   ...EMPTY_FIELDS,
+  nextStep: null,
   stageHistory: [{ stage, at: '2026-11-10T00:00:00Z' }],
   notes: [],
   createdAt: '2026-11-10T00:00:00Z',

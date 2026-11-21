@@ -10,6 +10,7 @@ import {
   type ApplicationSource,
   type Salary,
 } from '../../../domain/fields'
+import { isNextStep, type NextStep } from '../../../domain/nextStep'
 import { isKnownSiteId } from '../../../domain/sites'
 import type { StageId } from '../../../domain/stages'
 import type { Note } from '../../../domain/types'
@@ -35,6 +36,10 @@ export interface ApplicationRow {
   source_value: string | null
   contact_name: string | null
   contact_details: string | null
+  // Spec 015 (schema v5)
+  next_step_text: string | null
+  next_step_date: string | null
+  next_step_time: string | null
 }
 
 /** The spec 014 columns, in the order of `fieldValues` */
@@ -50,6 +55,20 @@ export const FIELD_COLUMNS = [
   'contact_name',
   'contact_details',
 ] as const
+
+/** The spec 015 columns, in the order of `stepValues` */
+export const STEP_COLUMNS = ['next_step_text', 'next_step_date', 'next_step_time'] as const
+
+/** Database.md v5: a row that breaks the rules across the columns reads as no step */
+export function toNextStep(row: ApplicationRow): NextStep | null {
+  if (row.next_step_text === null || row.next_step_date === null) return null
+  const step = { text: row.next_step_text, date: row.next_step_date, time: row.next_step_time }
+  return isNextStep(step) ? step : null
+}
+
+export function stepValues(step: NextStep | null): (string | null)[] {
+  return [step?.text ?? null, step?.date ?? null, step?.time ?? null]
+}
 
 export interface NoteRow {
   id: string

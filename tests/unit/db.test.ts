@@ -128,7 +128,7 @@ describe('migration 004: application fields (spec 014)', () => {
        VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, '2026-11-01T00:00:00.000Z', '2026-11-01T00:00:00.000Z', 'red')`,
     ).run()
 
-    migrate(db, () => {})
+    migrate(db, () => {}, MIGRATIONS.slice(0, 4))
 
     expect(getUserVersion(db)).toBe(4)
     expect(

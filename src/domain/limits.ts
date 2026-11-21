@@ -13,6 +13,8 @@ export const LIMITS = {
   siteName: 60,
   contactName: 100,
   contactDetails: 200,
+  /** Spec 015 FR-001 */
+  nextStep: 200,
 } as const
 
 export function isHttpUrl(value: string): boolean {

@@ -4,6 +4,7 @@ import { ANALYTICS_GROUPINGS, ANALYTICS_PERIODS } from './analytics'
 import { CARD_COLORS } from './colors'
 import { CURRENCIES, SALARY_PERIODS, salaryProblem, SOURCE_CHANNELS, WORK_FORMATS } from './fields'
 import { isHttpUrl, LIMITS } from './limits'
+import { isStepDate, isStepTime, stepTextProblem } from './nextStep'
 import { STAGES } from './stages'
 import { KNOWN_SITE_IDS, SITE_LIMITS, validateSiteForm, type KnownSiteId } from './sites'
 import { STALE_DAYS } from './stale'
@@ -102,12 +103,28 @@ export const ApplicationFieldsShape = {
   contactDetails: optionalText(LIMITS.contactDetails).optional(),
 }
 
+/** Spec 015 FR-001: one line of text, a calendar date, an optional time; `null` clears it */
+export const NextStepSchema = z.object({
+  text: requiredText(LIMITS.nextStep).refine((text) => stepTextProblem(text) === null, {
+    message: 'The step must be one line',
+  }),
+  date: z.string().refine(isStepDate, { message: 'A calendar date YYYY-MM-DD' }),
+  time: z
+    .string()
+    .refine(isStepTime, { message: 'A time HH:MM' })
+    .nullish()
+    .transform((value) => value ?? null),
+})
+
+const nextStepField = { nextStep: NextStepSchema.nullable().optional() }
+
 export const ApplicationInputSchema = z.object({
   title: requiredText(LIMITS.title),
   company: requiredText(LIMITS.company),
   url: UrlSchema.optional().transform((value) => value ?? null),
   stage: StageSchema.optional(),
   ...ApplicationFieldsShape,
+  ...nextStepField,
 })
 
 export const ApplicationPatchSchema = z.object({
@@ -115,6 +132,7 @@ export const ApplicationPatchSchema = z.object({
   company: requiredText(LIMITS.company).optional(),
   url: UrlSchema.optional(),
   ...ApplicationFieldsShape,
+  ...nextStepField,
 })
 
 export const MoveTargetSchema = z.object({

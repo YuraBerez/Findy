@@ -36,6 +36,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     checkForUpdates: vi.fn(async () => ({ status: 'latest' as const, currentVersion: '0.1.0' })),
     readVacancy: vi.fn(async () => ({ title: 'Frontend Developer', company: 'Acme' })),
     saveSkill: vi.fn(async () => ({ status: 'saved' as const })),
+    calendar: { save: vi.fn(async () => ({ status: 'saved' as const })) },
     siteIcons: {
       icons: vi.fn(() => ({ 'djinni.co': 'data:image/png;base64,AA==' })),
       refresh: vi.fn(async () => {}),
@@ -66,6 +67,7 @@ describe('IPC handlers', () => {
         hiddenSites: [],
         siteQuery: '',
         offerQuestionAnswered: false,
+        remindersEnabled: true,
       },
       applications: [],
       sites: [],
@@ -113,6 +115,7 @@ describe('IPC handlers', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
     expect(ctx.deps.applyTheme).toHaveBeenCalledWith('dark')
     expect(ctx.deps.applyLanguage).toHaveBeenCalledWith('uk')
@@ -535,6 +538,7 @@ describe('IPC handlers without storage (FR-054)', () => {
         hiddenSites: [],
         siteQuery: '',
         offerQuestionAnswered: false,
+        remindersEnabled: true,
       },
       applications: [],
       sites: [],

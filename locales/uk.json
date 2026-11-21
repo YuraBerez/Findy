@@ -65,7 +65,9 @@
       "invalidUrl": "Введіть посилання, що починається з http:// або https://.",
       "queryPlacement": "Вкажіть {query} один раз, після адреси сайту (наприклад, …?q={query}).",
       "invalidAmount": "Введіть ціле число, наприклад 3000.",
-      "salaryOrder": "«Зарплата від» не може бути більшою за «Зарплата до»."
+      "salaryOrder": "«Зарплата від» не може бути більшою за «Зарплата до».",
+      "invalidDate": "Введіть дату.",
+      "invalidTime": "Введіть час, наприклад 15:00."
     },
     "vacancy": {
       "hint": "Вставте посилання на вакансію — Findy заповнить посаду й компанію.",
@@ -307,7 +309,9 @@
       "location": "Локація",
       "source": "Джерело",
       "contactName": "Контактна особа",
-      "contactDetails": "Як звʼязатися"
+      "contactDetails": "Як звʼязатися",
+      "nextStep": "Наступний крок",
+      "nextStepDate": "Дата наступного кроку"
     },
     "menuExport": "Експорт у CSV…",
     "menuImport": "Імпорт із CSV…",
@@ -466,5 +470,42 @@
     "contactDetails": "Як звʼязатися",
     "contactDetailsHint": "Email, телефон, Telegram або посилання",
     "openContact": "Відкрити посилання контакту"
+  },
+  "nextStep": {
+    "title": "Наступний крок",
+    "add": "Додати наступний крок",
+    "text": "Крок",
+    "textHint": "Наприклад, технічна співбесіда з Олегом",
+    "date": "Дата",
+    "time": "Час",
+    "timeHint": "Необовʼязково",
+    "save": "Зберегти крок",
+    "cancel": "Скасувати",
+    "edit": "Редагувати",
+    "done": "Виконано",
+    "remove": "Прибрати крок",
+    "calendar": "Додати в календар",
+    "calendarSaved": "Файл календаря збережено.",
+    "menuItem": "Наступний крок…",
+    "doneNote": "Виконано: {{text}} ({{when}})",
+    "mark": {
+      "overdue": "Прострочено · {{day}}",
+      "today": "Сьогодні",
+      "todayAt": "Сьогодні, {{time}}",
+      "tomorrow": "Завтра",
+      "tomorrowAt": "Завтра, {{time}}",
+      "later": "{{day}}",
+      "laterAt": "{{day}}, {{time}}"
+    },
+    "cardLabel": "Наступний крок: {{text}}, {{when}} ({{mark}})"
+  },
+  "reminders": {
+    "menuItem": "Нагадування",
+    "summaryTitle": "Findy: наступні кроки",
+    "summary_one": "{{count}} крок на сьогодні або прострочений.",
+    "summary_few": "{{count}} кроки на сьогодні або прострочені.",
+    "summary_many": "{{count}} кроків на сьогодні або прострочених.",
+    "summary_other": "{{count}} кроку на сьогодні або прострочених.",
+    "step": "{{title}} · {{company}}, о {{time}}"
   }
 }

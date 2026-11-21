@@ -23,6 +23,9 @@ export const COLUMNS = [
   'source',
   'contactName',
   'contactDetails',
+  // Spec 015 FR-051
+  'nextStep',
+  'nextStepDate',
 ] as const
 
 export type Column = (typeof COLUMNS)[number]

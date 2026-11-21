@@ -38,6 +38,7 @@ function app(fields: Partial<Application> & Pick<Application, 'title'>): Applica
     order: 0,
     color: null,
     ...EMPTY_FIELDS,
+    nextStep: null,
     stageHistory: [{ stage, at: '2026-11-01T08:00:00.000Z' }],
     notes: [],
     createdAt: '2026-11-01T08:00:00.000Z',
@@ -125,6 +126,8 @@ describe('exportTable (FR-003…FR-006)', () => {
       'Source',
       'Contact name',
       'Contact details',
+      'Next step',
+      'Next step date',
     ])
     expect(rows.map((row) => row[0])).toEqual(['First', 'Second', 'Hidden'])
     expect(rows[0]).toEqual([
@@ -137,7 +140,7 @@ describe('exportTable (FR-003…FR-006)', () => {
       '2026-11-05T11:00:00+02:00',
       '2026-11-01T10:00:00+02:00 — Applied\n2026-11-05T11:00:00+02:00 — HR interview',
       '[2026-11-06T12:00:00+02:00]\nCall on Friday\n\n[2026-11-02T12:00:00+02:00]\nSent CV\nwith letter',
-      ...Array(9).fill(''),
+      ...Array(11).fill(''),
     ])
     expect(rows[1]!.slice(2, 5)).toEqual(['', 'HR interview', ''])
   })
@@ -164,6 +167,7 @@ describe('planImport (FR-012…FR-016)', () => {
         stage: 'hr_interview',
         color: null,
         fields: EMPTY_FIELDS,
+        nextStep: null,
         createdAt: NOW,
         stageHistory: [{ stage: 'hr_interview', at: NOW }],
         notes: [],
@@ -438,6 +442,7 @@ describe('round trip (FR-019, SC-001)', () => {
               contactName: rest.contactName,
               contactDetails: rest.contactDetails,
             },
+            nextStep: rest.nextStep,
             createdAt,
             stageHistory,
             notes: notes.map(({ text, createdAt }) => ({ text, createdAt })),

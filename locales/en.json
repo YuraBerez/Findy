@@ -61,7 +61,9 @@
       "invalidUrl": "Enter a link that starts with http:// or https://.",
       "queryPlacement": "Put {query} once, after the site address (for example …?q={query}).",
       "invalidAmount": "Enter a whole number, for example 3000.",
-      "salaryOrder": "“Salary from” must not be larger than “Salary to”."
+      "salaryOrder": "“Salary from” must not be larger than “Salary to”.",
+      "invalidDate": "Enter a date.",
+      "invalidTime": "Enter a time, for example 15:00."
     },
     "vacancy": {
       "hint": "Paste a vacancy link: Findy fills in the job title and the company.",
@@ -299,7 +301,9 @@
       "location": "Location",
       "source": "Source",
       "contactName": "Contact name",
-      "contactDetails": "Contact details"
+      "contactDetails": "Contact details",
+      "nextStep": "Next step",
+      "nextStepDate": "Next step date"
     },
     "menuExport": "Export to CSV…",
     "menuImport": "Import from CSV…",
@@ -440,5 +444,40 @@
     "contactDetails": "Contact details",
     "contactDetailsHint": "Email, phone, Telegram or a link",
     "openContact": "Open the contact link"
+  },
+  "nextStep": {
+    "title": "Next step",
+    "add": "Add next step",
+    "text": "Step",
+    "textHint": "For example, technical interview with Oleh",
+    "date": "Date",
+    "time": "Time",
+    "timeHint": "Optional",
+    "save": "Save step",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "done": "Done",
+    "remove": "Remove step",
+    "calendar": "Add to calendar",
+    "calendarSaved": "The calendar file is saved.",
+    "menuItem": "Next step…",
+    "doneNote": "Done: {{text}} ({{when}})",
+    "mark": {
+      "overdue": "Overdue · {{day}}",
+      "today": "Today",
+      "todayAt": "Today, {{time}}",
+      "tomorrow": "Tomorrow",
+      "tomorrowAt": "Tomorrow, {{time}}",
+      "later": "{{day}}",
+      "laterAt": "{{day}}, {{time}}"
+    },
+    "cardLabel": "Next step: {{text}}, {{when}} ({{mark}})"
+  },
+  "reminders": {
+    "menuItem": "Reminders",
+    "summaryTitle": "Findy: next steps",
+    "summary_one": "You have {{count}} step for today or overdue.",
+    "summary_other": "You have {{count}} steps for today or overdue.",
+    "step": "{{title}} · {{company}}, at {{time}}"
   }
 }

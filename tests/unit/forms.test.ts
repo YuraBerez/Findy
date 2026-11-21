@@ -75,6 +75,7 @@ const app = (id: string, stage: Application['stage'], order: number): Applicatio
   order,
   color: null,
   ...EMPTY_FIELDS,
+  nextStep: null,
   stageHistory: [
     { stage: 'applied', at: '2026-11-10T00:00:00Z' },
     { stage, at: '2026-11-12T00:00:00Z' },

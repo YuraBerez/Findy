@@ -22,6 +22,9 @@ export type FieldError =
   | { code: 'invalidAmount' }
   /** Spec 014 FR-002: "from" is larger than "to" */
   | { code: 'salaryOrder' }
+  /** Spec 015 US-1.3: not a calendar date, or not a time of day */
+  | { code: 'invalidDate' }
+  | { code: 'invalidTime' }
 
 export type FormErrors = Partial<Record<'title' | 'company' | 'url', FieldError>>
 
