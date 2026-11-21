@@ -217,7 +217,8 @@ build/                   # icons, entitlements for electron-builder
 - **Accessibility:** `e2e/steps/a11y.steps.ts` runs axe in legacy mode, because axe's default
   mode opens a new page and Electron cannot. Formatting and exclusions come from the kit.
 - **Rule:** the renderer must not trigger CSP violations; zod stays out of the renderer
-  (`domain/limits.ts`), because zod v4 probes `new Function()` on load.
+  (`domain/limits.ts`), because zod v4 probes `new Function()` on load. ESLint blocks `zod` and
+  `domain/schema` in `src/renderer`.
 
 ### D-7 — Renderer: components in folders, primitives in `ui/`, no duplication
 
@@ -235,6 +236,9 @@ build/                   # icons, entitlements for electron-builder
   keyboard pattern; `useAppState` owns all IPC calls; `features/board/dnd.ts` and
   `useBoardDnd` own drag-and-drop, `Board` only renders.
 - **Aliases:** `@domain/*`, `@shared/*`, `@ui` (tsconfig.web.json + electron.vite.config.ts).
+- **Enforced:** `eslint.config.mjs` checks the layers, the feature `index.ts` rule and the
+  `window.findy` rule. It also keeps `src/domain` pure (no Electron, React, Node or
+  database). If a rule blocks a correct import, change the rule and this section together.
 - **Errors (spec 003):** every IPC call goes through `useAppState.run()`: a failure
   becomes a notification (`app/notifications`, message by error code), the board
   reloads the saved state, and the action resolves to `false`. Global `error` /
