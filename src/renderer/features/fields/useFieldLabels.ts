@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   SOURCE_CHANNELS,
@@ -13,9 +14,14 @@ import { formatMoney } from '../../format'
 /** Spec 014: the names and the short text of the extra fields in the active language. */
 export function useFieldLabels() {
   const { t, i18n } = useTranslation()
-  const channels = Object.fromEntries(
-    SOURCE_CHANNELS.map((id) => [id, t(`fields.channels.${id}`)]),
-  ) as Record<SourceChannel, string>
+  // One object per language, so a memo that depends on it stays valid
+  const channels = useMemo(
+    () =>
+      Object.fromEntries(
+        SOURCE_CHANNELS.map((id) => [id, t(`fields.channels.${id}`)]),
+      ) as Record<SourceChannel, string>,
+    [t],
+  )
 
   /** FR-031: "$3,000 – $4,000/mo", "from $3,000/mo", "up to $4,000/mo" */
   const salary = ({ min, max, currency, period }: Salary): string => {

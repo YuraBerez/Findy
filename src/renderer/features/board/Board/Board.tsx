@@ -9,6 +9,7 @@ import type { Application } from '@shared/ipc'
 import { Button } from '@ui'
 import { BoardActionsContext, type BoardActions } from '../BoardActions'
 import { CardContent } from '../Card'
+import { useFieldLabels } from '../../fields'
 import { Column } from '../Column'
 import { collisionDetection } from '../dnd'
 import { useBoardDnd, type MoveHandler } from '../useBoardDnd'
@@ -50,7 +51,11 @@ export function Board({
     (application: Application) => staleDays(application, staleAfterDays, now),
     [staleAfterDays, now],
   )
-  const shown = useMemo(() => filterApplications(applications, query), [applications, query])
+  const { channels } = useFieldLabels()
+  const shown = useMemo(
+    () => filterApplications(applications, query, channels),
+    [applications, query, channels],
+  )
   // Positions in a filtered column become positions in the whole column
   const move = useCallback<MoveHandler>(
     (id, target) =>

@@ -1,18 +1,36 @@
+import { sourceName, type SourceChannel } from './fields'
 import type { StageId } from './stages'
 import type { Application } from './types'
 
-/** FR-060: case-insensitive match of the title or the company; an empty query matches all. */
-export function matchesQuery(application: Application, query: string): boolean {
+/**
+ * FR-060: case-insensitive match of the title or the company; an empty query matches all.
+ * Spec 014 FR-040: also the location, the source name and the contact, not amounts.
+ * `channelNames` names the sources that are not a job site, in the language of the user.
+ */
+export function matchesQuery(
+  application: Application,
+  query: string,
+  channelNames: Record<SourceChannel, string>,
+): boolean {
   const needle = query.trim().toLocaleLowerCase()
   if (!needle) return true
-  return (
-    application.title.toLocaleLowerCase().includes(needle) ||
-    application.company.toLocaleLowerCase().includes(needle)
-  )
+  const { source } = application
+  return [
+    application.title,
+    application.company,
+    application.location,
+    source && sourceName(source, channelNames),
+    application.contactName,
+    application.contactDetails,
+  ].some((text) => text?.toLocaleLowerCase().includes(needle))
 }
 
-export function filterApplications(applications: Application[], query: string): Application[] {
-  return applications.filter((application) => matchesQuery(application, query))
+export function filterApplications(
+  applications: Application[],
+  query: string,
+  channelNames: Record<SourceChannel, string>,
+): Application[] {
+  return applications.filter((application) => matchesQuery(application, query, channelNames))
 }
 
 /**
