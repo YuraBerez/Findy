@@ -12,9 +12,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — The skill (US-4)
 
-- [ ] T010 `skills/findy/SKILL.md`: tools, stages, fields, four workflows, rules, no
+- [x] T010 `skills/findy/SKILL.md`: tools, stages, fields, four workflows, rules, no
   connection (FR-001…FR-007, NFR-004)
-- [ ] T011 Parity test: skill tools = MCP tools; front matter; length (NFR-003)
+- [x] T011 Parity test: skill tools = MCP tools; front matter; length (NFR-003)
 
 ## Phase 3 — Save from the app (US-1)
 
