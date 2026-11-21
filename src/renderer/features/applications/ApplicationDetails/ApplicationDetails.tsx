@@ -2,28 +2,36 @@ import { useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { formValuesOf, type ValidApplication } from '@domain/forms'
 import type { CardColor } from '@domain/colors'
+import { fieldsFormValuesOf, type ApplicationFields, type Currency } from '@domain/fields'
+import type { CustomSite } from '@domain/sites'
 import { visibleStages } from '@domain/stages'
 import type { Application, StageId } from '@shared/ipc'
 import { Badge, Button, ColorPicker, ConfirmDialog, Dialog, ExternalLinkIcon, Section } from '@ui'
 import { formatDateTime } from '../../../format'
 import { useColorOptions } from '../../colors'
 import { NotesPanel, type NoteActions } from '../../notes'
-import { ApplicationFields } from '../ApplicationFields'
+import { ApplicationExtraFields } from '../ApplicationExtraFields'
+import { ApplicationFields as MainFields } from '../ApplicationFields'
 import { StageHistory } from '../StageHistory'
 import { useApplicationForm } from '../useApplicationForm'
+import { useFieldsForm } from '../useFieldsForm'
 import styles from './ApplicationDetails.module.css'
 
 interface Props {
   application: Application
   onClose(): void
   /** Resolves to false when saving failed (the failure is already notified) */
-  onSave(changes: ValidApplication): Promise<boolean>
+  onSave(changes: ValidApplication & ApplicationFields): Promise<boolean>
   onDelete(): Promise<void>
   onOpenLink(url: string): void
   /** Spec 007 FR-007: saved at once, not with "Save changes" */
   onColorChange(color: CardColor | null): void
   notes: NoteActions
   hiddenStages: StageId[]
+  /** Spec 014: the user's job sites, offered as sources */
+  sites: readonly CustomSite[]
+  /** Spec 014 FR-012: the currency of a new salary */
+  defaultCurrency: Currency
 }
 
 /** US-4: view and edit an application, its notes (US-3) and stage history; delete it. */
@@ -36,10 +44,13 @@ export function ApplicationDetails({
   onColorChange,
   notes,
   hiddenStages,
+  sites,
+  defaultCurrency,
 }: Props) {
   const { t, i18n } = useTranslation()
   const colors = useColorOptions()
   const form = useApplicationForm(formValuesOf(application))
+  const fields = useFieldsForm(fieldsFormValuesOf(application, defaultCurrency))
   const [saved, setSaved] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const { url } = application
@@ -48,8 +59,10 @@ export function ApplicationDetails({
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = form.validate(event)
-    if (!data) return
-    setSaved(await onSave(data))
+    // Both parts show their errors; the focus goes to the first invalid field
+    const extra = fields.validate(event, data !== null)
+    if (!data || !extra) return
+    setSaved(await onSave({ ...data, ...extra }))
   }
 
   return (
@@ -83,7 +96,8 @@ export function ApplicationDetails({
 
       <Section title={t('details.fields')}>
         <form noValidate className={styles.form} onSubmit={save} onChange={() => setSaved(false)}>
-          <ApplicationFields form={form} stages={visibleStages(hiddenStages)} />
+          <MainFields form={form} stages={visibleStages(hiddenStages)} />
+          <ApplicationExtraFields form={fields} sites={sites} onOpenLink={onOpenLink} />
           <div className={styles.saveRow}>
             <span role="status" className={styles.saved}>
               {saved ? t('details.saved') : ''}

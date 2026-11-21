@@ -18,6 +18,10 @@ export type FieldError =
   | { code: 'invalidUrl' }
   /** Spec 011 FR-010: `{query}` twice, or in the host */
   | { code: 'queryPlacement' }
+  /** Spec 014 FR-013: not a whole number 0…1 000 000 000 */
+  | { code: 'invalidAmount' }
+  /** Spec 014 FR-002: "from" is larger than "to" */
+  | { code: 'salaryOrder' }
 
 export type FormErrors = Partial<Record<'title' | 'company' | 'url', FieldError>>
 

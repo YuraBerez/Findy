@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyMove } from '@domain/board'
 import { asksAboutOffer, isMoveToOffer } from '@domain/offer'
+import type { ApplicationFields } from '@domain/fields'
 import type { ValidApplication } from '@domain/forms'
 import {
   errorKind,
@@ -121,7 +122,10 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         run(() => window.findy.createApplication(application)),
 
       /** FR-012: fields, then the stage if it changed (to the top of that column) */
-      updateApplication: async (id: string, { stage, ...fields }: ValidApplication) => {
+      updateApplication: async (
+        id: string,
+        { stage, ...fields }: ValidApplication & Partial<ApplicationFields>,
+      ) => {
         if (!(await run(() => window.findy.updateApplication(id, fields)))) return false
         const current = state.applications.find((application) => application.id === id)
         return current && current.stage !== stage ? moveApplication(id, { stage, index: 0 }) : true

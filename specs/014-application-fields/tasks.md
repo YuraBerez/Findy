@@ -23,11 +23,11 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — US-1, US-2: salary, work format, location (P1)
 
-- [ ] T020 Form values and validation for the extra fields in `domain/forms.ts`, with
+- [x] T020 Form values and validation for the extra fields in `domain/forms.ts`, with
   unit tests (FR-010, FR-012, FR-013)
-- [ ] T021 `ApplicationExtraFields` in the details panel, currency default, en + uk
+- [x] T021 `ApplicationExtraFields` in the details panel, currency default, en + uk
   strings (FR-010…FR-013)
-- [ ] T022 Card line: `formatSalary`, work format, en + uk (FR-030…FR-032)
+- [x] T022 Card line: `formatSalary`, work format, en + uk (FR-030…FR-032)
 - [ ] T023 e2e: details and card for US-1, US-2
 
 ## Phase 4 — US-3, US-4: source and contact (P2)

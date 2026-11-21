@@ -1,0 +1,23 @@
+/* Spec 014: one full-width block in the details form grid */
+.fields {
+  display: grid;
+  column-gap: var(--space-4);
+}
+
+/* From, to, currency, period in one row; two rows in a narrow panel */
+.salary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  column-gap: var(--space-4);
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--space-4);
+}
+
+/* US-4.2: "Open" right under the contact field, like "Fill from link" (spec 009) */
+.open {
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+}

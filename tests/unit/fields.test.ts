@@ -2,14 +2,21 @@
 import { describe, expect, it } from 'vitest'
 import {
   EMPTY_FIELDS,
+  fieldsFormValuesOf,
+  lastCurrency,
   parseAmount,
   parseSourceText,
   patchFields,
   salaryProblem,
   sourceFromUrl,
+  sourceKey,
   sourceName,
+  sourceOfKey,
+  validateFieldsForm,
+  type FieldsFormValues,
   type Salary,
 } from '../../src/domain/fields'
+import type { Application } from '../../src/domain/types'
 import {
   ApplicationInputSchema,
   ApplicationPatchSchema,
@@ -164,5 +171,87 @@ describe('input and patch (ipc.md)', () => {
       location: null,
       contactName: 'Olena',
     })
+  })
+})
+
+describe('details form (FR-010…FR-013)', () => {
+  const values = (extra: Partial<FieldsFormValues> = {}): FieldsFormValues => ({
+    ...fieldsFormValuesOf(EMPTY_FIELDS, 'EUR'),
+    ...extra,
+  })
+
+  it('starts empty with the default currency and per month (FR-012)', () => {
+    expect(values()).toMatchObject({ salaryMin: '', currency: 'EUR', period: 'month', source: '' })
+  })
+
+  it('round-trips saved fields', () => {
+    const fields = {
+      salary: { min: 3000, max: null, currency: 'UAH' as const, period: 'year' as const },
+      workFormat: 'hybrid' as const,
+      location: 'Lviv',
+      source: { kind: 'custom' as const, name: 'Acme: careers' },
+      contactName: 'Olena',
+      contactDetails: 'https://t.me/olena',
+    }
+    const result = validateFieldsForm(fieldsFormValuesOf(fields, 'USD'))
+    expect(result).toEqual({ ok: true, data: fields })
+  })
+
+  it('no amount → no salary, even with a currency (FR-003)', () => {
+    const result = validateFieldsForm(values({ currency: 'GBP', period: 'year' }))
+    expect(result).toEqual({ ok: true, data: EMPTY_FIELDS })
+  })
+
+  it('shows errors for bad amounts, order and long text', () => {
+    expect(validateFieldsForm(values({ salaryMin: '3k', salaryMax: '-1' }))).toEqual({
+      ok: false,
+      errors: { salaryMin: { code: 'invalidAmount' }, salaryMax: { code: 'invalidAmount' } },
+    })
+    expect(validateFieldsForm(values({ salaryMin: '5000', salaryMax: '4000' }))).toEqual({
+      ok: false,
+      errors: { salaryMin: { code: 'salaryOrder' } },
+    })
+    expect(
+      validateFieldsForm(
+        values({
+          location: 'x'.repeat(101),
+          contactName: 'x'.repeat(101),
+          contactDetails: 'x'.repeat(201),
+        }),
+      ),
+    ).toEqual({
+      ok: false,
+      errors: {
+        location: { code: 'tooLong', max: 100 },
+        contactName: { code: 'tooLong', max: 100 },
+        contactDetails: { code: 'tooLong', max: 200 },
+      },
+    })
+  })
+
+  it('source keys', () => {
+    for (const source of [
+      { kind: 'site', id: 'djinni' },
+      { kind: 'channel', id: 'recruiter' },
+      { kind: 'custom', name: 'a:b' },
+    ] as const)
+      expect(sourceOfKey(sourceKey(source))).toEqual(source)
+    expect(sourceKey(null)).toBe('')
+    expect(sourceOfKey('')).toBeNull()
+    expect(sourceOfKey('site:monster')).toBeNull()
+    expect(sourceOfKey('channel:friend')).toBeNull()
+    expect(sourceOfKey('custom:')).toBeNull()
+  })
+
+  it('default currency: the last application with a salary (FR-012)', () => {
+    const app = (updatedAt: string, currency: 'UAH' | 'PLN' | null) =>
+      ({
+        updatedAt,
+        salary: currency && { min: 1, max: null, currency, period: 'month' },
+      }) as unknown as Application
+    expect(lastCurrency([])).toBe('USD')
+    expect(
+      lastCurrency([app('2026-11-01', 'UAH'), app('2026-11-03', 'PLN'), app('2026-11-05', null)]),
+    ).toBe('PLN')
   })
 })
