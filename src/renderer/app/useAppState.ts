@@ -14,8 +14,10 @@ import {
   type SaveFileResult,
   type SaveSkillResult,
   type ImportPreview,
+  type IpcEvent,
   type KnownSiteId,
   type Language,
+  type McpConnection,
   type StageId,
   type Theme,
   type UpdateTrigger,
@@ -83,6 +85,16 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
     },
     [onError],
   )
+
+  /** Spec 004 FR-009: stable, because the settings page loads it in an effect */
+  const getMcpConnection = useCallback(async (): Promise<McpConnection | null> => {
+    try {
+      return await window.findy.getMcpConnection()
+    } catch (error) {
+      onError(error)
+      return null
+    }
+  }, [onError])
 
   /** A call that does not return the state; a failure is notified and gives null */
   const attempt = async <T>(call: () => Promise<T>): Promise<T | null> => {
@@ -222,6 +234,7 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
 
       /** Spec 004 FR-005 */
       setMcpEnabled: (enabled: boolean) => run(() => window.findy.setMcpEnabled(enabled)),
+      getMcpConnection,
 
       /** Spec 002: optimistic, so the column disappears at once */
       setHiddenStages: (stages: StageId[]) => {
@@ -246,4 +259,12 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       },
     },
   }
+}
+
+/**
+ * An event that main sends to the window (docs/contracts/ipc.md). Keep `handler` stable
+ * (`useCallback`): a new function subscribes again.
+ */
+export function useMainEvent(event: IpcEvent, handler: (payload: unknown) => void) {
+  useEffect(() => window.findy.on(event, handler), [event, handler])
 }

@@ -27,6 +27,16 @@ test.describe('MCP server (spec 004)', () => {
     },
   )
 
+  test('FR-009, spec 003: a failed connection read shows a notification', async ({ findy }) => {
+    const { board, settings } = findy.pages
+    await findy.api.setMcpEnabled(true)
+    await findy.api.failInMain('getMcpConnection', 'STORAGE')
+
+    await settings.open('AI assistant')
+    await board.verifyNotification('Findy could not save this change.')
+    await settings.verifyNoAssistantInstructions()
+  })
+
   test(
     'US-2, US-4: changes from the assistant show in the open app',
     { tag: '@critical' },

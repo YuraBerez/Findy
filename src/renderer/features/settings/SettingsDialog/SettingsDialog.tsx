@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_LANGUAGES } from '@domain/language'
 import type { StageId } from '@domain/stages'
-import type { Application, Language, Settings, Theme } from '@shared/ipc'
+import type { Application, Language, McpConnection, Settings, Theme } from '@shared/ipc'
 import { Dialog, Field, panelId, Select, Switch, tabId, Tabs } from '@ui'
 import { McpSettings } from '../../assistant'
 import { StaleAfterField } from '../../stale'
@@ -28,6 +28,8 @@ export interface SettingsActions {
   setRemindersEnabled(enabled: boolean): void
   setAutoUpdateCheck(enabled: boolean): void
   setMcpEnabled(enabled: boolean): void
+  /** Spec 004 FR-009: null when it failed (already notified) */
+  getMcpConnection(): Promise<McpConnection | null>
   /** Spec 016 FR-021 */
   saveSkill(): void
   /** Spec 016 FR-023 */
@@ -119,6 +121,7 @@ export function SettingsDialog({ settings, applications, actions, onClose }: Pro
       <McpSettings
         enabled={settings.mcpEnabled}
         onChange={actions.setMcpEnabled}
+        loadConnection={actions.getMcpConnection}
         onSaveSkill={actions.saveSkill}
         onOpenInstall={actions.openSkillInstall}
       />
