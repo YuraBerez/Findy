@@ -1,5 +1,6 @@
 import { CARD_COLORS, type CardColor } from '../colors'
 import { unguardCell } from '../csv'
+import { EMPTY_FIELDS, type ApplicationFields } from '../fields'
 import { isHttpUrl, LIMITS } from '../limits'
 import { firstVisibleStage, STAGES, type StageId } from '../stages'
 import type { Application, StageChange } from '../types'
@@ -28,6 +29,8 @@ export interface ImportedApplication {
   url: string | null
   stage: StageId
   color: CardColor | null
+  /** Spec 014 */
+  fields: ApplicationFields
   createdAt: string
   stageHistory: StageChange[]
   /** Newest first, as on the board */
@@ -204,7 +207,15 @@ export function planImport(rows: string[][], context: ImportContext): ImportPlan
       history.push({ stage, at: last && last.at > at ? last.at : at })
     }
 
-    plan.items.push({ ...item, stage, color, createdAt, stageHistory: history, notes })
+    plan.items.push({
+      ...item,
+      stage,
+      color,
+      fields: EMPTY_FIELDS,
+      createdAt,
+      stageHistory: history,
+      notes,
+    })
     if (context.hiddenStages.includes(stage)) plan.hidden++
   })
   return plan

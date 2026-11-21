@@ -4,7 +4,12 @@ import type { FieldError } from '../forms'
 import { isHttpUrl, LIMITS } from '../limits'
 import { QUERY_PLACEHOLDER } from './url'
 
-export const SITE_LIMITS = { name: 60, url: LIMITS.url, count: 50, query: 200 } as const
+export const SITE_LIMITS = {
+  name: LIMITS.siteName,
+  url: LIMITS.url,
+  count: 50,
+  query: 200,
+} as const
 
 export interface SiteFormValues {
   name: string

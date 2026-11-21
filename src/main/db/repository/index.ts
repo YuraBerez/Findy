@@ -40,9 +40,9 @@ export class Repository {
       newId: options.newId ?? randomUUID,
     }
     this.settings = new SettingsStore(ctx)
-    this.applications = new ApplicationStore(ctx, this.settings)
-    this.notes = new NoteStore(ctx, this.applications)
     this.sites = new SitesStore(ctx)
+    this.applications = new ApplicationStore(ctx, this.settings, this.sites)
+    this.notes = new NoteStore(ctx, this.applications)
   }
 
   // ── Applications ─────────────────────────────────────────────────────────

@@ -164,6 +164,21 @@ describe('IPC handlers', () => {
     })
   })
 
+  it('spec 014: saves the fields, rejects a bad salary with VALIDATION', async () => {
+    const h = ctx.handlers
+    let s = await state(
+      h.createApplication({ title: 'Dev', company: 'Acme', url: 'https://djinni.co/jobs/1/' }),
+    )
+    const id = s.applications[0]!.id
+    expect(s.applications[0]?.source).toEqual({ kind: 'site', id: 'djinni' })
+    s = await state(h.updateApplication(id, { workFormat: 'hybrid', location: ' Kyiv ' }))
+    expect(s.applications[0]).toMatchObject({ workFormat: 'hybrid', location: 'Kyiv' })
+    const bad = await h.updateApplication(id, {
+      salary: { min: 5, max: 1, currency: 'USD', period: 'month' },
+    })
+    expect(bad).toMatchObject({ ok: false, error: { code: 'VALIDATION' } })
+  })
+
   it('maps unknown ids to NOT_FOUND', async () => {
     const result = await ctx.handlers.deleteApplication('00000000-0000-4000-8000-000000000099')
     expect(result).toMatchObject({ ok: false, error: { code: 'NOT_FOUND' } })

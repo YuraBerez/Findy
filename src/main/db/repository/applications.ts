@@ -1,11 +1,20 @@
 import type { CardColor } from '../../../domain/colors'
+import {
+  EMPTY_FIELDS,
+  patchFields,
+  sourceFromUrl,
+  type ApplicationFields,
+} from '../../../domain/fields'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
 import { DEFAULT_STAGE, isStageId, STAGES, type StageId } from '../../../domain/stages'
 import type { ImportedApplication } from '../../../domain/transfer'
 import type { Application } from '../../../domain/types'
 import { NotFoundError } from './errors'
 import {
+  fieldValues,
+  FIELD_COLUMNS,
   groupBy,
+  toFields,
   toNote,
   type ApplicationRow,
   type NoteRow,
@@ -13,13 +22,25 @@ import {
   type StoreContext,
 } from './rows'
 import type { SettingsStore } from './settings'
+import type { SitesStore } from './sites'
+
+const FIELD_LIST = FIELD_COLUMNS.join(', ')
+const FIELD_PARAMS = FIELD_COLUMNS.map(() => '?').join(', ')
+const FIELD_SET = FIELD_COLUMNS.map((column) => `${column} = ?`).join(', ')
 
 /** Applications with their stage history and notes; the order of cards in a stage. */
 export class ApplicationStore {
   constructor(
     private readonly ctx: StoreContext,
     private readonly settings: SettingsStore,
+    private readonly sites: SitesStore,
   ) {}
+
+  /** Spec 014 FR-020, FR-021: an empty source comes from the link; a set one stays */
+  private withSource(fields: ApplicationFields, url: string | null): ApplicationFields {
+    if (fields.source) return fields
+    return { ...fields, source: sourceFromUrl(url, this.sites.list()) }
+  }
 
   list(): Application[] {
     const { db } = this.ctx
@@ -47,6 +68,7 @@ export class ApplicationStore {
         stage: row.stage,
         order: row.position,
         color: row.color,
+        ...toFields(row),
         stageHistory: (historyByApp.get(row.id) ?? []).map(({ stage, at }) => ({ stage, at })),
         notes: (notesByApp.get(row.id) ?? []).map(toNote),
         createdAt: row.created_at,
@@ -67,12 +89,13 @@ export class ApplicationStore {
     const stage = input.stage ?? DEFAULT_STAGE
     this.settings.assertVisible(stage)
     db.transaction(() => {
+      const fields = this.withSource(patchFields(EMPTY_FIELDS, input), input.url)
       // FR-023: new cards go to the top of the column
       db.prepare('UPDATE applications SET position = position + 1 WHERE stage = ?').run(stage)
       db.prepare(
-        `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, 0, ?, ?)`,
-      ).run(id, input.title, input.company, input.url, stage, at, at)
+        `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at, ${FIELD_LIST})
+         VALUES (?, ?, ?, ?, ?, 0, ?, ?, ${FIELD_PARAMS})`,
+      ).run(id, input.title, input.company, input.url, stage, at, at, ...fieldValues(fields))
       this.addStageChange(id, stage, at)
     })()
     return this.get(id)
@@ -82,13 +105,19 @@ export class ApplicationStore {
     const { db } = this.ctx
     db.transaction(() => {
       const current = this.require(id)
+      const url = patch.url === undefined ? current.url : patch.url
+      let fields = patchFields(toFields(current), patch)
+      // Spec 014 FR-020: a new link fills an empty source
+      if (url !== current.url) fields = this.withSource(fields, url)
       db.prepare(
-        'UPDATE applications SET title = ?, company = ?, url = ?, updated_at = ? WHERE id = ?',
+        `UPDATE applications SET title = ?, company = ?, url = ?, updated_at = ?, ${FIELD_SET}
+         WHERE id = ?`,
       ).run(
         patch.title ?? current.title,
         patch.company ?? current.company,
-        patch.url === undefined ? current.url : patch.url,
+        url,
         this.ctx.now(),
+        ...fieldValues(fields),
         id,
       )
     })()
@@ -155,8 +184,8 @@ export class ApplicationStore {
     db.transaction(() => {
       const shift = db.prepare('UPDATE applications SET position = position + ? WHERE stage = ?')
       const insert = db.prepare(
-        `INSERT INTO applications (id, title, company, url, stage, position, color, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO applications (id, title, company, url, stage, position, color, created_at, updated_at, ${FIELD_LIST})
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ${FIELD_PARAMS})`,
       )
       const addNote = db.prepare(
         'INSERT INTO notes (id, application_id, text, created_at, updated_at) VALUES (?, ?, ?, ?, NULL)',
@@ -180,6 +209,8 @@ export class ApplicationStore {
           item.color,
           item.createdAt,
           at,
+          // Spec 014 FR-022: the file gave no source → from the link
+          ...fieldValues(this.withSource(item.fields, item.url)),
         )
         for (const change of item.stageHistory) this.addStageChange(id, change.stage, change.at)
         for (const note of item.notes) addNote.run(this.ctx.newId(), id, note.text, note.createdAt)

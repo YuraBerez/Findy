@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { EMPTY_FIELDS } from '../../src/domain/fields'
 import { filterApplications, matchesQuery, toFullIndex } from '../../src/domain/search'
 import type { Application } from '../../src/domain/types'
 
@@ -16,6 +17,7 @@ const app = (
   stage,
   order,
   color: null,
+  ...EMPTY_FIELDS,
   stageHistory: [{ stage, at: '2026-11-10T00:00:00Z' }],
   notes: [],
   createdAt: '2026-11-10T00:00:00Z',

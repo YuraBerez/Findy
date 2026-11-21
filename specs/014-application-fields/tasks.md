@@ -12,13 +12,13 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — Foundations
 
-- [ ] T010 Domain types and rules in `domain/fields/` + limits, with unit tests
+- [x] T010 Domain types and rules in `domain/fields/` + limits, with unit tests
   (FR-001…FR-003)
-- [ ] T011 `sourceFromUrl` and `parseSourceText`, with unit tests (FR-020, FR-042)
-- [ ] T012 zod schemas: salary, source, input and patch fields, with unit tests
+- [x] T011 `sourceFromUrl` and `parseSourceText`, with unit tests (FR-020, FR-042)
+- [x] T012 zod schemas: salary, source, input and patch fields, with unit tests
   (FR-001…FR-003)
-- [ ] T013 Migration 004 + migration test (FR-001, NFR-004)
-- [ ] T014 Repository: read and write the fields, `updatedAt` only, source from the link
+- [x] T013 Migration 004 + migration test (FR-001, NFR-004)
+- [x] T014 Repository: read and write the fields, `updatedAt` only, source from the link
   in `create` and `update`; repository and IPC tests (FR-004, FR-005, FR-020…FR-022)
 
 ## Phase 3 — US-1, US-2: salary, work format, location (P1)

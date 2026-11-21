@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { EMPTY_FIELDS } from '../../src/domain/fields'
 import en from '../../locales/en.json'
 import uk from '../../locales/uk.json'
 import { readCsv, writeCsv } from '../../src/domain/csv'
@@ -33,6 +34,7 @@ function app(fields: Partial<Application> & Pick<Application, 'title'>): Applica
     stage,
     order: 0,
     color: null,
+    ...EMPTY_FIELDS,
     stageHistory: [{ stage, at: '2026-11-01T08:00:00.000Z' }],
     notes: [],
     createdAt: '2026-11-01T08:00:00.000Z',
@@ -148,6 +150,7 @@ describe('planImport (FR-012…FR-016)', () => {
         url: null,
         stage: 'hr_interview',
         color: null,
+        fields: EMPTY_FIELDS,
         createdAt: NOW,
         stageHistory: [{ stage: 'hr_interview', at: NOW }],
         notes: [],
@@ -341,6 +344,7 @@ describe('round trip (FR-019, SC-001)', () => {
           url,
           stage,
           color,
+          fields: EMPTY_FIELDS,
           createdAt,
           stageHistory,
           notes: notes.map(({ text, createdAt }) => ({ text, createdAt })),

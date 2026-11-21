@@ -1,6 +1,7 @@
 // Entities: docs/data-model.md
 import type { AnalyticsView } from './analytics'
 import type { CardColor } from './colors'
+import type { ApplicationFields } from './fields'
 import type { StageId } from './stages'
 import type { KnownSiteId } from './sites'
 
@@ -19,7 +20,8 @@ export interface Note {
   updatedAt: string | null
 }
 
-export interface Application {
+/** Spec 014 adds the optional fields of `ApplicationFields` */
+export interface Application extends ApplicationFields {
   id: string
   title: string
   company: string
