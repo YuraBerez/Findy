@@ -17,6 +17,7 @@ import {
 } from '../domain/transfer'
 import type { Language } from '../domain/types'
 import type { ExportResult, ImportPreview } from '../shared/ipc'
+import { SALARY_PERIODS, SOURCE_CHANNELS, WORK_FORMATS } from '../domain/fields'
 import { NotFoundError, type Repository } from './db/repository'
 import { createMainTranslator } from './i18n'
 
@@ -31,6 +32,9 @@ export function transferLabels(language: Language): TransferLabels {
     columns: names(COLUMNS, 'transfer.columns'),
     stages: names(STAGES, 'stages'),
     colors: names(CARD_COLORS, 'colors'),
+    periods: names(SALARY_PERIODS, 'fields.periods'),
+    workFormats: names(WORK_FORMATS, 'fields.workFormats'),
+    channels: names(SOURCE_CHANNELS, 'fields.channels'),
   }
 }
 

@@ -48,6 +48,53 @@ describe('MCP tools (spec 004)', () => {
       repo.setMcpEnabled(true)
     })
 
+    it('spec 014 FR-044: reads and writes the extra fields; the source as text', () => {
+      const salary = { min: 3000, max: 4000, currency: 'EUR', period: 'month' }
+      const added = call('add_application', {
+        title: 'Dev',
+        company: 'Acme',
+        url: 'https://djinni.co/jobs/1/',
+        salary,
+        workFormat: 'remote',
+      }) as { application: { id: string } }
+      const { id } = added.application
+      expect(added.application).toMatchObject({ salary, workFormat: 'remote', source: 'Djinni' })
+
+      const updated = call('update_application', {
+        id,
+        source: 'Referral',
+        location: 'Lviv',
+        contactName: 'Olena',
+        salary: null,
+      }) as { application: Record<string, unknown> }
+      expect(updated.application).toMatchObject({
+        source: 'Referral',
+        location: 'Lviv',
+        contactName: 'Olena',
+        salary: null,
+        workFormat: 'remote',
+      })
+      expect(call('update_application', { id, source: 'Acme careers' })).toMatchObject({
+        application: { source: 'Acme careers' },
+      })
+      expect(call('update_application', { id, source: null })).toMatchObject({
+        application: { source: null },
+      })
+      expect(call('update_application', { id, source: '  ' })).toMatchObject({
+        application: { source: null },
+      })
+      expect(call('list_applications', { query: 'lviv' })).toMatchObject({
+        applications: [{ id }],
+      })
+      expect(() =>
+        call('update_application', {
+          id,
+          salary: { min: 5, max: 1, currency: 'EUR', period: 'month' },
+        }),
+      ).toThrow()
+      expect(() => call('update_application', { id, source: 'x'.repeat(61) })).toThrow()
+    })
+
     it('adds, lists, gets, moves, updates, notes and deletes (US-2, US-3, US-5)', () => {
       const added = call('add_application', {
         title: ' Frontend Developer ',
@@ -135,5 +182,40 @@ describe('MCP tools (spec 004)', () => {
         NotFoundError,
       )
     })
+  })
+})
+
+describe('next step in the MCP tools (spec 015 FR-054)', () => {
+  beforeEach(() => {
+    repo.setMcpEnabled(true)
+  })
+
+  it('sets, returns, finds and clears the step', () => {
+    const { application } = call('add_application', {
+      title: 'Dev',
+      company: 'Acme',
+      nextStep: { text: 'HR call', date: '2026-11-24', time: '11:00' },
+    }) as { application: { id: string; nextStep: unknown } }
+    expect(application.nextStep).toEqual({ text: 'HR call', date: '2026-11-24', time: '11:00' })
+
+    const listed = call('list_applications', { query: 'hr call' }) as {
+      applications: { nextStep: unknown }[]
+    }
+    expect(listed.applications.map((app) => app.nextStep)).toEqual([application.nextStep])
+
+    const updated = call('update_application', { id: application.id, nextStep: null }) as {
+      application: { nextStep: unknown }
+    }
+    expect(updated.application.nextStep).toBeNull()
+  })
+
+  it('rejects a step with a bad date', () => {
+    expect(() =>
+      call('add_application', {
+        title: 'Dev',
+        company: 'Acme',
+        nextStep: { text: 'HR call', date: 'Tuesday' },
+      }),
+    ).toThrow()
   })
 })

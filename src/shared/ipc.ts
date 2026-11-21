@@ -1,6 +1,8 @@
 // Renderer ↔ main contract: docs/contracts/ipc.md
 import type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView } from '../domain/analytics'
 import type { CardColor } from '../domain/colors'
+import type { ApplicationFields } from '../domain/fields'
+import type { NextStep } from '../domain/nextStep'
 import type { StageId } from '../domain/stages'
 import type { ImportFatal, ImportRowError } from '../domain/transfer'
 import type { VacancyData } from '../domain/vacancy'
@@ -10,6 +12,7 @@ import type { Application, Language, Note, Settings, StageChange, Theme } from '
 export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView, CardColor }
 export type { ImportFatal, ImportRowError }
 export type { VacancyData }
+export type { NextStep }
 export type { CustomSite, KnownSiteId }
 export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
@@ -20,6 +23,9 @@ export const IPC_METHODS = [
   'createApplication',
   'updateApplication',
   'setApplicationColor',
+  'completeNextStep',
+  'saveNextStepCalendar',
+  'setRemindersEnabled',
   'moveApplication',
   'deleteApplication',
   'resetBoard',
@@ -47,6 +53,7 @@ export const IPC_METHODS = [
   'refreshSiteIcons',
   'setMcpEnabled',
   'getMcpConnection',
+  'saveSkill',
   'getSystemLocale',
   'openExternal',
   'getAppInfo',
@@ -58,6 +65,10 @@ export const IPC_EVENTS = [
   'languageChanged',
   'storageError',
   'stateChanged',
+  /** Spec 018 FR-002: Settings… in the native menu, or its shortcut */
+  'openSettings',
+  /** Spec 015 FR-035: a step notification was clicked; the payload is the application id */
+  'openApplication',
   /** Spec 011: a site icon was saved; ask getSiteIcons again */
   'siteIconsChanged',
 ] as const
@@ -144,7 +155,13 @@ export type UpdateCheckResult =
   | { status: 'available'; version: string; currentVersion: string; url: string }
   | { status: 'latest'; currentVersion: string }
 
+/** A file saved through the system save dialog (specs 015, 016) */
+export type SaveFileResult = { status: 'saved' } | { status: 'cancelled' }
+/** Spec 016 FR-021 */
+export type SaveSkillResult = SaveFileResult
+
 /** Spec 008 */
+
 export type ExportResult = { status: 'saved'; count: number } | { status: 'cancelled' }
 
 /** Spec 008 FR-020: what an import would do; nothing has changed yet */
@@ -166,14 +183,22 @@ export interface AppInfo {
   dataFilePath: string
 }
 
-export interface NewApplication {
+/** Spec 014: `null` clears a field; a missing field stays as it is */
+export type ApplicationFieldChanges = Partial<ApplicationFields>
+
+/** Spec 015: a whole value; `null` clears it, a missing key keeps it */
+export interface NextStepChange {
+  nextStep?: { text: string; date: string; time?: string | null } | null
+}
+
+export interface NewApplication extends ApplicationFieldChanges, NextStepChange {
   title: string
   company: string
   url?: string | null
   stage?: StageId
 }
 
-export interface ApplicationChanges {
+export interface ApplicationChanges extends ApplicationFieldChanges, NextStepChange {
   title?: string
   company?: string
   url?: string | null
@@ -185,6 +210,15 @@ export interface FindyApi {
   updateApplication(id: string, patch: ApplicationChanges): Promise<AppState>
   /** Spec 007: a palette colour, or null for none */
   setApplicationColor(id: string, color: CardColor | null): Promise<AppState>
+  /**
+   * Spec 015 FR-012: removes the step and adds the note "Done: …" in `language`;
+   * NOT_FOUND when the application has no step
+   */
+  completeNextStep(id: string, language: Language): Promise<AppState>
+  /** Spec 015 FR-040: the step as an .ics file through the save dialog; STORAGE when the write fails */
+  saveNextStepCalendar(id: string): Promise<SaveFileResult>
+  /** Spec 015 FR-030 */
+  setRemindersEnabled(enabled: boolean): Promise<AppState>
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>
   deleteApplication(id: string): Promise<AppState>
   /** FR-090…093: backup, then delete all applications */
@@ -237,6 +271,8 @@ export interface FindyApi {
   setMcpEnabled(enabled: boolean): Promise<AppState>
   /** Spec 004 FR-009: how an MCP client starts Findy's server */
   getMcpConnection(): Promise<McpConnection>
+  /** Spec 016: the skill archive through the system save dialog; STORAGE when the write fails */
+  saveSkill(): Promise<SaveSkillResult>
   getSystemLocale(): Promise<string>
   openExternal(url: string): Promise<void>
   getAppInfo(): Promise<AppInfo>

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { Database } from 'better-sqlite3'
 import type { AnalyticsView } from '../../../domain/analytics'
 import type { CardColor } from '../../../domain/colors'
+import type { NextStep, StepRef } from '../../../domain/nextStep'
 import type { CustomSite, KnownSiteId, SiteFormValues } from '../../../domain/sites'
 import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
@@ -40,9 +41,9 @@ export class Repository {
       newId: options.newId ?? randomUUID,
     }
     this.settings = new SettingsStore(ctx)
-    this.applications = new ApplicationStore(ctx, this.settings)
-    this.notes = new NoteStore(ctx, this.applications)
     this.sites = new SitesStore(ctx)
+    this.applications = new ApplicationStore(ctx, this.settings, this.sites)
+    this.notes = new NoteStore(ctx, this.applications)
   }
 
   // ── Applications ─────────────────────────────────────────────────────────
@@ -69,6 +70,16 @@ export class Repository {
 
   moveApplication(id: string, target: MoveTarget): Application {
     return this.applications.move(id, target)
+  }
+
+  /** Spec 015 FR-012: the step becomes the note `noteText(step)` */
+  completeNextStep(id: string, noteText: (step: NextStep) => string): Application {
+    return this.applications.completeNextStep(id, noteText)
+  }
+
+  /** Spec 015: the steps for the reminders */
+  listNextSteps(): StepRef[] {
+    return this.applications.listNextSteps()
   }
 
   deleteApplication(id: string): void {
@@ -165,6 +176,11 @@ export class Repository {
   /** Spec 010 FR-008 */
   setStaleAfterDays(days: number): Settings {
     return this.settings.setStaleAfterDays(days)
+  }
+
+  /** Spec 015 FR-030 */
+  setRemindersEnabled(enabled: boolean): Settings {
+    return this.settings.setRemindersEnabled(enabled)
   }
 
   setAutoUpdateCheck(enabled: boolean): Settings {

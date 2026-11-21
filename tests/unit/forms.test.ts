@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { EMPTY_FIELDS } from '../../src/domain/fields'
 import { applyMove, groupByStage } from '../../src/domain/board'
 import {
   EMPTY_FORM,
@@ -73,6 +74,8 @@ const app = (id: string, stage: Application['stage'], order: number): Applicatio
   stage,
   order,
   color: null,
+  ...EMPTY_FIELDS,
+  nextStep: null,
   stageHistory: [
     { stage: 'applied', at: '2026-11-10T00:00:00Z' },
     { stage, at: '2026-11-12T00:00:00Z' },

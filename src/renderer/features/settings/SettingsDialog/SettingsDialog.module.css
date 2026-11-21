@@ -1,0 +1,39 @@
+/* Spec 018: the side list of categories, and the page of the chosen one */
+.side {
+  flex: 0 0 190px;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-2);
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.panel {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.heading {
+  margin: 0 0 var(--space-4);
+  font-size: 16px;
+}
+
+.hint {
+  margin: 0 0 var(--space-2);
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+.stale {
+  max-width: 240px;
+  margin-top: var(--space-4);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+}

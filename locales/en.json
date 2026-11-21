@@ -59,7 +59,11 @@
       "required": "Fill in this field.",
       "tooLong": "Use {{max}} characters or fewer.",
       "invalidUrl": "Enter a link that starts with http:// or https://.",
-      "queryPlacement": "Put {query} once, after the site address (for example …?q={query})."
+      "queryPlacement": "Put {query} once, after the site address (for example …?q={query}).",
+      "invalidAmount": "Enter a whole number, for example 3000.",
+      "salaryOrder": "“Salary from” must not be larger than “Salary to”.",
+      "invalidDate": "Enter a date.",
+      "invalidTime": "Enter a time, for example 15:00."
     },
     "vacancy": {
       "hint": "Paste a vacancy link: Findy fills in the job title and the company.",
@@ -165,7 +169,8 @@
     "close": "Close",
     "projectPage": "Findy on GitHub",
     "support": "Support Findy…",
-    "copyright": "Open-source, MIT licence"
+    "copyright": "Open-source, MIT licence",
+    "settings": "Settings…"
   },
   "search": {
     "label": "Search applications",
@@ -186,7 +191,15 @@
     "copy": "Copy",
     "copied": "Copied",
     "otherTitle": "Other MCP clients",
-    "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI and other apps that run local (stdio) MCP servers use this command."
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI and other apps that run local (stdio) MCP servers use this command.",
+    "skillTitle": "Skill for your assistant",
+    "skillHint": "A skill teaches Claude and other assistants how to use Findy: the tools, the safe steps and the typical tasks. Save it and add it to your assistant.",
+    "saveSkill": "Save skill…",
+    "skillInstall": "How to install",
+    "skillSaved": "Skill saved. Add it to your assistant.",
+    "skillCodeHint": "Claude Code: run this in a terminal. Run it again later to update the skill.",
+    "skillDesktopHint": "Claude Desktop and claude.ai: save the skill and upload it in Settings → Capabilities.",
+    "skillCodeTitle": "Install the skill in Claude Code"
   },
   "views": {
     "label": "Views",
@@ -280,7 +293,18 @@
       "createdAt": "Created",
       "inStageSince": "In stage since",
       "history": "Stage history",
-      "notes": "Notes"
+      "notes": "Notes",
+      "salaryMin": "Salary from",
+      "salaryMax": "Salary to",
+      "currency": "Currency",
+      "salaryPeriod": "Salary period",
+      "workFormat": "Work format",
+      "location": "Location",
+      "source": "Source",
+      "contactName": "Contact name",
+      "contactDetails": "Contact details",
+      "nextStep": "Next step",
+      "nextStepDate": "Next step date"
     },
     "menuExport": "Export to CSV…",
     "menuImport": "Import from CSV…",
@@ -370,7 +394,6 @@
     "offerQuestion": "Did Findy help with your job search?",
     "yes": "Yes",
     "notReally": "Not really",
-    "notNow": "Not now",
     "dontAsk": "Don't ask again",
     "thanksTitle": "Thank you!",
     "thanksText": "Findy is free and open source, and it is made in spare time. If it helped you, you can support its development, or star it on GitHub so more people find it.",
@@ -379,5 +402,102 @@
     "feedbackTitle": "Thanks for your answer",
     "feedbackText": "What would make Findy more useful? Tell us on GitHub: we read every idea.",
     "feedback": "Tell us what to improve"
+  },
+  "fields": {
+    "salary": "Salary",
+    "salaryFrom": "Salary from",
+    "salaryTo": "Salary to",
+    "currency": "Currency",
+    "period": "Period",
+    "periods": {
+      "month": "Per month",
+      "year": "Per year"
+    },
+    "periodShort": {
+      "month": "/mo",
+      "year": "/yr"
+    },
+    "salaryFromOnly": "from {{amount}}",
+    "salaryToOnly": "up to {{amount}}",
+    "workFormat": "Work format",
+    "workFormats": {
+      "remote": "Remote",
+      "office": "Office",
+      "hybrid": "Hybrid"
+    },
+    "notSet": "Not set",
+    "location": "Location",
+    "locationHint": "City, country or time zone",
+    "source": "Source",
+    "sourceGroups": {
+      "sites": "Job sites",
+      "mySites": "My sites",
+      "channels": "Other sources"
+    },
+    "channels": {
+      "referral": "Referral",
+      "company_site": "Company website",
+      "recruiter": "Recruiter contacted me",
+      "other": "Other"
+    },
+    "contactName": "Contact name",
+    "contactDetails": "Contact details",
+    "contactDetailsHint": "Email, phone, Telegram or a link",
+    "openContact": "Open the contact link"
+  },
+  "nextStep": {
+    "title": "Next step",
+    "add": "Add next step",
+    "text": "Step",
+    "textHint": "For example, technical interview with Oleh",
+    "date": "Date",
+    "time": "Time",
+    "timeHint": "Optional",
+    "save": "Save step",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "done": "Done",
+    "remove": "Remove step",
+    "calendar": "Add to calendar",
+    "calendarSaved": "The calendar file is saved.",
+    "menuItem": "Next step…",
+    "doneNote": "Done: {{text}} ({{when}})",
+    "mark": {
+      "overdue": "Overdue · {{day}}",
+      "today": "Today",
+      "todayAt": "Today, {{time}}",
+      "tomorrow": "Tomorrow",
+      "tomorrowAt": "Tomorrow, {{time}}",
+      "later": "{{day}}",
+      "laterAt": "{{day}}, {{time}}"
+    },
+    "cardLabel": "Next step: {{text}}, {{when}} ({{mark}})",
+    "status": {
+      "overdue": "Overdue",
+      "today": "Today",
+      "tomorrow": "Tomorrow"
+    }
+  },
+  "reminders": {
+    "menuItem": "Reminders",
+    "step": "{{title}} · {{company}}, at {{time}}",
+    "stepTitle_one": "In {{count}} min: {{text}}",
+    "stepTitle_other": "In {{count}} min: {{text}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "menuItem": "Settings…",
+    "general": "General",
+    "board": "Board",
+    "reminders": "Reminders",
+    "updates": "Updates",
+    "remindersHint": "System notifications 15 minutes and 1 minute before a next step that has a time, while Findy runs.",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "assistant": "AI assistant",
+    "categories": "Settings categories"
   }
 }

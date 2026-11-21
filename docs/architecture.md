@@ -64,6 +64,8 @@ src/
 ├── domain/              # pure logic + zod schemas (shared)
 │   ├── stages.ts        # STAGES constant, StageId
 │   ├── colors.ts        # spec 007: CARD_COLORS, CardColor
+│   ├── fields/          # spec 014: salary, work format, source rules (zod-free)
+│   ├── nextStep/        # spec 015: step rules, status, reminders, formats, calendar file
 │   ├── csv.ts           # spec 008: CSV reader/writer, formula guard
 │   ├── transfer/        # spec 008: applications ↔ CSV rows (export table, import plan)
 │   ├── schema.ts        # zod schemas for IPC input & entities
@@ -86,6 +88,9 @@ src/
 │   │                        # rows.ts: table rows and mapping; errors.ts
 │   ├── updates.ts       # spec 006: latest release request, the update checker
 │   ├── transfer.ts      # spec 008: CSV files through system dialogs, pending import
+│   ├── reminders.ts     # spec 015: the reminder scheduler (15 minutes and 1 minute before)
+│   ├── calendar.ts      # spec 015: the .ics file through the save dialog
+│   ├── skill/           # spec 016: the skill archive (zip writer, save through the dialog)
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
 ├── preload/
@@ -101,7 +106,7 @@ src/
     │   ├── colors/      # useColorOptions: card colour names and tokens (spec 007)
     │   ├── transfer/    # ImportDialog/, useTransferMenu: CSV export and import (spec 008)
     │   ├── applications/# ApplicationDialog/
-    │   ├── settings/    # ThemeToggle/, LanguageSelect/
+    │   ├── settings/    # SettingsDialog/ (spec 018), ColumnSwitches/
     │   └── storage/     # StorageError/
     ├── ui/              # design-system primitives: Button, IconButton, Field,
     │                    # TextField, Select, Dialog, Menu, Switch, Tabs, BarChart,
@@ -118,6 +123,7 @@ e2e/                     # Playwright + playwright-e2e-kit (D-6)
 ├── screens/             # page objects: private locators, verbs, verify…()
 ├── fixtures/app.ts      # one Electron app + isolated database per test
 └── data/                # back door: seed and read through window.findy
+skills/findy/SKILL.md    # spec 016: the skill for AI assistants (bundled into main)
 build/                   # icons, entitlements for electron-builder
 .github/workflows/       # ci.yml, release.yml
 ```
@@ -286,6 +292,55 @@ build/                   # icons, entitlements for electron-builder
   change and `AppState` stays small.
 - e2e sets `FINDY_SITE_ICONS_URL` to a local server, or to a closed port, so tests
   never reach the sites.
+
+### D-14 — Extra fields as columns, the source rule in the repository (spec 014)
+
+- The fields are nullable columns of `applications` (migration 004), not a key-value table:
+  they are fixed and each has a CHECK.
+- `salary` and `source` are whole values in the domain: a patch replaces them or sets
+  `null`. The rules across columns live in `domain/fields/` and zod, because `ADD COLUMN`
+  cannot add a table CHECK.
+- `ApplicationStore` fills in an empty source from the link with `sourceFromUrl` in
+  `create`, `update` and `importMany`, so the app, CSV import and MCP share one rule.
+- CSV and MCP read a source as text (`parseSourceText`): a known site or channel by id or
+  name, else a custom name.
+
+### D-15 — The skill for assistants is a bundled text file (spec 016)
+
+- `skills/findy/SKILL.md` (Agent Skills format) is the only copy. Main imports it with
+  Vite's `?raw`, so each build holds the skill of its version and saving needs no network
+  and no resource path.
+- `saveSkill` writes a zip of stored entries (`main/skill/zip.ts`, CRC-32 from `node:zlib`):
+  `findy/SKILL.md` at the root, as an upload to Claude Desktop expects. No zip library.
+- `tests/unit/skill.test.ts` compares the `### <tool>` headings under `## Tools` with
+  `createTools`, so the skill cannot fall behind the MCP tools.
+- Claude Code users install it with one command from the main branch
+  (`shared/skill.ts#skillInstallCommand`, spec 017); the release has no skill archive.
+
+### D-16 — Next step: columns, a reminder scheduler in main (spec 015)
+
+- The step is three nullable columns of `applications` (migration 005): text, a local
+  date `YYYY-MM-DD` and an optional local time `HH:MM`. Wall-clock values, not UTC, so a
+  step at 15:00 stays at 15:00 in another time zone (spec D-6).
+- `nextStep` is a whole value in the create and update patch, so MCP shares the rules.
+  "Done" is its own call (`completeNextStep`): it clears the step and adds a note in one
+  transaction, with the note text written by main in the UI language.
+- `main/reminders.ts` shows the system notifications. It checks every 10 seconds (reminders 15 minutes and 1 minute before a step), after
+  each IPC call, after an MCP change and when the computer wakes, because renderer timers
+  slow down in a hidden window. Shown reminders are kept in memory for the run.
+- The renderer clock (`hooks/useNow`) waits until the next moment a card mark changes
+  (`nextStatusChange`), at most one hour.
+- "Add to calendar" writes an iCalendar file with a floating local time
+  (`domain/nextStep/calendar.ts`); no time zone rules, no network.
+
+### D-17 — One settings window; the app menu holds actions (spec 018)
+
+- `features/settings/SettingsDialog` is a wide `@ui/Dialog` with a vertical `@ui/Tabs`
+  list of categories. Each category is a page; only the page scrolls, so the window keeps
+  its size. The AI assistant page is `features/assistant/McpSettings`.
+- Cmd/Ctrl+, is the accelerator of the native menu item **Settings…**: main sends the
+  `openSettings` event, and the renderer opens the window unless another dialog is open.
+- The ⋯ menu holds only actions. A new setting goes into a category, never into the menu.
 
 ## Cross-cutting docs
 

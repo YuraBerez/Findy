@@ -2,13 +2,17 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { applyMove } from '@domain/board'
 import { asksAboutOffer, isMoveToOffer } from '@domain/offer'
+import type { ApplicationFields } from '@domain/fields'
 import type { ValidApplication } from '@domain/forms'
+import type { NextStep } from '@domain/nextStep'
 import {
   errorKind,
   type AnalyticsView,
   type AppState,
   type CardColor,
   type ExportResult,
+  type SaveFileResult,
+  type SaveSkillResult,
   type ImportPreview,
   type KnownSiteId,
   type Language,
@@ -121,11 +125,27 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         run(() => window.findy.createApplication(application)),
 
       /** FR-012: fields, then the stage if it changed (to the top of that column) */
-      updateApplication: async (id: string, { stage, ...fields }: ValidApplication) => {
+      updateApplication: async (
+        id: string,
+        { stage, ...fields }: ValidApplication & Partial<ApplicationFields>,
+      ) => {
         if (!(await run(() => window.findy.updateApplication(id, fields)))) return false
         const current = state.applications.find((application) => application.id === id)
         return current && current.stage !== stage ? moveApplication(id, { stage, index: 0 }) : true
       },
+
+      /** Spec 015 FR-010: a new or changed step; null removes it (no note) */
+      setNextStep: (id: string, step: NextStep | null) =>
+        run(() => window.findy.updateApplication(id, { nextStep: step })),
+      /** Spec 015 FR-012: the note is written in the UI language */
+      completeNextStep: (id: string) =>
+        run(() => window.findy.completeNextStep(id, i18n.language as Language)),
+      /** Spec 015 FR-040: null when it failed (already notified) */
+      saveNextStepCalendar: (id: string): Promise<SaveFileResult | null> =>
+        attempt(() => window.findy.saveNextStepCalendar(id)),
+      /** Spec 015 FR-030 */
+      setRemindersEnabled: (enabled: boolean) =>
+        run(() => window.findy.setRemindersEnabled(enabled)),
 
       /** Spec 007 FR-004 */
       setApplicationColor: (id: string, color: CardColor | null) =>
@@ -161,7 +181,7 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         await attempt(() => window.findy.refreshSiteIcons())
       },
 
-      /** Spec 013: Not now, or the dialog is done */
+      /** Spec 013: closed without an answer, or the dialog is done */
       closeOfferQuestion: () => setOfferAsked(false),
       /** Spec 013 FR-004: a final answer; the dialog stays open for its next step */
       answerOfferQuestion: () => run(() => window.findy.answerOfferQuestion()),
@@ -181,6 +201,9 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       updateNote: (id: string, noteId: string, text: string) =>
         run(() => window.findy.updateNote(id, noteId, text)),
       deleteNote: (id: string, noteId: string) => run(() => window.findy.deleteNote(id, noteId)),
+
+      /** Spec 016 FR-021: null when it failed (already notified) */
+      saveSkill: (): Promise<SaveSkillResult | null> => attempt(() => window.findy.saveSkill()),
 
       /** FR-015: main opens http(s) links in the system browser only */
       openLink: async (url: string) => {

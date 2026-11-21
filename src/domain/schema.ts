@@ -2,9 +2,11 @@
 import { z } from 'zod'
 import { ANALYTICS_GROUPINGS, ANALYTICS_PERIODS } from './analytics'
 import { CARD_COLORS } from './colors'
+import { CURRENCIES, SALARY_PERIODS, salaryProblem, SOURCE_CHANNELS, WORK_FORMATS } from './fields'
 import { isHttpUrl, LIMITS } from './limits'
+import { isStepDate, isStepTime, stepTextProblem } from './nextStep'
 import { STAGES } from './stages'
-import { KNOWN_SITE_IDS, SITE_LIMITS, validateSiteForm } from './sites'
+import { KNOWN_SITE_IDS, SITE_LIMITS, validateSiteForm, type KnownSiteId } from './sites'
 import { STALE_DAYS } from './stale'
 
 export { isHttpUrl, LIMITS }
@@ -44,9 +46,11 @@ export const SiteInputSchema = z
     return z.NEVER
   })
 
+export const KnownSiteIdSchema = z.enum(KNOWN_SITE_IDS as [KnownSiteId, ...KnownSiteId[]])
+
 /** Spec 011 FR-015: known site ids, without repeats */
 export const HiddenSitesSchema = z
-  .array(z.enum(KNOWN_SITE_IDS as [string, ...string[]]))
+  .array(KnownSiteIdSchema)
   .max(KNOWN_SITE_IDS.length)
   .refine((ids) => new Set(ids).size === ids.length, { message: 'duplicate site' })
 
@@ -61,17 +65,74 @@ export const AnalyticsViewSchema = z.object({
   grouping: z.enum(ANALYTICS_GROUPINGS),
 })
 
+/** Spec 014: empty or whitespace-only text means "not given" */
+const optionalText = (max: number) =>
+  z
+    .string()
+    .trim()
+    .max(max)
+    .nullish()
+    .transform((value) => (value ? value : null))
+
+const amount = z.int().min(0).max(LIMITS.salary).nullable()
+
+/** Spec 014 FR-001…FR-003: at least one amount, `min ≤ max` */
+export const SalarySchema = z
+  .object({
+    min: amount,
+    max: amount,
+    currency: z.enum(CURRENCIES),
+    period: z.enum(SALARY_PERIODS),
+  })
+  .refine((salary) => salaryProblem(salary) === null, { message: 'invalid_salary' })
+
+/** Spec 014: a known site, the name of a custom site, or a channel */
+export const SourceSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('site'), id: KnownSiteIdSchema }),
+  z.object({ kind: z.literal('custom'), name: requiredText(LIMITS.siteName) }),
+  z.object({ kind: z.literal('channel'), id: z.enum(SOURCE_CHANNELS) }),
+])
+
+/** Spec 014: `null` clears a field; a missing field is not changed */
+export const ApplicationFieldsShape = {
+  salary: SalarySchema.nullable().optional(),
+  workFormat: z.enum(WORK_FORMATS).nullable().optional(),
+  location: optionalText(LIMITS.location).optional(),
+  source: SourceSchema.nullable().optional(),
+  contactName: optionalText(LIMITS.contactName).optional(),
+  contactDetails: optionalText(LIMITS.contactDetails).optional(),
+}
+
+/** Spec 015 FR-001: one line of text, a calendar date, an optional time; `null` clears it */
+export const NextStepSchema = z.object({
+  text: requiredText(LIMITS.nextStep).refine((text) => stepTextProblem(text) === null, {
+    message: 'The step must be one line',
+  }),
+  date: z.string().refine(isStepDate, { message: 'A calendar date YYYY-MM-DD' }),
+  time: z
+    .string()
+    .refine(isStepTime, { message: 'A time HH:MM' })
+    .nullish()
+    .transform((value) => value ?? null),
+})
+
+const nextStepField = { nextStep: NextStepSchema.nullable().optional() }
+
 export const ApplicationInputSchema = z.object({
   title: requiredText(LIMITS.title),
   company: requiredText(LIMITS.company),
   url: UrlSchema.optional().transform((value) => value ?? null),
   stage: StageSchema.optional(),
+  ...ApplicationFieldsShape,
+  ...nextStepField,
 })
 
 export const ApplicationPatchSchema = z.object({
   title: requiredText(LIMITS.title).optional(),
   company: requiredText(LIMITS.company).optional(),
   url: UrlSchema.optional(),
+  ...ApplicationFieldsShape,
+  ...nextStepField,
 })
 
 export const MoveTargetSchema = z.object({

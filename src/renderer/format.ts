@@ -44,3 +44,24 @@ export function formatShare(share: number, language: string): string {
     share,
   )
 }
+
+/**
+ * Spec 014 FR-031: an amount or a range in the currency, whole units, digit groups of the
+ * language. A range uses the en dash of `formatRange`.
+ */
+export function formatMoney(
+  amounts: { min: number | null; max: number | null },
+  currency: string,
+  language: string,
+): string {
+  const format = new Intl.NumberFormat(language, {
+    style: 'currency',
+    currency,
+    currencyDisplay: 'narrowSymbol',
+    maximumFractionDigits: 0,
+  })
+  const { min, max } = amounts
+  if (min !== null && max !== null)
+    return min === max ? format.format(min) : format.formatRange(min, max)
+  return format.format((min ?? max)!)
+}

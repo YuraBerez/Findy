@@ -9,6 +9,7 @@ import type { Application } from '@shared/ipc'
 import { Button } from '@ui'
 import { BoardActionsContext, type BoardActions } from '../BoardActions'
 import { CardContent } from '../Card'
+import { useFieldLabels } from '../../fields'
 import { Column } from '../Column'
 import { collisionDetection } from '../dnd'
 import { useBoardDnd, type MoveHandler } from '../useBoardDnd'
@@ -19,6 +20,8 @@ interface Props {
   onAdd(): void
   onMove: MoveHandler
   onOpen(id: string): void
+  /** Spec 015 FR-013 */
+  onOpenStep(id: string): void
   onOpenLink(url: string): void
   onColorChange(id: string, color: CardColor | null): void
   hiddenStages: StageId[]
@@ -36,6 +39,7 @@ export function Board({
   onAdd,
   onMove,
   onOpen,
+  onOpenStep,
   onOpenLink,
   onColorChange,
   hiddenStages,
@@ -50,7 +54,11 @@ export function Board({
     (application: Application) => staleDays(application, staleAfterDays, now),
     [staleAfterDays, now],
   )
-  const shown = useMemo(() => filterApplications(applications, query), [applications, query])
+  const { channels } = useFieldLabels()
+  const shown = useMemo(
+    () => filterApplications(applications, query, channels),
+    [applications, query, channels],
+  )
   // Positions in a filtered column become positions in the whole column
   const move = useCallback<MoveHandler>(
     (id, target) =>
@@ -66,6 +74,8 @@ export function Board({
       move: dnd.moveFromMenu,
       setColor: onColorChange,
       open: onOpen,
+      openStep: onOpenStep,
+      now,
       openLink: onOpenLink,
       visible,
       hide: onHide,
@@ -79,6 +89,8 @@ export function Board({
       dnd.clearFocus,
       onColorChange,
       onOpen,
+      onOpenStep,
+      now,
       onOpenLink,
       visible,
       onHide,
@@ -125,7 +137,12 @@ export function Board({
           </div>
           <DragOverlay>
             {dnd.dragged && (
-              <CardContent application={dnd.dragged} staleDays={staleOf(dnd.dragged)} overlay />
+              <CardContent
+                application={dnd.dragged}
+                staleDays={staleOf(dnd.dragged)}
+                now={now}
+                overlay
+              />
             )}
           </DragOverlay>
         </DndContext>

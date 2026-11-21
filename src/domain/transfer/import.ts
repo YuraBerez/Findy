@@ -1,6 +1,17 @@
 import { CARD_COLORS, type CardColor } from '../colors'
 import { unguardCell } from '../csv'
+import {
+  isCurrency,
+  parseAmount,
+  parseSourceText,
+  SALARY_PERIODS,
+  WORK_FORMATS,
+  type ApplicationFields,
+  type SalaryPeriod,
+  type WorkFormat,
+} from '../fields'
 import { isHttpUrl, LIMITS } from '../limits'
+import { parseStepDateText, stepTextProblem, type NextStep } from '../nextStep'
 import { firstVisibleStage, STAGES, type StageId } from '../stages'
 import type { Application, StageChange } from '../types'
 import { COLUMNS, normalizeName, type Column, type TransferLabels } from './columns'
@@ -28,6 +39,10 @@ export interface ImportedApplication {
   url: string | null
   stage: StageId
   color: CardColor | null
+  /** Spec 014 */
+  fields: ApplicationFields
+  /** Spec 015 */
+  nextStep: NextStep | null
   createdAt: string
   stageHistory: StageChange[]
   /** Newest first, as on the board */
@@ -97,6 +112,78 @@ function parseNotes(text: string, now: string): { text: string; createdAt: strin
   return notes.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
+type Fail = (field: Column, problem: ImportProblem) => void
+
+/** Spec 014 FR-042: the extra fields of a row; problems go to `fail` */
+function readFields(
+  cell: (column: Column) => string,
+  fail: Fail,
+  names: {
+    periodOf: Map<string, SalaryPeriod>
+    workFormatOf: Map<string, WorkFormat>
+    channelNames: TransferLabels['channels'][]
+  },
+): ApplicationFields {
+  const amount = (column: 'salaryMin' | 'salaryMax') => {
+    const value = parseAmount(cell(column))
+    if (value === undefined) fail(column, 'invalid')
+    return value ?? null
+  }
+  const min = amount('salaryMin')
+  const max = amount('salaryMax')
+  if (min !== null && max !== null && min > max) fail('salaryMin', 'invalid')
+
+  // FR-003: currency and period count only with an amount, and then both are needed
+  let salary: ApplicationFields['salary'] = null
+  if (min !== null || max !== null) {
+    const currencyText = cell('currency').trim().toUpperCase()
+    const periodText = cell('salaryPeriod')
+    const period = names.periodOf.get(normalizeName(periodText))
+    if (!currencyText) fail('currency', 'required')
+    else if (!isCurrency(currencyText)) fail('currency', 'invalid')
+    if (!periodText.trim()) fail('salaryPeriod', 'required')
+    else if (!period) fail('salaryPeriod', 'invalid')
+    if (isCurrency(currencyText) && period) salary = { min, max, currency: currencyText, period }
+  }
+
+  const workFormatText = cell('workFormat')
+  const workFormat = workFormatText.trim()
+    ? (names.workFormatOf.get(normalizeName(workFormatText)) ?? null)
+    : null
+  if (workFormatText.trim() && !workFormat) fail('workFormat', 'invalid')
+
+  const text = (column: 'location' | 'contactName' | 'contactDetails') => {
+    const value = cell(column).trim()
+    if (value.length > LIMITS[column]) fail(column, 'tooLong')
+    return value || null
+  }
+
+  const source = parseSourceText(cell('source'), names.channelNames)
+  if (source === undefined) fail('source', 'tooLong')
+
+  return {
+    salary,
+    workFormat,
+    location: text('location'),
+    source: source ?? null,
+    contactName: text('contactName'),
+    contactDetails: text('contactDetails'),
+  }
+}
+
+/** Spec 015 FR-052: both cells or neither; a text without a valid date skips the row */
+function readNextStep(cell: (column: Column) => string, fail: Fail): NextStep | null {
+  const text = cell('nextStep').trim()
+  const dateText = cell('nextStepDate').trim()
+  if (!text && !dateText) return null
+  const when = dateText ? parseStepDateText(dateText) : null
+  const problem = stepTextProblem(text)
+  if (problem) fail('nextStep', problem === 'oneLine' ? 'invalid' : problem)
+  if (!dateText) fail('nextStepDate', 'required')
+  else if (!when) fail('nextStepDate', 'invalid')
+  return problem || !when ? null : { text, ...when }
+}
+
 const HISTORY_LINE = /^(\S+)\s+[—–-]\s+(.+)$/
 
 /**
@@ -123,6 +210,9 @@ export function planImport(rows: string[][], context: ImportContext): ImportPlan
 
   const stageOf = lookup(STAGES, (labels) => labels.stages, context.labels)
   const colorOf = lookup(CARD_COLORS, (labels) => labels.colors, context.labels)
+  const periodOf = lookup(SALARY_PERIODS, (labels) => labels.periods, context.labels)
+  const workFormatOf = lookup(WORK_FORMATS, (labels) => labels.workFormats, context.labels)
+  const channelNames = context.labels.map((labels) => labels.channels)
   const seen = new Set(context.existing.map(duplicateKey))
   const plan: ImportPlan = { fatal: null, items: [], errors: [], duplicates: 0, hidden: 0 }
 
@@ -184,6 +274,9 @@ export function planImport(rows: string[][], context: ImportContext): ImportPlan
     const notes = parseNotes(cell('notes'), context.now)
     if (!notes) fail('notes', 'tooLong')
 
+    const fields = readFields(cell, fail, { periodOf, workFormatOf, channelNames })
+    const nextStep = readNextStep(cell, fail)
+
     if (rowErrors.length > 0 || !stage || color === undefined || !notes) {
       plan.errors.push(...rowErrors)
       return
@@ -204,7 +297,16 @@ export function planImport(rows: string[][], context: ImportContext): ImportPlan
       history.push({ stage, at: last && last.at > at ? last.at : at })
     }
 
-    plan.items.push({ ...item, stage, color, createdAt, stageHistory: history, notes })
+    plan.items.push({
+      ...item,
+      stage,
+      color,
+      fields,
+      nextStep,
+      createdAt,
+      stageHistory: history,
+      notes,
+    })
     if (context.hiddenStages.includes(stage)) plan.hidden++
   })
   return plan

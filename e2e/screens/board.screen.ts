@@ -2,6 +2,7 @@ import { expect, type Locator, type Page } from '@playwright/test'
 import { BaseComponent, escapeRegExp } from 'playwright-e2e-kit'
 import type { CardColor, StageId } from '../../src/shared/ipc'
 import type { Pointer } from './pointer'
+import { SettingsScreen } from './settings.screen'
 
 /** Light and dark `--bg` (src/renderer/styles/global.css) */
 const BACKGROUND = { light: 'rgb(244, 246, 248)', dark: 'rgb(22, 24, 28)' } as const
@@ -19,9 +20,8 @@ export class BoardScreen extends BaseComponent {
   private readonly emptyState: Locator
   private readonly storageError: Locator
   private readonly menu: Locator
-  private readonly columnsDialog: Locator
   private readonly searchInput: Locator
-  private readonly assistantDialog: Locator
+  private readonly settings: SettingsScreen
 
   constructor(
     page: Page,
@@ -36,9 +36,8 @@ export class BoardScreen extends BaseComponent {
     this.emptyState = page.getByTestId('empty-board')
     this.storageError = page.getByTestId('storage-error')
     this.menu = page.getByRole('menu')
-    this.columnsDialog = page.getByRole('dialog', { name: 'Columns' })
-    this.assistantDialog = page.getByRole('dialog', { name: 'AI assistant access' })
     this.searchInput = this.toolbar.getByRole('searchbox', { name: 'Search applications' })
+    this.settings = new SettingsScreen(page)
   }
 
   private column(stage: StageId): Locator {
@@ -75,32 +74,30 @@ export class BoardScreen extends BaseComponent {
     await this.emptyState.getByRole('button').click()
   }
 
-  private themeSwitch(): Locator {
-    return this.menu.getByRole('menuitemcheckbox', { name: /^(Dark theme|Темна тема)$/ })
+  /** Spec 018: General → Theme in Settings, then close the window */
+  async chooseTheme(name: string): Promise<void> {
+    await this.settings.open(/^(General|Загальні)$/)
+    await this.settings.chooseTheme(name)
+    await this.settings.close()
   }
 
-  /** US-9: app menu → the "Dark theme" switch (the menu stays open, then closes) */
-  async toggleTheme(): Promise<void> {
-    await this.openAppMenu()
-    await this.themeSwitch().click()
-    await this.closeAppMenu()
-  }
-
-  /** FR-081: Enter opens the menu, Space flips the switch, Escape closes */
-  async toggleThemeWithKeyboard(): Promise<void> {
-    await this.appMenuButton.press('Enter')
-    await expect(this.menu).toBeVisible()
-    await this.themeSwitch().press('Space')
-    await this.themeSwitch().press('Escape')
-    await expect(this.menu).toBeHidden()
-  }
-
-  /** US-5: app menu → Language › → a language (submenu, so the menu stays short) */
+  /** US-5, spec 018: General → Language in Settings, then close the window */
   async chooseLanguage(name: 'English' | 'Українська'): Promise<void> {
+    await this.settings.open(/^(General|Загальні)$/)
+    await this.settings.chooseLanguage(name)
+    await this.settings.close()
+  }
+
+  /** Spec 018 FR-002: the native menu item and its accelerator open the window */
+  async verifySettingsOpen(): Promise<void> {
+    await this.settings.verifyOpen('General')
+  }
+
+  /** Spec 018 FR-020: the items of the app menu, in order */
+  async verifyAppMenu(items: string[]): Promise<void> {
     await this.openAppMenu()
-    await this.menu.getByRole('menuitem', { name: /^(Language|Мова)/ }).click()
-    await this.menu.getByRole('menuitemradio', { name }).click()
-    await expect(this.menu).toBeHidden()
+    await expect(this.menu.getByRole('menuitem')).toHaveText(items)
+    await this.closeAppMenu()
   }
 
   async closeAppMenu(): Promise<void> {
@@ -123,18 +120,40 @@ export class BoardScreen extends BaseComponent {
     await this.appMenuItem(/^(Support Findy…|Підтримати Findy…)$/).click()
   }
 
+  // ── Spec 015: next step ────────────────────────────────────────────────
+
+  /** FR-020: the visible mark text; null = no mark */
+  async verifyStepMark(title: string, mark: RegExp | null): Promise<void> {
+    const shown = this.card(title).getByTestId('card-next-step')
+    if (mark === null) await expect(shown).toHaveCount(0)
+    else await expect(this.card(title).getByTestId('card-next-step-text')).toHaveText(mark)
+  }
+
+  /** FR-022: the step is in the card's accessible name */
+  async verifyStepInName(title: string, text: RegExp): Promise<void> {
+    await expect(this.card(title)).toHaveAccessibleName(text)
+  }
+
+  /** FR-021: overdue has its own icon state, not only a colour */
+  async verifyStepOverdue(title: string): Promise<void> {
+    await expect(this.card(title).getByTestId('card-next-step')).toHaveAttribute(
+      'data-status',
+      'overdue',
+    )
+  }
+
+  /** FR-013: card ⋯ → Next step… */
+  async openStepFromMenu(title: string): Promise<void> {
+    await this.openCardMenu(title)
+    await this.menu.getByRole('menuitem', { name: /^(Next step…|Наступний крок…)$/ }).click()
+  }
+
   // ── Spec 010: stale applications ───────────────────────────────────────
 
   /** FR-003: the mark is text in the card's accessible name, or there is none */
   async verifyStaleMark(title: string, mark: string | null): Promise<void> {
     if (mark) await expect(this.card(title)).toHaveAccessibleName(new RegExp(` ${mark} `))
     else await expect(this.card(title)).not.toHaveAccessibleName(/No movement|Без руху/)
-  }
-
-  /** FR-008: app menu → Stale after… */
-  async openStaleAfter(): Promise<void> {
-    await this.openAppMenu()
-    await this.appMenuItem(/^(Stale after…|Вважати без руху після…)$/).click()
   }
 
   /** Spec 008 US-1: app menu → Export to CSV… (the save dialog is answered by the test) */
@@ -151,7 +170,7 @@ export class BoardScreen extends BaseComponent {
 
   /**
    * Spec 008 US-3.1: Enter opens the menu, End goes to "Reset board…" (the board must
-   * have cards), ↑ walks up past "Support Findy…" and the update entries to "Import from
+   * have cards), ↑ walks up past "Support Findy…" and "Check for updates…" to "Import from
    * CSV…", Enter picks it.
    */
   async importCsvWithKeyboard(): Promise<void> {
@@ -160,7 +179,6 @@ export class BoardScreen extends BaseComponent {
     const path = [
       this.appMenuItem('Reset board…'),
       this.appMenuItem('Support Findy…'),
-      this.menu.getByRole('menuitemcheckbox', { name: 'Check for updates automatically' }),
       this.appMenuItem('Check for updates…'),
     ]
     await this.menu.getByRole('menuitem').first().press('End')
@@ -220,37 +238,6 @@ export class BoardScreen extends BaseComponent {
     await this.page.getByRole('button', { name: /^(Found an issue\?|Знайшли проблему\?)$/ }).click()
   }
 
-  // ── AI assistant access (spec 004) ──────────────────────────────────────
-
-  async openAssistantDialog(): Promise<void> {
-    await this.openAppMenu()
-    await this.appMenuItem('AI assistant access (MCP)…').click()
-    await expect(this.assistantDialog).toBeVisible()
-  }
-
-  async setAssistantAccess(on: boolean): Promise<void> {
-    const toggle = this.assistantDialog.getByRole('switch', {
-      name: 'Allow AI assistants to use my board',
-    })
-    if ((await toggle.getAttribute('aria-checked')) !== String(on)) await toggle.click()
-    await expect(toggle).toHaveAttribute('aria-checked', String(on))
-  }
-
-  async closeAssistantDialog(): Promise<void> {
-    await this.assistantDialog.getByRole('button', { name: 'Close' }).click()
-    await expect(this.assistantDialog).toBeHidden()
-  }
-
-  /** FR-009: ready-to-copy client configuration */
-  async verifyAssistantInstructions(): Promise<void> {
-    const config = this.assistantDialog.getByTestId('mcp-desktop-config')
-    await expect(config).toContainText('"mcpServers"')
-    await expect(config).toContainText('"ELECTRON_RUN_AS_NODE": "1"')
-    await expect(this.assistantDialog).toContainText(
-      'claude mcp add findy -e ELECTRON_RUN_AS_NODE=1 --',
-    )
-  }
-
   // ── Notifications (spec 003) ───────────────────────────────────────────
 
   async closeNotification(text: string): Promise<void> {
@@ -280,37 +267,6 @@ export class BoardScreen extends BaseComponent {
     await this.column(stage)
       .getByRole('button', { name: `Hide column ${name}` })
       .click()
-  }
-
-  async openColumnsDialog(): Promise<void> {
-    await this.openAppMenu()
-    await this.appMenuItem('Columns…').click()
-    await expect(this.columnsDialog).toBeVisible()
-  }
-
-  async setColumnShown(name: string): Promise<void> {
-    await this.columnsDialog.getByRole('switch', { name: `Show ${name}` }).click()
-  }
-
-  async closeColumnsDialog(): Promise<void> {
-    await this.columnsDialog.getByRole('button', { name: 'Close' }).click()
-    await expect(this.columnsDialog).toBeHidden()
-  }
-
-  async verifyColumnSwitch(
-    name: string,
-    state: { on: boolean; enabled?: boolean; count?: string },
-  ): Promise<void> {
-    const toggle = this.columnsDialog.getByRole('switch', { name: `Show ${name}` })
-    await expect(toggle).toHaveAttribute('aria-checked', String(state.on))
-    if (state.enabled !== undefined) {
-      if (state.enabled) await expect(toggle).toBeEnabled()
-      else await expect(toggle).toBeDisabled()
-    }
-    if (state.count)
-      await expect(
-        this.columnsDialog.getByRole('listitem').filter({ hasText: name }),
-      ).toContainText(state.count)
   }
 
   async verifyNoHideButton(stage: StageId): Promise<void> {
@@ -524,6 +480,13 @@ export class BoardScreen extends BaseComponent {
     for (const text of texts) await expect(this.card(title)).toContainText(text)
   }
 
+  /** Spec 014 FR-030: the line with the work format and the salary; null = no line */
+  async verifyCardFieldsLine(title: string, line: RegExp | null): Promise<void> {
+    const shown = this.card(title).getByTestId('card-fields')
+    if (line === null) await expect(shown).toHaveCount(0)
+    else await expect(shown).toHaveText(line)
+  }
+
   /** Spec 007 FR-005, FR-010: the tint, and the colour name for assistive technology */
   async verifyCardColor(title: string, color: CardColor | null, name?: string): Promise<void> {
     if (color === null) {
@@ -557,7 +520,11 @@ export class BoardScreen extends BaseComponent {
 
   /** The card menu: the "Move to" stages, then "Colour" (spec 007) */
   async verifyMenuItems(stages: string[]): Promise<void> {
-    await expect(this.menu.getByRole('menuitem')).toHaveText([...stages, /^(Colour|Колір)/])
+    await expect(this.menu.getByRole('menuitem')).toHaveText([
+      ...stages,
+      /^(Next step…|Наступний крок…)$/,
+      /^(Colour|Колір)/,
+    ])
   }
 
   async verifyMenuItemFocused(name: string): Promise<void> {
@@ -573,18 +540,10 @@ export class BoardScreen extends BaseComponent {
     await expect(this.appRoot).toHaveCSS('background-color', BACKGROUND[theme])
   }
 
-  /** The switch in the app menu agrees with the theme on screen */
-  async verifyThemeSwitch(dark: boolean): Promise<void> {
-    await this.openAppMenu()
-    await expect(this.themeSwitch()).toHaveAttribute('aria-checked', String(dark))
-    await this.closeAppMenu()
-  }
-
   async verifyLanguage(name: 'English' | 'Українська', addButtonText: string): Promise<void> {
-    // The Language item shows the current one next to its label
-    await this.openAppMenu()
-    await expect(this.menu.getByRole('menuitem', { name: /^(Language|Мова)/ })).toContainText(name)
-    await this.closeAppMenu()
+    await this.settings.open(/^(General|Загальні)$/)
+    await this.settings.verifyLanguage(name)
+    await this.settings.close()
     await expect(this.addButton).toHaveText(addButtonText)
   }
 

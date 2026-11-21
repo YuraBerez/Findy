@@ -1,11 +1,15 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import { BaseComponent } from 'playwright-e2e-kit'
+import { SettingsScreen } from './settings.screen'
 
-/** Spec 006: the update entries of the app menu and the update dialog. */
+const AUTO_CHECK = /^(Check for updates automatically|Автоматично перевіряти оновлення)$/
+
+/** Spec 006: the update check in the app menu, its switch in Settings, the update dialog. */
 export class UpdatesScreen extends BaseComponent {
   private readonly appMenuButton: Locator
   private readonly menu: Locator
   private readonly dialog: Locator
+  private readonly settings: SettingsScreen
 
   constructor(page: Page) {
     super(page)
@@ -14,12 +18,7 @@ export class UpdatesScreen extends BaseComponent {
       .getByRole('button', { name: /^(App menu|Меню застосунку)$/ })
     this.menu = page.getByRole('menu')
     this.dialog = page.getByTestId('update-dialog')
-  }
-
-  private autoSwitch(): Locator {
-    return this.menu.getByRole('menuitemcheckbox', {
-      name: /^(Check for updates automatically|Автоматично перевіряти оновлення)$/,
-    })
+    this.settings = new SettingsScreen(page)
   }
 
   /** US-1: app menu → "Check for updates…" */
@@ -30,20 +29,17 @@ export class UpdatesScreen extends BaseComponent {
       .click()
   }
 
-  /** US-2: flip the automatic check in the app menu, then close the menu */
+  /** US-2, spec 018: Settings → Updates → the switch, then close the window */
   async setAutoCheck(on: boolean): Promise<void> {
-    await this.appMenuButton.click()
-    if ((await this.autoSwitch().getAttribute('aria-checked')) !== String(on))
-      await this.autoSwitch().click()
-    await expect(this.autoSwitch()).toHaveAttribute('aria-checked', String(on))
-    await this.appMenuButton.click()
-    await expect(this.menu).toBeHidden()
+    await this.settings.open(/^(Updates|Оновлення)$/)
+    await this.settings.setSwitch(AUTO_CHECK, on)
+    await this.settings.close()
   }
 
   async verifyAutoCheck(on: boolean): Promise<void> {
-    await this.appMenuButton.click()
-    await expect(this.autoSwitch()).toHaveAttribute('aria-checked', String(on))
-    await this.appMenuButton.click()
+    await this.settings.open(/^(Updates|Оновлення)$/)
+    await this.settings.verifySwitch(AUTO_CHECK, on)
+    await this.settings.close()
   }
 
   /** FR-007: the versions in the dialog */

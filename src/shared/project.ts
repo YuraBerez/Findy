@@ -1,6 +1,6 @@
 // The project on GitHub: every link to it is built here, so a rename changes one line
 
-const REPOSITORY = 'YuraBerez/findy'
+const REPOSITORY = 'YuraBerez/Findy'
 
 /** Home page of the project (About dialog, Help menu) */
 export const PROJECT_URL = `https://github.com/${REPOSITORY}`
@@ -18,3 +18,9 @@ export const releasePageUrl = (tag: string): string => `${RELEASE_PAGE_PREFIX}${
 
 /** Spec 006 FR-005: the latest published, stable release (drafts and pre-releases excluded) */
 export const LATEST_RELEASE_API_URL = `https://api.github.com/repos/${REPOSITORY}/releases/latest`
+
+/** Spec 016 FR-023: the README section with the steps to install the skill */
+export const SKILL_INSTALL_URL = `${PROJECT_URL}#install-the-findy-skill`
+
+/** Spec 017 FR-001: the skill file on the main branch, for the install command */
+export const SKILL_RAW_URL = `https://raw.githubusercontent.com/${REPOSITORY}/main/skills/findy/SKILL.md`

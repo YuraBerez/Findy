@@ -47,7 +47,7 @@ test.describe('performance with 1 000 applications', { tag: '@perf' }, () => {
       })
       expect(results.moveMs).toBeLessThan(limit(1000))
       // Spec 013: the first move to Offer asks if Findy helped
-      await findy.pages.offerDialog.answer('Not now')
+      await findy.pages.offerDialog.close()
     })
 
     await test.step('search filters 1 000 cards quickly', async () => {

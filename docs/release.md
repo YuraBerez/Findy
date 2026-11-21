@@ -76,7 +76,8 @@ download, with no way to open it. `smoke:packaged` runs
    for its files (`actions/attest-build-provenance`).
 4. The `checksums` job downloads every file of the draft and uploads
    `SHA256SUMS.txt`.
-5. Maintainer smoke-tests each artifact, then publishes the release.
+5. Maintainer smoke-tests each artifact (also: **Save skill…** in the app and upload the
+   archive in Claude Desktop once, spec 016), then publishes the release.
 6. Within a day, the [Homebrew tap](https://github.com/YuraBerez/homebrew-findy) and the
    [Scoop bucket](https://github.com/YuraBerez/scoop-findy) move to the published
    version: their daily workflow checks the files against `SHA256SUMS.txt` and commits

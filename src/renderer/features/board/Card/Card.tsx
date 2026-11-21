@@ -2,10 +2,13 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useEffect, useRef, type CSSProperties, type KeyboardEvent } from 'react'
 import { useTranslation } from 'react-i18next'
+import { showsStepMark } from '@domain/nextStep'
 import { enteredStageAt } from '@domain/time'
 import type { Application } from '@shared/ipc'
 import { formatDateTime, formatSince } from '../../../format'
 import { colorToken, useColorOptions } from '../../colors'
+import { useFieldLabels } from '../../fields'
+import { NextStepMark } from '../../nextStep'
 import { ClockIcon } from '@ui'
 import { useBoardActions } from '../BoardActions'
 import { CardActions } from '../CardActions'
@@ -17,6 +20,8 @@ interface CardContentProps {
   overlay?: boolean
   /** Spec 010 FR-003: days without movement when stale */
   staleDays?: number | null
+  /** Spec 015: the clock of the step mark */
+  now: Date
 }
 
 /** Spec 007 FR-005: the tint follows the card colour token */
@@ -26,11 +31,18 @@ function colorStyle(application: Application): CSSProperties | undefined {
     : undefined
 }
 
-/** FR-003: title, company, note count, time in the current stage. */
-export function CardContent({ application, overlay = false, staleDays = null }: CardContentProps) {
+/** FR-003: title, company, note count, time in the current stage; spec 014 FR-030. */
+export function CardContent({
+  application,
+  overlay = false,
+  staleDays = null,
+  now,
+}: CardContentProps) {
   const { t, i18n } = useTranslation()
   const colors = useColorOptions()
+  const fields = useFieldLabels()
   const since = enteredStageAt(application)
+  const line = fields.cardLine(application)
   return (
     <div
       className={styles.body}
@@ -45,11 +57,21 @@ export function CardContent({ application, overlay = false, staleDays = null }: 
       <p className={styles.company} title={application.company}>
         {application.company}
       </p>
+      {/* Spec 014 FR-030: work format and salary, inside the handle, so in the card's name */}
+      {line && (
+        <p className={styles.fields} title={line} data-testid="card-fields">
+          {line}
+        </p>
+      )}
       {/* FR-010: the colour is in the card's accessible name, not only seen */}
       {application.color && (
         <span className={styles.srOnly}>
           {t('colors.cardLabel', { color: colors.name(application.color) })}
         </span>
+      )}
+      {/* Spec 015 FR-020, FR-024: with the stale mark; none in Rejected */}
+      {showsStepMark(application.stage, application.nextStep) && (
+        <NextStepMark step={application.nextStep} now={now} />
       )}
       {/* Spec 010 FR-003: text and icon, inside the handle, so it is in the card's name */}
       {staleDays !== null && (
@@ -135,7 +157,11 @@ export function SortableCard({ application }: { application: Application }) {
         // dnd-kit swallows the click that ends a drag, so this is a real click
         onClick={() => board.open(application.id)}
       >
-        <CardContent application={application} staleDays={board.staleDays(application)} />
+        <CardContent
+          application={application}
+          staleDays={board.staleDays(application)}
+          now={board.now}
+        />
       </div>
       <CardActions application={application} />
     </article>

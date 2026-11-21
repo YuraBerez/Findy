@@ -1,21 +1,21 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { lastCurrency } from '@domain/fields'
+import { nextStatusChange } from '@domain/nextStep'
 import type { AppState, ImportPreview, Language } from '@shared/ipc'
 import { ConfirmDialog, panelId, tabId } from '@ui'
 import { Analytics } from '../../features/analytics'
 import { ApplicationDetails, ApplicationDialog } from '../../features/applications'
-import { McpDialog } from '../../features/assistant'
 import { Board } from '../../features/board'
 import { ReportIssueButton } from '../../features/feedback'
 import { UpdateDialog, useUpdateCheck } from '../../features/updates'
-import { ColumnsDialog } from '../../features/settings'
-import { StaleAfterDialog } from '../../features/stale'
+import { SettingsDialog } from '../../features/settings'
 import { Confetti, OfferDialog } from '../../features/support'
 import { useNow } from '../../hooks/useNow'
 import { ImportDialog } from '../../features/transfer'
 import { StorageError } from '../../features/storage'
 import { SitesView } from '../../features/sites'
-import { SUPPORT_URL } from '@shared/project'
+import { SKILL_INSTALL_URL, SUPPORT_URL } from '@shared/project'
 import { Toolbar } from '../Toolbar'
 import { useNotifications } from '../notifications'
 import { useAppState } from '../useAppState'
@@ -29,16 +29,48 @@ export function App({ initialState }: { initialState: AppState }) {
     notifyError,
   )
   const [adding, setAdding] = useState(false)
+  const [view, setView] = useState<View>('board')
   const [openId, setOpenId] = useState<string | null>(null)
+  // Spec 015 FR-013: the details opened at the next step
+  const [openAtStep, setOpenAtStep] = useState(false)
+  const open = useCallback((id: string | null, atStep = false) => {
+    setOpenId(id)
+    setOpenAtStep(atStep)
+  }, [])
   const [resetting, setResetting] = useState(false)
-  const [editingColumns, setEditingColumns] = useState(false)
-  const [assistant, setAssistant] = useState(false)
+  const [editingSettings, setEditingSettings] = useState(false)
   const [importing, setImporting] = useState<ImportPreview | null>(null)
   const [query, setQuery] = useState('')
-  const [editingStale, setEditingStale] = useState(false)
-  // Spec 010 FR-004: marks follow the time without a restart
-  const now = useNow()
-  const [view, setView] = useState<View>('board')
+  // Spec 010 FR-004, spec 015 FR-023: marks follow the time without a restart
+  const now = useNow(
+    useCallback(
+      (at: Date) =>
+        nextStatusChange(
+          state.applications.map((application) => application.nextStep),
+          at,
+        ),
+      [state.applications],
+    ),
+  )
+  // Spec 018 FR-002: Settings… in the native menu or Cmd/Ctrl+, (its accelerator)
+  useEffect(
+    () =>
+      window.findy.on('openSettings', () => {
+        // Nothing while another dialog or the details panel is open
+        if (!document.querySelector('dialog[open]')) setEditingSettings(true)
+      }),
+    [],
+  )
+  // Spec 015 FR-035: a click on a step notification
+  useEffect(
+    () =>
+      window.findy.on('openApplication', (id) => {
+        if (typeof id !== 'string') return
+        setView('board')
+        open(id)
+      }),
+    [open],
+  )
   const { hiddenStages } = state.settings
   const { t, i18n } = useTranslation()
   const count = state.applications.length
@@ -47,14 +79,7 @@ export function App({ initialState }: { initialState: AppState }) {
   // Spec 006: the automatic check runs once the app can read its settings
   const updates = useUpdateCheck(storageReady, actions.checkForUpdates)
   // Edge case: a found update waits until no other dialog is open
-  const dialogOpen =
-    adding ||
-    assistant ||
-    editingColumns ||
-    editingStale ||
-    resetting ||
-    Boolean(opened) ||
-    Boolean(importing)
+  const dialogOpen = adding || editingSettings || resetting || Boolean(opened) || Boolean(importing)
   const startAdding = () => setAdding(true)
   // Spec 008: the file name and counts come back; a cancelled dialog gives null
   const exportCsv = async () => {
@@ -83,21 +108,15 @@ export function App({ initialState }: { initialState: AppState }) {
       <Toolbar
         storageReady={storageReady}
         onAdd={startAdding}
-        onThemeChange={actions.setTheme}
-        onLanguageChange={actions.setLanguage}
         applicationCount={count}
         onReset={() => setResetting(true)}
-        onColumns={() => setEditingColumns(true)}
-        onAssistant={() => setAssistant(true)}
+        onSettings={() => setEditingSettings(true)}
         query={query}
         onQueryChange={setQuery}
-        onStaleAfter={() => setEditingStale(true)}
         onSupport={() => void actions.openLink(SUPPORT_URL)}
         view={view}
         onViewChange={setView}
-        autoUpdateCheck={state.settings.autoUpdateCheck}
         onCheckUpdates={() => void updates.checkNow()}
-        onAutoUpdateCheckChange={actions.setAutoUpdateCheck}
         onExport={() => void exportCsv()}
         onImport={() => void importCsv()}
       />
@@ -111,7 +130,8 @@ export function App({ initialState }: { initialState: AppState }) {
                 applications={state.applications}
                 onAdd={startAdding}
                 onMove={actions.moveApplication}
-                onOpen={setOpenId}
+                onOpen={open}
+                onOpenStep={(id) => open(id, true)}
                 onOpenLink={actions.openLink}
                 onColorChange={actions.setApplicationColor}
                 hiddenStages={hiddenStages}
@@ -163,28 +183,25 @@ export function App({ initialState }: { initialState: AppState }) {
           }}
         />
       )}
-      {editingStale && (
-        <StaleAfterDialog
-          days={staleAfterDays}
-          onClose={() => setEditingStale(false)}
-          onSave={async (days) => {
-            if (await actions.setStaleAfterDays(days)) setEditingStale(false)
-          }}
-        />
-      )}
-      {assistant && (
-        <McpDialog
-          enabled={state.settings.mcpEnabled}
-          onChange={actions.setMcpEnabled}
-          onClose={() => setAssistant(false)}
-        />
-      )}
-      {editingColumns && (
-        <ColumnsDialog
-          hiddenStages={hiddenStages}
+      {editingSettings && (
+        <SettingsDialog
+          settings={state.settings}
           applications={state.applications}
-          onChange={actions.setHiddenStages}
-          onClose={() => setEditingColumns(false)}
+          actions={{
+            setLanguage: (language) => void actions.setLanguage(language),
+            setTheme: (theme) => void actions.setTheme(theme),
+            setHiddenStages: (stages) => void actions.setHiddenStages(stages),
+            setStaleAfterDays: actions.setStaleAfterDays,
+            setRemindersEnabled: (enabled) => void actions.setRemindersEnabled(enabled),
+            setAutoUpdateCheck: (enabled) => void actions.setAutoUpdateCheck(enabled),
+            setMcpEnabled: (enabled) => void actions.setMcpEnabled(enabled),
+            saveSkill: async () => {
+              const result = await actions.saveSkill()
+              if (result?.status === 'saved') notify(t('mcp.skillSaved'))
+            },
+            openSkillInstall: () => void actions.openLink(SKILL_INSTALL_URL),
+          }}
+          onClose={() => setEditingSettings(false)}
         />
       )}
       {resetting && (
@@ -197,7 +214,7 @@ export function App({ initialState }: { initialState: AppState }) {
           onCancel={() => setResetting(false)}
           onConfirm={async () => {
             setResetting(false)
-            setOpenId(null)
+            open(null)
             await actions.resetBoard()
           }}
         />
@@ -206,15 +223,28 @@ export function App({ initialState }: { initialState: AppState }) {
         <ApplicationDetails
           key={opened.id}
           application={opened}
-          onClose={() => setOpenId(null)}
+          onClose={() => open(null)}
           onSave={(changes) => actions.updateApplication(opened.id, changes)}
           onDelete={async () => {
-            setOpenId(null)
+            open(null)
             await actions.deleteApplication(opened.id)
           }}
           onOpenLink={actions.openLink}
           onColorChange={(color) => actions.setApplicationColor(opened.id, color)}
           hiddenStages={hiddenStages}
+          sites={state.sites}
+          defaultCurrency={lastCurrency(state.applications)}
+          nextStep={{
+            now,
+            focus: openAtStep,
+            save: (step) => actions.setNextStep(opened.id, step),
+            remove: () => void actions.setNextStep(opened.id, null),
+            done: () => void actions.completeNextStep(opened.id),
+            addToCalendar: async () => {
+              const result = await actions.saveNextStepCalendar(opened.id)
+              if (result?.status === 'saved') notify(t('nextStep.calendarSaved'))
+            },
+          }}
           notes={{
             add: (text) => actions.addNote(opened.id, text),
             update: (noteId, text) => actions.updateNote(opened.id, noteId, text),

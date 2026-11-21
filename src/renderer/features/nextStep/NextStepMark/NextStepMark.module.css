@@ -1,0 +1,39 @@
+/* Spec 015 FR-021: the same line as the stale mark; overdue has its own icon and text */
+.mark {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  margin: var(--space-2) 0 0;
+  color: var(--fg);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.icon {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.mark[data-status='overdue'] .icon {
+  color: var(--danger);
+}
+
+.mark[data-status='later'] {
+  font-weight: 500;
+}
+
+.text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

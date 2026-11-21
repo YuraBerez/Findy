@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
+import { EMPTY_FIELDS } from '../../src/domain/fields'
 import {
   HiddenStageError,
   NotFoundError,
@@ -112,6 +113,100 @@ describe('setApplicationColor (spec 007)', () => {
   })
 })
 
+describe('application fields (spec 014)', () => {
+  const salary = { min: 3000, max: 4000, currency: 'USD' as const, period: 'month' as const }
+
+  it('new and old applications have empty fields (FR-001)', () => {
+    expect(repo.createApplication(input('Dev'))).toMatchObject(EMPTY_FIELDS)
+  })
+
+  it('saves, changes and clears the fields; bumps only updatedAt (FR-004)', () => {
+    const app = repo.createApplication(input('Dev'))
+    const updated = repo.updateApplication(app.id, {
+      salary,
+      workFormat: 'remote',
+      location: 'EU time zone',
+      source: { kind: 'channel', id: 'referral' },
+      contactName: 'Olena',
+      contactDetails: 't.me/olena_hr',
+    })
+    expect(updated).toMatchObject({
+      salary,
+      workFormat: 'remote',
+      location: 'EU time zone',
+      source: { kind: 'channel', id: 'referral' },
+      contactName: 'Olena',
+      contactDetails: 't.me/olena_hr',
+      stageHistory: app.stageHistory,
+      order: app.order,
+    })
+    expect(updated.updatedAt > app.updatedAt).toBe(true)
+
+    const cleared = repo.updateApplication(app.id, { salary: null, location: null })
+    expect(cleared).toMatchObject({ salary: null, location: null, workFormat: 'remote' })
+  })
+
+  it('keeps the name of a custom source after the site goes away (FR-005)', () => {
+    const site = repo.addSite({ name: 'Acme careers', url: 'https://careers.acme.com/' })
+    const app = repo.createApplication(input('Dev', { url: 'https://careers.acme.com/7' }))
+    expect(app.source).toEqual({ kind: 'custom', name: 'Acme careers' })
+    repo.deleteSite(site.id)
+    expect(repo.getApplication(app.id).source).toEqual({ kind: 'custom', name: 'Acme careers' })
+  })
+
+  it('fills an empty source from the link, never over a set one (FR-020, FR-021)', () => {
+    const app = repo.createApplication(input('Dev', { url: 'https://djinni.co/jobs/1/' }))
+    expect(app.source).toEqual({ kind: 'site', id: 'djinni' })
+
+    const moved = repo.updateApplication(app.id, { url: 'https://www.linkedin.com/jobs/view/2' })
+    expect(moved.source).toEqual({ kind: 'site', id: 'djinni' })
+
+    const chosen = repo.createApplication(
+      input('Two', { url: 'https://djinni.co/jobs/3/', source: { kind: 'channel', id: 'other' } }),
+    )
+    expect(chosen.source).toEqual({ kind: 'channel', id: 'other' })
+
+    const plain = repo.createApplication(input('Three'))
+    expect(plain.source).toBeNull()
+    expect(
+      repo.updateApplication(plain.id, { url: 'https://jobs.dou.ua/vacancies/1/' }).source,
+    ).toEqual({
+      kind: 'site',
+      id: 'dou',
+    })
+    // The same link again does not bring back a source the user cleared
+    expect(repo.updateApplication(plain.id, { source: null, title: 'Four' }).source).toBeNull()
+  })
+
+  it('reads an unknown stored source as no source', () => {
+    const app = repo.createApplication(input('Dev'))
+    db.prepare("UPDATE applications SET source_kind = 'site', source_value = 'monster'").run()
+    expect(repo.getApplication(app.id).source).toBeNull()
+  })
+
+  it('imports the fields and fills the source from the link (FR-022)', () => {
+    repo.importApplications([
+      {
+        title: 'A',
+        company: 'Acme',
+        url: 'https://djinni.co/jobs/9/',
+        stage: 'applied',
+        color: null,
+        fields: { ...EMPTY_FIELDS, salary, location: 'Lviv' },
+        nextStep: null,
+        createdAt: '2026-10-01T08:00:00.000Z',
+        stageHistory: [{ stage: 'applied', at: '2026-10-01T08:00:00.000Z' }],
+        notes: [],
+      },
+    ])
+    expect(repo.listApplications()[0]).toMatchObject({
+      salary,
+      location: 'Lviv',
+      source: { kind: 'site', id: 'djinni' },
+    })
+  })
+})
+
 describe('importApplications (spec 008)', () => {
   const item = (title: string, stage: 'applied' | 'offered' | 'rejected' = 'applied') => ({
     title,
@@ -119,6 +214,8 @@ describe('importApplications (spec 008)', () => {
     url: null,
     stage,
     color: 'blue' as const,
+    fields: EMPTY_FIELDS,
+    nextStep: null,
     createdAt: '2026-10-01T08:00:00.000Z',
     stageHistory: [
       { stage: 'applied' as const, at: '2026-10-01T08:00:00.000Z' },
@@ -277,6 +374,7 @@ describe('settings', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
   })
 
@@ -294,6 +392,7 @@ describe('settings', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
     expect(repo.setTheme('light').theme).toBe('light')
   })
@@ -311,6 +410,7 @@ describe('settings', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
   })
 })
@@ -425,6 +525,7 @@ describe('job sites (spec 011)', () => {
       hiddenSites: ['linkedin', 'indeed'],
       siteQuery: 'QA Engineer',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
     db.prepare(
       'UPDATE settings SET value = \'["linkedin","myspace",1]\' WHERE key = \'hiddenSites\'',
@@ -497,6 +598,7 @@ describe('resetBoard (FR-093)', () => {
       hiddenSites: [],
       siteQuery: '',
       offerQuestionAnswered: false,
+      remindersEnabled: true,
     })
   })
 })

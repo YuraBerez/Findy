@@ -26,10 +26,14 @@ interface FindyApi {
   // Applications
   createApplication(input: {
     title: string; company: string; url?: string | null; stage?: StageId;
-  }): Promise<AppState>;
+  } & ApplicationFields): Promise<AppState>;           // no source → from the link (spec 014 FR-020)
   updateApplication(id: string, patch: {
     title?: string; company?: string; url?: string | null;
-  }): Promise<AppState>;
+  } & ApplicationFields): Promise<AppState>;
+  completeNextStep(id: string,                          // spec 015 FR-012: clears the step and adds
+    language: 'en' | 'uk'): Promise<AppState>;           // the "Done" note; NOT_FOUND: no step
+  saveNextStepCalendar(id: string): Promise<           // spec 015: .ics through the save dialog
+    { status: 'saved' } | { status: 'cancelled' }>;      // STORAGE: write failed
   setApplicationColor(id: string,                       // spec 007; not in updateApplication,
     color: CardColor | null): Promise<AppState>;         // so the MCP update tool cannot set it
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>;
@@ -54,6 +58,7 @@ interface FindyApi {
     period: '7d' | '30d' | '90d' | 'all'; grouping: 'day' | 'week' | 'month';
   }): Promise<AppState>;
   setAutoUpdateCheck(enabled: boolean): Promise<AppState>;  // spec 006
+  setRemindersEnabled(enabled: boolean): Promise<AppState>;  // spec 015 FR-030
   setStaleAfterDays(days: number): Promise<AppState>;      // spec 010; VALIDATION unless a whole number 3–90
   answerOfferQuestion(): Promise<AppState>;                // spec 013; the offer question is never asked again
   checkForUpdates(trigger: 'manual' | 'auto'): Promise<     // spec 006
@@ -73,7 +78,8 @@ interface FindyApi {
     { title: string | null; company: string | null } | null // null: no data, no network, not HTML
   >;                                                        // never rejects for a failed read
   setMcpEnabled(enabled: boolean): Promise<AppState>;    // spec 004
-  getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009  // spec 002; rejects all-hidden and duplicates
+  getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009
+  saveSkill(): Promise<{ status: 'saved' } | { status: 'cancelled' }>;  // spec 016; STORAGE: write failed; no database needed  // spec 002; rejects all-hidden and duplicates
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
   getSystemLocale(): Promise<string>;
   openExternal(url: string): Promise<void>;            // http/https only, else rejects
@@ -91,6 +97,14 @@ interface AppState {
     | { status: 'ok'; dataFilePath: string }
     | { status: 'error'; error: 'corrupt' | 'newer_version' | 'open_failed';
         dataFilePath: string; backupPath: string | null };
+}
+```
+
+```ts
+interface ApplicationFields {                         // spec 014; null clears, missing keeps
+  salary?: Salary | null; workFormat?: WorkFormat | null; location?: string | null;
+  source?: ApplicationSource | null; contactName?: string | null; contactDetails?: string | null;
+  nextStep?: { text: string; date: string; time?: string | null } | null;  // spec 015; not in ApplicationFields
 }
 ```
 
@@ -121,6 +135,8 @@ and adds them in one transaction. A token works once; a new preview replaces it.
 | `findy:languageChanged` | `'en' \| 'uk'` | Language changed from the native app menu |
 | `findy:storageError` | `{ message }` | Background save failed |
 | `findy:stateChanged` | — | Another process (the MCP server) changed the database; reload (spec 004) |
+| `findy:openSettings` | — | **Settings…** in the native menu or Cmd/Ctrl+,; open the settings window (spec 018) |
+| `findy:openApplication` | `string` (application id) | The user clicked a step notification; open its details (spec 015) |
 | `findy:siteIconsChanged` | — | Main saved a site icon; call `getSiteIcons` again (spec 011) |
 
 Renderer subscribes via `window.findy.on(event, handler)` which returns an

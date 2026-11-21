@@ -2,6 +2,43 @@ import { expect, type Locator, type Page } from '@playwright/test'
 import { BaseComponent } from 'playwright-e2e-kit'
 import type { ApplicationForm } from './application-dialog.screen'
 
+/** Spec 014: the extra fields as a user types or picks them; labels of the options */
+export interface ExtraFieldsForm {
+  salaryFrom?: string
+  salaryTo?: string
+  currency?: string
+  period?: string
+  workFormat?: string
+  location?: string
+  source?: string
+  contactName?: string
+  contactDetails?: string
+}
+
+const TEXT_INPUTS = {
+  salaryFrom: 'Salary from',
+  salaryTo: 'Salary to',
+  location: 'Location',
+  contactName: 'Contact name',
+  contactDetails: 'Contact details',
+} as const
+
+const SELECTS = {
+  currency: 'Currency',
+  period: 'Period',
+  workFormat: 'Work format',
+  source: 'Source',
+} as const
+
+/** Spec 015: the step form as a user types it; date `YYYY-MM-DD`, time `HH:MM` */
+export interface NextStepForm {
+  text?: string
+  date?: string
+  time?: string
+}
+
+const STEP_INPUTS = { text: 'Step', date: 'Date', time: /^Time/ } as const
+
 /** The details side panel of one application (US-4) with its notes (US-3). */
 export class ApplicationDetailsScreen extends BaseComponent {
   private readonly panel: Locator
@@ -35,6 +72,14 @@ export class ApplicationDetailsScreen extends BaseComponent {
     this.colors = this.panel.getByRole('radiogroup', { name: 'Colour' })
   }
 
+  private stepSection(): Locator {
+    return this.panel.getByRole('region', { name: /^(Next step|Наступний крок)$/ })
+  }
+
+  private stepButton(name: string): Locator {
+    return this.stepSection().getByRole('button', { name, exact: true })
+  }
+
   private note(text: string): Locator {
     return this.notes.filter({ hasText: text })
   }
@@ -48,6 +93,25 @@ export class ApplicationDetailsScreen extends BaseComponent {
     if (form.stage !== undefined)
       await this.panel.getByLabel('Stage', { exact: true }).selectOption({ label: form.stage })
     await this.saveButton.click()
+  }
+
+  /** Spec 014: fills the given fields, then saves */
+  async editFields(form: ExtraFieldsForm): Promise<void> {
+    for (const [field, label] of Object.entries(TEXT_INPUTS)) {
+      const value = form[field as keyof typeof TEXT_INPUTS]
+      if (value !== undefined) await this.panel.getByLabel(label).fill(value)
+    }
+    for (const [field, label] of Object.entries(SELECTS)) {
+      const value = form[field as keyof typeof SELECTS]
+      if (value !== undefined)
+        await this.panel.getByLabel(label, { exact: true }).selectOption({ label: value })
+    }
+    await this.saveButton.click()
+  }
+
+  /** Spec 014 US-4.2 */
+  async openContactLink(): Promise<void> {
+    await this.panel.getByRole('button', { name: 'Open the contact link' }).click()
   }
 
   /** Spec 007 US-2: saved at once, no "Save changes" */
@@ -82,6 +146,64 @@ export class ApplicationDetailsScreen extends BaseComponent {
   /** A key combination inside the open panel, e.g. an app shortcut (spec 005 FR-002) */
   async pressShortcut(keys: string): Promise<void> {
     await this.heading.press(keys)
+  }
+
+  // ── Next step (spec 015) ───────────────────────────────────────────────
+
+  /** FR-010: "Add next step" (or "Edit"), fill the form, save */
+  async addNextStep(form: NextStepForm): Promise<void> {
+    await this.stepButton('Add next step').click()
+    await this.fillNextStep(form)
+  }
+
+  async editNextStep(form: NextStepForm): Promise<void> {
+    await this.stepButton('Edit').click()
+    await this.fillNextStep(form)
+  }
+
+  /** Fills the open step form and saves it */
+  async fillNextStep(form: NextStepForm): Promise<void> {
+    for (const [field, label] of Object.entries(STEP_INPUTS)) {
+      const value = form[field as keyof NextStepForm]
+      if (value !== undefined) await this.stepSection().getByLabel(label).fill(value)
+    }
+    await this.stepButton('Save step').click()
+  }
+
+  async completeNextStep(): Promise<void> {
+    await this.stepButton('Done').click()
+  }
+
+  async removeNextStep(): Promise<void> {
+    await this.stepButton('Remove step').click()
+  }
+
+  async addStepToCalendar(): Promise<void> {
+    await this.stepButton('Add to calendar').click()
+  }
+
+  async verifyNextStep(text: string, when: RegExp): Promise<void> {
+    const shown = this.stepSection().getByTestId('next-step')
+    await expect(shown).toContainText(text)
+    await expect(shown).toContainText(when)
+  }
+
+  async verifyNoNextStep(): Promise<void> {
+    await expect(this.stepSection().getByTestId('next-step')).toHaveCount(0)
+    await expect(this.stepButton('Add next step')).toBeVisible()
+  }
+
+  /** US-1.3: the error next to a step field */
+  async verifyStepError(field: keyof NextStepForm, message: string): Promise<void> {
+    const input = this.stepSection().getByLabel(STEP_INPUTS[field])
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input).toHaveAccessibleDescription(message)
+  }
+
+  /** FR-013: opened from the card menu, the focus is on the step */
+  async verifyStepFocused(control: 'form' | 'edit'): Promise<void> {
+    if (control === 'form') await expect(this.stepSection().getByLabel('Step')).toBeFocused()
+    else await expect(this.stepButton('Edit')).toBeFocused()
   }
 
   // ── Notes ──────────────────────────────────────────────────────────────
@@ -130,6 +252,43 @@ export class ApplicationDetailsScreen extends BaseComponent {
     ).toHaveText(form.stage)
   }
 
+  /** Spec 014: the values of the given extra fields */
+  async verifyExtraFields(form: ExtraFieldsForm): Promise<void> {
+    for (const [field, label] of Object.entries(TEXT_INPUTS)) {
+      const value = form[field as keyof typeof TEXT_INPUTS]
+      if (value !== undefined) await expect(this.panel.getByLabel(label)).toHaveValue(value)
+    }
+    for (const [field, label] of Object.entries(SELECTS)) {
+      const value = form[field as keyof typeof SELECTS]
+      if (value !== undefined)
+        await expect(
+          this.panel.getByLabel(label, { exact: true }).getByRole('option', { selected: true }),
+        ).toHaveText(value)
+    }
+  }
+
+  /** Spec 014 FR-013: the error next to a text field, and the field has the focus */
+  async verifyFieldError(field: keyof typeof TEXT_INPUTS, message: string): Promise<void> {
+    const input = this.panel.getByLabel(TEXT_INPUTS[field])
+    await expect(input).toHaveAttribute('aria-invalid', 'true')
+    await expect(input).toHaveAccessibleDescription(message)
+  }
+
+  /** US-3.1: option names by their group (the accessibility tree has no option groups) */
+  async verifySourceOptions(groups: Record<string, string[]>): Promise<void> {
+    const options = await this.panel
+      .getByLabel('Source', { exact: true })
+      .getByRole('option')
+      .evaluateAll((items) =>
+        items.map(
+          (item) =>
+            `${(item.parentElement as HTMLOptGroupElement).label ?? ''}/${item.textContent}`,
+        ),
+      )
+    for (const [group, names] of Object.entries(groups))
+      for (const name of names) expect(options).toContain(`${group}/${name}`)
+  }
+
   async verifyColor(name: string): Promise<void> {
     await expect(this.colors.getByRole('radio', { checked: true })).toHaveText(name)
   }
@@ -148,7 +307,7 @@ export class ApplicationDetailsScreen extends BaseComponent {
     await expect(this.openVacancyButton).toBeHidden()
   }
 
-  async verifyNotes(texts: string[]): Promise<void> {
+  async verifyNotes(texts: (string | RegExp)[]): Promise<void> {
     await expect(this.notes.getByRole('paragraph')).toHaveText(texts)
   }
 

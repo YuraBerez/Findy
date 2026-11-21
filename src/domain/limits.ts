@@ -6,6 +6,15 @@ export const LIMITS = {
   company: 200,
   url: 2048,
   note: 10_000,
+  /** Spec 014 FR-001 */
+  salary: 1_000_000_000,
+  location: 100,
+  /** The name of a custom site (spec 011); a custom source keeps it (spec 014) */
+  siteName: 60,
+  contactName: 100,
+  contactDetails: 200,
+  /** Spec 015 FR-001 */
+  nextStep: 200,
 } as const
 
 export function isHttpUrl(value: string): boolean {

@@ -1,6 +1,8 @@
 // Entities: docs/data-model.md
 import type { AnalyticsView } from './analytics'
 import type { CardColor } from './colors'
+import type { ApplicationFields } from './fields'
+import type { NextStep } from './nextStep'
 import type { StageId } from './stages'
 import type { KnownSiteId } from './sites'
 
@@ -19,7 +21,8 @@ export interface Note {
   updatedAt: string | null
 }
 
-export interface Application {
+/** Spec 014 adds the optional fields of `ApplicationFields` */
+export interface Application extends ApplicationFields {
   id: string
   title: string
   company: string
@@ -28,6 +31,8 @@ export interface Application {
   order: number
   /** Spec 007: one colour of the palette, or none */
   color: CardColor | null
+  /** Spec 015: zero or one next step */
+  nextStep: NextStep | null
   stageHistory: StageChange[]
   notes: Note[]
   createdAt: string
@@ -53,4 +58,6 @@ export interface Settings {
   siteQuery: string
   /** Spec 013 FR-004: the offer question has a final answer; it is never asked again */
   offerQuestionAnswered: boolean
+  /** Spec 015 FR-030: system notifications about next steps; on by default */
+  remindersEnabled: boolean
 }

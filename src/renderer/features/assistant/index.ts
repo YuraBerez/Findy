@@ -1,1 +1,1 @@
-export * from './McpDialog'
+export * from './McpSettings'

@@ -30,6 +30,8 @@ export class SettingsStore {
       hiddenSites: parseHiddenSites(map.get('hiddenSites')),
       siteQuery: (map.get('siteQuery') ?? '').slice(0, SITE_LIMITS.query),
       offerQuestionAnswered: map.get('offerQuestionAnswered') === 'true',
+      // Spec 015 FR-030: on by default; only an explicit 'false' turns them off
+      remindersEnabled: map.get('remindersEnabled') !== 'false',
     }
   }
 
@@ -69,6 +71,11 @@ export class SettingsStore {
 
   setStaleAfterDays(days: number): Settings {
     return this.set('staleAfterDays', String(days))
+  }
+
+  /** Spec 015 FR-030 */
+  setRemindersEnabled(enabled: boolean): Settings {
+    return this.set('remindersEnabled', String(enabled))
   }
 
   /** Spec 013 FR-004 */

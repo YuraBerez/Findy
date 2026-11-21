@@ -28,15 +28,15 @@ helped, without getting in my way.
 1. **Given** the user never answered the question, **When** the user moves an
    application to Offer in the app (drag and drop, keyboard, card menu or details
    panel), **Then** after the move a dialog congratulates the user and asks "Did Findy
-   help with your job search?" with the answers **Yes**, **Not really** and **Not now**,
-   and a smaller **Don't ask again**.
+   help with your job search?" with the answers **Yes** and **Not really**, and a smaller
+   **Don't ask again** (D-7: no **Not now**).
 2. **When** the user selects **Yes**, **Then** the dialog thanks the user and shows two
    actions: **Support on Ko-fi** and **Star on GitHub**. Each opens its page in the
    system browser.
 3. **When** the user selects **Not really**, **Then** the dialog asks what to improve
    and shows **Tell us what to improve**, which opens the same feedback page as
    "Found an issue?".
-4. **When** the user selects **Not now** or closes the dialog (Esc, close button),
+4. **When** the user closes the dialog (Esc, the close button, a click outside),
    **Then** the dialog closes and is shown again after the next move to Offer.
 5. **Given** the user answered **Yes** or **Not really**, or selected **Don't ask
    again**, **Then** the dialog is never shown again.
@@ -75,12 +75,12 @@ As a user who got an offer, I want a short celebration, so that the moment feels
 - **FR-002** The app MUST NOT show the dialog for a move to Offer from a CSV import,
   from an AI assistant (MCP), or when the application was created in Offer. A move from
   Offer to Offer again (a reorder in the column) does not count.
-- **FR-003** The dialog MUST offer the answers **Yes**, **Not really**, **Not now** and
-  **Don't ask again**. **Yes** shows the support step (Ko-fi and GitHub star); **Not
+- **FR-003** The dialog MUST offer the answers **Yes**, **Not really** and **Don't ask
+  again**, and a close button (D-7). **Yes** shows the support step (Ko-fi and GitHub star); **Not
   really** shows the feedback step.
 - **FR-004** **Yes**, **Not really** and **Don't ask again** are final answers: the app
   MUST remember on this computer that the question was answered and MUST NOT show the
-  dialog again. **Not now** and closing the dialog are not final.
+  dialog again. Closing the dialog is not final.
 - **FR-005** The answer MUST stay on the user's computer. The app MUST NOT send it, or
   any other data, anywhere. Opening a page in the browser sends nothing from Findy.
 - **FR-006** All links (Ko-fi, the GitHub repository, the feedback page) MUST open in
@@ -89,7 +89,7 @@ As a user who got an offer, I want a short celebration, so that the moment feels
   opens the Ko-fi page.
 - **FR-008** All texts MUST be in English and Ukrainian.
 - **FR-009** The dialog MUST be keyboard accessible: focus moves into it when it opens,
-  Esc means **Not now**, and focus returns to the moved card when it closes.
+  Esc closes it without an answer, and focus returns to the moved card when it closes.
 - **FR-010** Each move to Offer that FR-001 and FR-002 count MUST play confetti for at
   most 3 seconds, whatever the answer to the question is (US-3).
 - **FR-011** The confetti MUST NOT take clicks, keys or focus and MUST be hidden from
@@ -109,7 +109,7 @@ As a user who got an offer, I want a short celebration, so that the moment feels
 - Several applications reach Offer one after another while the dialog is open → only
   one dialog is shown.
 - The user moves an application to Offer and back at once → the dialog is still shown
-  (the move happened); the user can select **Not now**.
+  (the move happened); the user can close the dialog.
 - Offline → the dialog works; the browser shows its own page if there is no network.
 - The move is made in the details panel → the dialog opens when the panel closes.
 - The Offer column is hidden → a move to it from the card menu or details panel still
@@ -131,7 +131,8 @@ As a user who got an offer, I want a short celebration, so that the moment feels
 ## Decisions
 
 - **D-1** Show on the first offer; **Not now** asks again on the next offer; a final
-  answer or **Don't ask again** ends it (owner, 2026-11-20).
+  answer or **Don't ask again** ends it (owner, 2026-11-20). Changed by D-7: closing the
+  dialog takes the place of **Not now**.
 - **D-2** First a question; **Yes** → Ko-fi and a GitHub star, **Not really** → the
   feedback page (owner, 2026-11-20).
 - **D-3** Only moves the user makes in the app count; not CSV import or MCP
@@ -143,6 +144,9 @@ As a user who got an offer, I want a short celebration, so that the moment feels
   in the system browser (§III.4).
 - **D-6** Confetti on every move to Offer in the app, not only with the question;
   none when the system reduces motion (owner, 2026-11-20).
+- **D-7** No **Not now** button: three answers next to **Don't ask again** were too
+  many. The close button, Esc and a click outside still close the dialog without an
+  answer, and it asks again on the next offer (owner, 2026-11-21, after release 0.5.0).
 
 ## Open questions
 
