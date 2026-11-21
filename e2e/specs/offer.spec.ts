@@ -37,7 +37,7 @@ test.describe('congratulate on an offer (spec 013)', () => {
     },
   )
 
-  test('US-1.4, FR-009: keyboard; Escape and Not now ask again on the next offer', async ({
+  test('US-1.4, FR-009: keyboard; Escape and the close button ask again on the next offer', async ({
     findy,
   }) => {
     const { board, offerDialog } = findy.pages
@@ -56,10 +56,11 @@ test.describe('congratulate on an offer (spec 013)', () => {
       await offerDialog.verifyNoDialog()
       await board.verifyCardFocused('offered', 'Backend Engineer')
     })
-    await test.step('the next move to Offer asks again; Not now closes', async () => {
+    await test.step('the next move to Offer asks again; the close button closes', async () => {
       await board.moveWithMenu('Data Analyst', 'Offer')
       await offerDialog.verifyAsked()
-      await offerDialog.answer('Not now')
+      await offerDialog.verifyNoNotNow()
+      await offerDialog.close()
       await offerDialog.verifyNoDialog()
     })
   })
@@ -207,7 +208,7 @@ test.describe('congratulate on an offer (spec 013)', () => {
       await board.moveWithMenu('One', 'Offer')
       await offerDialog.verifyAsked()
       await a11y.expectNoViolations()
-      await offerDialog.answer('Not now')
+      await offerDialog.close()
 
       await findy.api.setTheme('dark')
       await findy.api.setLanguage('uk')

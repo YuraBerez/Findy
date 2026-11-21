@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import { BaseComponent } from 'playwright-e2e-kit'
 
-type Answer = 'Yes' | 'Not really' | 'Not now' | "Don't ask again"
+type Answer = 'Yes' | 'Not really' | "Don't ask again"
 type Link = 'Support on Ko-fi' | 'Star on GitHub' | 'Tell us what to improve'
 
 /** Spec 013: the dialog after a move to Offer, in English. */
@@ -41,7 +41,12 @@ export class OfferDialogScreen extends BaseComponent {
     await this.dialog.getByRole('button', { name: answer, exact: true }).click()
   }
 
-  /** US-1.4: Escape means Not now */
+  /** US-1.4, D-7: the close button closes without an answer */
+  async close(): Promise<void> {
+    await this.dialog.getByRole('button', { name: 'Close' }).click()
+  }
+
+  /** US-1.4: Escape closes without an answer */
   async closeWithEscape(): Promise<void> {
     await this.dialog.getByRole('button', { name: 'Yes' }).press('Escape')
   }
@@ -51,6 +56,11 @@ export class OfferDialogScreen extends BaseComponent {
     await expect(this.dialog.getByRole('heading')).toHaveText(title)
     for (const link of links)
       await expect(this.dialog.getByRole('button', { name: link })).toBeVisible()
+  }
+
+  /** D-7: there is no "Not now" answer */
+  async verifyNoNotNow(): Promise<void> {
+    await expect(this.dialog.getByRole('button', { name: 'Not now' })).toHaveCount(0)
   }
 
   /** Text expansion: every button of the question fits the window, in any language */
