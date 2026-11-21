@@ -37,6 +37,9 @@ apply until you get an offer.
 - **Quick add.** Job title, company and a link to the vacancy, and that's it.
 - **Drag and drop** cards between stages (keyboard works too).
 - **Notes on every application.** Who you talked to, salary discussed, next steps.
+- **Salary, work format and contact.** Keep the salary range, remote/office/hybrid, the
+  location, the source and the recruiter on each application. The card shows the work
+  format and the salary. The source fills in from a job site link.
 - **One click to the vacancy.** Cards with a link open it in your browser.
 - **Add from a link.** Paste a vacancy link and Findy fills in the job title and the
   company from the page.
