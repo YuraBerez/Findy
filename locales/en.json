@@ -193,7 +193,10 @@
     "skillHint": "A skill teaches Claude and other assistants how to use Findy: the tools, the safe steps and the typical tasks. Save it and add it to your assistant.",
     "saveSkill": "Save skill…",
     "skillInstall": "How to install",
-    "skillSaved": "Skill saved. Add it to your assistant."
+    "skillSaved": "Skill saved. Add it to your assistant.",
+    "skillCodeHint": "Claude Code: run this in a terminal. Run it again later to update the skill.",
+    "skillDesktopHint": "Claude Desktop and claude.ai: save the skill and upload it in Settings → Capabilities.",
+    "skillCodeTitle": "Install the skill in Claude Code"
   },
   "views": {
     "label": "Views",

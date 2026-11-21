@@ -47,6 +47,11 @@ export class FindyBackdoor {
     })
   }
 
+  /** The system clipboard text; read it inside `withClipboard` (spec 017) */
+  clipboardText(): Promise<string> {
+    return this.app.evaluate(({ clipboard }) => clipboard.readText())
+  }
+
   /** Replaces shell.openExternal in main, so a test can see links without a browser. */
   async captureExternalLinks(): Promise<void> {
     await this.app.evaluate(({ shell }) => {

@@ -5,6 +5,8 @@ import { inflateRawSync } from 'node:zlib'
 import { describe, expect, it, vi } from 'vitest'
 import { createSkillSaver, skillArchive, skillArchiveName } from '../../src/main/skill'
 import { zip } from '../../src/main/skill/zip'
+import { SKILL_RAW_URL } from '../../src/shared/project'
+import { skillInstallCommand } from '../../src/shared/skill'
 import { createTools } from '../../src/main/mcp/tools'
 import { STAGES } from '../../src/domain/stages'
 import { memoryRepository } from './helpers/db'
@@ -110,5 +112,33 @@ describe('skill saver (FR-021)', () => {
     const d = deps(null)
     expect(await createSkillSaver(d).save()).toEqual({ status: 'cancelled' })
     expect(d.writeBytes).not.toHaveBeenCalled()
+  })
+})
+
+describe('install command (spec 017)', () => {
+  it('posix: one line, the main branch file, a temp file moved only after a good download', () => {
+    const command = skillInstallCommand('posix')
+    expect(command).not.toContain('\n')
+    expect(command).toContain(`"${SKILL_RAW_URL}"`)
+    expect(SKILL_RAW_URL).toMatch(
+      /^https:\/\/raw\.githubusercontent\.com\/.+\/main\/skills\/findy\/SKILL\.md$/,
+    )
+    expect(command).toBe(
+      'mkdir -p ~/.claude/skills/findy && curl -fsSL "' +
+        SKILL_RAW_URL +
+        '" -o ~/.claude/skills/findy/SKILL.md.tmp && ' +
+        'mv ~/.claude/skills/findy/SKILL.md.tmp ~/.claude/skills/findy/SKILL.md',
+    )
+  })
+
+  it('PowerShell: one line, quoted paths (spaces in the home folder), move only on success', () => {
+    const command = skillInstallCommand('powershell', 'https://example.com/SKILL.md')
+    expect(command).not.toContain('\n')
+    expect(command).toBe(
+      '$d = "$HOME\\.claude\\skills\\findy"; ' +
+        'New-Item -ItemType Directory -Force $d | Out-Null; ' +
+        'Invoke-WebRequest -UseBasicParsing "https://example.com/SKILL.md" -OutFile "$d\\SKILL.md.tmp"; ' +
+        'if ($?) { Move-Item -Force "$d\\SKILL.md.tmp" "$d\\SKILL.md" }',
+    )
   })
 })

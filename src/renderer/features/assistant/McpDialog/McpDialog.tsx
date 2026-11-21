@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { McpConnection } from '@shared/ipc'
+import { skillInstallCommand } from '@shared/skill'
 import { Button, CodeBlock, Dialog, ExternalLinkIcon, Switch } from '@ui'
 import styles from './McpDialog.module.css'
 
@@ -13,6 +14,9 @@ interface Props {
   onOpenInstall(): void
   onClose(): void
 }
+
+/** Spec 017 FR-004: Electron's user agent names Windows on Windows */
+const shell = navigator.userAgent.includes('Windows') ? 'powershell' : 'posix'
 
 const quote = (value: string) => (/[\s"]/.test(value) ? JSON.stringify(value) : value)
 
@@ -72,6 +76,15 @@ export function McpDialog({ enabled, onChange, onSaveSkill, onOpenInstall, onClo
       {/* Spec 016 FR-020, FR-022: also with access off, so the user can prepare */}
       <h3 className={styles.heading}>{t('mcp.skillTitle')}</h3>
       <p className={styles.hint}>{t('mcp.skillHint')}</p>
+      {/* Spec 017 FR-004, FR-005: one command for this system, also with access off */}
+      <p className={styles.hint}>{t('mcp.skillCodeHint')}</p>
+      <CodeBlock
+        testId="skill-install-command"
+        label={t('mcp.skillCodeTitle')}
+        code={skillInstallCommand(shell)}
+        {...copy}
+      />
+      <p className={styles.hint}>{t('mcp.skillDesktopHint')}</p>
       <div className={styles.actions}>
         <Button onClick={onSaveSkill}>{t('mcp.saveSkill')}</Button>
         <Button variant="ghost" onClick={onOpenInstall}>

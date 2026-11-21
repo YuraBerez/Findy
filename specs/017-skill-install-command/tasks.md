@@ -8,8 +8,8 @@
 
 ## Phase 2 — Implementation
 
-- [ ] T010 `skillInstallCommand` + `SKILL_RAW_URL`, with unit tests (FR-001…FR-003, FR-006)
-- [ ] T011 MCP dialog block "Claude Code"; en + uk; e2e (FR-004, FR-005, NFR-003)
+- [x] T010 `skillInstallCommand` + `SKILL_RAW_URL`, with unit tests (FR-001…FR-003, FR-006)
+- [x] T011 MCP dialog block "Claude Code"; en + uk; e2e (FR-004, FR-005, NFR-003)
 - [ ] T012 README en + uk (FR-007)
 - [ ] T013 No skill archive in the release; docs (FR-008)
 
