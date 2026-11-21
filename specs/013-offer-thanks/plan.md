@@ -34,7 +34,7 @@ from `src/shared/project.ts` and open through the existing `openExternal` call.
 | V. i18n | ✅ | Dialog, menu items in en + uk |
 | VI. Tested | ✅ | Unit: the rule, the settings row, IPC, the menu template; e2e: US-1, US-2 |
 | VII. Simplicity | ✅ | No new table, no dependency; one rule, one dialog |
-| VIII. Accessible | ✅ | `@ui/Dialog` moves focus in and back; Esc = Not now; all actions are buttons |
+| VIII. Accessible | ✅ | `@ui/Dialog` moves focus in and back; Esc closes without an answer; all actions are buttons |
 
 ## Requirement → component map
 
@@ -43,7 +43,7 @@ from `src/shared/project.ts` and open through the existing `openExternal` call.
 | FR-001, FR-002 | `domain/offer.ts`: `asksAboutOffer(from, to, answered)` → true only for a move from another stage to `offered` while not answered |
 | FR-004, NFR-002 | `Settings.offerQuestionAnswered`; `SettingsStore.setOfferQuestionAnswered`; IPC `answerOfferQuestion()` → `AppState`; not in the CSV (the CSV has no settings) |
 | FR-001, edge cases | `useAppState.moveApplication`: after a successful move, sets `offerAsk` when `asksAboutOffer` is true; one flag, so several moves give one dialog |
-| FR-003, FR-009 | `features/support/OfferDialog`: step 1 (congratulations, Yes / Not really / Not now, Don't ask again), step 2a (Ko-fi, GitHub star), step 2b (feedback) |
+| FR-003, FR-009 | `features/support/OfferDialog`: step 1 (congratulations, Yes / Not really, Don't ask again, the close button (spec D-7)), step 2a (Ko-fi, GitHub star), step 2b (feedback) |
 | FR-006 | `shared/project.ts`: `SUPPORT_URL` (Ko-fi); `PROJECT_URL` for the star; `NEW_ISSUE_URL` for feedback |
 | FR-010…FR-012 | `features/support/Confetti`: a fixed canvas, `pointer-events: none`, `aria-hidden`; about 150 pieces in the chart colours, gravity and drift, removed after 3 s; nothing when `prefers-reduced-motion: reduce`. `useAppState` counts confirmed moves to Offer (`isMoveToOffer`), and each count restarts it |
 | FR-007 | Toolbar ⋯ menu: **Support Findy…**; native Help menu: **Support Findy…** (see D-2) |
