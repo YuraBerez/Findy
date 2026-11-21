@@ -88,7 +88,7 @@ src/
 │   │                        # rows.ts: table rows and mapping; errors.ts
 │   ├── updates.ts       # spec 006: latest release request, the update checker
 │   ├── transfer.ts      # spec 008: CSV files through system dialogs, pending import
-│   ├── reminders.ts     # spec 015: the reminder scheduler (summary, 15 minutes before)
+│   ├── reminders.ts     # spec 015: the reminder scheduler (15 minutes and 1 minute before)
 │   ├── calendar.ts      # spec 015: the .ics file through the save dialog
 │   ├── skill/           # spec 016: the skill archive (zip writer, save through the dialog)
 │   ├── menu.ts          # localised native menu

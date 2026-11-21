@@ -480,9 +480,6 @@
   },
   "reminders": {
     "menuItem": "Reminders",
-    "summaryTitle": "Findy: next steps",
-    "summary_one": "You have {{count}} step for today or overdue.",
-    "summary_other": "You have {{count}} steps for today or overdue.",
     "step": "{{title}} · {{company}}, at {{time}}",
     "stepTitle_one": "In {{count}} min: {{text}}",
     "stepTitle_other": "In {{count}} min: {{text}}"

@@ -15,7 +15,7 @@ Each task references the requirement(s) it satisfies.
 - [ ] T010 `domain/nextStep/`: types, date and time rules, `stepStart`, with unit tests
   (FR-001, FR-002)
 - [ ] T011 Status, the next status change, due reminders, with unit tests (FR-020, FR-023,
-  FR-031…FR-034)
+  FR-032…FR-034)
 - [ ] T012 Formats: mark text, full date and time, CSV date text, with unit tests (FR-012,
   FR-020, FR-051)
 - [ ] T013 zod `NextStepSchema` in the input and patch schemas, with unit tests (FR-001)
@@ -44,8 +44,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 5 — US-4: reminders (P1)
 
-- [ ] T040 `main/reminders.ts`: summary at start and at midnight, 15 and 1 minute before,
-  once per key, wake from sleep, off switch; unit tests with a fake clock (FR-031…FR-036)
+- [ ] T040 `main/reminders.ts`: 15 and 1 minute before,
+  once per key, no other lead times, off switch; unit tests with a fake clock (FR-032…FR-036)
 - [ ] T041 Wiring in `main/index.ts`: `Notification`, click → window and
   `openApplication`, `powerMonitor`, checks after IPC and MCP changes (FR-035, FR-037)
 - [ ] T042 "Reminders" toggle in the ⋯ menu; renderer opens the details on

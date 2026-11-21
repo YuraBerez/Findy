@@ -37,7 +37,7 @@ No new dependency.
 | II. Local-first | ✅ | Notifications and the `.ics` file are local; no network (NFR-004, FR-042) |
 | III. Secure Electron | ✅ | New IPC input parsed with zod in main; the file path comes only from the system save dialog; the renderer gets an event with an application id, nothing more |
 | IV. Cross-platform | ✅ | Electron `Notification` on the three systems; FR-037 when it is not supported; no platform branches |
-| V. i18n | ✅ | Marks, form, menu item, note text, notifications and CSV headers in en + uk; Ukrainian plurals for the summary; dates and times through `Intl` |
+| V. i18n | ✅ | Marks, form, menu item, note text, notifications and CSV headers in en + uk; dates and times through `Intl` |
 | VI. Tested | ✅ | Unit for each rule (status, boundaries, reminders, calendar, CSV); e2e for each acceptance scenario that a test can reach (see Risks) |
 | VII. Simplicity | ✅ | Columns on the existing table; one scheduler; shown reminders kept in memory (D-4) |
 | VIII. Accessible | ✅ | Every control through `Field`/`Button`; the card mark has text, an icon and a full accessible name; the menu entry is a toggle like the update check |
@@ -113,7 +113,7 @@ together, time only with a date) stays in zod; a row that breaks it reads as no 
 | FR-020…FR-022, FR-024 | `domain/nextStep/status.ts#stepStatus`; `features/board/Card` mark (`NextStepMark`), `domain/nextStep/format.ts` |
 | FR-023 | `domain/nextStep/status.ts#nextStatusChange`; `hooks/useNow` waits until that moment (at most one hour, spec 010 FR-004) |
 | FR-030 | `SettingsStore` row `remindersEnabled`; `features/nextStep/useRemindersMenu` toggle in the ⋯ menu |
-| FR-031…FR-037 | `domain/nextStep/reminders.ts` (`dueCount`, `dueReminders`, `reminderKey`); `main/reminders.ts#createReminders` (clock, summary at start and at midnight, shown keys); `main/index.ts` wires `Notification`, `powerMonitor` and the click |
+| FR-032…FR-037 | `domain/nextStep/reminders.ts` (`dueReminders`, `reminderKey`); `main/reminders.ts#createReminders` (clock, shown keys); `main/index.ts` wires `Notification`, `powerMonitor` and the click |
 | FR-040…FR-042 | `domain/nextStep/calendar.ts` (`calendarEvent`, `calendarFileName`); `main/calendar.ts#createCalendarSaver` |
 | FR-050 | `domain/search.ts#matchesQuery` also checks the step text |
 | FR-051…FR-053 | `domain/transfer/columns.ts` (+2 columns), `export.ts`, `import.ts` (`parseStepDateText`); `main/transfer.ts` labels |
@@ -146,8 +146,8 @@ together, time only with a date) stays in zod; a row that breaks it reads as no 
 - **Chosen:** main.
 - **Why:** Chromium slows timers in a hidden or minimized window, so a 15-minute
   reminder could come late. Main owns the database and `Notification`, and it sees the
-  MCP changes. A 10-second check is cheap with `listNextSteps()` (NFR-005), and it catches
-  a wake from sleep (FR-032) without exact timers.
+  MCP changes. A 10-second check is cheap with `listNextSteps()` (NFR-005) and needs no
+  exact timers.
 
 ### D-4 — Shown reminders in memory
 
@@ -170,8 +170,7 @@ together, time only with a date) stays in zod; a row that breaks it reads as no 
 
 - **Notifications in e2e** → the test replaces `Notification.prototype.show` in main
   through the back door and reads the recorded notifications; a click is
-  `notification.emit('click')`. The summary at start is checked in unit tests only,
-  because it comes before the test can replace `show`.
+  `notification.emit('click')`.
 - **macOS asks for permission** on the first notification of an unsigned app → FR-037:
   a blocked notification fails silently.
 - **Notification objects collected by GC** (the click is lost) → main keeps each one until

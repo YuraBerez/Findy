@@ -1,24 +1,17 @@
-// Spec 015 FR-031…FR-037: system notifications about next steps while Findy runs.
+// Spec 015 FR-032…FR-037: system notifications before next steps while Findy runs.
 // Independent of Electron: index.ts gives it the clock, the steps and `show`.
-import {
-  dateKey,
-  dueCount,
-  dueReminders,
-  formatStepTime,
-  reminderKey,
-  type StepRef,
-} from '../domain/nextStep'
+import { dueReminders, formatStepTime, reminderKey, type StepRef } from '../domain/nextStep'
 import type { Language } from '../domain/types'
 import type { Translate } from './i18n'
 
-/** Plan D-3: often enough for the 1-minute reminder, and it catches a wake from sleep */
+/** Plan D-3: often enough for the 1-minute reminder */
 export const CHECK_INTERVAL_MS = 10_000
 
 export interface ReminderNotice {
   title: string
   body: string
-  /** FR-035: the application to open on a click; null for the summary */
-  applicationId: string | null
+  /** FR-035: the application to open on a click */
+  applicationId: string
 }
 
 export interface RemindersDeps {
@@ -35,35 +28,21 @@ export interface RemindersDeps {
 export function createReminders(deps: RemindersDeps) {
   /** Plan D-4: the reminders shown in this run */
   const shown = new Set<string>()
-  let day: string | null = null
 
   const check = (): void => {
-    const now = deps.now()
-    const today = dateKey(now)
-    // FR-031: at start, and when the local date changes while Findy runs
-    const newDay = day !== today
-    day = today
     if (!deps.enabled()) return
-    const refs = deps.listSteps()
+    const due = dueReminders(deps.listSteps(), deps.now())
+    if (due.length === 0) return
     const { t, language } = deps.translator()
-
-    const count = newDay ? dueCount(refs, now) : 0
-    if (count > 0)
-      deps.show({
-        title: t('reminders.summaryTitle'),
-        body: t('reminders.summary', { count }),
-        applicationId: null,
-      })
-
-    // FR-032, FR-033: once per step date, time and lead
-    for (const due of dueReminders(refs, now)) {
-      const key = reminderKey(due)
+    // FR-033: once per step date, time and lead
+    for (const reminder of due) {
+      const key = reminderKey(reminder)
       if (shown.has(key)) continue
       shown.add(key)
-      const { ref } = due
+      const { ref, lead } = reminder
       // FR-036: the step text, the job title and the company; never the notes
       deps.show({
-        title: t('reminders.stepTitle', { count: due.minutes, text: ref.nextStep.text }),
+        title: t('reminders.stepTitle', { count: lead / 60_000, text: ref.nextStep.text }),
         body: t('reminders.step', {
           title: ref.title,
           company: ref.company,

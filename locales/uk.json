@@ -506,11 +506,6 @@
   },
   "reminders": {
     "menuItem": "Нагадування",
-    "summaryTitle": "Findy: наступні кроки",
-    "summary_one": "{{count}} крок на сьогодні або прострочений.",
-    "summary_few": "{{count}} кроки на сьогодні або прострочені.",
-    "summary_many": "{{count}} кроків на сьогодні або прострочених.",
-    "summary_other": "{{count}} кроку на сьогодні або прострочених.",
     "step": "{{title}} · {{company}}, о {{time}}",
     "stepTitle_one": "Через {{count}} хв: {{text}}",
     "stepTitle_few": "Через {{count}} хв: {{text}}",
