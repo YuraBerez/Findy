@@ -15,7 +15,8 @@ type Step = 'ask' | 'support' | 'feedback'
 
 /**
  * Spec 013 US-1: congratulations on an offer and one question. Yes leads to support,
- * Not really to feedback; Not now, Escape and a click outside only close it (FR-003).
+ * Not really to feedback; the close button, Escape and a click outside only close it
+ * (FR-003, D-7).
  */
 export function OfferDialog({ onAnswer, onOpenLink, onClose }: Props) {
   const { t } = useTranslation()
@@ -74,13 +75,13 @@ export function OfferDialog({ onAnswer, onOpenLink, onClose }: Props) {
     <Dialog
       title={t('support.offerTitle')}
       onClose={onClose}
+      closeLabel={t('common.close')}
       testId="offer-dialog"
       footer={
         <>
           <Button variant="ghost" className={styles.dontAsk} onClick={() => void answer(null)}>
             {t('support.dontAsk')}
           </Button>
-          <Button onClick={onClose}>{t('support.notNow')}</Button>
           <Button onClick={() => void answer('feedback')}>{t('support.notReally')}</Button>
           <Button variant="primary" autoFocus onClick={() => void answer('support')}>
             {t('support.yes')}

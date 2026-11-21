@@ -181,7 +181,7 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
         await attempt(() => window.findy.refreshSiteIcons())
       },
 
-      /** Spec 013: Not now, or the dialog is done */
+      /** Spec 013: closed without an answer, or the dialog is done */
       closeOfferQuestion: () => setOfferAsked(false),
       /** Spec 013 FR-004: a final answer; the dialog stays open for its next step */
       answerOfferQuestion: () => run(() => window.findy.answerOfferQuestion()),
