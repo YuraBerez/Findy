@@ -8,6 +8,8 @@ import styles from './McpSettings.module.css'
 interface Props {
   enabled: boolean
   onChange(enabled: boolean): void
+  /** Spec 004 FR-009: null when it failed (already notified) */
+  loadConnection(): Promise<McpConnection | null>
   /** Spec 016 FR-021 */
   onSaveSkill(): void
   /** Spec 016 FR-023: the README steps in the browser */
@@ -23,13 +25,19 @@ const quote = (value: string) => (/[\s"]/.test(value) ? JSON.stringify(value) : 
  * Spec 004 US-1, FR-009: turn assistant access on/off and show how to connect; spec 016: the
  * skill. A page of the settings window (spec 018 D-3).
  */
-export function McpSettings({ enabled, onChange, onSaveSkill, onOpenInstall }: Props) {
+export function McpSettings({
+  enabled,
+  onChange,
+  loadConnection,
+  onSaveSkill,
+  onOpenInstall,
+}: Props) {
   const { t } = useTranslation()
   const [connection, setConnection] = useState<McpConnection | null>(null)
 
   useEffect(() => {
-    void window.findy.getMcpConnection().then(setConnection)
-  }, [])
+    void loadConnection().then(setConnection)
+  }, [loadConnection])
 
   const copy = { copyLabel: t('mcp.copy'), copiedLabel: t('mcp.copied') }
 

@@ -25,6 +25,9 @@ webPreferences: {
 - [ ] Preload exposes only the functions in [contracts/ipc.md](contracts/ipc.md);
       never raw `ipcRenderer`.
 - [ ] Every `ipcMain.handle` parses its arguments with zod before use.
+- [ ] Every IPC call comes from the app page: main checks the URL of `event.senderFrame`
+      (`isAppSender`, the same rule as navigation). Any other sender gets a `VALIDATION`
+      error, and the handler does not run.
 - [ ] Single-instance lock (`app.requestSingleInstanceLock`).
 - [ ] No `remote` module, no `eval`, no `dangerouslySetInnerHTML` for user content.
 - [ ] Electron kept on a supported major version (Dependabot).

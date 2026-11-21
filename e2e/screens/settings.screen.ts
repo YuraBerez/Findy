@@ -184,6 +184,11 @@ export class SettingsScreen extends BaseComponent {
     await expect(this.dialog).toContainText('claude mcp add findy -e ELECTRON_RUN_AS_NODE=1 --')
   }
 
+  /** Spec 003: no instructions when main could not give the connection */
+  async verifyNoAssistantInstructions(): Promise<void> {
+    await expect(this.dialog.getByTestId('mcp-desktop-config')).toHaveCount(0)
+  }
+
   async verifySkillCommand(text: RegExp): Promise<void> {
     await expect(this.dialog.getByLabel('Install the skill in Claude Code')).toHaveText(text)
   }

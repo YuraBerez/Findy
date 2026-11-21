@@ -61,56 +61,91 @@ must be motivated by a spec and land in the same PR.
 
 ```
 src/
-├── domain/              # pure logic + zod schemas (shared)
+├── domain/              # pure logic (no Electron, React or fs), shared by main and renderer
+│   ├── types.ts         # entities (docs/data-model.md)
+│   ├── schema.ts        # zod schemas for IPC input & entities (main only, see D-6)
+│   ├── limits.ts        # zod-free limits and checks that the renderer can use (D-6)
 │   ├── stages.ts        # STAGES constant, StageId
+│   ├── board.ts         # validation + ordering rules for applications
+│   ├── forms.ts         # field errors of the application form
+│   ├── search.ts        # board search (spec 001, spec 014)
+│   ├── time.ts          # elapsed time, stage entry
+│   ├── language.ts      # saved language or the OS locale
 │   ├── colors.ts        # spec 007: CARD_COLORS, CardColor
+│   ├── stale.ts         # spec 010: stale applications
+│   ├── offer.ts         # spec 013: moves to Offer, the one-time question
 │   ├── fields/          # spec 014: salary, work format, source rules (zod-free)
 │   ├── nextStep/        # spec 015: step rules, status, reminders, formats, calendar file
 │   ├── csv.ts           # spec 008: CSV reader/writer, formula guard
 │   ├── transfer/        # spec 008: applications ↔ CSV rows (export table, import plan)
-│   ├── schema.ts        # zod schemas for IPC input & entities
-│   ├── board.ts         # validation + ordering rules for applications
+│   ├── vacancy/         # spec 009: job title and company from a page, as text
+│   ├── sites/           # spec 011: known job sites, search addresses, icon rules
 │   ├── analytics.ts     # spec 005: periods, buckets, stage entries, funnel, totals
-│   ├── updates.ts       # spec 006: SemVer compare, the 24-hour check rule
-│   └── notes.ts         # validation rules for notes
+│   └── updates.ts       # spec 006: SemVer compare, the 24-hour check rule
 ├── shared/
-│   ├── ipc.ts           # FindyApi, AppState, channel names
+│   ├── ipc.ts           # FindyApi, AppState, channel names, IpcError
+│   ├── i18n.ts          # one i18next setup for main and renderer
+│   ├── skill.ts         # spec 017: the skill install command
 │   └── project.ts       # every GitHub URL of the project (home, issues, releases, API)
 ├── main/
-│   ├── index.ts         # window, lifecycle, single instance, CSP
-│   ├── ipc.ts           # ipcMain.handle registrations
+│   ├── index.ts         # entry: lifecycle, single instance, IPC registration, --mcp forward
+│   ├── app/             # Electron glue (covered by e2e): window.ts, dialogs.ts,
+│   │                    # notices.ts, services.ts (creates every service below)
+│   ├── ipc.ts           # the IPC handlers (zod-validated)
+│   ├── security.ts      # allowed navigation, external links and IPC senders
+│   ├── paths.ts         # the data folder, also without Electron (MCP)
 │   ├── db/
 │   │   ├── connection.ts    # open findy.db, pragmas, integrity check
 │   │   ├── migrate.ts       # PRAGMA user_version + backups
 │   │   ├── migrations/      # 001-init.ts, … (append-only)
 │   │   └── repository/      # index.ts: the Repository facade for IPC and MCP;
-│   │                        # applications.ts, notes.ts, settings.ts: one store each;
-│   │                        # rows.ts: table rows and mapping; errors.ts
+│   │                        # applications.ts, notes.ts, settings.ts, sites.ts: one store
+│   │                        # each; rows.ts: table rows and mapping; errors.ts
+│   ├── mcp/             # spec 004: cli.ts (Node-mode entry), server.ts, tools.ts
+│   ├── watch.ts         # spec 004: changes from another process (PRAGMA data_version)
 │   ├── updates.ts       # spec 006: latest release request, the update checker
 │   ├── transfer.ts      # spec 008: CSV files through system dialogs, pending import
+│   ├── http.ts          # specs 009, 011: fetch with checked redirects and limits
+│   ├── vacancy.ts       # spec 009: read a vacancy page
+│   ├── siteIcons.ts     # spec 011: download and keep the job site icons
 │   ├── reminders.ts     # spec 015: the reminder scheduler (15 minutes and 1 minute before)
 │   ├── calendar.ts      # spec 015: the .ics file through the save dialog
 │   ├── skill/           # spec 016: the skill archive (zip writer, save through the dialog)
-│   ├── menu.ts          # localised native menu
-│   └── i18n.ts          # main-process strings (menu, dialogs)
+│   ├── menu.ts          # installs the localised native menu
+│   ├── menuTemplate.ts  # the menu items (unit-tested)
+│   ├── i18n.ts          # main-process strings (menu, dialogs)
+│   └── smoke.ts         # CI: a packaged build loads better-sqlite3
 ├── preload/
 │   └── index.ts
 └── renderer/            # component architecture (D-7)
     ├── index.html, main.tsx, i18n.ts, format.ts
-    ├── app/             # App, Toolbar, useAppState (all IPC calls), views.ts (tabs)
+    ├── app/             # App, Toolbar, notifications, ErrorBoundary,
+    │                    # useAppState (all IPC calls), views.ts (tabs)
     ├── features/        # one folder per feature, one folder per component
     │   ├── board/       # Board/, Column/, Card/, CardActions/, dnd.ts, useBoardDnd.ts
+    │   ├── applications/# ApplicationDialog/, ApplicationDetails/, ApplicationFields/,
+    │   │                # ApplicationExtraFields/, StageHistory/, form hooks
+    │   ├── notes/       # NotesPanel/, NoteItem/, useNoteDraft
+    │   ├── search/      # SearchBox/
     │   ├── analytics/   # Analytics/, AnalyticsFilters/, Totals/, ActivityChart/,
     │   │                # StagesChart/, Funnel/, ChartCard/ (spec 005)
     │   ├── updates/     # UpdateDialog/, useUpdateCheck, useUpdatesMenu (spec 006)
     │   ├── colors/      # useColorOptions: card colour names and tokens (spec 007)
     │   ├── transfer/    # ImportDialog/, useTransferMenu: CSV export and import (spec 008)
-    │   ├── applications/# ApplicationDialog/
+    │   ├── stale/       # StaleAfterField/ (spec 010)
+    │   ├── sites/       # SitesView/, SiteTile/, SiteDialog/, HiddenSites/ (spec 011)
+    │   ├── support/     # OfferDialog/, Confetti/ (spec 013)
+    │   ├── fields/      # useFieldLabels (spec 014)
+    │   ├── nextStep/    # NextStepSection/, NextStepMark/, form and label hooks (spec 015)
+    │   ├── assistant/   # McpSettings/ (specs 004, 016, 017)
     │   ├── settings/    # SettingsDialog/ (spec 018), ColumnSwitches/
+    │   ├── feedback/    # ReportIssueButton/
     │   └── storage/     # StorageError/
+    ├── hooks/           # hooks for more than one feature: useNow, useFieldErrorText
     ├── ui/              # design-system primitives: Button, IconButton, Field,
-    │                    # TextField, Select, Dialog, Menu, Switch, Tabs, BarChart,
-    │                    # ChartLegend, DataTable, ColorSwatch, ColorPicker, icons, styles/
+    │                    # TextField, Select, Dialog, ConfirmDialog, Menu, Switch, Tabs,
+    │                    # Section, Badge, Toast, CodeBlock, BarChart, ChartLegend,
+    │                    # DataTable, ColorSwatch, ColorPicker, icons, styles/
     └── styles/          # global.css: tokens and reset only
 locales/
 ├── en.json              # single source for main + renderer strings
@@ -182,12 +217,15 @@ build/                   # icons, entitlements for electron-builder
 - **Accessibility:** `e2e/steps/a11y.steps.ts` runs axe in legacy mode, because axe's default
   mode opens a new page and Electron cannot. Formatting and exclusions come from the kit.
 - **Rule:** the renderer must not trigger CSP violations; zod stays out of the renderer
-  (`domain/limits.ts`), because zod v4 probes `new Function()` on load.
+  (`domain/limits.ts`), because zod v4 probes `new Function()` on load. ESLint blocks `zod` and
+  `domain/schema` in `src/renderer`.
 
 ### D-7 — Renderer: components in folders, primitives in `ui/`, no duplication
 
-- **Layers** (imports go down only): `app/` → `features/*` → `ui/`.
+- **Layers** (imports go down only): `app/` → `features/*` → `hooks/` → `ui/`.
   `ui/` has no business logic, no IPC and no i18n keys: it takes text as props.
+  `hooks/` holds hooks that more than one feature uses; it can use `@domain`, `@shared`
+  and i18n, but not IPC, `app/` or `features/`.
   Features never import each other's internals, only a feature's `index.ts`.
 - **One folder per component:** `Name/Name.tsx`, `Name.module.css`, `index.ts`
   (later its tests and stories too). Import a folder, not its files.
@@ -198,11 +236,16 @@ build/                   # icons, entitlements for electron-builder
   keyboard pattern; `useAppState` owns all IPC calls; `features/board/dnd.ts` and
   `useBoardDnd` own drag-and-drop, `Board` only renders.
 - **Aliases:** `@domain/*`, `@shared/*`, `@ui` (tsconfig.web.json + electron.vite.config.ts).
+- **Enforced:** `eslint.config.mjs` checks the layers, the feature `index.ts` rule and the
+  `window.findy` rule. It also keeps `src/domain` pure (no Electron, React, Node or
+  database). If a rule blocks a correct import, change the rule and this section together.
 - **Errors (spec 003):** every IPC call goes through `useAppState.run()`: a failure
   becomes a notification (`app/notifications`, message by error code), the board
   reloads the saved state, and the action resolves to `false`. Global `error` /
   `unhandledrejection` listeners and an `ErrorBoundary` catch the rest. Never
-  call `window.findy` outside `useAppState`.
+  call `window.findy` outside `app/useAppState.ts`. Main's events also go through it
+  (`useMainEvent`). The only exception is `main.tsx`: it reads the first state and
+  the system locale before React starts.
 
 ### D-8 — MCP server inside the app (spec 004)
 

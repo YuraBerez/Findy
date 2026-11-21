@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { lastCurrency } from '@domain/fields'
 import { nextStatusChange } from '@domain/nextStep'
@@ -18,7 +18,7 @@ import { SitesView } from '../../features/sites'
 import { SKILL_INSTALL_URL, SUPPORT_URL } from '@shared/project'
 import { Toolbar } from '../Toolbar'
 import { useNotifications } from '../notifications'
-import { useAppState } from '../useAppState'
+import { useAppState, useMainEvent } from '../useAppState'
 import { useViewShortcuts, VIEW_ID_PREFIX, type View } from '../views'
 import styles from './App.module.css'
 
@@ -53,23 +53,24 @@ export function App({ initialState }: { initialState: AppState }) {
     ),
   )
   // Spec 018 FR-002: Settings… in the native menu or Cmd/Ctrl+, (its accelerator)
-  useEffect(
-    () =>
-      window.findy.on('openSettings', () => {
-        // Nothing while another dialog or the details panel is open
-        if (!document.querySelector('dialog[open]')) setEditingSettings(true)
-      }),
-    [],
+  useMainEvent(
+    'openSettings',
+    useCallback(() => {
+      // Nothing while another dialog or the details panel is open
+      if (!document.querySelector('dialog[open]')) setEditingSettings(true)
+    }, []),
   )
   // Spec 015 FR-035: a click on a step notification
-  useEffect(
-    () =>
-      window.findy.on('openApplication', (id) => {
+  useMainEvent(
+    'openApplication',
+    useCallback(
+      (id: unknown) => {
         if (typeof id !== 'string') return
         setView('board')
         open(id)
-      }),
-    [open],
+      },
+      [open],
+    ),
   )
   const { hiddenStages } = state.settings
   const { t, i18n } = useTranslation()
@@ -195,6 +196,7 @@ export function App({ initialState }: { initialState: AppState }) {
             setRemindersEnabled: (enabled) => void actions.setRemindersEnabled(enabled),
             setAutoUpdateCheck: (enabled) => void actions.setAutoUpdateCheck(enabled),
             setMcpEnabled: (enabled) => void actions.setMcpEnabled(enabled),
+            getMcpConnection: actions.getMcpConnection,
             saveSkill: async () => {
               const result = await actions.saveSkill()
               if (result?.status === 'saved') notify(t('mcp.skillSaved'))

@@ -11,7 +11,8 @@ persisted, and returns the new full state. Invalid input rejects with an
 `IpcError` (`{ code: 'VALIDATION' | 'NOT_FOUND' | 'STORAGE' | 'NETWORK', message }`).
 `NETWORK` (spec 006) means that a manual update check failed.
 `createApplication` and `moveApplication` into a hidden stage (spec 002) reject
-with `VALIDATION`.
+with `VALIDATION`. A call from a frame that is not the app page rejects with
+`VALIDATION: Unknown sender`, and the handler does not run (docs/security.md).
 
 Handlers resolve with an envelope `{ ok: true, data } | { ok: false, error }`; the
 preload unwraps it and throws `IpcError`. `contextBridge` keeps only an error's
