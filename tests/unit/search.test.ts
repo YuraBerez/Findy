@@ -102,3 +102,14 @@ describe('toFullIndex', () => {
     expect(toFullIndex(other, visible, 'A', { stage: 'offered', index: 0 })).toBe(1) // before y, after z
   })
 })
+
+describe('search by the next step (spec 015 FR-050)', () => {
+  it('matches the step text', () => {
+    const withStep = {
+      ...app('1', 'Frontend Developer', 'Acme', 0),
+      nextStep: { text: 'Call Olena', date: '2026-11-26', time: null },
+    }
+    expect(matchesQuery(withStep, 'olena', CHANNELS)).toBe(true)
+    expect(matchesQuery(app('2', 'Dev', 'Globex', 1), 'olena', CHANNELS)).toBe(false)
+  })
+})

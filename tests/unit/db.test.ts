@@ -171,6 +171,50 @@ describe('migration 004: application fields (spec 014)', () => {
   })
 })
 
+describe('migration 005: next step (spec 015)', () => {
+  it('keeps v4 data; there is no step', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {}, MIGRATIONS.slice(0, 4))
+    db.prepare(
+      `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at, location)
+       VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, 'now', 'now', 'Lviv')`,
+    ).run()
+
+    migrate(db, () => {})
+
+    expect(getUserVersion(db)).toBe(5)
+    expect(
+      db
+        .prepare(
+          'SELECT location, next_step_text, next_step_date, next_step_time FROM applications',
+        )
+        .get(),
+    ).toEqual({
+      location: 'Lviv',
+      next_step_text: null,
+      next_step_date: null,
+      next_step_time: null,
+    })
+  })
+
+  it('checks every new column', () => {
+    const db = new Database(':memory:')
+    migrate(db, () => {})
+    db.prepare(
+      `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at)
+       VALUES ('a', 'Dev', 'Acme', NULL, 'applied', 0, 'now', 'now')`,
+    ).run()
+    const set = (sql: string) => () => db.prepare(`UPDATE applications SET ${sql}`).run()
+    expect(set("next_step_text = ''")).toThrow(/CHECK/)
+    expect(set(`next_step_text = '${'x'.repeat(201)}'`)).toThrow(/CHECK/)
+    expect(set("next_step_date = '26.11.2026'")).toThrow(/CHECK/)
+    expect(set("next_step_time = '3pm'")).toThrow(/CHECK/)
+    expect(
+      set("next_step_text = 'Call', next_step_date = '2026-11-26', next_step_time = '15:00'"),
+    ).not.toThrow()
+  })
+})
+
 describe('openDatabase (FR-051, FR-054)', () => {
   let dir: string
   let cleanup: () => void

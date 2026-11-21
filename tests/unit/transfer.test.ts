@@ -386,6 +386,7 @@ describe('round trip (FR-019, SC-001)', () => {
       url: 'https://acme.com/jobs?id=1&x=2',
       stage: 'technical_interview',
       color: 'purple',
+      nextStep: { text: 'Call Olena, "HR"', date: '2026-11-26', time: '15:00' },
       createdAt: '2026-10-01T07:15:30.000Z',
       stageHistory: [
         { stage: 'applied', at: '2026-10-01T07:15:30.000Z' },
@@ -469,5 +470,65 @@ describe('round trip (FR-019, SC-001)', () => {
     const result = planImport(readCsv(writeCsv(exportTable(many, EN))), context())
     expect(result.items).toHaveLength(1_000)
     expect(performance.now() - start).toBeLessThan(2_000)
+  })
+})
+
+describe('next step (spec 015 FR-051…FR-053)', () => {
+  const header = ['Title', 'Company', 'Next step', 'Next step date']
+
+  it('exports the text and the local date, with the time when set', () => {
+    const rows = exportTable(
+      [
+        app({ title: 'A', nextStep: { text: 'Call', date: '2026-11-26', time: '15:00' } }),
+        app({ title: 'B', nextStep: { text: 'Send CV', date: '2026-11-27', time: null } }),
+        app({ title: 'C' }),
+      ],
+      EN,
+      kyiv,
+    )
+    expect(rows[0]!.slice(-2)).toEqual(['Next step', 'Next step date'])
+    expect(rows.slice(1).map((row) => row.slice(-2))).toEqual([
+      ['Call', '2026-11-26T15:00'],
+      ['Send CV', '2026-11-27'],
+      ['', ''],
+    ])
+  })
+
+  it('imports both cells, in Ukrainian headers too; both empty is no step', () => {
+    const result = planImport(
+      [
+        ['Назва', 'Компанія', 'Наступний крок', 'Дата наступного кроку'],
+        ['A', 'Acme', ' Call ', '2026-11-26T15:00'],
+        ['B', 'Acme', '', ''],
+      ],
+      context(),
+    )
+    expect(result.errors).toEqual([])
+    expect(result.items.map((item) => item.nextStep)).toEqual([
+      { text: 'Call', date: '2026-11-26', time: '15:00' },
+      null,
+    ])
+  })
+
+  it('skips a text without a valid date, and a date without text (FR-052)', () => {
+    const result = planImport(
+      [
+        header,
+        ['A', 'Acme', 'Call', ''],
+        ['B', 'Acme', 'Call', '26.11.2026'],
+        ['C', 'Acme', '', '2026-11-26'],
+        ['D', 'Acme', 'x'.repeat(201), '2026-11-26'],
+        ['E', 'Acme', 'a\nb', '2026-11-26'],
+      ],
+      context(),
+    )
+    expect(result.items).toEqual([])
+    expect(result.errors).toEqual([
+      { row: 2, field: 'nextStepDate', problem: 'required' },
+      { row: 3, field: 'nextStepDate', problem: 'invalid' },
+      { row: 4, field: 'nextStep', problem: 'required' },
+      { row: 5, field: 'nextStep', problem: 'tooLong' },
+      { row: 6, field: 'nextStep', problem: 'invalid' },
+    ])
   })
 })

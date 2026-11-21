@@ -595,3 +595,61 @@ describe('errorKind (spec 003 FR-002)', () => {
     expect(errorKind(error)).toBe(kind)
   })
 })
+
+describe('next step over IPC (spec 015)', () => {
+  const step = { text: 'Interview', date: '2026-11-26', time: '15:00' }
+  const created = async (ctx: ReturnType<typeof setup>, nextStep: object | null = step) =>
+    (await state(ctx.handlers.createApplication({ title: 'Dev', company: 'Acme', nextStep })))
+      .applications[0]!
+
+  it('sets the step on create and clears it on update; a bad step is VALIDATION', async () => {
+    const ctx = setup()
+    const app = await created(ctx)
+    expect(app.nextStep).toEqual(step)
+    const bad = await ctx.handlers.updateApplication(app.id, {
+      nextStep: { text: 'x', date: '2026-02-30' },
+    })
+    expect(bad).toMatchObject({ ok: false, error: { code: 'VALIDATION' } })
+    const cleared = await state(ctx.handlers.updateApplication(app.id, { nextStep: null }))
+    expect(cleared.applications[0]!.nextStep).toBeNull()
+  })
+
+  it('"Done" writes the note in the given language (FR-012)', async () => {
+    const ctx = setup()
+    const app = await created(ctx)
+    const result = await state(ctx.handlers.completeNextStep(app.id, 'uk'))
+    const [note] = result.applications[0]!.notes
+    expect(result.applications[0]!.nextStep).toBeNull()
+    expect(note!.text).toMatch(/^Виконано: Interview \(26 лист\. 2026 р\.,? 15:00\)$/)
+    expect(await ctx.handlers.completeNextStep(app.id, 'en')).toMatchObject({
+      ok: false,
+      error: { code: 'NOT_FOUND' },
+    })
+  })
+
+  it('saves the calendar file of the step; NOT_FOUND without a step (FR-040)', async () => {
+    const ctx = setup()
+    const app = await created(ctx)
+    expect(unwrap(await ctx.handlers.saveNextStepCalendar(app.id))).toEqual({ status: 'saved' })
+    expect(ctx.deps.calendar.save).toHaveBeenCalledWith(
+      expect.objectContaining({ id: app.id, company: 'Acme' }),
+      step,
+    )
+    const plain = await created(ctx, null)
+    expect(await ctx.handlers.saveNextStepCalendar(plain.id)).toMatchObject({
+      ok: false,
+      error: { code: 'NOT_FOUND' },
+    })
+  })
+
+  it('stores the Reminders switch (FR-030)', async () => {
+    const ctx = setup()
+    expect((await state(ctx.handlers.setRemindersEnabled(false))).settings.remindersEnabled).toBe(
+      false,
+    )
+    expect(await ctx.handlers.setRemindersEnabled('no')).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+})
