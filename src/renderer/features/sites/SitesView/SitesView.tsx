@@ -54,9 +54,21 @@ export function SitesView(props: Props) {
   // FR-005: saved shortly after typing stops, and at once when the field loses focus
   const saveQuery = (value: string) => {
     clearTimeout(pending.current)
+    pending.current = undefined
     if (value.trim() !== props.query) onQueryChange(value)
   }
-  useEffect(() => () => clearTimeout(pending.current), [])
+  // FR-005: a save that still waits runs when the tab or the window closes, so it is not lost
+  const flushQuery = useEffectEvent(() => {
+    if (pending.current !== undefined) saveQuery(query)
+  })
+  useEffect(() => {
+    const flush = () => flushQuery()
+    window.addEventListener('beforeunload', flush)
+    return () => {
+      window.removeEventListener('beforeunload', flush)
+      flush()
+    }
+  }, [])
 
   const known = KNOWN_SITES.filter((site) => !(hiddenSites as string[]).includes(site.id))
   const hidden = KNOWN_SITES.filter((site) => (hiddenSites as string[]).includes(site.id))

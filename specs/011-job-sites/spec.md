@@ -169,6 +169,8 @@ As a user, I want to see each site's icon, so that I find a site at a glance.
   icon are ignored.
 - The user adds a site with the same address as a known one → allowed; both show.
 - A query with `/` or `?` → encoded, so it stays one value.
+- The user types a query and at once changes the tab or closes the app → the query is
+  still saved (FR-005).
 - A saved icon is damaged → the letter shows; the icon is downloaded again later.
 - The database cannot be opened (spec 001 US-6.3) → like the analytics tab, the Sites
   tab is not shown; the storage error screen explains what happened (changed during
