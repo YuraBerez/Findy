@@ -48,4 +48,4 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 6 — Polish
 
-- [ ] T090 README features list (en, uk); axe in both themes; full gate
+- [x] T090 README features list (en, uk); axe in both themes; full gate
