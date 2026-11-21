@@ -65,6 +65,7 @@ src/
 │   ├── stages.ts        # STAGES constant, StageId
 │   ├── colors.ts        # spec 007: CARD_COLORS, CardColor
 │   ├── fields/          # spec 014: salary, work format, source rules (zod-free)
+│   ├── nextStep/        # spec 015: step rules, status, reminders, formats, calendar file
 │   ├── csv.ts           # spec 008: CSV reader/writer, formula guard
 │   ├── transfer/        # spec 008: applications ↔ CSV rows (export table, import plan)
 │   ├── schema.ts        # zod schemas for IPC input & entities
@@ -87,6 +88,8 @@ src/
 │   │                        # rows.ts: table rows and mapping; errors.ts
 │   ├── updates.ts       # spec 006: latest release request, the update checker
 │   ├── transfer.ts      # spec 008: CSV files through system dialogs, pending import
+│   ├── reminders.ts     # spec 015: the reminder scheduler (summary, 15 minutes before)
+│   ├── calendar.ts      # spec 015: the .ics file through the save dialog
 │   ├── skill/           # spec 016: the skill archive (zip writer, save through the dialog)
 │   ├── menu.ts          # localised native menu
 │   └── i18n.ts          # main-process strings (menu, dialogs)
@@ -313,6 +316,22 @@ build/                   # icons, entitlements for electron-builder
   `createTools`, so the skill cannot fall behind the MCP tools.
 - Claude Code users install it with one command from the main branch
   (`shared/skill.ts#skillInstallCommand`, spec 017); the release has no skill archive.
+
+### D-16 — Next step: columns, a reminder scheduler in main (spec 015)
+
+- The step is three nullable columns of `applications` (migration 005): text, a local
+  date `YYYY-MM-DD` and an optional local time `HH:MM`. Wall-clock values, not UTC, so a
+  step at 15:00 stays at 15:00 in another time zone (spec D-6).
+- `nextStep` is a whole value in the create and update patch, so MCP shares the rules.
+  "Done" is its own call (`completeNextStep`): it clears the step and adds a note in one
+  transaction, with the note text written by main in the UI language.
+- `main/reminders.ts` shows the system notifications. It checks every 30 seconds, after
+  each IPC call, after an MCP change and when the computer wakes, because renderer timers
+  slow down in a hidden window. Shown reminders are kept in memory for the run.
+- The renderer clock (`hooks/useNow`) waits until the next moment a card mark changes
+  (`nextStatusChange`), at most one hour.
+- "Add to calendar" writes an iCalendar file with a floating local time
+  (`domain/nextStep/calendar.ts`); no time zone rules, no network.
 
 ## Cross-cutting docs
 

@@ -38,6 +38,7 @@ user data. Labels come from locale files (`stages.<id>`).
 | `source` | ApplicationSource \| null | yes | Spec 014: set from the link when empty (FR-020) |
 | `contactName` | string \| null | yes | Spec 014: trimmed, 1–100 chars |
 | `contactDetails` | string \| null | yes | Spec 014: trimmed, 1–200 chars, free text |
+| `nextStep` | NextStep \| null | yes | Spec 015: replaced as a whole; a change bumps `updatedAt`, adds no `stageHistory` entry and keeps `order`; a move keeps it |
 | `stageHistory` | StageChange[] | yes | ≥ 1 entry; last entry's `stage` equals `stage` |
 | `notes` | Note[] | yes | may be empty |
 | `createdAt` | timestamp | yes | immutable |
@@ -74,6 +75,17 @@ type ApplicationSource =
 
 A change to a custom site does not change the applications that use its name.
 
+## NextStep (spec 015)
+
+| Field | Type | Rules |
+|-------|------|-------|
+| `text` | string | trimmed, 1–200 chars, one line |
+| `date` | string | local calendar date `YYYY-MM-DD` (not UTC) |
+| `time` | string \| null | local wall-clock time `HH:MM`, 00:00–23:59; `null` = all day |
+
+The status ("overdue", "today", "tomorrow", later) is computed from the local clock,
+never stored. "Done" removes the step and adds a note "Done: <text> (<date>[, <time>])".
+
 ## StageChange
 
 | Field | Type | Rules |
@@ -106,6 +118,7 @@ column does not add history.
 | `hiddenSites` | `KnownSiteId[]` | `[]` | Spec 011: known job sites the user hid; a JSON array in the row `hiddenSites`; ids that a later version does not know are dropped |
 | `siteQuery` | `string` | `''` | Spec 011 FR-005: the search query of the Sites tab, trimmed, ≤ 200 characters; row `siteQuery` |
 | `offerQuestionAnswered` | `boolean` | `false` | Spec 013 FR-004: the question after an offer has a final answer and is never asked again; row `offerQuestionAnswered` (`'true'`); another value reads as `false`. The answer itself is not stored |
+| `remindersEnabled` | `boolean` | `true` | Spec 015 FR-030: system notifications about next steps; row `remindersEnabled`, only `'false'` turns them off; a board reset does not change it |
 | `analytics` | `{ period: '7d' \| '30d' \| '90d' \| 'all'; grouping: 'day' \| 'week' \| 'month' }` | `{ period: '30d', grouping: 'day' }` | Spec 005: the view of the analytics screen; a JSON object in the `settings` row `analytics`; an invalid value reads as the default |
 
 ## CustomSite (spec 011)

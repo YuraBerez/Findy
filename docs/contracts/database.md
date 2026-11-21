@@ -100,6 +100,18 @@ The rules across columns (`salary_min ≤ salary_max`, currency and period only 
 amount) are checked in main before the write. A `source_value` that this version does
 not know reads as no source.
 
+Version 5 (`005-next-step`, spec 015) adds the next step to `applications`; rows from
+version 4 get `NULL` (no step):
+
+```sql
+next_step_text TEXT CHECK (next_step_text IS NULL OR length(next_step_text) BETWEEN 1 AND 200),
+next_step_date TEXT CHECK (next_step_date IS NULL OR next_step_date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'),
+next_step_time TEXT CHECK (next_step_time IS NULL OR next_step_time GLOB '[0-2][0-9]:[0-5][0-9]')
+```
+
+Text and date are set together, and a time needs a date. Main checks this before the
+write; a row that breaks it reads as no step.
+
 Column ↔ entity mapping is in [data-model.md](../data-model.md)
 (`position` ↔ `order`, snake_case ↔ camelCase).
 
