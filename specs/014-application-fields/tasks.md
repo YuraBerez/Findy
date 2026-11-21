@@ -28,13 +28,13 @@ Each task references the requirement(s) it satisfies.
 - [x] T021 `ApplicationExtraFields` in the details panel, currency default, en + uk
   strings (FR-010…FR-013)
 - [x] T022 Card line: `formatSalary`, work format, en + uk (FR-030…FR-032)
-- [ ] T023 e2e: details and card for US-1, US-2
+- [x] T023 e2e: details and card for US-1, US-2
 
 ## Phase 4 — US-3, US-4: source and contact (P2)
 
-- [ ] T030 Source select (known sites, custom sites, channels) and contact fields with
+- [x] T030 Source select (known sites, custom sites, channels) and contact fields with
   the "Open" link action (FR-010, US-4.2)
-- [ ] T031 e2e: source from the link, source kept, deleted custom site, contact link
+- [x] T031 e2e: source from the link, source kept, deleted custom site, contact link
   (US-3, US-4)
 
 ## Phase 5 — US-5: search, CSV, MCP (P2)

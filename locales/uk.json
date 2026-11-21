@@ -432,7 +432,7 @@
     },
     "notSet": "Не вказано",
     "location": "Локація",
-    "locationHint": "місто, країна або часовий пояс",
+    "locationHint": "Місто, країна або часовий пояс",
     "source": "Джерело",
     "sourceGroups": {
       "sites": "Сайти вакансій",
@@ -447,7 +447,7 @@
     },
     "contactName": "Контактна особа",
     "contactDetails": "Як звʼязатися",
-    "contactDetailsHint": "email, телефон, Telegram або посилання",
+    "contactDetailsHint": "Email, телефон, Telegram або посилання",
     "openContact": "Відкрити посилання контакту"
   }
 }

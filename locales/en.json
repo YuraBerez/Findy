@@ -406,7 +406,7 @@
     },
     "notSet": "Not set",
     "location": "Location",
-    "locationHint": "city, country or time zone",
+    "locationHint": "City, country or time zone",
     "source": "Source",
     "sourceGroups": {
       "sites": "Job sites",
@@ -421,7 +421,7 @@
     },
     "contactName": "Contact name",
     "contactDetails": "Contact details",
-    "contactDetailsHint": "email, phone, Telegram or a link",
+    "contactDetailsHint": "Email, phone, Telegram or a link",
     "openContact": "Open the contact link"
   }
 }

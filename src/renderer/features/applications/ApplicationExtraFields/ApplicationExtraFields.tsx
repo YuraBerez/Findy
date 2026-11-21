@@ -115,7 +115,7 @@ export function ApplicationExtraFields({ form, sites, onOpenLink }: Props) {
         <TextField
           name="location"
           label={t('fields.location')}
-          hint={t('fields.locationHint')}
+          placeholder={t('fields.locationHint')}
           value={values.location}
           error={form.errorText('location')}
           autoComplete="off"
@@ -173,7 +173,7 @@ export function ApplicationExtraFields({ form, sites, onOpenLink }: Props) {
           <TextField
             name="contactDetails"
             label={t('fields.contactDetails')}
-            hint={t('fields.contactDetailsHint')}
+            placeholder={t('fields.contactDetailsHint')}
             value={values.contactDetails}
             error={form.errorText('contactDetails')}
             autoComplete="off"

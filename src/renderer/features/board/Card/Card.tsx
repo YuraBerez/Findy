@@ -50,7 +50,7 @@ export function CardContent({ application, overlay = false, staleDays = null }: 
       </p>
       {/* Spec 014 FR-030: work format and salary, inside the handle, so in the card's name */}
       {line && (
-        <p className={styles.fields} title={line}>
+        <p className={styles.fields} title={line} data-testid="card-fields">
           {line}
         </p>
       )}
