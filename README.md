@@ -224,26 +224,35 @@ does, the safe steps (no duplicates, no invented data, a delete only after you c
 and four typical tasks: add an application, update it after an interview, review your
 job search, prepare for an interview. The skill needs the MCP connection above.
 
-Get the skill in one of two ways:
+**Claude Code:** run one command in a terminal. It downloads the skill into
+`~/.claude/skills/findy/`; Claude Code finds it at the next start. Run it again later to
+update the skill.
 
-- In Findy, open **⋯ → AI assistant access (MCP)…** and click **Save skill…**. This
-  saves `findy-skill-<version>.zip`.
-- Download `findy-skill-<version>.zip` from the
-  [release](https://github.com/YuraBerez/findy/releases) of your version.
+macOS and Linux:
 
-Then add it to your assistant:
+```bash
+mkdir -p ~/.claude/skills/findy && curl -fsSL "https://raw.githubusercontent.com/YuraBerez/Findy/main/skills/findy/SKILL.md" -o ~/.claude/skills/findy/SKILL.md.tmp && mv ~/.claude/skills/findy/SKILL.md.tmp ~/.claude/skills/findy/SKILL.md
+```
 
-- **Claude Desktop and claude.ai:** open **Settings → Capabilities**, turn on skills if
-  they are off, then upload the zip file in the **Skills** section.
-- **Claude Code:** unzip the file into `~/.claude/skills/` (for all your projects) or
-  into `.claude/skills/` of one project. The result is `skills/findy/SKILL.md`. Claude
-  Code finds it at the next start.
-- **Other assistants that support Agent Skills:** unzip it into the skills folder that the assistant documents.
-- **Assistants without skills:** add the text of `findy/SKILL.md` to the assistant's
-  custom instructions or project rules.
+Windows (PowerShell):
 
-After you update Findy, save the skill again: each version describes the tools of that
-version.
+```powershell
+$d = "$HOME\.claude\skills\findy"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/YuraBerez/Findy/main/skills/findy/SKILL.md" -OutFile "$d\SKILL.md.tmp"; if ($?) { Move-Item -Force "$d\SKILL.md.tmp" "$d\SKILL.md" }
+```
+
+**Claude Desktop and claude.ai:** in Findy, open **⋯ → AI assistant access (MCP)…** and
+click **Save skill…**. Then open **Settings → Capabilities** in Claude, turn on skills if
+they are off, and upload the saved `findy-skill-<version>.zip` in the **Skills** section.
+
+**Other assistants that support Agent Skills:** use the command above with the skills
+folder of your assistant instead of `~/.claude/skills`.
+
+**Assistants without skills:** add the text of
+[skills/findy/SKILL.md](skills/findy/SKILL.md) to the assistant's custom instructions or
+project rules.
+
+The command takes the skill from the main branch. If the assistant reports an unknown
+Findy tool, update Findy.
 
 ## Where is my data?
 

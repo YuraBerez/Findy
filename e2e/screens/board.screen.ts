@@ -271,6 +271,17 @@ export class BoardScreen extends BaseComponent {
     await this.assistantDialog.getByRole('button', { name: 'Save skill…' }).click()
   }
 
+  /** Spec 017 FR-004: with access off, the command block has the only "Copy" button */
+  async copySkillCommand(): Promise<void> {
+    await this.assistantDialog.getByRole('button', { name: 'Copy' }).click()
+  }
+
+  async verifySkillCommand(text: RegExp): Promise<void> {
+    await expect(this.assistantDialog.getByLabel('Install the skill in Claude Code')).toHaveText(
+      text,
+    )
+  }
+
   /** Spec 016 FR-023 */
   async openSkillInstall(): Promise<void> {
     await this.assistantDialog.getByRole('button', { name: 'How to install' }).click()

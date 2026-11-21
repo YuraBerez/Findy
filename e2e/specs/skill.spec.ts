@@ -1,6 +1,7 @@
 // Spec 016: the skill for AI assistants, saved from the MCP dialog
 import { expect, test } from '../fixtures/app'
-import { SKILL_INSTALL_URL } from '../../src/shared/project'
+import { SKILL_INSTALL_URL, SKILL_RAW_URL } from '../../src/shared/project'
+import { skillInstallCommand } from '../../src/shared/skill'
 
 test.describe('skill for AI assistants (spec 016)', () => {
   test(
@@ -33,4 +34,20 @@ test.describe('skill for AI assistants (spec 016)', () => {
       })
     },
   )
+
+  test('spec 017 US-1: the install command for this system, with access off; Copy', async ({
+    findy,
+  }) => {
+    const { board } = findy.pages
+    const command = skillInstallCommand(process.platform === 'win32' ? 'powershell' : 'posix')
+    await board.openAssistantDialog()
+    await board.verifySkillCommand(
+      new RegExp(`^${command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`),
+    )
+    expect(command).toContain(SKILL_RAW_URL)
+    await findy.api.withClipboard('', async () => {
+      await board.copySkillCommand()
+      await expect.poll(() => findy.api.clipboardText()).toBe(command)
+    })
+  })
 })

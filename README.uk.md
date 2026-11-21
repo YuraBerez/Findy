@@ -227,26 +227,35 @@ npm run dev          # запуск із гарячим перезавантаж
 підсумувати пошук, підготуватися до співбесіди. Скілу потрібне MCP-підключення, описане
 вище.
 
-Отримати скіл можна двома способами:
+**Claude Code:** виконайте одну команду в терміналі. Вона завантажить скіл у
+`~/.claude/skills/findy/`; Claude Code знайде його під час наступного запуску. Повторний
+запуск команди оновить скіл.
 
-- У Findy відкрийте **⋯ → Доступ для AI-асистентів (MCP)…** і натисніть
-  **Зберегти скіл…**. Збережеться файл `findy-skill-<версія>.zip`.
-- Завантажте `findy-skill-<версія>.zip` з [релізу](https://github.com/YuraBerez/findy/releases)
-  вашої версії.
+macOS і Linux:
 
-Потім додайте його до асистента:
+```bash
+mkdir -p ~/.claude/skills/findy && curl -fsSL "https://raw.githubusercontent.com/YuraBerez/Findy/main/skills/findy/SKILL.md" -o ~/.claude/skills/findy/SKILL.md.tmp && mv ~/.claude/skills/findy/SKILL.md.tmp ~/.claude/skills/findy/SKILL.md
+```
 
-- **Claude Desktop і claude.ai:** відкрийте **Settings → Capabilities**, увімкніть
-  скіли, якщо вони вимкнені, і завантажте zip-файл у розділі **Skills**.
-- **Claude Code:** розпакуйте файл у `~/.claude/skills/` (для всіх проєктів) або в
-  `.claude/skills/` одного проєкту. Має вийти `skills/findy/SKILL.md`. Claude Code
-  знайде скіл під час наступного запуску.
-- **Інші асистенти з підтримкою Agent Skills:** розпакуйте його в теку скілів, яку вказує документація асистента.
-- **Асистенти без скілів:** додайте текст `findy/SKILL.md` до власних інструкцій
-  асистента або правил проєкту.
+Windows (PowerShell):
 
-Після оновлення Findy збережіть скіл ще раз: кожна версія описує інструменти саме цієї
-версії.
+```powershell
+$d = "$HOME\.claude\skills\findy"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/YuraBerez/Findy/main/skills/findy/SKILL.md" -OutFile "$d\SKILL.md.tmp"; if ($?) { Move-Item -Force "$d\SKILL.md.tmp" "$d\SKILL.md" }
+```
+
+**Claude Desktop і claude.ai:** у Findy відкрийте **⋯ → Доступ для AI-асистентів (MCP)…** і
+натисніть **Зберегти скіл…**. Потім у Claude відкрийте **Settings → Capabilities**,
+увімкніть скіли, якщо вони вимкнені, і завантажте збережений `findy-skill-<версія>.zip` у
+розділі **Skills**.
+
+**Інші асистенти з підтримкою Agent Skills:** скористайтеся командою вище, замінивши
+`~/.claude/skills` на теку скілів вашого асистента.
+
+**Асистенти без скілів:** додайте текст [skills/findy/SKILL.md](skills/findy/SKILL.md) до
+власних інструкцій асистента або правил проєкту.
+
+Команда бере скіл з гілки main. Якщо асистент повідомляє про невідомий інструмент Findy,
+оновіть Findy.
 
 ## Де мої дані?
 

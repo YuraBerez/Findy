@@ -70,16 +70,14 @@ download, with no way to open it. `smoke:packaged` runs
 
 1. Maintainer bumps version, updates `CHANGELOG.md`, merges to `main`.
 2. Pushes tag `vX.Y.Z`.
-   The draft job also uploads `findy-skill-X.Y.Z.zip`: the `skills/findy` folder for
-   AI assistants (spec 016).
 3. Matrix job builds on the three runners and uploads the files to a **draft**
    GitHub Release: two `.dmg`, the Windows installer and the portable ZIP (spec 012),
    the AppImage and the `.deb`. Each runner records a build provenance attestation
    for its files (`actions/attest-build-provenance`).
 4. The `checksums` job downloads every file of the draft and uploads
    `SHA256SUMS.txt`.
-5. Maintainer smoke-tests each artifact (also: upload the skill archive in Claude
-   Desktop once), then publishes the release.
+5. Maintainer smoke-tests each artifact (also: **Save skill…** in the app and upload the
+   archive in Claude Desktop once, spec 016), then publishes the release.
 6. Within a day, the [Homebrew tap](https://github.com/YuraBerez/homebrew-findy) and the
    [Scoop bucket](https://github.com/YuraBerez/scoop-findy) move to the published
    version: their daily workflow checks the files against `SHA256SUMS.txt` and commits
