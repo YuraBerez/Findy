@@ -27,7 +27,7 @@ Each task references the requirement(s) it satisfies.
 ## Phase 4 — Release and instructions (US-2, US-3)
 
 - [x] T030 Release workflow uploads the skill archive (FR-011)
-- [ ] T031 README en + uk: "Install the Findy skill", link from the MCP section (FR-030)
+- [x] T031 README en + uk: "Install the Findy skill", link from the MCP section (FR-030)
 
 ## Phase 5 — Polish
 

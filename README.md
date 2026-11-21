@@ -215,6 +215,36 @@ open Findy window shows the changes within a second.
 **Privacy:** Findy itself sends your data nowhere. The assistant you connect sends
 what it reads to its AI provider, and only when you ask it to work with your board.
 
+To make the assistant use these tools well, also [install the Findy skill](#install-the-findy-skill).
+
+## Install the Findy skill
+
+The Findy skill teaches your assistant how to work with your board: what each tool
+does, the safe steps (no duplicates, no invented data, a delete only after you confirm)
+and four typical tasks: add an application, update it after an interview, review your
+job search, prepare for an interview. The skill needs the MCP connection above.
+
+Get the skill in one of two ways:
+
+- In Findy, open **⋯ → AI assistant access (MCP)…** and click **Save skill…**. This
+  saves `findy-skill-<version>.zip`.
+- Download `findy-skill-<version>.zip` from the
+  [release](https://github.com/YuraBerez/findy/releases) of your version.
+
+Then add it to your assistant:
+
+- **Claude Desktop and claude.ai:** open **Settings → Capabilities**, turn on skills if
+  they are off, then upload the zip file in the **Skills** section.
+- **Claude Code:** unzip the file into `~/.claude/skills/` (for all your projects) or
+  into `.claude/skills/` of one project. The result is `skills/findy/SKILL.md`. Claude
+  Code finds it at the next start.
+- **Other assistants that support Agent Skills:** unzip it into the skills folder that the assistant documents.
+- **Assistants without skills:** add the text of `findy/SKILL.md` to the assistant's
+  custom instructions or project rules.
+
+After you update Findy, save the skill again: each version describes the tools of that
+version.
+
 ## Where is my data?
 
 | OS | Path |
