@@ -95,6 +95,9 @@ As a user, I want the app to check for updates by itself, after I allow it.
 - The app runs from a development build with a version like `0.0.0`: the check works
   as for any other version.
 - The release page answers with a rate-limit error: same as any other error.
+- The answer spells the repository name in other letter case (`Findy` / `findy`): it is
+  the same repository, and the check works. GitHub gives the current spelling, so 0.5.0
+  and older refused every answer after the rename.
 - The answer is not valid or very large: "no update" for an automatic check, an error
   for a manual check.
 - A manual check while the popup is open: no second popup.

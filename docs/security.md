@@ -36,7 +36,9 @@ webPreferences: {
       update check (constitution §II.6, spec 006) runs from main
       with `net.fetch`, never from the renderer. It is a GET with no user data, a 10 s
       timeout and a size limit; the answer is parsed with zod, and "Download" opens only
-      `https://github.com/YuraBerez/findy/releases/tag/…` (`RELEASE_PAGE_PREFIX`). `FINDY_RELEASES_URL` replaces the
+      `https://github.com/YuraBerez/Findy/releases/tag/…` (`RELEASE_PAGE_PREFIX`,
+      compared without letter case, because GitHub names are not case-sensitive:
+      `isReleasePage`). `FINDY_RELEASES_URL` replaces the
       API URL for e2e tests; a packaged app ignores it.
 - [ ] Vacancy pages (constitution §II.7, spec 009), never from the renderer: main reads only the link that the
       user pasted or asked to read, with Node's `fetch` (no cookie store), `credentials:
