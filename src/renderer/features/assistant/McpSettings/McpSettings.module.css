@@ -24,6 +24,4 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  /* The last row of the dialog: the same room below as under a paragraph */
-  margin-bottom: var(--space-4);
 }

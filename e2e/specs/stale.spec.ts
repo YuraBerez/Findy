@@ -52,31 +52,29 @@ test.describe('stale applications (spec 010)', () => {
   })
 
   test('US-3: change N; invalid values are refused; N stays after a restart', async ({ findy }) => {
-    const { board, staleDialog } = findy.pages
-    await test.step('3.1: the dialog shows 14 at first', async () => {
-      await board.openStaleAfter()
-      await staleDialog.verifyOpen('14')
+    const { board, settings } = findy.pages
+    await test.step('3.1: Settings → Board shows 14 at first', async () => {
+      await settings.open('Board')
+      await settings.verifyDays('14')
     })
     await test.step('3.3: 2, 91 and an empty value are refused', async () => {
       for (const value of ['2', '91', '']) {
-        await staleDialog.setDays(value)
-        await staleDialog.save()
-        await staleDialog.verifyError('Enter a whole number from 3 to 90.')
+        await settings.saveDays(value)
+        await settings.verifyDaysError('Enter a whole number from 3 to 90.')
       }
     })
-    await test.step('3.2: 7 applies at once', async () => {
-      await staleDialog.setDays('7')
-      await staleDialog.save()
-      await staleDialog.verifyClosed()
+    await test.step('3.2: 7 applies at once (spec 018 FR-013: on Enter)', async () => {
+      await settings.saveDays('7')
+      await settings.close()
       await board.verifyStaleMark('Ten days', await markOf(findy, 'Ten days', 7))
       await board.verifyStaleMark('Fresh', null)
     })
     await test.step('3.2: and after a restart', async () => {
       const pages = await findy.restart()
       await pages.board.verifyStaleMark('Ten days', await markOf(findy, 'Ten days', 7))
-      await pages.board.openStaleAfter()
-      await pages.staleDialog.verifyOpen('7')
-      await pages.staleDialog.cancel()
+      await pages.settings.open('Board')
+      await pages.settings.verifyDays('7')
+      await pages.settings.close()
     })
   })
 
@@ -89,11 +87,12 @@ test.describe('stale applications (spec 010)', () => {
     await board.verifyStaleMark('Edge', 'No movement for 1[56] days')
   })
 
-  test('US-4.1: the dialog works with the keyboard', async ({ findy }) => {
-    const { board, staleDialog } = findy.pages
-    await board.openStaleAfter()
-    await staleDialog.saveWithKeyboard('30')
-    await staleDialog.verifyClosed()
+  test('US-4.1, spec 018 FR-013: the field saves when it loses focus', async ({ findy }) => {
+    const { board, settings } = findy.pages
+    await settings.open('Board')
+    await settings.setDays('30')
+    await settings.chooseCategory('General')
+    await settings.close()
     // 19–20 and 29–30 whole days: not more than 30
     await board.verifyStaleMark('Waiting', null)
     await board.verifyStaleMark('Also stale', null)

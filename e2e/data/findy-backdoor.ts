@@ -167,6 +167,23 @@ export class FindyBackdoor {
     }, message)
   }
 
+  /** Spec 018 FR-002: clicks an item of the native menu by its label, as its accelerator does */
+  async clickNativeMenuItem(label: string): Promise<void> {
+    await this.app.evaluate(({ Menu, BrowserWindow }, name) => {
+      const find = (items: Electron.MenuItem[]): Electron.MenuItem | undefined => {
+        for (const item of items) {
+          if (item.label === name) return item
+          const inner = item.submenu && find(item.submenu.items)
+          if (inner) return inner
+        }
+        return undefined
+      }
+      const item = find(Menu.getApplicationMenu()?.items ?? [])
+      if (!item) throw new Error(`No menu item "${name}"`)
+      item.click(undefined, BrowserWindow.getAllWindows()[0])
+    }, label)
+  }
+
   /** Top-level labels of the native application menu (FR-044) */
   menuLabels(): Promise<string[]> {
     return this.app.evaluate(

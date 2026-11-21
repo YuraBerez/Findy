@@ -175,7 +175,8 @@
     "close": "Закрити",
     "projectPage": "Findy на GitHub",
     "support": "Підтримати Findy…",
-    "copyright": "Відкритий код, ліцензія MIT"
+    "copyright": "Відкритий код, ліцензія MIT",
+    "settings": "Налаштування…"
   },
   "search": {
     "label": "Пошук заявок",
@@ -510,5 +511,21 @@
     "stepTitle_few": "Через {{count}} хв: {{text}}",
     "stepTitle_many": "Через {{count}} хв: {{text}}",
     "stepTitle_other": "Через {{count}} хв: {{text}}"
+  },
+  "settings": {
+    "title": "Налаштування",
+    "menuItem": "Налаштування…",
+    "general": "Загальні",
+    "board": "Дошка",
+    "reminders": "Нагадування",
+    "updates": "Оновлення",
+    "remindersHint": "Системні сповіщення за 15 хвилин і за 1 хвилину до наступного кроку з часом, поки Findy відкрита.",
+    "themes": {
+      "system": "Як у системі",
+      "light": "Світла",
+      "dark": "Темна"
+    },
+    "assistant": "AI-асистент",
+    "categories": "Розділи налаштувань"
   }
 }

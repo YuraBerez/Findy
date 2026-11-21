@@ -56,7 +56,7 @@ apply until you get an offer.
   HR, technical and C-level interviews you get, and how far your applications go in a
   funnel. Every chart can also show its numbers as a table.
 - **Update check.** **⋯ → Check for updates…** tells you when a new version is out.
-  Turn on the automatic check in the same menu if you want it (off by default).
+  Turn on the automatic check in **⋯ → Settings…** if you want it (off by default).
 - **CSV export and import.** Save the whole board to a file that opens in any
   spreadsheet, or add applications from your own table (**⋯ → Export to CSV…**,
   **Import from CSV…**). Import shows a summary first and never changes existing cards.
@@ -65,6 +65,8 @@ apply until you get an offer.
   your own sites and hide the ones you do not use.
 - **English and Ukrainian** interface, **light and dark** theme.
 - **Start over.** Reset the board in one step; Findy keeps a backup first.
+- **One settings window.** **⋯ → Settings…** or Cmd/Ctrl+, opens the language, the theme,
+  the columns, reminders, the update check and AI assistant access in one place.
 - **Private by design.** Works offline, no account, no telemetry. Your data lives in a
   local SQLite database on your computer. Findy goes online only for what you ask:
   the update check (when you start it or turn it on), the vacancy page whose link you
@@ -204,12 +206,12 @@ Findy has a built-in [MCP](https://modelcontextprotocol.io) server, so an assist
 add, move and annotate applications when you ask it to ("I applied to Acme as a
 frontend developer", "move Globex to the technical interview").
 
-1. In Findy open **⋯ → AI assistant access (MCP)…** and turn it on (it is off by default).
+1. In Findy open **⋯ → Settings… → AI assistant** and turn on access (it is off by default).
 2. Copy the configuration it shows into your client:
    - **Claude Desktop / Cowork:** `claude_desktop_config.json` (Settings → Developer → Edit Config).
-   - **Claude Code:** the `claude mcp add findy …` command from the same dialog.
+   - **Claude Code:** the `claude mcp add findy …` command from the same page.
    - **Gemini CLI, Cursor, VS Code, Windsurf, Zed, Codex CLI…:** the command, arguments
-     and environment (`ELECTRON_RUN_AS_NODE=1`) from the dialog, transport stdio.
+     and environment (`ELECTRON_RUN_AS_NODE=1`) from the page, transport stdio.
      The short form `<Findy> --mcp` also works.
 
 Tools: list and get applications, list stages, add, update, move, add a note,
@@ -244,7 +246,7 @@ Windows (PowerShell):
 $d = "$HOME\.claude\skills\findy"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/YuraBerez/Findy/main/skills/findy/SKILL.md" -OutFile "$d\SKILL.md.tmp"; if ($?) { Move-Item -Force "$d\SKILL.md.tmp" "$d\SKILL.md" }
 ```
 
-**Claude Desktop and claude.ai:** in Findy, open **⋯ → AI assistant access (MCP)…** and
+**Claude Desktop and claude.ai:** in Findy, open **⋯ → Settings… → AI assistant** and
 click **Save skill…**. Then open **Settings → Capabilities** in Claude, turn on skills if
 they are off, and upload the saved `findy-skill-<version>.zip` in the **Skills** section.
 

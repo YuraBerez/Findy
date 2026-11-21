@@ -22,7 +22,7 @@ import { ApplicationDialogScreen } from '../screens/application-dialog.screen'
 import { AnalyticsScreen } from '../screens/analytics.screen'
 import { ImportDialogScreen } from '../screens/import-dialog.screen'
 import { OfferDialogScreen } from '../screens/offer-dialog.screen'
-import { StaleDialogScreen } from '../screens/stale-dialog.screen'
+import { SettingsScreen } from '../screens/settings.screen'
 import { SitesScreen } from '../screens/sites.screen'
 import { UpdatesScreen } from '../screens/updates.screen'
 import { BoardScreen } from '../screens/board.screen'
@@ -38,7 +38,7 @@ export interface FindyPages {
   analytics: AnalyticsScreen
   updates: UpdatesScreen
   importDialog: ImportDialogScreen
-  staleDialog: StaleDialogScreen
+  settings: SettingsScreen
   offerDialog: OfferDialogScreen
   sites: SitesScreen
   dialog: ApplicationDialogScreen
@@ -153,7 +153,7 @@ function pagesFor(page: Page): FindyPages {
     analytics: new AnalyticsScreen(page),
     updates: new UpdatesScreen(page),
     importDialog: new ImportDialogScreen(page),
-    staleDialog: new StaleDialogScreen(page),
+    settings: new SettingsScreen(page),
     offerDialog: new OfferDialogScreen(page),
     sites: new SitesScreen(page),
     dialog,

@@ -15,6 +15,7 @@ describe('native menu (FR-044, FR-072)', () => {
       isDev: false,
       openProjectPage: vi.fn(),
       openSupportPage: vi.fn(),
+      settings: { enabled: true, open: vi.fn() },
     })
     expect(labels(template)).toEqual(['Findy', 'Редагування', 'Вигляд', 'Вікно', 'Довідка'])
     const edit = submenu(template[1])
@@ -29,6 +30,7 @@ describe('native menu (FR-044, FR-072)', () => {
       isDev: true,
       openProjectPage: vi.fn(),
       openSupportPage: vi.fn(),
+      settings: { enabled: true, open: vi.fn() },
     })
     expect(labels(template)).toEqual(['File', 'Edit', 'View', 'Window', 'Help'])
     const all = template.flatMap((top) => [top, ...submenu(top)])
@@ -46,6 +48,7 @@ describe('native menu (FR-044, FR-072)', () => {
       isDev: false,
       openProjectPage,
       openSupportPage: vi.fn(),
+      settings: { enabled: true, open: vi.fn() },
     })
     expect(submenu(template[2]).map((item) => item.role)).not.toContain('toggleDevTools')
     const project = submenu(template[4])[0]!
@@ -61,9 +64,40 @@ describe('native menu (FR-044, FR-072)', () => {
       isDev: false,
       openProjectPage: vi.fn(),
       openSupportPage,
+      settings: { enabled: true, open: vi.fn() },
     })
     const support = submenu(template[4]).find((item) => item.label === 'Підтримати Findy…')!
     ;(support.click as () => void)()
     expect(openSupportPage).toHaveBeenCalled()
+  })
+
+  it('has Settings… with Cmd/Ctrl+, in the Findy menu or the File menu (spec 018 FR-002)', () => {
+    const open = vi.fn()
+    const mac = buildMenuTemplate({
+      t: createMainTranslator('en'),
+      platform: 'darwin',
+      isDev: false,
+      openProjectPage: vi.fn(),
+      openSupportPage: vi.fn(),
+      settings: { enabled: true, open },
+    })
+    const item = submenu(mac[0]).find((entry) => entry.label === 'Settings…')!
+    expect(item).toMatchObject({ accelerator: 'CmdOrCtrl+,', enabled: true })
+    ;(item.click as () => void)()
+    expect(open).toHaveBeenCalled()
+
+    const windows = buildMenuTemplate({
+      t: createMainTranslator('uk'),
+      platform: 'win32',
+      isDev: false,
+      openProjectPage: vi.fn(),
+      openSupportPage: vi.fn(),
+      settings: { enabled: false, open },
+    })
+    expect(submenu(windows[0])[0]).toMatchObject({
+      label: 'Налаштування…',
+      accelerator: 'CmdOrCtrl+,',
+      enabled: false,
+    })
   })
 })

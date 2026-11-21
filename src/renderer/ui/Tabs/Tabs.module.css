@@ -35,3 +35,19 @@
   color: var(--fg);
   box-shadow: 0 0 0 1px var(--border);
 }
+
+/* Spec 018: a side list of categories */
+.vertical {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.vertical .tab {
+  width: 100%;
+  padding: 6px 10px;
+  text-align: left;
+  white-space: normal;
+}

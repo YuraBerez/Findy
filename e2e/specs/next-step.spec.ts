@@ -117,7 +117,7 @@ test.describe('next step (spec 015)', () => {
   test('US-4: reminders 15 and 1 minute before; a click opens the details; off', async ({
     findy,
   }) => {
-    const { board, details } = findy.pages
+    const { board, details, settings } = findy.pages
     await findy.api.seed([{ title: 'Dev', company: 'Acme' }, { title: 'Other' }])
     await findy.refresh()
     await findy.api.recordNotifications()
@@ -143,8 +143,9 @@ test.describe('next step (spec 015)', () => {
     })
 
     await test.step('US-4.3: Reminders off → no notification; the marks stay', async () => {
-      await board.toggleReminders()
-      await board.verifyRemindersSwitch(false)
+      await settings.open('Reminders')
+      await settings.setSwitch('Reminders', false)
+      await settings.close()
       const before = (await findy.api.notifications()).length
       await findy.api.setNextStep('Dev', stepIn(15, 'Changed call'))
       await board.verifyStepMark('Dev', /^Today, /)

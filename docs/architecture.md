@@ -106,7 +106,7 @@ src/
     │   ├── colors/      # useColorOptions: card colour names and tokens (spec 007)
     │   ├── transfer/    # ImportDialog/, useTransferMenu: CSV export and import (spec 008)
     │   ├── applications/# ApplicationDialog/
-    │   ├── settings/    # ThemeToggle/, LanguageSelect/
+    │   ├── settings/    # SettingsDialog/ (spec 018), ColumnSwitches/
     │   └── storage/     # StorageError/
     ├── ui/              # design-system primitives: Button, IconButton, Field,
     │                    # TextField, Select, Dialog, Menu, Switch, Tabs, BarChart,
@@ -332,6 +332,15 @@ build/                   # icons, entitlements for electron-builder
   (`nextStatusChange`), at most one hour.
 - "Add to calendar" writes an iCalendar file with a floating local time
   (`domain/nextStep/calendar.ts`); no time zone rules, no network.
+
+### D-17 — One settings window; the app menu holds actions (spec 018)
+
+- `features/settings/SettingsDialog` is a wide `@ui/Dialog` with a vertical `@ui/Tabs`
+  list of categories. Each category is a page; only the page scrolls, so the window keeps
+  its size. The AI assistant page is `features/assistant/McpSettings`.
+- Cmd/Ctrl+, is the accelerator of the native menu item **Settings…**: main sends the
+  `openSettings` event, and the renderer opens the window unless another dialog is open.
+- The ⋯ menu holds only actions. A new setting goes into a category, never into the menu.
 
 ## Cross-cutting docs
 

@@ -25,7 +25,7 @@ import { userDataDir } from './paths'
 import { createIconFetcher } from './siteIcons'
 import { readVacancyPage } from './vacancy'
 import { watchExternalChanges } from './watch'
-import { applyMenu } from './menu'
+import { applyMenu, setSettingsAction } from './menu'
 import { createReminders, type ReminderNotice } from './reminders'
 import { isAllowedNavigation } from './security'
 import { runSmokeTest } from './smoke'
@@ -133,6 +133,11 @@ function start(): void {
         }
 
   nativeTheme.themeSource = repository?.getSettings().theme ?? 'system'
+  // Spec 018 FR-002, FR-004: the window asks the renderer; off without a database
+  setSettingsAction({
+    enabled: repository !== null,
+    open: () => showWindow()?.webContents.send(CHANNEL_PREFIX + 'openSettings'),
+  })
   applyMenu(resolveLanguage(repository?.getSettings().language ?? null, app.getLocale()))
 
   // Spec 006. FINDY_RELEASES_URL points e2e tests at a local release server (plan D-4);

@@ -169,7 +169,8 @@
     "close": "Close",
     "projectPage": "Findy on GitHub",
     "support": "Support Findy…",
-    "copyright": "Open-source, MIT licence"
+    "copyright": "Open-source, MIT licence",
+    "settings": "Settings…"
   },
   "search": {
     "label": "Search applications",
@@ -482,5 +483,21 @@
     "step": "{{title}} · {{company}}, at {{time}}",
     "stepTitle_one": "In {{count}} min: {{text}}",
     "stepTitle_other": "In {{count}} min: {{text}}"
+  },
+  "settings": {
+    "title": "Settings",
+    "menuItem": "Settings…",
+    "general": "General",
+    "board": "Board",
+    "reminders": "Reminders",
+    "updates": "Updates",
+    "remindersHint": "System notifications 15 minutes and 1 minute before a next step that has a time, while Findy runs.",
+    "themes": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "assistant": "AI assistant",
+    "categories": "Settings categories"
   }
 }

@@ -12,6 +12,17 @@
 
 .modal {
   width: min(480px, calc(100vw - 32px));
+  /* The browser's own limit is lower than the content's: only the body may scroll */
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.wide {
+  width: min(760px, calc(100vw - 32px));
+  height: min(600px, calc(100vh - 32px));
+  max-height: none;
+  overflow: hidden;
   border-radius: 12px;
 }
 
@@ -31,7 +42,8 @@
   max-height: calc(100vh - 32px);
 }
 
-.drawer .content {
+.drawer .content,
+.wide .content {
   height: 100%;
   max-height: none;
 }
@@ -75,6 +87,18 @@
   min-height: 0;
   overflow-y: auto;
   padding: 0 var(--space-6);
+}
+
+/* No footer: the body needs its own space at the bottom */
+.body:last-child {
+  padding-bottom: var(--space-6);
+}
+
+.wide .body {
+  display: flex;
+  overflow: hidden;
+  padding: 0;
+  border-top: 1px solid var(--border);
 }
 
 .drawer .body {

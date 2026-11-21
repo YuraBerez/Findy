@@ -31,12 +31,12 @@ test.describe('hidden columns (spec 002)', () => {
         ])
       })
       await test.step('2.1 and 2.2: the Columns dialog shows it again', async () => {
-        const { board } = findy.pages
-        await board.openColumnsDialog()
-        await board.verifyColumnSwitch('Rejected', { on: false, count: '1 application' })
-        await board.verifyColumnSwitch('Applied', { on: true, count: '0 applications' })
-        await board.setColumnShown('Rejected')
-        await board.closeColumnsDialog()
+        const { board, settings } = findy.pages
+        await settings.open('Board')
+        await settings.verifyColumnSwitch('Rejected', { on: false, count: '1 application' })
+        await settings.verifyColumnSwitch('Applied', { on: true, count: '0 applications' })
+        await settings.setColumnShown('Rejected')
+        await settings.close()
         await board.verifyStageNames(ALL)
         await board.verifyCards('rejected', ['Rejected card'])
       })
@@ -53,11 +53,11 @@ test.describe('hidden columns (spec 002)', () => {
       'rejected',
     ])
     await findy.refresh()
-    const { board } = findy.pages
+    const { board, settings } = findy.pages
     await board.verifyStageNames(['Applied'])
     await board.verifyNoHideButton('applied')
-    await board.openColumnsDialog()
-    await board.verifyColumnSwitch('Applied', { on: true, enabled: false })
+    await settings.open('Board')
+    await settings.verifyColumnSwitch('Applied', { on: true, enabled: false })
   })
 
   test('US-3: no move or choice into a hidden column', async ({ findy }) => {
