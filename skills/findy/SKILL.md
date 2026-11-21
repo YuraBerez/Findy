@@ -14,8 +14,9 @@ the user's computer; you see it only when you call a tool.
 If the Findy tools are not in your tool list, or a tool answers that "AI assistant access"
 is turned off, do not guess and do not invent applications. Tell the user:
 
-1. Open Findy, then the app menu **⋯ → AI assistant access (MCP)…**, and turn it on.
-2. If the assistant is not connected yet, copy the configuration from the same dialog
+1. Open Findy, then **⋯ → Settings… → AI assistant**, and turn on access. In Findy 0.5
+   and older the item is **⋯ → AI assistant access (MCP)…**.
+2. If the assistant is not connected yet, copy the configuration from the same page
    into the assistant (Claude Desktop: `claude_desktop_config.json`; Claude Code: the
    `claude mcp add findy …` command), then restart the assistant.
 

@@ -65,6 +65,8 @@ export const IPC_EVENTS = [
   'languageChanged',
   'storageError',
   'stateChanged',
+  /** Spec 018 FR-002: Settings… in the native menu, or its shortcut */
+  'openSettings',
   /** Spec 015 FR-035: a step notification was clicked; the payload is the application id */
   'openApplication',
   /** Spec 011: a site icon was saved; ask getSiteIcons again */

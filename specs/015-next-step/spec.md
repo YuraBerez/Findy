@@ -1,7 +1,7 @@
 # Feature Spec: Next step and reminders
 
 - **ID:** 015-next-step
-- **Status:** Approved
+- **Status:** Implemented
 - **Approved:** 2026-11-21 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-21

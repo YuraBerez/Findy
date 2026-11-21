@@ -6,22 +6,22 @@ test.describe('MCP server (spec 004)', () => {
     { tag: '@critical' },
     async ({ findy }) => {
       const mcp = await findy.connectMcp()
-      const { board } = findy.pages
+      const { settings } = findy.pages
 
       await test.step('1.1, 1.2: off by default; the tool says how to turn it on', async () => {
         const result = await mcp.call('list_applications')
         expect(result.isError).toBe(true)
-        expect(result.text).toMatch(/turn on "AI assistant access \(MCP\)"/)
+        expect(result.text).toMatch(/turn it on in ⋯ → Settings… → AI assistant/)
       })
       await test.step('1.3: turned on in the app, with connection instructions', async () => {
-        await board.openAssistantDialog()
-        await board.setAssistantAccess(true)
-        await board.verifyAssistantInstructions()
+        await settings.open('AI assistant')
+        await settings.setSwitch('Allow AI assistants to use my board', true)
+        await settings.verifyAssistantInstructions()
         expect((await mcp.call('list_applications')).isError).toBe(false)
       })
       await test.step('1.4: off again', async () => {
-        await board.setAssistantAccess(false)
-        await board.closeAssistantDialog()
+        await settings.setSwitch('Allow AI assistants to use my board', false)
+        await settings.close()
         expect((await mcp.call('list_applications')).isError).toBe(true)
       })
     },
@@ -93,8 +93,8 @@ test.describe('MCP server (spec 004)', () => {
     'the assistant access dialog has no accessibility violations',
     { tag: '@a11y' },
     async ({ findy }) => {
-      await findy.pages.board.openAssistantDialog()
-      await findy.pages.board.setAssistantAccess(true)
+      await findy.pages.settings.open('AI assistant')
+      await findy.pages.settings.setSwitch('Allow AI assistants to use my board', true)
       await findy.pages.a11y.expectNoViolations()
     },
   )

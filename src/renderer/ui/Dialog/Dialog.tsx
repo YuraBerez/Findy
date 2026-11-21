@@ -18,7 +18,8 @@ interface Props {
   /** With a submit handler the body is a <form>, so Enter submits */
   onSubmit?(event: FormEvent<HTMLFormElement>): void
   /** `drawer` comes in from the right edge (details), `modal` is centred */
-  variant?: 'modal' | 'drawer'
+  /** `wide`: a fixed-size window whose content lays out and scrolls itself (spec 018) */
+  variant?: 'modal' | 'drawer' | 'wide'
   /** A confirmation that interrupts the user (WAI-ARIA alertdialog) */
   alert?: boolean
   testId?: string

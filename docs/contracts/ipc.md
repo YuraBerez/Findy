@@ -135,6 +135,7 @@ and adds them in one transaction. A token works once; a new preview replaces it.
 | `findy:languageChanged` | `'en' \| 'uk'` | Language changed from the native app menu |
 | `findy:storageError` | `{ message }` | Background save failed |
 | `findy:stateChanged` | — | Another process (the MCP server) changed the database; reload (spec 004) |
+| `findy:openSettings` | — | **Settings…** in the native menu or Cmd/Ctrl+,; open the settings window (spec 018) |
 | `findy:openApplication` | `string` (application id) | The user clicked a step notification; open its details (spec 015) |
 | `findy:siteIconsChanged` | — | Main saved a site icon; call `getSiteIcons` again (spec 011) |
 

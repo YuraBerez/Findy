@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { McpConnection } from '@shared/ipc'
 import { skillInstallCommand } from '@shared/skill'
-import { Button, CodeBlock, Dialog, ExternalLinkIcon, Switch } from '@ui'
-import styles from './McpDialog.module.css'
+import { Button, CodeBlock, ExternalLinkIcon, Switch } from '@ui'
+import styles from './McpSettings.module.css'
 
 interface Props {
   enabled: boolean
@@ -12,7 +12,6 @@ interface Props {
   onSaveSkill(): void
   /** Spec 016 FR-023: the README steps in the browser */
   onOpenInstall(): void
-  onClose(): void
 }
 
 /** Spec 017 FR-004: Electron's user agent names Windows on Windows */
@@ -20,8 +19,11 @@ const shell = navigator.userAgent.includes('Windows') ? 'powershell' : 'posix'
 
 const quote = (value: string) => (/[\s"]/.test(value) ? JSON.stringify(value) : value)
 
-/** Spec 004 US-1, FR-009: turn assistant access on/off and show how to connect; spec 016: the skill. */
-export function McpDialog({ enabled, onChange, onSaveSkill, onOpenInstall, onClose }: Props) {
+/**
+ * Spec 004 US-1, FR-009: turn assistant access on/off and show how to connect; spec 016: the
+ * skill. A page of the settings window (spec 018 D-3).
+ */
+export function McpSettings({ enabled, onChange, onSaveSkill, onOpenInstall }: Props) {
   const { t } = useTranslation()
   const [connection, setConnection] = useState<McpConnection | null>(null)
 
@@ -32,7 +34,7 @@ export function McpDialog({ enabled, onChange, onSaveSkill, onOpenInstall, onClo
   const copy = { copyLabel: t('mcp.copy'), copiedLabel: t('mcp.copied') }
 
   return (
-    <Dialog title={t('mcp.title')} closeLabel={t('common.close')} onClose={onClose}>
+    <>
       <div className={styles.row}>
         <span className={styles.label}>{t('mcp.allow')}</span>
         <Switch checked={enabled} label={t('mcp.allow')} onToggle={() => onChange(!enabled)} />
@@ -92,6 +94,6 @@ export function McpDialog({ enabled, onChange, onSaveSkill, onOpenInstall, onClo
           {t('mcp.skillInstall')}
         </Button>
       </div>
-    </Dialog>
+    </>
   )
 }

@@ -15,13 +15,22 @@ interface Props<K extends string> {
   onChange(key: K): void
   /** Ids are `${idPrefix}-tab-${key}` and `${idPrefix}-panel-${key}`: give the panels the second one */
   idPrefix: string
+  /** Vertical: a side list (spec 018), with ↑ and ↓ */
+  orientation?: 'horizontal' | 'vertical'
 }
 
 /**
  * ARIA tabs (WAI-ARIA APG, automatic activation): one tab stop, the arrow keys,
  * Home and End move focus and select the tab.
  */
-export function Tabs<K extends string>({ label, items, value, onChange, idPrefix }: Props<K>) {
+export function Tabs<K extends string>({
+  label,
+  items,
+  value,
+  onChange,
+  idPrefix,
+  orientation = 'horizontal',
+}: Props<K>) {
   const refs = useRef(new Map<K, HTMLButtonElement>())
 
   const select = (index: number) => {
@@ -31,9 +40,11 @@ export function Tabs<K extends string>({ label, items, value, onChange, idPrefix
   }
 
   const onKeyDown = (event: KeyboardEvent, index: number) => {
+    const [next, previous] =
+      orientation === 'vertical' ? ['ArrowDown', 'ArrowUp'] : ['ArrowRight', 'ArrowLeft']
     const target = {
-      ArrowRight: index + 1,
-      ArrowLeft: index - 1,
+      [next]: index + 1,
+      [previous]: index - 1,
       Home: 0,
       End: items.length - 1,
     }[event.key]
@@ -43,7 +54,12 @@ export function Tabs<K extends string>({ label, items, value, onChange, idPrefix
   }
 
   return (
-    <div role="tablist" aria-label={label} className={styles.list}>
+    <div
+      role="tablist"
+      aria-label={label}
+      aria-orientation={orientation}
+      className={[styles.list, styles[orientation]].join(' ')}
+    >
       {items.map((item, index) => {
         const selected = item.key === value
         return (

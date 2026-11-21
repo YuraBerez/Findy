@@ -51,7 +51,7 @@ test.describe('error handling (spec 003)', () => {
 
   test('a notification has no accessibility violations', { tag: '@a11y' }, async ({ findy }) => {
     await findy.api.failInMain('setTheme', 'STORAGE')
-    await findy.pages.board.toggleTheme()
+    await findy.pages.board.chooseTheme('Dark')
     await findy.pages.board.verifyNotification('Findy could not save this change.')
     await findy.pages.a11y.expectNoViolations()
   })

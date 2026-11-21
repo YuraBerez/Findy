@@ -96,8 +96,8 @@ const fieldsInput = {
 export class McpAccessDisabledError extends Error {
   constructor() {
     super(
-      'Findy has AI assistant access turned off. Ask the user to open Findy and turn on ' +
-        '"AI assistant access (MCP)" in the app menu (⋯).',
+      'Findy has AI assistant access turned off. Ask the user to open Findy and turn it on ' +
+        'in ⋯ → Settings… → AI assistant.',
     )
     this.name = 'McpAccessDisabledError'
   }

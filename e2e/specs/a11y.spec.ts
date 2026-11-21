@@ -62,7 +62,7 @@ test.describe('accessibility', () => {
   test('columns dialog has no violations', { tag: '@a11y' }, async ({ findy }) => {
     await findy.api.setHiddenStages(['rejected'])
     await findy.refresh()
-    await findy.pages.board.openColumnsDialog()
+    await findy.pages.settings.open('Board')
     await findy.pages.a11y.expectNoViolations()
   })
 

@@ -1,10 +1,5 @@
-.hint {
-  margin: 0 0 var(--space-4);
-  color: var(--fg-muted);
-}
-
 .list {
-  margin: 0 0 var(--space-6);
+  margin: 0;
   padding: 0;
   list-style: none;
 }
