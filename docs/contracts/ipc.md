@@ -73,7 +73,8 @@ interface FindyApi {
     { title: string | null; company: string | null } | null // null: no data, no network, not HTML
   >;                                                        // never rejects for a failed read
   setMcpEnabled(enabled: boolean): Promise<AppState>;    // spec 004
-  getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009  // spec 002; rejects all-hidden and duplicates
+  getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009
+  saveSkill(): Promise<{ status: 'saved' } | { status: 'cancelled' }>;  // spec 016; STORAGE: write failed; no database needed  // spec 002; rejects all-hidden and duplicates
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
   getSystemLocale(): Promise<string>;
   openExternal(url: string): Promise<void>;            // http/https only, else rejects

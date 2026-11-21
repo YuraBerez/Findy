@@ -54,3 +54,4 @@ Rules:
 | 013 | [Congratulate on an offer and ask for support](013-offer-thanks/spec.md) | Implemented (0.5.0) |
 | 014 | [More application fields](014-application-fields/spec.md) | Approved (2026-11-21) |
 | 015 | [Next step and reminders](015-next-step/spec.md) | Approved (2026-11-21) |
+| 016 | [A skill for AI assistants that use Findy](016-mcp-skill/spec.md) | Approved (2026-11-21) |
