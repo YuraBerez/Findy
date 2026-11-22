@@ -198,7 +198,9 @@ add it twice.
   anyway" (owner, 2026-11-22).
 - **D-7** Browsers: Chromium-based and Firefox. Safari is later (owner, 2026-11-22).
 - **D-8** The code of the extension is in this repository. The extension is released to
-  the browser stores separately from the app releases (owner, 2026-11-22).
+  the browser stores separately from the app releases (owner, 2026-11-22). Until it is in
+  the stores, each app release has the extension as two zip files (Chromium, Firefox)
+  with the version of the app, and the README tells how to load it (owner, 2026-11-22).
 - **D-9** Defaults chosen without a question (change them before approval if needed):
   the popup language follows the browser language (Ukrainian or English); with more than
   one duplicate, the last updated one is shown; the connector works when the app is

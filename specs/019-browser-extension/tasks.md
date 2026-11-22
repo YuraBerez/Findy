@@ -38,4 +38,5 @@ Each task references the requirement(s) it satisfies.
 - [ ] T050 e2e: connector over stdio against the app (add, lookup, invalid input, open window shows the card) (US-1.2, US-1.4, US-2, FR-008, FR-009)
 - [ ] T051 e2e: the extension in Chromium with a temporary profile, a host manifest in that profile, and the local vacancy page; axe on the popup (US-1.1–1.3, US-1.5, US-2.1–2.2, US-3.1–3.3, US-4, NFR-007)
 - [ ] T052 Packaged smoke test on Windows, macOS and Linux: registration files exist and the launcher answers `hello` (FR-011, FR-012)
-- [ ] T053 CI: build and zip the extension; release workflow on tag `extension-v*`; docs/release.md (store upload steps), docs/security.md, README (install the extension) (spec D-8)
+- [ ] T053 CI: build the extension in the CI job; docs/release.md (store upload steps, not done yet), docs/security.md, `PRIVACY.md` (spec D-8)
+- [x] T054 Release workflow attaches the extension zips (Chromium, Firefox) to each app release; README in English and Ukrainian: how to load it (spec D-8)

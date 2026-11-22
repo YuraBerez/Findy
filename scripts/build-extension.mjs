@@ -39,10 +39,14 @@ function writeLocales(target) {
   }
 }
 
+// The extension ships with the app release (spec D-8), so it has the version of the app
+const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'))
+
 const manifests = {
-  chromium: { ...base, ...chromium },
+  chromium: { ...base, version, ...chromium },
   firefox: {
     ...base,
+    version,
     browser_specific_settings: {
       gecko: { ...firefox.browser_specific_settings.gecko, id: FIREFOX_EXTENSION_ID },
     },
