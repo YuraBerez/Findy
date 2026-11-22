@@ -120,6 +120,8 @@ src/
 │   └── smoke.ts         # CI: a packaged build loads better-sqlite3
 ├── preload/
 │   └── index.ts
+├── extension/           # spec 019: the browser extension: manifest.json, icons/,
+│                        # browser/ (tab, connector), popup/ (built by scripts/build-extension.mjs)
 └── renderer/            # component architecture (D-7)
     ├── index.html, main.tsx, i18n.ts, format.ts
     ├── app/             # App, Toolbar, notifications, ErrorBoundary,
@@ -161,7 +163,6 @@ e2e/                     # Playwright + playwright-e2e-kit (D-6)
 ├── screens/             # page objects: private locators, verbs, verify…()
 ├── fixtures/app.ts      # one Electron app + isolated database per test
 └── data/                # back door: seed and read through window.findy
-extension/               # spec 019: the browser extension (popup, build for Chromium and Firefox)
 skills/findy/SKILL.md    # spec 016: the skill for AI assistants (bundled into main)
 build/                   # icons, entitlements for electron-builder
 .github/workflows/       # ci.yml, release.yml
@@ -391,9 +392,10 @@ build/                   # icons, entitlements for electron-builder
 
 ### D-18 — Browser extension through native messaging (spec 019)
 
-- The extension (`extension/`, Manifest V3) reads the HTML of the active tab only when
-  the popup opens, and finds the job title and the company with `domain/vacancy`. It has
-  no `fetch` and no access to all sites (constitution §II.9).
+- The extension (`src/extension/`, Manifest V3, built into `out/extension/`) reads the
+  HTML of the active tab only when the popup opens, and finds the job title and the
+  company with `domain/vacancy`. It has no `fetch` and no access to all sites
+  (constitution §II.9).
 - The browser starts the **connector**: a third entry, `out/main/connector.js`, in Node
   mode, as the MCP server (D-8). One request per connection, length-prefixed JSON on
   stdio ([contracts/native-messaging.md](contracts/native-messaging.md)). It uses the

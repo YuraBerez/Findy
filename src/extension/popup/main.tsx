@@ -3,9 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { I18nextProvider, initReactI18next } from 'react-i18next'
 import { resolveLanguage } from '@domain/language'
 import { createI18n } from '@shared/i18n'
-import { nativeSend } from '../native'
+import { nativeSend } from '../browser/connector'
 import { Popup } from './Popup'
-import '../../../src/renderer/styles/global.css'
+import '@styles/global.css'
 
 // NFR-006: the language of the browser, Ukrainian or English
 const language = resolveLanguage(null, chrome.i18n.getUILanguage())

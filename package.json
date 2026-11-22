@@ -33,7 +33,7 @@
     "test:coverage": "vitest run --coverage",
     "format:check": "prettier --check .",
     "screenshots": "npm run build && UPDATE_SCREENSHOTS=1 playwright test self-tests/readme-screenshots --workers=1",
-    "build:extension": "node extension/build.mjs"
+    "build:extension": "node scripts/build-extension.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.2.0"

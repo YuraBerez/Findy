@@ -1,7 +1,7 @@
 // Spec 019: what the popup shows, as pure data, so the rules are unit-tested.
 import type { StageId } from '@domain/stages'
-import { addVacancy, helloFindy, lookupLink, type Send } from '../native'
-import { readOpenPage, type PageApi } from '../page'
+import { addVacancy, helloFindy, lookupLink, type Send } from '../browser/connector'
+import { readOpenPage, type PageApi } from '../browser/page'
 
 export interface Form {
   title: string

@@ -5,7 +5,7 @@
 
 ## Summary
 
-The extension is a small Manifest V3 add-on in `extension/`. Its popup reads the HTML of
+The extension is a small Manifest V3 add-on in `src/extension/`. Its popup reads the HTML of
 the active tab, finds the job title and the company with `domain/vacancy`
 (`extractVacancy`, spec 009), and talks to Findy through browser **native messaging**.
 The browser starts the **connector**: a third entry of Findy's binary in Node mode
@@ -41,7 +41,7 @@ manifest for each installed browser.
 ## Architecture
 
 ```
-Browser tab ──executeScript(outerHTML)──▶ Popup (extension/)
+Browser tab ──executeScript(outerHTML)──▶ Popup (src/extension/)
                                             │ extractVacancy()  (src/domain/vacancy)
                                             │ sendNativeMessage("io.github.findy", …)
                                             ▼
@@ -71,36 +71,46 @@ answers).
 
 | Requirement | Component |
 |-------------|-----------|
-| FR-001, NFR-003 | `extension/manifest`: `activeTab`, `scripting`, `nativeMessaging`; `extension/src/page.ts` reads `outerHTML` (cut to 2 MB) on popup open |
+| FR-001, NFR-003 | `src/extension/manifest.json`: `activeTab`, `scripting`, `nativeMessaging`; `browser/page.ts` reads `outerHTML` (cut to 2 MB) on popup open |
 | FR-002 | `extractVacancy` from `src/domain/vacancy`, bundled into the popup |
-| FR-003, FR-005, US-2, US-3 | `extension/src/popup/` (React, `@ui` `TextField`, `Button`); state machine in `extension/src/popup/state.ts` (pure, unit-tested) |
+| FR-003, FR-005, US-2, US-3 | `src/extension/popup/` (React, `@ui` `TextField`, `Button`); state in `popup/state.ts` (pure, unit-tested) |
 | FR-004 | `src/main/connector/handler.ts` → `Repository.createApplication` (stage `applied`, source from the link as spec 014 FR-020) |
 | FR-006, FR-007 | `src/domain/links.ts` `vacancyLinkKey(url)`; `handler.ts` `lookup` over `Repository` applications |
 | FR-008 | `handler.ts` answers only the shapes above |
 | FR-009 | Connector writes through `Repository`; existing `watch.ts` |
 | FR-010 | Popup `hello` + timeout; download link from `src/shared/project.ts` |
 | FR-011 | `src/main/connector/register/` (manifest JSON, launcher text, browser folders, Windows registry); called from `start()` in `main/index.ts` |
-| FR-012 | `extension/build.ts`: two outputs, `chromium/` and `firefox/` (manifest differences only) |
-| NFR-001, NFR-002 | No `fetch` in extension or connector (ESLint `no-restricted-globals` for `extension/`); `allowed_origins` / `allowed_extensions` from `src/shared/extension.ts`; zod in `handler.ts` |
+| FR-012 | `scripts/build-extension.mjs`: two outputs, `chromium/` and `firefox/` (manifest differences only) |
+| NFR-001, NFR-002 | No `fetch` in extension or connector (ESLint `no-restricted-globals` for `src/extension/`); `allowed_origins` / `allowed_extensions` from `src/shared/extension.ts`; zod in `handler.ts` |
 | NFR-006 | `extension.*` keys in both locales; the build writes `_locales/*/messages.json` from them |
 | NFR-007 | e2e uses `e2e/data/vacancy-server.ts` |
 
 ## Project structure
 
+The extension is one more process next to `main`, `preload` and `renderer` (owner, 2026-11-22).
+
 ```
-extension/
-  manifest.base.json     # shared part; build adds the browser-specific keys
-  build.ts               # Vite build for chromium/ and firefox/, writes _locales
-  src/popup/             # Popup/Popup.tsx, index.html, main.tsx, state.ts
-  src/page.ts            # read the active tab
-  src/native.ts          # sendNativeMessage wrapper with a timeout
+src/extension/
+  manifest.json          # shared part; the build adds the keys of each browser
+  icons/
+  browser/               # the extension API of the browser
+    chrome.d.ts          # types of the few calls that the popup uses
+    page.ts              # read the active tab (2 MB cut)
+    connector.ts         # native messaging with a timeout: hello, lookup, add
+  popup/
+    index.html, main.tsx
+    state.ts             # what the popup shows (pure, unit-tested)
+    Popup/               # Popup.tsx, Popup.module.css, index.ts
 src/domain/links.ts      # vacancyLinkKey (FR-007)
 src/main/connector/
   cli.ts                 # entry: out/main/connector.js (Node mode)
   codec.ts               # length-prefixed JSON frames
   handler.ts             # hello / lookup / add
-  register/              # index.ts facade; manifest.ts, launcher.ts, browsers.ts, windows.ts
+  run.ts                 # one request, one answer
+  register/              # index.ts facade; manifest.ts, launcher.ts, browsers.ts, windows.ts, fs.ts
 src/shared/extension.ts  # host name, store ids, store links
+scripts/build-extension.mjs  # → out/extension/{chromium,firefox}
+tests/unit/extension/    # popup logic (tsconfig.extension.json)
 docs/contracts/native-messaging.md
 ```
 

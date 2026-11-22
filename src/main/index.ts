@@ -80,7 +80,8 @@ function start(): void {
       appImage: process.env.APPIMAGE,
       env: process.env.FINDY_CONNECTOR_HOME ? {} : process.env,
       fs: nodeRegisterFs,
-      runReg,
+      // A test folder never changes the registry of the user
+      runReg: process.env.FINDY_CONNECTOR_HOME ? async () => {} : runReg,
     }).catch((error: unknown) =>
       console.error('Findy could not register the browser connector', error),
     )

@@ -34,14 +34,7 @@ function restrictImports(...layer) {
 
 export default tseslint.config(
   {
-    ignores: [
-      'out/',
-      'dist/',
-      'extension/dist/',
-      'coverage/',
-      'test-results/',
-      'playwright-report/',
-    ],
+    ignores: ['out/', 'dist/', 'coverage/', 'test-results/', 'playwright-report/'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -116,7 +109,7 @@ export default tseslint.config(
   {
     // Spec 019: the browser extension. No network (NFR-001), no Node or Electron, and the
     // same React rules as the renderer.
-    files: ['extension/src/**/*.{ts,tsx}'],
+    files: ['src/extension/**/*.{ts,tsx}'],
     languageOptions: { globals: globals.browser },
     plugins: { 'react-hooks': reactHooks },
     rules: {

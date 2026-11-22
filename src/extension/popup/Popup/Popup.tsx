@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Button, TextField } from '@ui'
 import { DOWNLOAD_URL } from '@shared/project'
-import type { Send } from '../../native'
+import type { Send } from '../../browser/connector'
 import { canAdd, loadPopup, submit, type Form, type PopupState } from '../state'
 import styles from './Popup.module.css'
 

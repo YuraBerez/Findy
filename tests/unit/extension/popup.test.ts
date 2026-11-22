@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { addVacancy, helloFindy, lookupLink, type Send } from '../../../extension/src/native'
-import { MAX_PAGE_CHARS, readOpenPage, type PageApi } from '../../../extension/src/page'
-import { canAdd, loadPopup, submit, type PopupState } from '../../../extension/src/popup/state'
+import {
+  addVacancy,
+  helloFindy,
+  lookupLink,
+  type Send,
+} from '../../../src/extension/browser/connector'
+import { MAX_PAGE_CHARS, readOpenPage, type PageApi } from '../../../src/extension/browser/page'
+import { canAdd, loadPopup, submit, type PopupState } from '../../../src/extension/popup/state'
 import { CONNECTOR_PROTOCOL } from '../../../src/shared/extension'
 
 const VACANCY = `<html><head><script type="application/ld+json">
