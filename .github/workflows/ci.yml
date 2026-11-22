@@ -25,6 +25,8 @@ jobs:
       - run: npm ci
       - run: npm run format:check
       - run: npm run lint
+      - name: Build the browser extension (spec 019)
+        run: npm run build:extension
       - name: Unit tests with coverage thresholds
         run: npm run test:coverage
       - name: Coverage summary

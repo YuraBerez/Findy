@@ -7,7 +7,7 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 0 — Constitution and docs
 
-- [ ] T000 Amendment §II.9 in a separate PR with the `constitution` label (spec D-1); merged before Phase 2
+- [x] T000 Amendment §II.9 in a separate PR with the `constitution` label (spec D-1); merged before Phase 2
 - [x] T001 Spec FR-011 → "every start of the app" (plan D-2); `docs/contracts/native-messaging.md`; architecture D-18 (FR-011, NFR-002)
 
 ## Phase 1 — Domain and shared
@@ -37,6 +37,7 @@ Each task references the requirement(s) it satisfies.
 
 - [ ] T050 e2e: connector over stdio against the app (add, lookup, invalid input, open window shows the card) (US-1.2, US-1.4, US-2, FR-008, FR-009)
 - [ ] T051 e2e: the extension in Chromium with a temporary profile, a host manifest in that profile, and the local vacancy page; axe on the popup (US-1.1–1.3, US-1.5, US-2.1–2.2, US-3.1–3.3, US-4, NFR-007)
-- [ ] T052 Packaged smoke test on Windows, macOS and Linux: registration files exist and the launcher answers `hello` (FR-011, FR-012)
-- [ ] T053 CI: build the extension in the CI job; docs/release.md (store upload steps, not done yet), docs/security.md, `PRIVACY.md` (spec D-8)
+  - **Moved to a follow-up (2026-11-22):** Playwright cannot click the button of an extension, and a popup opened as a tab gets no `activeTab` grant. The popup logic (US-1.1, US-2, US-3) has unit tests in `tests/unit/extension/`, and the owner checked the popup in Chrome by hand. US-4 (keyboard, language) has no automated test yet.
+- [x] T052 Packaged smoke test on Windows, macOS and Linux: registration files exist and the launcher answers `hello` (FR-011, FR-012)
+- [x] T053 CI: build the extension in the CI job; docs/release.md (store upload steps, not done yet), docs/security.md, `PRIVACY.md` (spec D-8)
 - [x] T054 Release workflow attaches the extension zips (Chromium, Firefox) to each app release; install guide `docs/guide/browser-extension.md` in English and Ukrainian, linked from the README (spec D-8)

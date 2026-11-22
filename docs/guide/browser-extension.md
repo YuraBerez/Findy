@@ -40,4 +40,6 @@ restart. A permanent install comes with the signed version.
 **If the extension says that Findy is not found:** open Findy once and try again. Browsers
 in Flatpak or Snap cannot start Findy, so the extension does not work in them.
 
+Privacy details: [PRIVACY.md](../../PRIVACY.md).
+
 ← [Back to README](../../README.md)

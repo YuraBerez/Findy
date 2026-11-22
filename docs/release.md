@@ -46,7 +46,7 @@ the failed tests run once more (`playwright test --last-failed`).
   `test-results/`. Read the trace (`npx playwright show-trace <trace.zip>`) before a fix.
 
 Coverage scope: `src/domain`, `src/main` (except the entry points
-`src/main/index.ts` and `src/main/mcp/cli.ts`, the Electron glue in `src/main/app/` and
+`src/main/index.ts`, `src/main/mcp/cli.ts` and `src/main/connector/cli.ts`, the Electron glue in `src/main/app/` and
 `src/main/menu.ts`) and `src/shared`. UI and preload are covered by e2e tests.
 
 Branch protection on `main` requires all four checks (`Quality gate …` and
@@ -83,17 +83,29 @@ download, with no way to open it. `smoke:packaged` runs
 2. Pushes tag `vX.Y.Z`.
 3. Matrix job builds on the three runners and uploads the files to a **draft**
    GitHub Release: two `.dmg`, the Windows installer and the portable ZIP (spec 012),
-   the AppImage and the `.deb`. Each runner records a build provenance attestation
+   the AppImage and the `.deb`. The `extension` job adds the browser extension as two
+   zips with the version of the app: `Findy-X.Y.Z-browser-extension.zip` (Chromium) and
+   `…-browser-extension-Firefox.zip` (spec 019 D-8). Each runner records a build provenance attestation
    for its files (`actions/attest-build-provenance`).
 4. The `checksums` job downloads every file of the draft and uploads
    `SHA256SUMS.txt`.
 5. Maintainer smoke-tests each artifact (also: **Save skill…** in the app and upload the
-   archive in Claude Desktop once, spec 016), then publishes the release.
+   archive in Claude Desktop once, spec 016; load the extension zip in Chrome and add one
+   vacancy, spec 019), then publishes the release.
 6. Within a day, the [Homebrew tap](https://github.com/YuraBerez/homebrew-findy) and the
    [Scoop bucket](https://github.com/YuraBerez/scoop-findy) move to the published
    version: their daily workflow checks the files against `SHA256SUMS.txt` and commits
    the new version and sums. Run their "Follow Findy releases" workflow by hand to do
    it at once. They never read a draft or a pre-release.
+
+`smoke:packaged` also starts the browser connector from `app.asar` through a launcher, as
+a browser does, on all three systems (spec 019).
+
+The browser stores are not used yet (spec 019 D-8). To publish later: Chrome Web Store
+(one-time fee; upload the Chromium zip without the `key` field and with the private key as
+`key.pem` in the zip root on the first upload, so that the id stays
+`inpfooemhgjckhjffffcgbbbbmbblglg`), and addons.mozilla.org (free; upload the Firefox zip
+and the source code with the build steps).
 
 Users can check a download with `SHA256SUMS.txt` or
 `gh attestation verify <file> --repo YuraBerez/findy` (README → Check a download).
