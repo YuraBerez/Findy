@@ -4,7 +4,7 @@ The non-negotiable principles of the project. Every spec, plan, task and pull
 request must comply. Changing this document requires its own PR with the
 `constitution` label and a short rationale.
 
-**Version:** 1.4.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6), 2026-11-19 (§II.7, §II.8)
+**Version:** 1.5.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6), 2026-11-19 (§II.7, §II.8), 2026-11-22 (§II.9)
 
 ---
 
@@ -53,6 +53,12 @@ No production code is written without an approved spec.
    goes only to that site's host and sends no user data: no search query, no list of
    sites, no cookies or identifiers. The app opens the sites themselves only in the
    system browser. See spec 011.
+9. **Exception — browser extension.** The Findy browser extension may send the job
+   title, the company and the link of the open page to Findy, only when the user clicks
+   its button. Findy may tell the extension if an application with that link exists, and
+   its stage, but gives it no other data. The browser starts a Findy process that talks
+   to the extension over standard input and output; there is no network listener. The
+   extension and that process make no network requests. See spec 019.
 
 ## III. Secure Electron by default
 
