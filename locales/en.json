@@ -499,5 +499,21 @@
     },
     "assistant": "AI assistant",
     "categories": "Settings categories"
+  },
+  "extension": {
+    "storeName": "Findy — add a vacancy",
+    "storeDescription": "Add the vacancy that you see to Findy, your job-search board, in one click. Needs the Findy desktop app.",
+    "title": "Add to Findy",
+    "reading": "Reading the page…",
+    "unsupported": "Findy can add only a web page (http or https).",
+    "noFindy": "Findy is not found on this computer, or its version is too old. Install or update Findy, then open it once.",
+    "download": "Download Findy",
+    "already": "Already in Findy: {{stage}}",
+    "fillIn": "Fill in the job title and the company.",
+    "add": "Add to Findy",
+    "addAnyway": "Add anyway",
+    "adding": "Adding…",
+    "added": "Added to Findy, stage “{{stage}}”.",
+    "failed": "Findy could not add the vacancy: {{reason}}"
   }
 }

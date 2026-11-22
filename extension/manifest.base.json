@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "__MSG_storeName__",
+  "short_name": "Findy",
+  "description": "__MSG_storeDescription__",
+  "version": "0.1.0",
+  "default_locale": "en",
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "__MSG_title__",
+    "default_icon": { "16": "icons/icon-16.png", "32": "icons/icon-32.png" }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "commands": {
+    "_execute_action": { "suggested_key": { "default": "Alt+Shift+F" } }
+  },
+  "permissions": ["activeTab", "scripting", "nativeMessaging"],
+  "chromium": {
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsvTJVaUkNQnjQcubTlIw81Z6fDFK0HDqckVz5ersH225fYozpKsRZdQ9+YggAAgCsZw9mw1oKSNwOM6MWZnhfqVYGPiD5YcGQxPf2bOf2wF6spJ4j8JlzvW7OvWA5NT0huF1si5Vl7nCqKdJL9zhZwFmDVpB3dxInVKTJ/WyIEdW8NfnDXJvb28rx352+Odbuk/6fOswGHh5GX/XEqm4jCtsionVREYJL80p9W1CXrZfHU1htXcCsJbbXeWwsC5aU8lEwEFYt3xoXRSxqJ/6SXNDEZ4W7h8oyIHIRqTIkcFNlCa9rJaYkJG+bhtXNYKBXw7UDDu9J9ODCuUlybx28QIDAQAB",
+    "minimum_chrome_version": "116"
+  },
+  "firefox": {
+    "browser_specific_settings": { "gecko": { "strict_min_version": "128.0" } }
+  }
+}

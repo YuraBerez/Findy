@@ -29,9 +29,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 4 — Extension
 
-- [ ] T040 `extension/` build: base manifest + Chromium (`key`, service worker not needed) and Firefox (`browser_specific_settings`) outputs; `_locales` from `locales/*.json`; ESLint rules (no `fetch`, no Node); `npm run build:extension` (FR-012, NFR-001, NFR-006)
-- [ ] T041 `page.ts` (active tab HTML, 2 MB cut) and `native.ts` (timeout, `hello`, protocol check); popup `state.ts` reducer; unit tests (FR-001, FR-002, FR-005, FR-010)
-- [ ] T042 Popup UI with `@ui`: fields, "Add to Findy", "Already in Findy" + stage + "Add anyway", messages of US-3, download link; en/uk strings (FR-003, FR-005, FR-006, FR-010, US-3, US-4, NFR-005)
+- [x] T040 `extension/` build: base manifest + Chromium (`key`, no background script) and Firefox (`browser_specific_settings`) outputs; `_locales` from `locales/*.json`; ESLint rules (no `fetch`, no Node); `npm run build:extension` (FR-012, NFR-001, NFR-006)
+- [x] T041 `page.ts` (active tab HTML, 2 MB cut) and `native.ts` (timeout, `hello`, protocol check); popup `state.ts` reducer; unit tests (FR-001, FR-002, FR-005, FR-010)
+- [x] T042 Popup UI with `@ui`: fields, "Add to Findy", "Already in Findy" + stage + "Add anyway", messages of US-3, download link; en/uk strings (FR-003, FR-005, FR-006, FR-010, US-3, US-4, NFR-005)
 
 ## Phase 5 — Verification and release
 

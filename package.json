@@ -20,7 +20,7 @@
     "dev": "electron-vite dev --watch",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p tsconfig.e2e.json",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json && tsc --noEmit -p tsconfig.e2e.json && tsc --noEmit -p tsconfig.extension.json",
     "lint": "eslint . && npm run typecheck",
     "format": "prettier --write .",
     "test": "vitest run",
@@ -32,7 +32,8 @@
     "smoke:packaged": "node scripts/smoke-packaged.mjs",
     "test:coverage": "vitest run --coverage",
     "format:check": "prettier --check .",
-    "screenshots": "npm run build && UPDATE_SCREENSHOTS=1 playwright test self-tests/readme-screenshots --workers=1"
+    "screenshots": "npm run build && UPDATE_SCREENSHOTS=1 playwright test self-tests/readme-screenshots --workers=1",
+    "build:extension": "node extension/build.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^13.2.0"

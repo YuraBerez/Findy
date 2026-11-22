@@ -154,7 +154,7 @@ docs/contracts/native-messaging.md
 - **Options considered:** plain DOM; React with `@ui`.
 - **Chosen:** React with `@ui` controls and the theme tokens.
 - **Why:** CLAUDE.md forbids duplicate controls and styles. React is already a
-  dependency; the popup bundle stays below 300 KB.
+  dependency; the popup script is about 320 KB, read from disk.
 
 ## Risks
 
