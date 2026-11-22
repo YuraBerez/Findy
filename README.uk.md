@@ -88,155 +88,26 @@ Findy збирає всі заявки на одній дошці: від від
 
 Findy потребує macOS 13 Ventura чи новішої або Windows 10/11 (64-біт).
 
-### Встановлення через Homebrew (macOS)
-
-```bash
-brew tap yuraberez/findy
-brew trust yuraberez/findy
-brew install --cask findy
-```
-
-`brew trust` потрібен один раз: Homebrew завантажує cask зі сторонніх tap лише після
-того, як ви їм довірилися. Оновлення: `brew upgrade --cask findy`.
-[Tap](https://github.com/YuraBerez/homebrew-findy) переходить на кожен опублікований
-реліз протягом доби. Перший запуск усе одно потребує кроків нижче.
-
-### Встановлення через Scoop (Windows)
-
-```powershell
-scoop bucket add findy https://github.com/YuraBerez/scoop-findy
-scoop install findy
-```
-
-Оновлення: `scoop update findy`. [Bucket](https://github.com/YuraBerez/scoop-findy)
-встановлює портативну версію для вашого користувача, без прав адміністратора (починаючи
-з Findy 0.4.1).
-
-### Перевірка завантаження
-
-Кожен реліз (починаючи з 0.4.1) містить `SHA256SUMS.txt` із контрольною сумою кожного
-файлу, а GitHub фіксує, який workflow і коміт зібрали кожен із них:
-
-```bash
-shasum -a 256 -c SHA256SUMS.txt --ignore-missing      # macOS, Linux
-gh attestation verify Findy-x.y.z-macOS-Apple-Silicon.dmg --repo YuraBerez/findy
-```
-
-У Windows: `Get-FileHash Findy-Setup-x.y.z.exe` і порівняйте з `SHA256SUMS.txt`.
-
-### Перший запуск: збірки поки не підписані
-
-Сертифікати для підпису коду платні, тому збірки не підписані. Під час першого
-відкриття macOS і Windows показують попередження. Збірки зроблено з відкритого
-коду в GitHub Actions. Ці кроки потрібні лише один раз.
-
-#### macOS
-
-Тип свого Mac видно в меню Apple → **Про цей Mac**: **Чип: Apple M…** означає
-Apple Silicon, **Процесор: Intel…** означає Intel.
-
-1. Відкрийте файл `.dmg` і перетягніть **Findy** у **Програми** (Applications).
-2. Відкрийте Findy. macOS покаже *«Findy» не відкрито* (або *не вдається
-   відкрити, бо Apple не може перевірити*). Натисніть **Готово**. Не натискайте
-   *Перемістити в Смітник*.
-3. Відкрийте **Системні параметри → Приватність і безпека**. Прокрутіть до
-   розділу **Безпека**. Біля *«Findy» заблоковано для захисту вашого Mac*
-   натисніть **Усе одно відкрити**.
-4. Введіть пароль і ще раз натисніть **Усе одно відкрити**. Findy запуститься.
-
-У macOS 14 і старіших можна також клацнути Findy у Програмах із Control →
-**Відкрити** → **Відкрити**.
-
-Якщо macOS пише *«Findy» пошкоджено, і його не можна відкрити*, відкрийте
-**Термінал**, виконайте команду й знову відкрийте Findy:
-
-```bash
-xattr -dr com.apple.quarantine /Applications/Findy.app
-```
-
-Відкрийте Findy цими кроками хоча б раз, перш ніж підключати AI-асистента (MCP):
-доти macOS не дає й асистентові запустити Findy.
-
-#### Windows
-
-1. Завантажте `Findy-Setup-x.y.z.exe`. Якщо браузер попереджає, що файл
-   завантажують нечасто, оберіть **Зберегти** (Edge: **⋯ → Зберегти → Показати
-   більше → Усе одно зберегти**).
-2. Запустіть файл. У вікні *Windows захистив ваш ПК* (SmartScreen) натисніть
-   **Докладніше**, потім **Усе одно запустити**.
-3. Пройдіть кроки інсталятора й запустіть Findy з меню «Пуск».
-
-#### Linux
-
-- **AppImage:** зробіть файл виконуваним і запустіть:
-  ```bash
-  chmod +x Findy-*.AppImage
-  ./Findy-*.AppImage
-  ```
-  В Ubuntu 22.04 і новіших AppImage потребує FUSE 2:
-  `sudo apt install libfuse2` (Ubuntu 24.04: `sudo apt install libfuse2t64`).
-- **Пакет Debian / Ubuntu:** `sudo apt install ./findy_x.y.z_amd64.deb`.
+Homebrew, Scoop, перевірка завантаження й перший запуск (збірки поки не підписані):
+[docs/guide/install.uk.md](docs/guide/install.uk.md).
 
 ## Запуск із вихідного коду
 
-Потрібно: [Node.js](https://nodejs.org/) 22 LTS або новіший, npm, Git.
-
-```bash
-git clone https://github.com/YuraBerez/findy.git
-cd findy
-npm install
-npm run dev          # запуск із гарячим перезавантаженням
-```
-
-Інші команди:
-
-| Команда | Що робить |
-|---------|-----------|
-| `npm run build` | Продакшн-збірка коду застосунку |
-| `npm run dist` | Інсталятор для вашої ОС у `dist/` |
-| `npm test` | Unit-тести |
-| `npm run test:coverage` | Unit-тести з перевіркою покриття ≥ 80 % |
-| `npm run test:e2e` | End-to-end тести на реальному застосунку |
-| `npm run lint` | Лінтер і перевірка типів |
-
-На Linux можуть знадобитися стандартні системні бібліотеки Electron
-(`libgtk-3-0 libnss3 libasound2`), а для збірки `.deb` ще `fakeroot` і `dpkg`.
+Див. [CONTRIBUTING.md](CONTRIBUTING.md#development-setup) (англійською).
 
 ## Findy з Claude чи іншим AI-асистентом (MCP)
 
 У Findy вбудований [MCP](https://modelcontextprotocol.io)-сервер: асистент може
-додавати, переміщувати й коментувати заявки на ваше прохання («я відгукнувся в Acme
-на фронтенд», «перемісти Globex на технічну співбесіду»).
-
-1. У Findy відкрийте **⋯ → Налаштування… → AI-асистент** і ввімкніть доступ (за замовчуванням вимкнено).
-2. Скопіюйте показані налаштування у свій клієнт:
-   - **Claude Desktop / Cowork:** `claude_desktop_config.json` (Settings → Developer → Edit Config).
-   - **Claude Code:** команда `claude mcp add findy …` з тієї самої сторінки.
-   - **Gemini CLI, Cursor, VS Code, Windsurf, Zed, Codex CLI…:** команда, аргументи
-     й змінна середовища (`ELECTRON_RUN_AS_NODE=1`) зі сторінки, транспорт stdio.
-     Коротка форма `<Findy> --mcp` теж працює.
-
-Інструменти: список і перегляд заявок, список етапів, додати, змінити, перемістити,
-нотатка, видалити (асистент спершу питає вас). Правила ті самі, що в застосунку, а
-відкрите вікно Findy показує зміни протягом секунди.
-
-**Приватність:** сам Findy нікуди не передає ваші дані. Підключений асистент передає
-прочитане своєму AI-провайдеру — лише коли ви просите його попрацювати з дошкою.
-
-Щоб асистент користувався цими інструментами правильно, також
-[встановіть скіл Findy](#встановити-скіл-findy).
+додавати, переміщувати й коментувати заявки на ваше прохання («я відгукнувся в Acme на
+фронтенд»). Доступ вимкнено, доки ви не ввімкнете його в **⋯ → Налаштування… →
+AI-асистент**. Як підключити клієнт:
+[docs/guide/ai-assistant.uk.md](docs/guide/ai-assistant.uk.md).
 
 ## Встановити скіл Findy
 
-Скіл Findy навчає асистента працювати з вашою дошкою: що робить кожен інструмент,
-безпечні кроки (без дублікатів, без вигаданих даних, видалення лише після вашого
-підтвердження) і чотири типові задачі: додати заявку, оновити її після співбесіди,
-підсумувати пошук, підготуватися до співбесіди. Скілу потрібне MCP-підключення, описане
-вище.
-
-**Claude Code:** виконайте одну команду в терміналі. Вона завантажить скіл у
-`~/.claude/skills/findy/`; Claude Code знайде його під час наступного запуску. Повторний
-запуск команди оновить скіл.
+Скіл навчає асистента працювати з вашою дошкою. Claude Code встановлює його однією
+командою; кроки для Claude Desktop та інших асистентів — у
+[docs/guide/ai-assistant.uk.md](docs/guide/ai-assistant.uk.md#встановити-скіл-findy).
 
 macOS і Linux:
 
@@ -249,20 +120,6 @@ Windows (PowerShell):
 ```powershell
 $d = "$HOME\.claude\skills\findy"; New-Item -ItemType Directory -Force $d | Out-Null; Invoke-WebRequest -UseBasicParsing "https://raw.githubusercontent.com/YuraBerez/Findy/main/skills/findy/SKILL.md" -OutFile "$d\SKILL.md.tmp"; if ($?) { Move-Item -Force "$d\SKILL.md.tmp" "$d\SKILL.md" }
 ```
-
-**Claude Desktop і claude.ai:** у Findy відкрийте **⋯ → Налаштування… → AI-асистент** і
-натисніть **Зберегти скіл…**. Потім у Claude відкрийте **Settings → Capabilities**,
-увімкніть скіли, якщо вони вимкнені, і завантажте збережений `findy-skill-<версія>.zip` у
-розділі **Skills**.
-
-**Інші асистенти з підтримкою Agent Skills:** скористайтеся командою вище, замінивши
-`~/.claude/skills` на теку скілів вашого асистента.
-
-**Асистенти без скілів:** додайте текст [skills/findy/SKILL.md](skills/findy/SKILL.md) до
-власних інструкцій асистента або правил проєкту.
-
-Команда бере скіл з гілки main. Якщо асистент повідомляє про невідомий інструмент Findy,
-оновіть Findy.
 
 ## Де мої дані?
 
