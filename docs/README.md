@@ -6,6 +6,7 @@
 |-------|---------------|
 | [guide/install.md](guide/install.md) | Homebrew, Scoop, check a download, the first start |
 | [guide/ai-assistant.md](guide/ai-assistant.md) | Connect an AI assistant (MCP), install the Findy skill |
+| [guide/browser-extension.md](guide/browser-extension.md) | Install the browser extension and add vacancies from the browser |
 
 **For contributors:** cross-cutting, long-lived knowledge about how Findy is built. Feature specs
 live separately in [`/specs`](../specs/README.md).

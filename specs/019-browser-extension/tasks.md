@@ -39,4 +39,4 @@ Each task references the requirement(s) it satisfies.
 - [ ] T051 e2e: the extension in Chromium with a temporary profile, a host manifest in that profile, and the local vacancy page; axe on the popup (US-1.1–1.3, US-1.5, US-2.1–2.2, US-3.1–3.3, US-4, NFR-007)
 - [ ] T052 Packaged smoke test on Windows, macOS and Linux: registration files exist and the launcher answers `hello` (FR-011, FR-012)
 - [ ] T053 CI: build the extension in the CI job; docs/release.md (store upload steps, not done yet), docs/security.md, `PRIVACY.md` (spec D-8)
-- [x] T054 Release workflow attaches the extension zips (Chromium, Firefox) to each app release; README in English and Ukrainian: how to load it (spec D-8)
+- [x] T054 Release workflow attaches the extension zips (Chromium, Firefox) to each app release; install guide `docs/guide/browser-extension.md` in English and Ukrainian, linked from the README (spec D-8)

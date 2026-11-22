@@ -9,7 +9,7 @@
 | Linux, any distribution | [Findy-VERSION.AppImage](https://github.com/YuraBerez/findy/releases/download/vVERSION/Findy-VERSION.AppImage) |
 | Debian, Ubuntu | [findy_VERSION_amd64.deb](https://github.com/YuraBerez/findy/releases/download/vVERSION/findy_VERSION_amd64.deb) |
 
-**Browser extension:** [Findy-VERSION-browser-extension.zip](https://github.com/YuraBerez/findy/releases/download/vVERSION/Findy-VERSION-browser-extension.zip) for Chrome, Edge, Brave, Opera and Vivaldi; [Findy-VERSION-browser-extension-Firefox.zip](https://github.com/YuraBerez/findy/releases/download/vVERSION/Findy-VERSION-browser-extension-Firefox.zip) for Firefox. [How to install](https://github.com/YuraBerez/findy#add-a-vacancy-from-the-browser).
+**Browser extension:** [Findy-VERSION-browser-extension.zip](https://github.com/YuraBerez/findy/releases/download/vVERSION/Findy-VERSION-browser-extension.zip) for Chrome, Edge, Brave, Opera and Vivaldi; [Findy-VERSION-browser-extension-Firefox.zip](https://github.com/YuraBerez/findy/releases/download/vVERSION/Findy-VERSION-browser-extension-Firefox.zip) for Firefox. [How to install](https://github.com/YuraBerez/findy/blob/main/docs/guide/browser-extension.md).
 
 **Which Mac do I have?** Open the Apple menu → **About This Mac**. **Chip: Apple M…** means Apple Silicon. **Processor: Intel…** means Intel.
 
