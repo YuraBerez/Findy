@@ -86,6 +86,7 @@ src/
 │   ├── ipc.ts           # FindyApi, AppState, channel names, IpcError
 │   ├── i18n.ts          # one i18next setup for main and renderer
 │   ├── skill.ts         # spec 017: the skill install command
+│   ├── extension.ts     # spec 019: native host name, extension ids, store links
 │   └── project.ts       # every GitHub URL of the project (home, issues, releases, API)
 ├── main/
 │   ├── index.ts         # entry: lifecycle, single instance, IPC registration, --mcp forward
@@ -102,6 +103,8 @@ src/
 │   │                        # applications.ts, notes.ts, settings.ts, sites.ts: one store
 │   │                        # each; rows.ts: table rows and mapping; errors.ts
 │   ├── mcp/             # spec 004: cli.ts (Node-mode entry), server.ts, tools.ts
+│   ├── connector/       # spec 019: cli.ts (Node-mode entry for the browser extension),
+│   │                    # codec.ts, handler.ts, register/ (host manifests, launcher)
 │   ├── watch.ts         # spec 004: changes from another process (PRAGMA data_version)
 │   ├── updates.ts       # spec 006: latest release request, the update checker
 │   ├── transfer.ts      # spec 008: CSV files through system dialogs, pending import
@@ -117,6 +120,8 @@ src/
 │   └── smoke.ts         # CI: a packaged build loads better-sqlite3
 ├── preload/
 │   └── index.ts
+├── extension/           # spec 019: the browser extension: manifest.json, icons/,
+│                        # browser/ (tab, connector), popup/ (built by scripts/build-extension.mjs)
 └── renderer/            # component architecture (D-7)
     ├── index.html, main.tsx, i18n.ts, format.ts
     ├── app/             # App, Toolbar, notifications, ErrorBoundary,
@@ -385,11 +390,29 @@ build/                   # icons, entitlements for electron-builder
   `openSettings` event, and the renderer opens the window unless another dialog is open.
 - The ⋯ menu holds only actions. A new setting goes into a category, never into the menu.
 
+### D-18 — Browser extension through native messaging (spec 019)
+
+- The extension (`src/extension/`, Manifest V3, built into `out/extension/`) reads the
+  HTML of the active tab only when the popup opens, and finds the job title and the
+  company with `domain/vacancy`. It has no `fetch` and no access to all sites
+  (constitution §II.9).
+- The browser starts the **connector**: a third entry, `out/main/connector.js`, in Node
+  mode, as the MCP server (D-8). One request per connection, length-prefixed JSON on
+  stdio ([contracts/native-messaging.md](contracts/native-messaging.md)). It uses the
+  same `Repository` and zod schemas; the open app shows its writes through `watch.ts`.
+- A host manifest cannot set environment variables, so it points at a launcher in
+  `userData/connector/` (`.sh`, or `.cmd` on Windows; the AppImage runs `--connector`).
+- Every app start writes the launcher and a host manifest for each installed browser
+  (files on macOS and Linux, `HKCU` keys on Windows), only when the content changes. The
+  manifest accepts only the ids in `shared/extension.ts`: one Chromium build from the
+  Chrome Web Store, one Firefox build from addons.mozilla.org.
+
 ## Cross-cutting docs
 
 - [constitution.md](constitution.md) — project principles
 - [data-model.md](data-model.md) — entities and invariants
 - [contracts/ipc.md](contracts/ipc.md) — renderer ↔ main API
+- [contracts/native-messaging.md](contracts/native-messaging.md) — browser extension ↔ connector
 - [contracts/database.md](contracts/database.md) — SQLite schema, transactions, migrations
 - [i18n.md](i18n.md) — localisation rules
 - [security.md](security.md) — Electron hardening

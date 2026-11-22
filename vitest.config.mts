@@ -18,6 +18,7 @@ export default defineConfig({
         'src/main/index.ts',
         'src/main/app/**',
         'src/main/mcp/cli.ts',
+        'src/main/connector/cli.ts',
         'src/main/menu.ts',
         '**/*.d.ts',
       ],

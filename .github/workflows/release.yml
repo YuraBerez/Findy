@@ -89,9 +89,44 @@ jobs:
             dist/*.AppImage
             dist/*.deb
 
+  extension:
+    name: Browser extension
+    needs: draft
+    # Spec 019: the extension is not in the browser stores yet; users load it from the release
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Build and zip the extension
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          npm run build:extension
+          mkdir -p dist
+          (cd out/extension/chromium && zip -qr "$GITHUB_WORKSPACE/dist/Findy-${TAG#v}-browser-extension.zip" .)
+          (cd out/extension/firefox && zip -qr "$GITHUB_WORKSPACE/dist/Findy-${TAG#v}-browser-extension-Firefox.zip" .)
+          ls -l dist
+      - name: Upload to the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: gh release upload "$TAG" dist/*.zip --clobber
+      - name: Attest the build provenance (spec 012 FR-010)
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: dist/*.zip
+
   checksums:
     name: SHA256SUMS.txt
-    needs: build
+    needs: [build, extension]
     runs-on: ubuntu-latest
     steps:
       # Spec 012 FR-009: one file with the sum of every download, for users and for
@@ -106,5 +141,5 @@ jobs:
           rm -f SHA256SUMS.txt
           sha256sum * > SHA256SUMS.txt
           cat SHA256SUMS.txt
-          [ "$(wc -l < SHA256SUMS.txt)" -ge 6 ] || { echo "Expected at least 6 files"; exit 1; }
+          [ "$(wc -l < SHA256SUMS.txt)" -ge 8 ] || { echo "Expected at least 8 files"; exit 1; }
           gh release upload "$TAG" SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --clobber

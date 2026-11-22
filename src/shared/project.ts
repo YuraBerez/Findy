@@ -31,3 +31,6 @@ export const SKILL_INSTALL_URL = `${PROJECT_URL}#install-the-findy-skill`
 
 /** Spec 017 FR-001: the skill file on the main branch, for the install command */
 export const SKILL_RAW_URL = `https://raw.githubusercontent.com/${REPOSITORY}/main/skills/findy/SKILL.md`
+
+/** Spec 019 FR-010: where the browser extension sends a user who has no Findy */
+export const DOWNLOAD_URL = `${PROJECT_URL}/releases/latest`

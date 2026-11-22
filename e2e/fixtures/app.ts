@@ -1,4 +1,4 @@
-import { mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
@@ -9,6 +9,7 @@ import {
   type Page,
 } from '@playwright/test'
 import { errorGuardFixture, type ErrorGuard } from 'playwright-e2e-kit'
+import { BrowserConnector, chromeHostManifest, chromeProfileDir } from '../data/browser-connector'
 import { writeBulkDatabase, type BulkData } from '../data/bulk-database'
 import { CsvFiles } from '../data/csv-files'
 import { FindyBackdoor } from '../data/findy-backdoor'
@@ -59,6 +60,10 @@ export interface Findy {
   restart(): Promise<FindyPages>
   /** Start `Findy --mcp` on the same database and connect an MCP client (spec 004) */
   connectMcp(): Promise<McpTestClient>
+  /** Spec 019: the connector as the browser starts it, through the registered launcher */
+  connectBrowser(): Promise<BrowserConnector>
+  /** Spec 019: the host manifest that the app wrote for Chrome; null on Windows */
+  chromeHostManifest(): Record<string, unknown> | null
   /** The fake release API, when the test sets `latestRelease` (spec 006) */
   releases: ReleaseServer | null
   /** CSV files for export and import (spec 008) */
@@ -103,11 +108,21 @@ async function launch(
   const args = ['.', `--lang=${systemLocale}`]
   if (process.env.CI && process.platform === 'linux') args.push('--no-sandbox')
   const env: Record<string, string> = { ...process.env, FINDY_USER_DATA_DIR: userDataDir }
+  // Spec 019 FR-011: register with a test Chrome, never with the browsers of this computer
+  env.FINDY_CONNECTOR_HOME = connectorHome(userDataDir)
   // Never reach the real GitHub from a test: without a fake server, point at a closed port
   env.FINDY_RELEASES_URL = releases?.url ?? 'http://127.0.0.1:9/latest'
   // Spec 011 NFR-003: nor the job sites
   env.FINDY_SITE_ICONS_URL = icons?.url ?? 'http://127.0.0.1:9'
   return electron.launch({ args, env })
+}
+
+/** Spec 019: the home folder of the test browsers, with an installed Chrome */
+function connectorHome(userDataDir: string): string {
+  const home = join(userDataDir, 'home')
+  const chrome = chromeProfileDir(home)
+  if (chrome) mkdirSync(chrome, { recursive: true })
+  return home
 }
 
 /**
@@ -236,6 +251,8 @@ export const test = base.extend<Fixtures>({
         mcpClients.push(client)
         return client
       },
+      connectBrowser: () => BrowserConnector.registered(userDataDir),
+      chromeHostManifest: () => chromeHostManifest(connectorHome(userDataDir)),
       refresh: async () => {
         await window.reload()
         await window.getByTestId('app').waitFor()

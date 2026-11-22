@@ -29,6 +29,13 @@ webPreferences: {
       (`isAppSender`, the same rule as navigation). Any other sender gets a `VALIDATION`
       error, and the handler does not run.
 - [ ] Single-instance lock (`app.requestSingleInstanceLock`).
+- [ ] Browser connector (spec 019, constitution §II.9): no network listener. The browser
+      starts it over stdio. Host manifests accept only the ids in `src/shared/extension.ts`.
+      Every message is parsed with zod; input is at most 64 KB. It answers only `hello`,
+      `lookup` (the stage of a match) and `add`. Development and e2e runs register only into
+      `FINDY_CONNECTOR_HOME`.
+- [ ] Browser extension: permissions `activeTab`, `scripting`, `nativeMessaging` only; no
+      host permissions; no `fetch` (ESLint); no remote code.
 - [ ] No `remote` module, no `eval`, no `dangerouslySetInnerHTML` for user content.
 - [ ] Electron kept on a supported major version (Dependabot).
 - [ ] Outbound network: only the update check, the vacancy page and the job site icons

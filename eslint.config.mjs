@@ -33,7 +33,9 @@ function restrictImports(...layer) {
 }
 
 export default tseslint.config(
-  { ignores: ['out/', 'dist/', 'coverage/', 'test-results/', 'playwright-report/'] },
+  {
+    ignores: ['out/', 'dist/', 'coverage/', 'test-results/', 'playwright-report/'],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -102,6 +104,25 @@ export default tseslint.config(
         { regex: '^\\.\\./\\.\\./\\.\\./app(/|$)', message: FEATURE_TO_APP },
         { regex: '^\\.\\./\\.\\./(?!\\.\\.)[^/]+/.+', message: FEATURE_INTERNALS },
       ),
+    },
+  },
+  {
+    // Spec 019: the browser extension. No network (NFR-001), no Node or Electron, and the
+    // same React rules as the renderer.
+    files: ['src/extension/**/*.{ts,tsx}'],
+    languageOptions: { globals: globals.browser },
+    plugins: { 'react-hooks': reactHooks },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      'no-restricted-imports': restrictImports(),
+      'no-restricted-globals': [
+        'error',
+        ...['fetch', 'XMLHttpRequest', 'WebSocket', 'EventSource'].map((name) => ({
+          name,
+          message:
+            'The extension makes no network requests (constitution §II.9, spec 019 NFR-001).',
+        })),
+      ],
     },
   },
   {

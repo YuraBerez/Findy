@@ -47,6 +47,8 @@ apply until you get an offer.
 - **One click to the vacancy.** Cards with a link open it in your browser.
 - **Add from a link.** Paste a vacancy link and Findy fills in the job title and the
   company from the page.
+- **Add from the browser.** The Findy browser extension adds the open vacancy in one
+  click, also from pages behind a login ([how to install](docs/guide/browser-extension.md)).
 - **Card colours.** Mark cards with one of 7 colours from the card's **⋯** menu.
 - **No movement.** Cards that stay in a stage for more than 14 days (you choose the
   number) are marked, so you know where to follow up.
@@ -94,6 +96,13 @@ are not signed yet): [docs/guide/install.md](docs/guide/install.md).
 ## Run from source
 
 See [CONTRIBUTING.md](CONTRIBUTING.md#development-setup).
+
+## Add a vacancy from the browser
+
+The Findy browser extension adds the vacancy that you see to your board in one click,
+also from pages behind a login. It is not in the browser stores yet: how to install it
+from the release and load it in Chrome, Edge, Brave, Opera, Vivaldi or Firefox is in
+[docs/guide/browser-extension.md](docs/guide/browser-extension.md).
 
 ## Use Findy from Claude or another AI assistant (MCP)
 

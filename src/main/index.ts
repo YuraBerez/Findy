@@ -1,9 +1,12 @@
 import { spawn } from 'node:child_process'
+import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { app, BrowserWindow, ipcMain, nativeTheme, powerMonitor } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { resolveLanguage } from '../domain/language'
 import { createServices } from './app/services'
+import { registerConnector, registrationHome } from './connector/register'
+import { nodeRegisterFs, runReg } from './connector/register/fs'
 import { createWindow, devIcon, isFromApp, sendToWindows, showWindow } from './app/window'
 import { openDatabase } from './db/connection'
 import { Repository } from './db/repository'
@@ -19,6 +22,8 @@ app.setPath('userData', userDataDir())
 
 /** Spec 004 FR-009: the MCP server runs this binary in Node mode (architecture D-8) */
 const MCP_SCRIPT = join(__dirname, 'mcp.js')
+/** Spec 019: the browser extension's connector, also in Node mode (architecture D-18) */
+const CONNECTOR_SCRIPT = join(__dirname, 'connector.js')
 
 function start(): void {
   if (devIcon && process.platform === 'darwin') app.dock?.setIcon(devIcon)
@@ -62,6 +67,26 @@ function start(): void {
 
   createWindow()
 
+  // Spec 019 FR-011: tell the installed browsers where the connector is. A failure only
+  // means that the extension shows "Findy not found"; it never stops the app.
+  const home = registrationHome(app.isPackaged, process.env, homedir())
+  if (home)
+    registerConnector({
+      platform: process.platform,
+      home,
+      userData: app.getPath('userData'),
+      execPath: process.execPath,
+      script: CONNECTOR_SCRIPT,
+      appImage: process.env.APPIMAGE,
+      userDataDir: process.env.FINDY_USER_DATA_DIR,
+      env: process.env.FINDY_CONNECTOR_HOME ? {} : process.env,
+      fs: nodeRegisterFs,
+      // A test folder never changes the registry of the user
+      runReg: process.env.FINDY_CONNECTOR_HOME ? async () => {} : runReg,
+    }).catch((error: unknown) =>
+      console.error('Findy could not register the browser connector', error),
+    )
+
   // Spec 015 FR-032: a check at start, then every 10 seconds and on wake
   if (reminders) {
     const stop = reminders.start()
@@ -72,10 +97,11 @@ function start(): void {
 
 /**
  * Spec 004: `Findy --mcp` starts the MCP server in Node mode with the same stdio,
- * for clients configured with the short command, and for the AppImage.
+ * for clients configured with the short command, and for the AppImage. Spec 019:
+ * `Findy --connector` does the same for the AppImage launcher of the extension.
  */
-function forwardToMcp(): void {
-  const child = spawn(process.execPath, [MCP_SCRIPT], {
+function forwardToNode(script: string): void {
+  const child = spawn(process.execPath, [script], {
     env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
     stdio: 'inherit',
   })
@@ -84,7 +110,10 @@ function forwardToMcp(): void {
 
 if (process.argv.includes('--mcp')) {
   app.dock?.hide()
-  forwardToMcp()
+  forwardToNode(MCP_SCRIPT)
+} else if (process.argv.includes('--connector')) {
+  app.dock?.hide()
+  forwardToNode(CONNECTOR_SCRIPT)
 } else if (process.env.FINDY_SMOKE_TEST === '1') {
   process.exit(runSmokeTest())
 }

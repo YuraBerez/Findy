@@ -15,6 +15,7 @@
     "src/domain/**/*",
     "tests/unit/**/*"
   ],
-  // Unit tests of pure renderer modules need the DOM types: tsconfig.web.json
-  "exclude": ["tests/unit/renderer/**/*"]
+  // Unit tests of pure renderer and extension modules need the DOM types:
+  // tsconfig.web.json and tsconfig.extension.json
+  "exclude": ["tests/unit/renderer/**/*", "tests/unit/extension/**/*"]
 }
