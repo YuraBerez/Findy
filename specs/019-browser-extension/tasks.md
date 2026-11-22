@@ -23,9 +23,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — Registration
 
-- [ ] T030 `connector/register/`: manifest JSON (Chromium `allowed_origins`, Firefox `allowed_extensions`), launcher text per OS and for the AppImage; unit tests (FR-011, plan D-1)
-- [ ] T031 Browser folders on macOS and Linux, `HKCU` keys on Windows (through `reg.exe`); only installed browsers; write only on change; unit tests with a fake file system and a fake `reg` (FR-011, FR-012)
-- [ ] T032 Call registration from `start()`; a failure is logged and never stops the app (FR-011)
+- [x] T030 `connector/register/`: manifest JSON (Chromium `allowed_origins`, Firefox `allowed_extensions`), launcher text per OS and for the AppImage; unit tests (FR-011, plan D-1)
+- [x] T031 Browser folders on macOS and Linux, `HKCU` keys on Windows (through `reg.exe`); only installed browsers; write only on change; unit tests with a fake file system and a fake `reg` (FR-011, FR-012)
+- [x] T032 Call registration from `start()`; a failure is logged and never stops the app (FR-011)
 
 ## Phase 4 — Extension
 

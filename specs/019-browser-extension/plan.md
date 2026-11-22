@@ -122,9 +122,14 @@ docs/contracts/native-messaging.md
 
 - **Options considered:** installer scripts for NSIS, dmg, deb, Homebrew and Scoop;
   registration by the app.
-- **Chosen:** the app writes the launcher and manifests on every start, and only for
-  browsers whose profile folder (or `HKCU` key) exists. It rewrites them only when the
-  content changes.
+- **Chosen:** the app writes the launcher and manifests on every start. On macOS and
+  Linux it writes a manifest only for browsers whose profile folder exists, and only when
+  the content changes. On Windows it sets the `HKCU` keys of Chrome, Chromium, Edge and
+  Firefox on every start, because Brave, Opera and Vivaldi read the key of Chrome even
+  when Chrome is not installed.
+- Only a packaged app registers in the real home folder. Development and e2e runs
+  register only when `FINDY_CONNECTOR_HOME` is set, into that folder. So they never change
+  the browsers of the developer.
 - **Why:** the dmg, the zip for Scoop and the AppImage have no install step. One code
   path covers the first start and every update. **This changes spec FR-011** ("the
   installer, and the first start") to "every start of the app"; the spec is updated in
@@ -156,6 +161,7 @@ docs/contracts/native-messaging.md
 | Risk | Mitigation |
 |------|------------|
 | The Chrome Web Store does not accept the pinned `key` id | Upload a draft first (T050); if the id differs, change `src/shared/extension.ts` before the app release |
+| Opera reads host manifests from the folder of Chrome (macOS, Linux); not tested in e2e | Chrome's folder is written when Opera is installed; manual check before the first release |
 | Browsers in Flatpak or Snap cannot start host programs outside their sandbox | Out of scope for this spec; the popup shows the US-3.1 message; documented in README |
 | Antivirus or policy blocks `.cmd` launchers on Windows | Smoke test in the packaged Windows build (T041); fallback: a small `.exe` launcher in a later spec |
 | The AppImage moves to another folder | The app rewrites the launcher on the next start (D-2) |

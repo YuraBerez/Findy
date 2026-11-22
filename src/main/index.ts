@@ -1,9 +1,12 @@
 import { spawn } from 'node:child_process'
+import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { app, BrowserWindow, ipcMain, nativeTheme, powerMonitor } from 'electron'
 import { CHANNEL_PREFIX, IPC_METHODS } from '../shared/ipc'
 import { resolveLanguage } from '../domain/language'
 import { createServices } from './app/services'
+import { registerConnector, registrationHome } from './connector/register'
+import { nodeRegisterFs, runReg } from './connector/register/fs'
 import { createWindow, devIcon, isFromApp, sendToWindows, showWindow } from './app/window'
 import { openDatabase } from './db/connection'
 import { Repository } from './db/repository'
@@ -63,6 +66,24 @@ function start(): void {
   })
 
   createWindow()
+
+  // Spec 019 FR-011: tell the installed browsers where the connector is. A failure only
+  // means that the extension shows "Findy not found"; it never stops the app.
+  const home = registrationHome(app.isPackaged, process.env, homedir())
+  if (home)
+    registerConnector({
+      platform: process.platform,
+      home,
+      userData: app.getPath('userData'),
+      execPath: process.execPath,
+      script: CONNECTOR_SCRIPT,
+      appImage: process.env.APPIMAGE,
+      env: process.env.FINDY_CONNECTOR_HOME ? {} : process.env,
+      fs: nodeRegisterFs,
+      runReg,
+    }).catch((error: unknown) =>
+      console.error('Findy could not register the browser connector', error),
+    )
 
   // Spec 015 FR-032: a check at start, then every 10 seconds and on wake
   if (reminders) {
