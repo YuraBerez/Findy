@@ -19,8 +19,13 @@ export default defineConfig({
   main: {
     build: {
       rollupOptions: {
-        // mcp.js runs in Node mode for AI assistants (spec 004, architecture D-8)
-        input: { index: resolve('src/main/index.ts'), mcp: resolve('src/main/mcp/cli.ts') },
+        // mcp.js and connector.js run in Node mode: for AI assistants (spec 004, architecture
+        // D-8) and for the browser extension (spec 019, D-18)
+        input: {
+          index: resolve('src/main/index.ts'),
+          mcp: resolve('src/main/mcp/cli.ts'),
+          connector: resolve('src/main/connector/cli.ts'),
+        },
       },
     },
   },

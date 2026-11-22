@@ -17,9 +17,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — Connector
 
-- [ ] T020 `connector/codec.ts`: read and write length-prefixed JSON frames, 64 KB input limit; unit tests (NFR-002)
-- [ ] T021 `connector/handler.ts`: `hello`, `lookup` (last updated match), `add` (stage `applied`, source from the link), zod, error codes, no other data; unit tests on an in-memory database (FR-004, FR-006, FR-008, FR-009)
-- [ ] T022 `connector/cli.ts` entry `out/main/connector.js`; `Findy --connector` forward; electron-vite input; logs to stderr (FR-009, plan D-1)
+- [x] T020 `connector/codec.ts`: read and write length-prefixed JSON frames, 64 KB input limit; unit tests (NFR-002)
+- [x] T021 `connector/handler.ts`: `hello`, `lookup` (last updated match), `add` (stage `applied`, source from the link), zod, error codes, no other data; unit tests on an in-memory database (FR-004, FR-006, FR-008, FR-009)
+- [x] T022 `connector/cli.ts` entry `out/main/connector.js`; `Findy --connector` forward; electron-vite input; logs to stderr (FR-009, plan D-1)
 
 ## Phase 3 — Registration
 
