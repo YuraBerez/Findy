@@ -57,4 +57,4 @@ Rules:
 | 016 | [A skill for AI assistants that use Findy](016-mcp-skill/spec.md) | Implemented (#40) |
 | 017 | [Install the skill with one command](017-skill-install-command/spec.md) | Implemented (#41) |
 | 018 | [One settings window](018-settings/spec.md) | Implemented (#44) |
-| 019 | [Add a vacancy from the browser](019-browser-extension/spec.md) | Approved |
+| 019 | [Add a vacancy from the browser](019-browser-extension/spec.md) | Implemented (0.7.0) |

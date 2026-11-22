@@ -3,6 +3,22 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.7.0] - 2026-11-22
+
+### Add a vacancy from the browser
+- The new Findy browser extension adds the vacancy that you see to your board in one click. On a vacancy page, click the Findy button (or press **Alt+Shift+F**), check the job title and the company, and click **Add to Findy**. The application goes to **Applied**.
+- It works also on pages that need a login, for example LinkedIn, because it reads the page as you see it.
+- If you already added the vacancy, the extension shows its stage, and **Add anyway** adds it again.
+- The extension talks only to the Findy app on your computer. It makes no network requests and keeps no copy of the page. Findy registers itself with Chrome, Edge, Brave, Opera, Vivaldi, Chromium and Firefox when it starts.
+- The extension is not in the browser stores yet. Download `Findy-0.7.0-browser-extension.zip` from this release and load it in your browser: see [docs/guide/browser-extension.md](https://github.com/YuraBerez/findy/blob/main/docs/guide/browser-extension.md). Firefox can load it only as a temporary add-on for now.
+
+### Documentation
+- The README is shorter. Install steps, the first start and the AI assistant setup moved to `docs/guide/` in English and Ukrainian.
+- New `PRIVACY.md`: what the app and the extension do with your data.
+
+### For contributors
+- `smoke:packaged` also checks the browser connector on all three systems.
+
 ## [0.6.1] - 2026-11-21
 
 ### Fixes
