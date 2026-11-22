@@ -31,10 +31,26 @@ exist in both files; CI checks this. See [docs/i18n.md](docs/i18n.md).
 
 ## Development setup
 
+Requirements: [Node.js](https://nodejs.org/) 22 LTS or newer, npm, Git.
+
 ```bash
+git clone https://github.com/YuraBerez/findy.git
+cd findy
 npm install
-npm run dev
+npm run dev          # start the app with hot reload
 ```
+
+| Command | What it does |
+|---------|--------------|
+| `npm run build` | Production build of the app code |
+| `npm run dist` | Build an installer for your current OS into `dist/` |
+| `npm test` | Unit tests |
+| `npm run test:coverage` | Unit tests with the 80 % coverage gate |
+| `npm run test:e2e` | End-to-end tests against the real app |
+| `npm run lint` | Lint and type-check |
+
+On Linux you may need the usual Electron system libraries
+(`libgtk-3-0 libnss3 libasound2`); for building `.deb` packages also `fakeroot` and `dpkg`.
 
 Before opening a PR:
 
