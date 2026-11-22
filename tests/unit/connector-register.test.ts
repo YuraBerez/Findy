@@ -65,6 +65,17 @@ describe('launcher (spec 019 plan D-1)', () => {
     )
   })
 
+  it('sets the data folder of a test run, before the command (sh and cmd)', () => {
+    const sh = launcherFile('darwin', { ...target, userDataDir: '/tmp/dev data' }).content.split(
+      '\n',
+    )
+    expect(sh[2]).toBe('export FINDY_USER_DATA_DIR="/tmp/dev data"')
+    expect(sh[3]).toMatch(/^ELECTRON_RUN_AS_NODE=1 exec /)
+    const cmd = launcherFile('win32', { ...target, userDataDir: 'C:\\tmp\\100%' }).content
+    expect(cmd).toContain('set "FINDY_USER_DATA_DIR=C:\\tmp\\100%%"\r\n')
+    expect(launcherFile('darwin', target).content).not.toContain('FINDY_USER_DATA_DIR')
+  })
+
   it('runs the AppImage with --connector', () => {
     const file = launcherFile('linux', { ...target, appImage: '/home/u/Findy.AppImage' })
     expect(file.content).toContain('exec "/home/u/Findy.AppImage" --connector')

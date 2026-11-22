@@ -8,6 +8,11 @@ export interface LauncherTarget {
   script: string
   /** The AppImage file: its mount path changes on every start, so it runs `--connector` */
   appImage?: string
+  /**
+   * `FINDY_USER_DATA_DIR` of a development or e2e run. The browser starts the launcher
+   * without it, so the launcher sets it: the connector then uses the same test database.
+   */
+  userDataDir?: string
 }
 
 export interface LauncherFile {
@@ -32,6 +37,9 @@ export function launcherFile(platform: NodeJS.Platform, target: LauncherTarget):
         '@echo off',
         `rem ${HEADER}`,
         'set ELECTRON_RUN_AS_NODE=1',
+        ...(target.userDataDir
+          ? [`set ${cmdQuote(`FINDY_USER_DATA_DIR=${target.userDataDir}`)}`]
+          : []),
         `${cmdQuote(target.execPath)} ${cmdQuote(target.script)}`,
         '',
       ].join('\r\n'),
@@ -39,8 +47,11 @@ export function launcherFile(platform: NodeJS.Platform, target: LauncherTarget):
   const command = target.appImage
     ? `exec ${shQuote(target.appImage)} --connector`
     : `ELECTRON_RUN_AS_NODE=1 exec ${shQuote(target.execPath)} ${shQuote(target.script)}`
+  const data = target.userDataDir
+    ? [`export FINDY_USER_DATA_DIR=${shQuote(target.userDataDir)}`]
+    : []
   return {
     name: 'findy-connector.sh',
-    content: ['#!/bin/sh', `# ${HEADER}`, command, ''].join('\n'),
+    content: ['#!/bin/sh', `# ${HEADER}`, ...data, command, ''].join('\n'),
   }
 }

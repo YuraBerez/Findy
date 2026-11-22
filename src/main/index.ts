@@ -78,6 +78,7 @@ function start(): void {
       execPath: process.execPath,
       script: CONNECTOR_SCRIPT,
       appImage: process.env.APPIMAGE,
+      userDataDir: process.env.FINDY_USER_DATA_DIR,
       env: process.env.FINDY_CONNECTOR_HOME ? {} : process.env,
       fs: nodeRegisterFs,
       // A test folder never changes the registry of the user
