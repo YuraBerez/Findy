@@ -1,7 +1,7 @@
 # Feature Spec: Add a vacancy from the browser
 
 - **ID:** 019-browser-extension
-- **Status:** Approved
+- **Status:** Implemented (0.7.0)
 - **Approved:** 2026-11-22 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-22
