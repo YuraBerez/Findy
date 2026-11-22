@@ -12,8 +12,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Domain and shared
 
-- [ ] T010 [P] `domain/links.ts` `vacancyLinkKey`: host case, slash at the end, `#…`, tracking parameters; other query parameters kept; unit tests (FR-007)
-- [ ] T011 [P] `shared/extension.ts`: host name, Chromium and Firefox ids, store links; built from one constant (NFR-002)
+- [x] T010 [P] `domain/links.ts` `vacancyLinkKey`: host case, slash at the end, `#…`, tracking parameters; other query parameters kept; unit tests (FR-007)
+- [x] T011 [P] `shared/extension.ts`: host name, Chromium and Firefox ids, store links; built from one constant (NFR-002)
 
 ## Phase 2 — Connector
 
