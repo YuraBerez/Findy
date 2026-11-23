@@ -7,17 +7,17 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Setup
 
-- [ ] T001 `website/` package: `package.json` with `astro` and test tools,
+- [x] T001 `website/` package: `package.json` with `astro` and test tools,
   `astro.config.mts`, `tsconfig.json`, `eslint.config.mjs`, `vitest.config.mts` (80 %
   gate on `src/lib`); scripts `dev`, `build`, `lint`, `test`, `test:coverage`; root
   ESLint, Prettier and Vitest ignore `website/`; ignore `website/dist`, `website/.astro`
   (NFR-006)
-- [ ] T002 `SITE_URL`, `SOURCE_URL` and `releaseFileUrl()` in `src/shared/project.ts`
+- [x] T002 `SITE_URL`, `SOURCE_URL` and `releaseFileUrl()` in `src/shared/project.ts`
   with root unit tests; Astro `site`/`base` from `SITE_URL` (FR-030)
 
 ## Phase 2 — Foundations
 
-- [ ] T010 [P] `lib/paths.ts`: page path for a language and slug, the other-language
+- [x] T010 [P] `lib/paths.ts`: page path for a language and slug, the other-language
   path; unit tests (FR-020, FR-021)
 - [ ] T011 [P] `website/src/i18n/` en and uk strings, `uk` typed as `en`; key parity
   test (US-3, NFR-007)
@@ -29,9 +29,9 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — US-1 Understand Findy and download it (P1)
 
-- [ ] T020 [P] `lib/release.ts`: release JSON → download list, version label; unit tests
+- [x] T020 [P] `lib/release.ts`: release JSON → download list, version label; unit tests
   with a full and a partial release (FR-010, FR-012, FR-014)
-- [ ] T021 [P] `lib/os.ts`: `detectOs()` for Windows, macOS, Linux, Android, iOS,
+- [x] T021 [P] `lib/os.ts`: `detectOs()` for Windows, macOS, Linux, Android, iOS,
   iPadOS, unknown; unit tests (FR-011, FR-013)
 - [ ] T022 `data/release.ts`: build-time fetch of the latest release, fail on error
   (FR-010, FR-032)
@@ -44,7 +44,7 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 4 — US-2 Read the guides on the website (P1)
 
-- [ ] T030 [P] `lib/guides.ts` and `lib/guideLinks.ts`: file id → slug and language;
+- [x] T030 [P] `lib/guides.ts` and `lib/guideLinks.ts`: file id → slug and language;
   link rewrite (guide → site page, anchor kept, repository file → `SOURCE_URL`,
   absolute kept); unit tests (FR-007, FR-008)
 - [ ] T031 Guides content collection over `docs/guide`, remark plugin, guide pages en

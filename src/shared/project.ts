@@ -1,6 +1,8 @@
 // The project on GitHub: every link to it is built here, so a rename changes one line
 
-const REPOSITORY = 'YuraBerez/Findy'
+const OWNER = 'YuraBerez'
+const NAME = 'Findy'
+const REPOSITORY = `${OWNER}/${NAME}`
 
 /** Home page of the project (About dialog, Help menu) */
 export const PROJECT_URL = `https://github.com/${REPOSITORY}`
@@ -15,6 +17,10 @@ export const NEW_ISSUE_URL = `${PROJECT_URL}/issues/new/choose`
 export const RELEASE_PAGE_PREFIX = `${PROJECT_URL}/releases/tag/`
 
 export const releasePageUrl = (tag: string): string => `${RELEASE_PAGE_PREFIX}${tag}`
+
+/** Spec 020 FR-012: a file of a release, for the download links of the website */
+export const releaseFileUrl = (tag: string, name: string): string =>
+  `${PROJECT_URL}/releases/download/${tag}/${encodeURIComponent(name)}`
 
 /**
  * A release page of this repository. GitHub names are not case-sensitive and the API
@@ -34,3 +40,12 @@ export const SKILL_RAW_URL = `https://raw.githubusercontent.com/${REPOSITORY}/ma
 
 /** Spec 019 FR-010: where the browser extension sends a user who has no Findy */
 export const DOWNLOAD_URL = `${PROJECT_URL}/releases/latest`
+
+/** Spec 020 FR-008: a file of the repository on the main branch (append its path) */
+export const SOURCE_URL = `${PROJECT_URL}/blob/main/`
+
+/**
+ * Spec 020 FR-030: the project website on GitHub Pages. The host is the owner in lower
+ * case; the path keeps the repository case, because Pages paths are case-sensitive.
+ */
+export const SITE_URL = `https://${OWNER.toLowerCase()}.github.io/${NAME}/`
