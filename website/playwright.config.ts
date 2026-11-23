@@ -1,7 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 import { SITE_URL } from '../src/shared/project'
 
-const PORT = 4321
+/** Not the port of `astro dev`, so a running dev server is never tested by mistake */
+const PORT = 4329
 /** The built website, served under the same path as on GitHub Pages */
 const BASE_URL = `http://localhost:${PORT}${new URL(SITE_URL).pathname}`
 
@@ -14,6 +15,6 @@ export default defineConfig({
   webServer: {
     command: `npx astro preview --port ${PORT} --ignore-lock`,
     url: BASE_URL,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 })

@@ -79,7 +79,17 @@ src/shared/project.ts ──import──▶ every GitHub and website URL
   tags. The preview image is the board screenshot of the page language. `sitemap.xml`
   and `robots.txt` are endpoints.
 - **Theme (NFR-003).** CSS tokens from `docs/brand.md` on `:root`, the dark values under
-  `prefers-color-scheme: dark`. System font stack, no web fonts (NFR-001).
+  `prefers-color-scheme: dark` (unless `<html data-theme="light">`) and under
+  `[data-theme="dark"]`. The theme button sets `data-theme` and keeps it in
+  `localStorage` (`lib/theme.ts`). An inline script in `<head>` reads it before the first
+  paint; Astro adds its hash to the CSP. System font stack, no web fonts (NFR-001).
+- **Slider (FR-003).** A row of slides with CSS scroll snap, so it scrolls without
+  scripts. The script shows the buttons, changes the slide every 5 s, waits while the
+  pointer or the focus is on the slider, and does not start with reduced motion.
+- **Features (FR-002).** The stage chips use the stage names from `locales/*.json` and the
+  order from `src/domain/stages.ts`, so they always match the app. Colours come from the
+  chart tokens of `docs/brand.md` by a `data-stage` attribute: the CSP blocks `style`
+  attributes.
 
 ## Project structure
 

@@ -6,6 +6,7 @@ import boardUk from '../../../docs/screenshots/board-uk.png'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
 import { MESSAGES } from '../i18n'
+import { THEME_KEY } from '../lib/theme'
 import { DEFAULT_LANG, LANGS, pagePath, withBase, type Lang, type PageKey } from '../lib/paths'
 import '../styles/global.css'
 
@@ -53,6 +54,15 @@ const preview = await getImage({
     <meta property="og:image" content={absolute(preview.src)} />
     <meta property="og:image:alt" content={t.screenshots.board} />
     <meta name="twitter:card" content="summary_large_image" />
+    {/* NFR-003: the theme that the visitor picked, before the first paint (so inline) */}
+    <script is:inline define:vars={{ key: THEME_KEY }}>
+      try {
+        const theme = localStorage.getItem(key)
+        if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme
+      } catch {
+        // No storage: the system theme applies
+      }
+    </script>
   </head>
   <body>
     <a class="skip" href="#main">

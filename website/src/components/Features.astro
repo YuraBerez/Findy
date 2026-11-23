@@ -1,0 +1,123 @@
+---
+import en from '../../../locales/en.json'
+import uk from '../../../locales/uk.json'
+import { STAGES } from '../../../src/domain/stages'
+import { MESSAGES } from '../i18n'
+import type { Lang } from '../lib/paths'
+import Icon from './Icon.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = MESSAGES[lang].features
+// FR-002: the stage names are the app's own, in the board order
+const stageNames = { en, uk }[lang].stages
+---
+
+<section id="features" aria-labelledby="features-title">
+  <h2 id="features-title">{t.title}</h2>
+  <p class="muted">{t.stages}</p>
+  <ol class="stages">
+    {STAGES.map((stage) => (
+      <li class="stage" data-stage={stage}>
+        {stageNames[stage]}
+      </li>
+    ))}
+  </ol>
+  <ul class="features">
+    {t.items.map((item) => (
+      <li class="feature">
+        <span class="icon">
+          <Icon name={item.icon} />
+        </span>
+        <div>
+          <h3>{item.title}</h3>
+          <p>{item.text}</p>
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .stages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-6);
+    padding: 0;
+    list-style: none;
+  }
+  .stage {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.9rem;
+  }
+  /* The colour of each stage (docs/brand.md); no style attribute, the CSP blocks it */
+  [data-stage='applied'] {
+    --stage: var(--chart-applied);
+  }
+  [data-stage='hr_interview'] {
+    --stage: var(--chart-hr_interview);
+  }
+  [data-stage='test_task'] {
+    --stage: var(--chart-test_task);
+  }
+  [data-stage='technical_interview'] {
+    --stage: var(--chart-technical_interview);
+  }
+  [data-stage='c_level_interview'] {
+    --stage: var(--chart-c_level_interview);
+  }
+  [data-stage='offered'] {
+    --stage: var(--chart-offered);
+  }
+  [data-stage='rejected'] {
+    --stage: var(--chart-rejected);
+  }
+  .stage::before {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--stage);
+    content: '';
+  }
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+    gap: var(--space-6) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .feature {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+  .icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--primary) 14%, transparent);
+    color: var(--primary);
+  }
+  h3 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+  }
+  p {
+    margin: 0;
+    color: var(--fg-muted);
+  }
+</style>

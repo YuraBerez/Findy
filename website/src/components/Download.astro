@@ -4,6 +4,7 @@ import { MESSAGES, format, formatSize } from '../i18n'
 import { guidePage, pagePath, withBase, type Lang } from '../lib/paths'
 import type { Os } from '../lib/os'
 import { MAIN_KINDS, filesForOs, filesOf, type Release } from '../lib/release'
+import DownloadRow from './DownloadRow.astro'
 
 interface Props {
   lang: Lang
@@ -19,8 +20,17 @@ const systems: Os[] = ['windows', 'mac', 'linux']
 const sizeOf = (bytes: number) => formatSize(bytes, lang)
 const extension = filesOf(release, ['extensionChromium', 'extensionFirefox'])
 const checksums = filesOf(release, ['checksums'])
-const brew = `brew tap ${HOMEBREW_TAP}\nbrew trust ${HOMEBREW_TAP}\nbrew install --cask findy`
-const scoop = `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`
+/** FR-014: the package manager of each system, under its builds */
+const commands: Partial<Record<Os, { title: string; code: string }>> = {
+  windows: {
+    title: t.scoop,
+    code: `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`,
+  },
+  mac: {
+    title: t.homebrew,
+    code: `brew tap ${HOMEBREW_TAP}\nbrew trust ${HOMEBREW_TAP}\nbrew install --cask findy`,
+  },
+}
 ---
 
 <section id="download" class="download" aria-labelledby="download-title">
@@ -37,12 +47,12 @@ const scoop = `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`
           <div class="main-buttons">
             {files.map((file) => (
               <a class="button" href={file.url}>
-                {t.kinds[file.kind]}
+                {t.kinds[file.kind].title}
                 <span class="size"> · {sizeOf(file.size)}</span>
               </a>
             ))}
           </div>
-          {os === 'mac' && <p class="muted">{t.whichMac}</p>}
+          {os === 'mac' && <p class="muted hint">{t.whichMac}</p>}
         </div>
       )
     )
@@ -50,63 +60,75 @@ const scoop = `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`
 
   {/* FR-013, FR-014, FR-015: every build, with or without scripts */}
   <h3>{t.all}</h3>
-  <div class="grid">
+  <div class="systems">
     {systems.map((os) => {
       const files = filesForOs(release, os)
+      const command = commands[os]
       return (
         files.length > 0 && (
           <div class="card">
             <h4>{t.os[os]}</h4>
-            <ul>
-              {files.map((file) => (
+            <ul class="rows">
+              {files.map((file, i) => (
                 <li>
-                  <a href={file.url}>{t.kinds[file.kind]}</a>
-                  <span class="muted"> · {sizeOf(file.size)}</span>
+                  <DownloadRow
+                    href={file.url}
+                    title={t.kinds[file.kind].title}
+                    detail={t.kinds[file.kind].detail}
+                    size={sizeOf(file.size)}
+                    badge={i === 0 ? t.recommended : undefined}
+                  />
                 </li>
               ))}
             </ul>
+            {os === 'mac' && <p class="muted hint">{t.whichMac}</p>}
+            {command && (
+              <details class="command">
+                <summary>{command.title}</summary>
+                <pre>
+                    <code>{command.code}</code>
+                  </pre>
+              </details>
+            )}
           </div>
         )
       )
     })}
   </div>
 
-  <div class="grid">
-    <div class="card">
-      <h4>{t.packageManagers}</h4>
-      <p>{t.homebrew}</p>
-      <pre><code>{brew}</code></pre>
-      <p>{t.scoop}</p>
-      <pre><code>{scoop}</code></pre>
-    </div>
-    {extension.length > 0 && (
-      <div class="card">
+  {extension.length > 0 && (
+    <div class="card extension">
+      <div>
         <h4>{t.extension}</h4>
-        <p>{t.extensionHint}</p>
-        <ul>
-          {extension.map((file) => (
-            <li>
-              <a href={file.url}>{t.kinds[file.kind]}</a>
-            </li>
-          ))}
-        </ul>
-        <p>
-          <a href={guide('browser-extension')}>{t.howToInstall}</a>
+        <p class="muted">
+          {t.extensionHint} <a href={guide('browser-extension')}>{t.howToInstall}</a>
         </p>
       </div>
-    )}
-  </div>
+      <ul class="rows">
+        {extension.map((file) => (
+          <li>
+            <DownloadRow
+              href={file.url}
+              title={t.kinds[file.kind].title}
+              detail={t.kinds[file.kind].detail}
+              size={sizeOf(file.size)}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
 
   <p class="note">
     {t.unsigned} <a href={guide('install', `#${t.unsignedAnchor}`)}>{t.unsignedLink}</a>
   </p>
-  <p>
+  <p class="links">
+    <a href={guide('install')}>{t.installHelp}</a>
     <a href={release.pageUrl}>{t.releasePage}</a>
     {checksums.map((file) => (
-      <>
-        {' · '}
-        <a href={file.url}>{t.kinds.checksums}</a>
-      </>
+      <a href={file.url}>
+        {t.kinds.checksums.title} ({t.kinds.checksums.detail})
+      </a>
     ))}
   </p>
 </section>
@@ -127,6 +149,9 @@ const scoop = `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`
 <style>
   .download {
     padding-block: var(--space-6);
+  }
+  .download > h2 {
+    margin-top: 0;
   }
   .main {
     display: none;
@@ -154,28 +179,66 @@ const scoop = `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`
   .size {
     font-weight: 400;
   }
-  .grid {
+  .systems {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: var(--space-4);
     margin-bottom: var(--space-4);
   }
   .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
     padding: var(--space-4);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
   }
   .card h4 {
-    margin-top: 0;
-  }
-  .card ul {
     margin: 0;
-    padding-left: 1.2em;
+    font-size: 1.1rem;
+  }
+  .rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hint {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+  .command {
+    margin-top: auto;
+  }
+  .command summary {
+    color: var(--primary);
+    cursor: pointer;
+  }
+  .command pre {
+    margin: var(--space-2) 0 0;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .extension {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    align-items: center;
+  }
+  .extension p {
+    margin: var(--space-2) 0 0;
   }
   .note {
+    margin-top: var(--space-6);
     padding: var(--space-4);
     border-left: 4px solid var(--primary);
     background: var(--surface);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
   }
 </style>

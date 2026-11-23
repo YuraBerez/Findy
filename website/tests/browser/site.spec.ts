@@ -101,14 +101,87 @@ test.describe('keyboard (NFR-002)', () => {
       await page.keyboard.press('Tab')
       reached.add(await page.evaluate(() => document.activeElement?.textContent?.trim() ?? ''))
     }
-    expect([...reached]).toContain('Українською')
-    expect([...reached].some((text) => text.startsWith('Windows installer'))).toBe(true)
+    expect([...reached]).toContain('English')
+    expect([...reached].some((text) => text.startsWith('Installer'))).toBe(true)
   })
 
-  test('opens the same page in the other language (FR-020)', async ({ page }) => {
+  test('opens the same page in the other language from the menu (FR-020)', async ({ page }) => {
     await page.goto(guidePage('install'))
-    await page.getByRole('link', { name: 'Українською' }).first().press('Enter')
+    const menu = page.locator('header [data-language-menu]')
+    const language = page.getByRole('link', { name: 'Українська' })
+    await expect(language).toBeHidden()
+    await menu.locator('summary').focus()
+    await page.keyboard.press('Enter')
+    await expect(language).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(language).toBeHidden()
+    await expect(menu.locator('summary')).toBeFocused()
+    await page.keyboard.press('Enter')
+    await language.press('Enter')
     await expect(page).toHaveURL(/\/uk\/guide\/install\/$/)
     await expect(page.locator('html')).toHaveAttribute('lang', 'uk')
+  })
+
+  test('closes the language menu with a click outside it', async ({ page }) => {
+    await page.goto('')
+    await page.locator('header [data-language-menu] summary').click()
+    await expect(page.getByRole('link', { name: 'Українська' })).toBeVisible()
+    await page.locator('main h1').click()
+    await expect(page.getByRole('link', { name: 'Українська' })).toBeHidden()
+  })
+})
+
+test.describe('screenshot slider (FR-003)', () => {
+  const current = (page: Page) => page.locator('[data-slider] [data-dot][aria-current="true"]')
+
+  test('changes the screenshot by itself, and with the buttons and the dots', async ({ page }) => {
+    await page.clock.install()
+    await page.goto('')
+    await expect(current(page)).toHaveAttribute('data-dot', '0')
+    await page.clock.runFor(5100)
+    await expect(current(page)).toHaveAttribute('data-dot', '1')
+    await page.getByRole('button', { name: 'Next screenshot' }).click()
+    await expect(current(page)).toHaveAttribute('data-dot', '2')
+    await page.getByRole('button', { name: 'Screenshot 1 of 4' }).click()
+    await expect(current(page)).toHaveAttribute('data-dot', '0')
+    await page.getByRole('button', { name: 'Previous screenshot' }).click()
+    await expect(current(page)).toHaveAttribute('data-dot', '3')
+  })
+
+  test('stops with the pause button (WCAG 2.2.2)', async ({ page }) => {
+    await page.clock.install()
+    await page.goto('')
+    await page.getByRole('button', { name: 'Pause the slideshow' }).click()
+    await page.mouse.move(0, 0)
+    await page.locator('main h1').focus()
+    await page.clock.runFor(12000)
+    await expect(current(page)).toHaveAttribute('data-dot', '0')
+    await expect(page.getByRole('button', { name: 'Play the slideshow' })).toBeVisible()
+  })
+
+  test.describe('reduced motion', () => {
+    test.use({ reducedMotion: 'reduce' })
+    test('does not change by itself', async ({ page }) => {
+      await page.clock.install()
+      await page.goto('')
+      await page.clock.runFor(12000)
+      await expect(current(page)).toHaveAttribute('data-dot', '0')
+    })
+  })
+})
+
+test.describe('theme button (NFR-003)', () => {
+  test.use({ colorScheme: 'light' })
+  test('switches the theme and keeps it after a reload', async ({ page }) => {
+    await page.goto('')
+    const background = () => page.evaluate(() => getComputedStyle(document.body).backgroundColor)
+    const light = await background()
+    await page.getByRole('button', { name: 'Switch to the dark theme' }).click()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    expect(await background()).not.toBe(light)
+    await page.reload()
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    await page.getByRole('button', { name: 'Switch to the light theme' }).click()
+    expect(await background()).toBe(light)
   })
 })

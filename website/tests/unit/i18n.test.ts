@@ -39,5 +39,7 @@ describe('website text (spec 020 US-3, plan D-3)', () => {
   it('formats a size in the language', () => {
     expect(formatSize(92_400_000, 'en')).toMatch(/^92\sMB$/)
     expect(formatSize(92_400_000, 'uk')).toMatch(/^92\sМБ$/)
+    expect(formatSize(41_200, 'en')).toMatch(/^41\skB$/)
+    expect(formatSize(41_200, 'uk')).toMatch(/^41\sкБ$/)
   })
 })

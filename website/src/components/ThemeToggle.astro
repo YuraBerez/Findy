@@ -1,0 +1,101 @@
+---
+import { MESSAGES } from '../i18n'
+import type { Lang } from '../lib/paths'
+
+interface Props {
+  lang: Lang
+}
+
+// NFR-003: the system theme first; this button switches between light and dark.
+// The choice stays in this browser only (localStorage), see BaseLayout.
+const t = MESSAGES[Astro.props.lang].theme
+---
+
+<button
+  type="button"
+  class="theme control"
+  data-theme-toggle
+  data-to-dark={t.toDark}
+  data-to-light={t.toLight}
+  aria-label={t.toDark}
+  hidden
+>
+  <svg
+    class="moon"
+    aria-hidden="true"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+  </svg>
+  <svg
+    class="sun"
+    aria-hidden="true"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+  </svg>
+</button>
+
+<script>
+  import { THEME_KEY } from '../lib/theme'
+
+  const root = document.documentElement
+  const dark = () =>
+    root.dataset.theme
+      ? root.dataset.theme === 'dark'
+      : matchMedia('(prefers-color-scheme: dark)').matches
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+    const label = () => {
+      button.setAttribute('aria-label', (dark() ? button.dataset.toLight : button.dataset.toDark)!)
+      button.dataset.dark = String(dark())
+    }
+    button.hidden = false
+    label()
+    button.addEventListener('click', () => {
+      const theme = dark() ? 'light' : 'dark'
+      root.dataset.theme = theme
+      try {
+        localStorage.setItem(THEME_KEY, theme)
+      } catch {
+        // Storage is off (private mode): the theme changes for this page only
+      }
+      label()
+    })
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', label)
+  }
+</script>
+
+<style>
+  .theme {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+  }
+  .theme[hidden] {
+    display: none;
+  }
+  .sun,
+  [data-dark='true'] .moon {
+    display: none;
+  }
+  [data-dark='true'] .sun {
+    display: block;
+  }
+</style>

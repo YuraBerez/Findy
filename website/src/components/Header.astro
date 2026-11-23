@@ -1,19 +1,28 @@
 ---
 import logo from '../../../assets/logo.svg'
 import { MESSAGES } from '../i18n'
-import { GUIDES } from '../lib/guides'
-import { guidePage, otherLang, pagePath, withBase, type Lang, type PageKey } from '../lib/paths'
+import { guidePage, pagePath, withBase, type Lang, type PageKey } from '../lib/paths'
+import LanguageSwitch from './LanguageSwitch.astro'
+import ThemeToggle from './ThemeToggle.astro'
 
 interface Props {
   lang: Lang
   page: PageKey
 }
 
+// FR-022: the home sections and two guides here; every guide is in the footer
 const { lang, page } = Astro.props
 const t = MESSAGES[lang]
 const base = import.meta.env.BASE_URL
 const href = (key: PageKey) => withBase(base, pagePath(lang, key))
-const other = otherLang(lang)
+const links = [
+  { href: `${href('')}#features`, text: t.nav.features, current: false },
+  ...(['browser-extension', 'ai-assistant'] as const).map((slug) => ({
+    href: href(guidePage(slug)),
+    text: t.guides[slug],
+    current: page === guidePage(slug),
+  })),
+]
 ---
 
 <header class="header">
@@ -24,26 +33,22 @@ const other = otherLang(lang)
     </a>
     <nav aria-label={t.nav.label}>
       <ul>
-        <li>
-          <a href={`${href('')}#download`}>{t.nav.download}</a>
-        </li>
-        {GUIDES.map((slug) => (
+        {links.map((link) => (
           <li>
-            <a
-              href={href(guidePage(slug))}
-              aria-current={page === guidePage(slug) ? 'page' : undefined}
-            >
-              {t.guides[slug]}
+            <a href={link.href} aria-current={link.current ? 'page' : undefined}>
+              {link.text}
             </a>
           </li>
         ))}
-        <li>
-          <a href={withBase(base, pagePath(other, page))} hreflang={other} lang={other}>
-            {t.nav.otherLanguage}
-          </a>
-        </li>
       </ul>
     </nav>
+    <div class="actions">
+      <LanguageSwitch lang={lang} page={page} />
+      <ThemeToggle lang={lang} />
+      <a class="button download" href={`${href('')}#download`}>
+        {t.nav.download}
+      </a>
+    </div>
   </div>
 </header>
 
@@ -56,7 +61,6 @@ const other = otherLang(lang)
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
     gap: var(--space-2) var(--space-6);
     padding-block: var(--space-2);
   }
@@ -69,9 +73,13 @@ const other = otherLang(lang)
     font-size: 1.25rem;
     text-decoration: none;
   }
+  nav {
+    flex: 1;
+  }
   ul {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: var(--space-2) var(--space-4);
     margin: 0;
     padding: 0;
@@ -85,5 +93,13 @@ const other = otherLang(lang)
   nav a[aria-current='page'] {
     color: var(--primary);
     text-decoration: underline;
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .download {
+    padding: 7px 16px;
   }
 </style>

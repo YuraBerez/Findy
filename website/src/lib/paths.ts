@@ -3,6 +3,9 @@ export const LANGS = ['en', 'uk'] as const
 export type Lang = (typeof LANGS)[number]
 export const DEFAULT_LANG: Lang = 'en'
 
+/** The name of each language in that language, for the language menu (FR-020) */
+export const LANG_NAMES: Record<Lang, string> = { en: 'English', uk: 'Українська' }
+
 /** A page of the website without the language: '' is the home page, else 'guide/install/' */
 export type PageKey = string
 

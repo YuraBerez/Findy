@@ -1,6 +1,7 @@
-/* Spec 020: brand tokens from docs/brand.md; the theme follows the system (NFR-003) */
+/* Spec 020: brand tokens from docs/brand.md (NFR-003). The theme follows the system until
+   the visitor picks one with the theme button; then <html data-theme> is set. */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   --primary: #0a66c2;
   --on-primary: #ffffff;
   --bg: #f4f6f8;
@@ -8,6 +9,13 @@
   --fg: #1c1f24;
   --fg-muted: #5b6370;
   --border: #d9dee5;
+  --chart-applied: #0a66c2;
+  --chart-hr_interview: #7b3fbf;
+  --chart-test_task: #b35c00;
+  --chart-technical_interview: #00796b;
+  --chart-c_level_interview: #c2185b;
+  --chart-offered: #2e7d32;
+  --chart-rejected: #6b7280;
   --radius: 8px;
   --space-2: 8px;
   --space-4: 16px;
@@ -24,7 +32,8 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
     --primary: #4a9de8;
     --on-primary: #0b1520;
     --bg: #16181c;
@@ -32,13 +41,49 @@
     --fg: #e6e8eb;
     --fg-muted: #a3abb7;
     --border: #343a44;
+    --chart-applied: #4a9de8;
+    --chart-hr_interview: #b28af0;
+    --chart-test_task: #f0a14a;
+    --chart-technical_interview: #4db6ac;
+    --chart-c_level_interview: #f06292;
+    --chart-offered: #66bb6a;
+    --chart-rejected: #9aa3b0;
   }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --primary: #4a9de8;
+  --on-primary: #0b1520;
+  --bg: #16181c;
+  --surface: #1f2228;
+  --fg: #e6e8eb;
+  --fg-muted: #a3abb7;
+  --border: #343a44;
+  --chart-applied: #4a9de8;
+  --chart-hr_interview: #b28af0;
+  --chart-test_task: #f0a14a;
+  --chart-technical_interview: #4db6ac;
+  --chart-c_level_interview: #f06292;
+  --chart-offered: #66bb6a;
+  --chart-rejected: #9aa3b0;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+/* Smooth scroll to a section from a link, unless the system asks for less motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+[id] {
+  scroll-margin-top: var(--space-6);
 }
 
 body {
@@ -103,6 +148,20 @@ pre {
 
 .button:hover {
   filter: brightness(1.08);
+}
+
+/* Small controls (menus, slider, theme): primary icon and border, a tint on hover */
+.control {
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.control:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface));
 }
 
 .muted {

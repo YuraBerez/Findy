@@ -2,15 +2,10 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { parse, type HTMLElement } from 'node-html-parser'
 import { describe, expect, it } from 'vitest'
-import {
-  PROJECT_URL,
-  SITE_URL,
-  SOURCE_URL,
-  SUPPORT_URL,
-} from '../../../src/shared/project'
+import { PROJECT_URL, SITE_URL, SOURCE_URL, SUPPORT_URL } from '../../../src/shared/project'
 import { MESSAGES } from '../../src/i18n'
 import { GUIDES } from '../../src/lib/guides'
-import { LANGS, guidePage, otherLang, pagePath, type Lang } from '../../src/lib/paths'
+import { LANGS, LANG_NAMES, guidePage, otherLang, pagePath, type Lang } from '../../src/lib/paths'
 
 // Spec 020: checks of the built website in dist/ (run `npm run build` first)
 const DIST = new URL('../../dist/', import.meta.url).pathname
@@ -55,28 +50,37 @@ describe.each(PAGES)('page /$path', ({ lang, page, path }) => {
 
   it('has a preview for social networks (FR-041)', () => {
     for (const property of ['og:title', 'og:description', 'og:image', 'og:url']) {
-      expect(doc.querySelector(`meta[property="${property}"]`)?.getAttribute('content')).toBeTruthy()
+      expect(
+        doc.querySelector(`meta[property="${property}"]`)?.getAttribute('content'),
+      ).toBeTruthy()
     }
     const image = doc.querySelector('meta[property="og:image"]')?.getAttribute('content') ?? ''
     expect(image.startsWith(SITE_URL)).toBe(true)
     expect(existsSync(fileOf(new URL(image).pathname))).toBe(true)
   })
 
-  it('has a language switch to the same page (FR-020)', () => {
-    const other = otherLang(lang)
-    const link = doc.querySelector(`header a[hreflang=${other}]`)
-    expect(link?.getAttribute('href')).toBe(`${BASE}${pagePath(other, page)}`)
+  it('has a language menu that opens the same page in each language (FR-020)', () => {
+    const menu = doc.querySelector('header details[data-language-menu]')
+    expect(menu?.querySelector('summary')?.getAttribute('aria-label')).toContain(LANG_NAMES[lang])
+    for (const l of LANGS) {
+      const link = menu?.querySelector(`a[hreflang=${l}]`)
+      expect(link?.getAttribute('href')).toBe(`${BASE}${pagePath(l, page)}`)
+      expect(link?.getAttribute('aria-current') ?? null).toBe(l === lang ? 'page' : null)
+    }
+    expect(otherLang(lang)).not.toBe(lang)
   })
 
   it('has a navigation to the home page and every guide (FR-022)', () => {
-    const hrefs = attrs(doc, 'header a', 'href')
+    const hrefs = attrs(doc, 'header a, footer a', 'href')
     expect(hrefs).toContain(`${BASE}${pagePath(lang)}`)
     for (const slug of GUIDES) expect(hrefs).toContain(`${BASE}${pagePath(lang, guidePage(slug))}`)
   })
 
   it('has the support, source, issues and licence links in the footer (FR-023)', () => {
     const hrefs = attrs(doc, 'footer a', 'href')
-    expect(hrefs).toEqual(expect.arrayContaining([SUPPORT_URL, PROJECT_URL, `${SOURCE_URL}LICENSE`]))
+    expect(hrefs).toEqual(
+      expect.arrayContaining([SUPPORT_URL, PROJECT_URL, `${SOURCE_URL}LICENSE`]),
+    )
     expect(hrefs.some((href) => href.startsWith(`${PROJECT_URL}/issues`))).toBe(true)
   })
 
@@ -100,8 +104,9 @@ describe.each(PAGES)('page /$path', ({ lang, page, path }) => {
     expect(attrs(doc, '[src]', 'src').filter(external)).toEqual([])
     expect(attrs(doc, '[srcset]', 'srcset').filter(external)).toEqual([])
     expect(attrs(doc, 'link[rel=stylesheet], link[rel=icon]', 'href').filter(external)).toEqual([])
-    expect(doc.querySelector('meta[http-equiv=content-security-policy]')?.getAttribute('content'))
-      .toMatch(/default-src 'self'/)
+    expect(
+      doc.querySelector('meta[http-equiv=content-security-policy]')?.getAttribute('content'),
+    ).toMatch(/default-src 'self'/)
   })
 })
 
@@ -164,18 +169,21 @@ describe.each(LANGS)('home page (%s)', (lang) => {
 describe('guides (FR-006 – FR-008)', () => {
   const source = new URL('../../../docs/guide/', import.meta.url).pathname
 
-  it.each(PAGES.filter((p) => p.page !== ''))('/$path has the text of its file', ({ lang, page }) => {
-    const slug = page.split('/')[1] ?? ''
-    const file = lang === 'en' ? `${slug}.md` : `${slug}.${lang}.md`
-    const markdown = readFileSync(join(source, file), 'utf8')
-    const heading = markdown.match(/^# (.+)$/m)?.[1] ?? ''
-    const doc = read(pagePath(lang, page))
-    expect(doc.querySelector('article h1')?.text).toBe(heading)
-    // no link in a guide points to a Markdown file that the website does not have
-    for (const href of attrs(doc, 'article a', 'href')) {
-      expect(href.startsWith(SOURCE_URL) || !href.endsWith('.md'), href).toBe(true)
-    }
-  })
+  it.each(PAGES.filter((p) => p.page !== ''))(
+    '/$path has the text of its file',
+    ({ lang, page }) => {
+      const slug = page.split('/')[1] ?? ''
+      const file = lang === 'en' ? `${slug}.md` : `${slug}.${lang}.md`
+      const markdown = readFileSync(join(source, file), 'utf8')
+      const heading = markdown.match(/^# (.+)$/m)?.[1] ?? ''
+      const doc = read(pagePath(lang, page))
+      expect(doc.querySelector('article h1')?.text).toBe(heading)
+      // no link in a guide points to a Markdown file that the website does not have
+      for (const href of attrs(doc, 'article a', 'href')) {
+        expect(href.startsWith(SOURCE_URL) || !href.endsWith('.md'), href).toBe(true)
+      }
+    },
+  )
 
   it('has one page per guide file', () => {
     const files = readdirSync(source).filter((f) => f.endsWith('.md'))

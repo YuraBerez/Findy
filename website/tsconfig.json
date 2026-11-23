@@ -3,6 +3,6 @@
   "compilerOptions": {
     "noUncheckedIndexedAccess": true
   },
-  "include": [".astro/types.d.ts", "**/*", "../src/shared/project.ts"],
+  "include": [".astro/types.d.ts", "**/*", "../src/shared/project.ts", "../src/domain/stages.ts"],
   "exclude": ["dist", "coverage", "test-results", "playwright-report"]
 }

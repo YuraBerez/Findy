@@ -112,7 +112,12 @@ As a user who likes Findy, I want a link to support the project, so that I can h
 - **FR-002** The home page MUST tell what Findy does and show the main features: the
   board of stages, notes and the next step, analytics, job sites, CSV import and export,
   the browser extension and the AI assistant.
-- **FR-003** The home page MUST show screenshots of the app in the language of the page.
+- **FR-003** The home page MUST show screenshots of the app in the language of the page,
+  in a slider in the first view. The slider changes the screenshot by itself and has
+  buttons for the previous and the next screenshot, one button for each screenshot, and
+  a pause button. It does not change by itself when the system asks for reduced motion.
+  Without scripts, the visitor scrolls the screenshots. All screenshots have the same
+  height.
 - **FR-004** The home page MUST say that Findy is free and open source, that it keeps all
   data on the computer, and that it has no account.
 - **FR-005** The website MUST say that the builds are not signed yet, and link to the
@@ -140,11 +145,12 @@ As a user who likes Findy, I want a link to support the project, so that I can h
 
 ### Language and navigation
 
-- **FR-020** Every page MUST have a language switch that opens the same page in the
-  other language.
+- **FR-020** Every page MUST have a language menu that opens the same page in each
+  language. The menu works with the keyboard and without scripts.
 - **FR-021** The address without a language MUST open the English home page. The website
   MUST NOT choose the language from the browser settings.
-- **FR-022** Every page MUST have a navigation to the home page and to each guide.
+- **FR-022** Every page MUST have a navigation to the home page and to each guide. The
+  header has the main links and a download button; the footer lists every guide.
 - **FR-023** Every page MUST have a footer with links to the support page, the source
   code, the issues and the licence.
 
@@ -170,11 +176,13 @@ As a user who likes Findy, I want a link to support the project, so that I can h
 
 - **NFR-001** Privacy: the website MUST NOT use analytics, cookies, trackers or other
   sites at run time (no external fonts, scripts or images). Only the download links go to
-  the project host.
+  the project host. The browser storage keeps only the theme that the visitor picked
+  (NFR-003); it never leaves the browser.
 - **NFR-002** Accessibility: every link and button MUST work with the keyboard and have
   an accessible name. Text contrast MUST meet WCAG 2.1 AA. Colour is never the only signal.
 - **NFR-003** The website MUST follow the light or dark theme of the system, with the
-  brand colours of `docs/brand.md`.
+  brand colours of `docs/brand.md`. A button in the header switches between light and
+  dark. The browser keeps that choice for the next visit.
 - **NFR-004** The website MUST work on a phone (360 px wide) with no horizontal scroll.
 - **NFR-005** The home page MUST load fast: the first view loads less than 1 MB without
   the screenshots below it, and the screenshots load only when the visitor scrolls to them.
@@ -228,6 +236,10 @@ As a user who likes Findy, I want a link to support the project, so that I can h
 - **D-6** No analytics on the website. (owner, 2026-11-23)
 - **D-7** The constitution needs no change: §II is about the app and the user data. The
   website keeps the same spirit (NFR-001).
+- **D-8** After the first review of the pages: the screenshots move into a slider in the
+  first view; the language switch becomes a menu; a theme button switches light and dark;
+  the features show the stages and short items with icons; each build is a row with its
+  size. (owner, 2026-11-23)
 
 ## Open questions
 
