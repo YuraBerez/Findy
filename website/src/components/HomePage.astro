@@ -1,5 +1,5 @@
 ---
-import { SUPPORT_URL } from '../../../src/shared/project'
+import { PROJECT_URL, SUPPORT_URL } from '../../../src/shared/project'
 import logo from '../../../assets/logo.svg'
 import analyticsEn from '../../../docs/screenshots/analytics-en.png'
 import analyticsUk from '../../../docs/screenshots/analytics-uk.png'
@@ -37,13 +37,16 @@ const slides = (['board', 'details', 'analytics', 'sites'] as const).map((key) =
 
 <BaseLayout lang={lang} page="" title={t.meta.homeTitle} description={t.meta.homeDescription}>
   <section class="hero container">
-    <img class="logo" src={logo.src} alt="" width="80" height="80" />
+    <img class="logo" src={logo.src} alt="" width="64" height="64" />
     <h1>{t.hero.title}</h1>
     <p class="lead">{t.hero.lead}</p>
     <p class="muted">{t.hero.facts}</p>
-    <p>
+    <p class="actions">
       <a class="button" href="#download">
         {t.nav.download}
+      </a>
+      <a class="button secondary" href={PROJECT_URL}>
+        {t.hero.repository}
       </a>
     </p>
     <Slider lang={lang} slides={slides} />
@@ -76,13 +79,23 @@ const slides = (['board', 'details', 'analytics', 'sites'] as const).map((key) =
     text-align: center;
   }
   .hero h1 {
-    margin: var(--space-4) 0;
-    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    margin: var(--space-4) 0 var(--space-2);
+    font-size: clamp(1.6rem, 4vw, 2.25rem);
   }
   .lead {
-    max-width: 720px;
-    margin: 0 auto var(--space-4);
-    font-size: 1.15rem;
+    max-width: 640px;
+    margin: 0 auto var(--space-2);
+    font-size: 1.05rem;
+  }
+  .hero .muted {
+    margin-top: 0;
+    font-size: 0.9rem;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
   }
   .container > :global(section) {
     margin-top: var(--space-10);

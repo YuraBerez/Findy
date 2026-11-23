@@ -1,0 +1,60 @@
+---
+import Icon from './Icon.astro'
+
+interface Props {
+  code: string
+  copy: string
+  copied: string
+}
+
+// A command to type, with a copy button (shown only with scripts). set:text keeps the
+// text as it is: no indentation from the formatter inside <pre>.
+const { code, copy, copied } = Astro.props
+---
+
+<div class="code" data-code>
+  <pre><code set:text={code} /></pre>
+  <button type="button" class="control copy" data-copy={copy} data-copied={copied} hidden>
+    <Icon name="copy" size={16} />
+    <span>{copy}</span>
+  </button>
+</div>
+
+<script>
+  for (const block of document.querySelectorAll<HTMLElement>('[data-code]')) {
+    const button = block.querySelector<HTMLButtonElement>('.copy')!
+    const label = button.querySelector('span')!
+    // Some browsers give no clipboard (an insecure page): then no button
+    if (!navigator.clipboard) continue
+    button.hidden = false
+    button.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(block.querySelector('code')!.textContent ?? '')
+      label.textContent = button.dataset.copied!
+      setTimeout(() => (label.textContent = button.dataset.copy!), 2000)
+    })
+  }
+</script>
+
+<style>
+  .code {
+    position: relative;
+  }
+  pre {
+    margin: 0;
+    padding-right: 110px;
+    white-space: pre-wrap;
+  }
+  .copy {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+  .copy[hidden] {
+    display: none;
+  }
+</style>

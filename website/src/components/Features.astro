@@ -12,53 +12,134 @@ interface Props {
 
 const { lang } = Astro.props
 const t = MESSAGES[lang].features
-// FR-002: the stage names are the app's own, in the board order
+// FR-002: the stage names and order are the app's own. The last two are the results.
 const stageNames = { en, uk }[lang].stages
+const flow = STAGES.slice(0, -2)
+const outcomes = STAGES.slice(-2)
 ---
 
-<section id="features" aria-labelledby="features-title">
-  <h2 id="features-title">{t.title}</h2>
-  <p class="muted">{t.stages}</p>
-  <ol class="stages">
-    {STAGES.map((stage) => (
-      <li class="stage" data-stage={stage}>
-        {stageNames[stage]}
-      </li>
+<section id="features" class="features" aria-labelledby="features-title">
+  <header class="intro">
+    <h2 id="features-title">{t.title}</h2>
+    <p class="muted">{t.lead}</p>
+  </header>
+
+  <div class="pipeline">
+    <ol class="flow" aria-label={t.flow}>
+      {flow.map((stage) => (
+        <li class="stage" data-stage={stage}>
+          {stageNames[stage]}
+        </li>
+      ))}
+    </ol>
+    <ul class="outcomes" aria-label={t.outcomes}>
+      {outcomes.map((stage) => (
+        <li class="stage" data-stage={stage}>
+          <Icon name={stage === 'offered' ? 'check' : 'cross'} size={14} />
+          {stageNames[stage]}
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="groups">
+    {t.groups.map((group) => (
+      <div class="group">
+        <h3>{group.title}</h3>
+        <ul>
+          {group.items.map((item) => (
+            <li class="feature">
+              <span class="icon">
+                <Icon name={item.icon} size={20} />
+              </span>
+              <div>
+                <h4>{item.title}</h4>
+                <p>{item.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     ))}
-  </ol>
-  <ul class="features">
-    {t.items.map((item) => (
-      <li class="feature">
-        <span class="icon">
-          <Icon name={item.icon} />
-        </span>
-        <div>
-          <h3>{item.title}</h3>
-          <p>{item.text}</p>
-        </div>
-      </li>
-    ))}
-  </ul>
+  </div>
 </section>
 
 <style>
-  .stages {
+  .intro {
+    margin-bottom: var(--space-6);
+    text-align: center;
+  }
+  .intro h2 {
+    margin-bottom: var(--space-2);
+  }
+  .intro p {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+
+  /* The stages: one flow, then a fork into the two results */
+  .pipeline {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-2);
-    margin: 0 0 var(--space-6);
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-10);
+  }
+  .flow,
+  .outcomes {
+    display: flex;
+    margin: 0;
     padding: 0;
     list-style: none;
+  }
+  .flow {
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2) 0;
+  }
+  .flow .stage:not(:last-child)::after {
+    width: 20px;
+    height: 2px;
+    margin: 0 -1px 0 12px;
+    background: var(--border);
+    content: '';
+  }
+  .outcomes {
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-left: var(--space-4);
+    border-left: 2px solid var(--border);
   }
   .stage {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 4px 12px;
-    border: 1px solid var(--border);
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .flow .stage::before,
+  .outcomes .stage {
     border-radius: 999px;
-    background: var(--surface);
-    font-size: 0.9rem;
+  }
+  .flow .stage {
+    padding: 0;
+  }
+  .flow .stage::before {
+    width: 10px;
+    height: 10px;
+    background: var(--stage);
+    content: '';
+  }
+  /* The stage colour on the border and the icon; the text keeps the text colour (contrast) */
+  .outcomes .stage {
+    padding: 4px 12px 4px 8px;
+    border: 1px solid var(--stage);
+    font-weight: 600;
+  }
+  .outcomes .stage :global(svg) {
+    color: var(--stage);
   }
   /* The colour of each stage (docs/brand.md); no style attribute, the CSP blocks it */
   [data-stage='applied'] {
@@ -82,42 +163,57 @@ const stageNames = { en, uk }[lang].stages
   [data-stage='rejected'] {
     --stage: var(--chart-rejected);
   }
-  .stage::before {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--stage);
-    content: '';
-  }
-  .features {
+
+  /* Three groups of features */
+  .groups {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
-    gap: var(--space-6) var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: var(--space-4);
+  }
+  .group {
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+  .group h3 {
+    margin: 0 0 var(--space-4);
+    color: var(--primary);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .group ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
     margin: 0;
     padding: 0;
     list-style: none;
   }
   .feature {
     display: flex;
-    gap: var(--space-4);
+    gap: 12px;
     align-items: flex-start;
   }
   .icon {
     display: grid;
     flex: none;
     place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     background: color-mix(in srgb, var(--primary) 14%, transparent);
     color: var(--primary);
   }
-  h3 {
-    margin: 0 0 4px;
+  h4 {
+    margin: 0 0 2px;
     font-size: 1rem;
   }
-  p {
+  .feature p {
     margin: 0;
     color: var(--fg-muted);
+    font-size: 0.95rem;
+    line-height: 1.45;
   }
 </style>

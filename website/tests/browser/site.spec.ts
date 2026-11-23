@@ -219,3 +219,13 @@ test.describe('menu on a phone (NFR-004)', () => {
     })
   })
 })
+
+test.describe('package manager commands (FR-014)', () => {
+  test.use({ permissions: ['clipboard-read', 'clipboard-write'] })
+  test('copies a command', async ({ page }) => {
+    await page.goto('')
+    await page.getByRole('button', { name: 'Copy' }).first().click()
+    await expect(page.getByRole('button', { name: 'Copied' })).toBeVisible()
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/^brew tap /)
+  })
+})

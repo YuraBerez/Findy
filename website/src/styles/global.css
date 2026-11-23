@@ -3,12 +3,14 @@
 :root {
   color-scheme: light;
   --primary: #0a66c2;
-  --on-primary: #ffffff;
   --bg: #f4f6f8;
   --surface: #ffffff;
   --fg: #1c1f24;
   --fg-muted: #5b6370;
   --border: #d9dee5;
+  /* Filled buttons: the brand primary in both themes, white text (5.8:1) */
+  --button: #0a66c2;
+  --on-button: #ffffff;
   --chart-applied: #0a66c2;
   --chart-hr_interview: #7b3fbf;
   --chart-test_task: #b35c00;
@@ -35,7 +37,6 @@
   :root:not([data-theme='light']) {
     color-scheme: dark;
     --primary: #4a9de8;
-    --on-primary: #0b1520;
     --bg: #16181c;
     --surface: #1f2228;
     --fg: #e6e8eb;
@@ -54,7 +55,6 @@
 :root[data-theme='dark'] {
   color-scheme: dark;
   --primary: #4a9de8;
-  --on-primary: #0b1520;
   --bg: #16181c;
   --surface: #1f2228;
   --fg: #e6e8eb;
@@ -140,14 +140,26 @@ pre {
   display: inline-block;
   padding: 12px 20px;
   border-radius: var(--radius);
-  background: var(--primary);
-  color: var(--on-primary);
+  background: var(--button);
+  color: var(--on-button);
   font-weight: 600;
   text-decoration: none;
 }
 
 .button:hover {
   filter: brightness(1.08);
+}
+
+/* A second action next to a filled button */
+.button.secondary {
+  border: 1px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  background: transparent;
+  color: var(--primary);
+}
+
+.button.secondary:hover {
+  filter: none;
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
 }
 
 /* Small controls (menus, slider, theme): primary icon and border, a tint on hover */

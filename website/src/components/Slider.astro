@@ -160,15 +160,17 @@ const sizes = '(min-width: 912px) 880px, calc(100vw - 32px)'
     )
     toggle.addEventListener('click', () => setPlaying(!playing))
 
-    // A swipe or a scroll by hand: follow it
+    // A swipe or a scroll by hand: follow it when the scroll stops (not in the middle of
+    // a smooth scroll that show() started)
+    let settle: number | undefined
     list.addEventListener(
       'scroll',
       () => {
-        const index = Math.round(list.scrollLeft / list.clientWidth)
-        if (index !== current) {
-          current = index
+        window.clearTimeout(settle)
+        settle = window.setTimeout(() => {
+          current = Math.round(list.scrollLeft / list.clientWidth)
           mark()
-        }
+        }, 150)
       },
       { passive: true },
     )

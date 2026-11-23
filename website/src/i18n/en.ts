@@ -30,6 +30,7 @@ export const en = {
     title: 'Track your job search on one board',
     lead: 'Dozens of applications, interviews and test tasks are easy to mix up. Findy keeps every application on a kanban board, from the moment you apply to the offer, and shows you what to do next.',
     facts: 'Open source project',
+    repository: 'View on GitHub',
   },
   download: {
     title: 'Download Findy',
@@ -48,11 +49,16 @@ export const en = {
       checksums: { title: 'Checksums', detail: 'SHA256SUMS.txt' },
     },
     recommended: 'Recommended',
-    whichMac:
-      'Which Mac do I have? Open the Apple menu → About This Mac. “Chip: Apple M…” means Apple Silicon, “Processor: Intel…” means Intel.',
+    whichMac: 'Which Mac do I have?',
+    whichMacAnswer:
+      'Apple menu → About This Mac. “Chip: Apple M…” is Apple Silicon, “Processor: Intel…” is Intel.',
+    free: 'Free',
+    packageManagers: 'Package managers',
+    copy: 'Copy',
+    copied: 'Copied',
     all: 'All downloads',
-    homebrew: 'Install with Homebrew',
-    scoop: 'Install with Scoop',
+    homebrew: 'macOS · Homebrew',
+    scoop: 'Windows · Scoop',
     extension: 'Browser extension',
     extensionHint: 'Adds the vacancy that is open in your browser to Findy in one click.',
     howToInstall: 'How to install',
@@ -66,47 +72,69 @@ export const en = {
   },
   features: {
     title: 'What Findy does',
-    stages: 'Every application is a card that moves through the stages of hiring:',
-    items: [
+    lead: 'Every application is a card that moves through the stages of hiring.',
+    flow: 'The stages of an application',
+    outcomes: 'The result',
+    groups: [
       {
-        icon: 'board',
-        title: 'Kanban board',
-        text: 'Drag cards between stages with the mouse or the keyboard.',
+        title: 'Track',
+        items: [
+          {
+            icon: 'board',
+            title: 'Kanban board',
+            text: 'Drag cards between stages with the mouse or the keyboard.',
+          },
+          {
+            icon: 'note',
+            title: 'Notes and reminders',
+            text: 'Notes, salary and contacts on each card. Findy reminds you of the next step.',
+          },
+          {
+            icon: 'chart',
+            title: 'Analytics',
+            text: 'Applications per week, interviews and the funnel of your search.',
+          },
+        ],
       },
       {
-        icon: 'note',
-        title: 'Notes and reminders',
-        text: 'Notes, salary and contacts on each card. Findy reminds you of the next step.',
+        title: 'Add faster',
+        items: [
+          {
+            icon: 'link',
+            title: 'From a link',
+            text: 'Paste a vacancy link, and the job title and the company fill in.',
+          },
+          {
+            icon: 'puzzle',
+            title: 'From the browser',
+            text: 'The extension adds the open vacancy in one click.',
+          },
+          {
+            icon: 'search',
+            title: 'Job sites',
+            text: 'One search, opened on Djinni, DOU, LinkedIn, Indeed and more.',
+          },
+        ],
       },
       {
-        icon: 'link',
-        title: 'Add from a link',
-        text: 'Paste a vacancy link, or click the browser extension, and the fields fill in.',
-      },
-      {
-        icon: 'chart',
-        title: 'Analytics',
-        text: 'Applications per week, interviews and a funnel of your search.',
-      },
-      {
-        icon: 'search',
-        title: 'Job sites',
-        text: 'One search, opened on Djinni, DOU, LinkedIn, Indeed and more.',
-      },
-      {
-        icon: 'sparkles',
-        title: 'AI assistant',
-        text: 'If you turn it on, Claude can read your board and help you prepare.',
-      },
-      {
-        icon: 'table',
-        title: 'CSV export and import',
-        text: 'Move your board to and from any spreadsheet.',
-      },
-      {
-        icon: 'lock',
-        title: 'Private',
-        text: 'Offline, no account, no telemetry. The data stays on your computer.',
+        title: 'Your data',
+        items: [
+          {
+            icon: 'lock',
+            title: 'Private',
+            text: 'Offline, no account, no telemetry. The data stays on your computer.',
+          },
+          {
+            icon: 'table',
+            title: 'CSV export and import',
+            text: 'Move your board to and from any spreadsheet.',
+          },
+          {
+            icon: 'sparkles',
+            title: 'AI assistant',
+            text: 'If you turn it on, Claude can read your board and help you prepare.',
+          },
+        ],
       },
     ],
   },

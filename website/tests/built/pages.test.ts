@@ -160,9 +160,15 @@ describe.each(LANGS)('home page (%s)', (lang) => {
 
   it('tells what Findy does and that the data stays local (FR-002, FR-004)', () => {
     const text = doc.querySelector('main')?.text ?? ''
-    for (const item of t.features.items) expect(text).toContain(item.title)
+    for (const group of t.features.groups) {
+      expect(text).toContain(group.title)
+      for (const item of group.items) expect(text).toContain(item.title)
+    }
     expect(text).toContain(t.privacy.title)
     expect(text).toContain(t.hero.facts)
+    expect(attrs(doc, '.hero a', 'href')).toEqual(
+      expect.arrayContaining(['#download', PROJECT_URL]),
+    )
   })
 })
 
