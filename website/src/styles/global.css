@@ -82,8 +82,9 @@
   }
 }
 
+/* Room for the sticky header above a section that a link opens */
 [id] {
-  scroll-margin-top: var(--space-6);
+  scroll-margin-top: 80px;
 }
 
 body {

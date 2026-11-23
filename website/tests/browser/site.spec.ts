@@ -229,3 +229,11 @@ test.describe('package manager commands (FR-014)', () => {
     expect(await page.evaluate(() => navigator.clipboard.readText())).toMatch(/^brew tap /)
   })
 })
+
+test('keeps the header at the top while the page scrolls', async ({ page }) => {
+  await page.goto('')
+  await page.locator('#download').scrollIntoViewIfNeeded()
+  const box = await page.locator('header.header').boundingBox()
+  expect(box?.y).toBe(0)
+  await expect(page.locator('header').getByRole('link', { name: 'Download' })).toBeInViewport()
+})

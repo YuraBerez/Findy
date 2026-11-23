@@ -152,18 +152,28 @@ export const en = {
   },
   privacy: {
     title: 'Private by design',
-    text: 'Findy works offline and has no account and no telemetry. Your applications and notes stay in a local database on your computer, in an open format. Findy goes online only when you ask: to check for updates, to read a vacancy page whose link you paste, and to get the icons of job sites.',
+    points: [
+      'Works offline',
+      'No account and no telemetry',
+      'Your data stays in a local database, in an open format',
+    ],
+    online:
+      'Findy goes online only when you ask: to check for updates, to read a vacancy page whose link you paste, and to get the icons of job sites.',
+    policy: 'Privacy policy',
   },
   support: {
     title: 'Support Findy',
     text: 'Findy is free and made in spare time. If it helps you find a job, you can support it.',
     button: 'Support on Ko-fi',
+    star: 'Star on GitHub',
   },
   footer: {
     support: 'Support',
     source: 'Source code',
     issues: 'Report an issue',
     licence: 'MIT licence',
+    project: 'Project',
+    copyright: '© {year} Findy contributors',
     notAffiliated: 'Findy is not affiliated with any job platform.',
   },
 }

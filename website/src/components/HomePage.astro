@@ -1,5 +1,5 @@
 ---
-import { PROJECT_URL, SUPPORT_URL } from '../../../src/shared/project'
+import { PROJECT_URL } from '../../../src/shared/project'
 import logo from '../../../assets/logo.svg'
 import analyticsEn from '../../../docs/screenshots/analytics-en.png'
 import analyticsUk from '../../../docs/screenshots/analytics-uk.png'
@@ -13,6 +13,7 @@ import { latestRelease } from '../data/release'
 import { MESSAGES } from '../i18n'
 import BaseLayout from '../layouts/BaseLayout.astro'
 import type { Lang } from '../lib/paths'
+import Closing from './Closing.astro'
 import Download from './Download.astro'
 import Features from './Features.astro'
 import Slider from './Slider.astro'
@@ -56,20 +57,7 @@ const slides = (['board', 'details', 'analytics', 'sites'] as const).map((key) =
     <Features lang={lang} />
     <Download lang={lang} release={release} />
 
-    <section aria-labelledby="privacy-title">
-      <h2 id="privacy-title">{t.privacy.title}</h2>
-      <p>{t.privacy.text}</p>
-    </section>
-
-    <section aria-labelledby="support-title">
-      <h2 id="support-title">{t.support.title}</h2>
-      <p>{t.support.text}</p>
-      <p>
-        <a class="button" href={SUPPORT_URL}>
-          {t.support.button}
-        </a>
-      </p>
-    </section>
+    <Closing lang={lang} />
   </div>
 </BaseLayout>
 

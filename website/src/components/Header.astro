@@ -118,10 +118,14 @@ const links = [
 </script>
 
 <style>
+  /* Stays at the top while the page scrolls */
   .header {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 20;
     border-bottom: 1px solid var(--border);
-    background: var(--surface);
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(10px);
   }
   .bar {
     display: flex;
