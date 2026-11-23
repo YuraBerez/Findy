@@ -11,6 +11,22 @@
   /* Filled buttons: the brand primary in both themes, white text (5.8:1) */
   --button: #0a66c2;
   --on-button: #ffffff;
+  /* Tints of the primary: they follow --primary in each theme */
+  --primary-soft: color-mix(in srgb, var(--primary) 14%, transparent);
+  --primary-faint: color-mix(in srgb, var(--primary) 30%, transparent);
+  --primary-line: color-mix(in srgb, var(--primary) 45%, transparent);
+  --primary-hover: color-mix(in srgb, var(--primary) 12%, var(--surface));
+  --header-bg: color-mix(in srgb, var(--surface) 88%, transparent);
+  --shadow: 0 6px 20px rgb(0 0 0 / 0.15);
+  /* Command boxes: dark in both themes; accent and prompt are the dark-theme brand colours */
+  --terminal-bg: #0f141b;
+  --terminal-bar: #161c25;
+  --terminal-border: #2b3340;
+  --terminal-line: #3a4452;
+  --terminal-fg: #e6e8eb;
+  --terminal-muted: #a3abb7;
+  --terminal-accent: #4a9de8;
+  --terminal-prompt: #66bb6a;
   --chart-applied: #0a66c2;
   --chart-hr_interview: #7b3fbf;
   --chart-test_task: #b35c00;
@@ -153,19 +169,19 @@ pre {
 
 /* A second action next to a filled button */
 .button.secondary {
-  border: 1px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  border: 1px solid var(--primary-line);
   background: transparent;
   color: var(--primary);
 }
 
 .button.secondary:hover {
   filter: none;
-  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  background: var(--primary-soft);
 }
 
 /* Small controls (menus, slider, theme): primary icon and border, a tint on hover */
 .control {
-  border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  border: 1px solid var(--primary-line);
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--primary);
@@ -174,7 +190,7 @@ pre {
 
 .control:hover {
   border-color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+  background: var(--primary-hover);
 }
 
 .muted {

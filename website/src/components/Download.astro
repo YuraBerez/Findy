@@ -25,12 +25,14 @@ const checksums = filesOf(release, ['checksums'])
 // FR-014: the package managers
 const commands = [
   {
-    title: t.homebrew,
-    code: `brew tap ${HOMEBREW_TAP}\nbrew trust ${HOMEBREW_TAP}\nbrew install --cask findy`,
+    title: 'Homebrew',
+    platform: t.os.mac,
+    lines: [`brew tap ${HOMEBREW_TAP}`, `brew trust ${HOMEBREW_TAP}`, 'brew install --cask findy'],
   },
   {
-    title: t.scoop,
-    code: `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`,
+    title: 'Scoop',
+    platform: t.os.windows,
+    lines: [`scoop bucket add findy ${SCOOP_BUCKET_URL}`, 'scoop install findy'],
   },
 ]
 ---
@@ -107,24 +109,42 @@ const commands = [
   </div>
 
   <div class="card wide">
-    <h4>{t.packageManagers}</h4>
+    <div class="head">
+      <span class="tile">
+        <Icon name="terminal" size={20} />
+      </span>
+      <div>
+        <h4>{t.packageManagers}</h4>
+        <p class="muted">{t.packageManagersHint}</p>
+      </div>
+    </div>
     <div class="commands">
       {commands.map((command) => (
-        <div>
-          <p class="muted label">{command.title}</p>
-          <CodeBlock code={command.code} copy={t.copy} copied={t.copied} />
-        </div>
+        <CodeBlock
+          title={command.title}
+          platform={command.platform}
+          commands={command.lines}
+          copy={t.copy}
+          copied={t.copied}
+        />
       ))}
     </div>
   </div>
 
   {extension.length > 0 && (
     <div class="card wide extension">
-      <div>
-        <h4>{t.extension}</h4>
-        <p class="muted">
-          {t.extensionHint} <a href={guide('browser-extension')}>{t.howToInstall}</a>
-        </p>
+      <div class="head">
+        <span class="tile">
+          <Icon name="puzzle" size={20} />
+        </span>
+        <div>
+          <h4>{t.extension}</h4>
+          <p class="muted">{t.extensionHint}</p>
+          <a class="button secondary small" href={guide('browser-extension')}>
+            {t.howToInstall}
+            <Icon name="arrow" size={16} />
+          </a>
+        </div>
       </div>
       <ul class="rows">
         {extension.map((file) => (
@@ -198,15 +218,10 @@ const commands = [
     display: none;
     margin-bottom: var(--space-10);
     padding: var(--space-10) var(--space-6);
-    border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
+    border: 1px solid var(--primary-line);
     border-radius: 16px;
     background:
-      radial-gradient(
-        ellipse at top,
-        color-mix(in srgb, var(--primary) 16%, transparent),
-        transparent 70%
-      ),
-      var(--surface);
+      radial-gradient(ellipse at top, var(--primary-soft), transparent 70%), var(--surface);
     text-align: center;
   }
   :global(html[data-os='windows']) .main[data-for='windows'],
@@ -291,17 +306,37 @@ const commands = [
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     gap: var(--space-4);
   }
-  .label {
-    margin: 0 0 var(--space-2);
-    font-size: 0.9rem;
-  }
   .extension {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: var(--space-6);
     align-items: center;
   }
-  .extension p {
-    margin: var(--space-2) 0 0;
+  .head {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+  }
+  .head p {
+    margin: 4px 0 0;
+  }
+  .tile {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+  .small {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: var(--space-4);
+    padding: 6px 14px;
+    font-size: 0.9rem;
   }
   .note {
     margin-top: var(--space-6);

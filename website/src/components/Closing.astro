@@ -65,14 +65,9 @@ const t = MESSAGES[Astro.props.lang]
     background: var(--surface);
   }
   .support {
-    border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+    border-color: var(--primary-line);
     background:
-      radial-gradient(
-        ellipse at top right,
-        color-mix(in srgb, var(--primary) 16%, transparent),
-        transparent 70%
-      ),
-      var(--surface);
+      radial-gradient(ellipse at top right, var(--primary-soft), transparent 70%), var(--surface);
   }
   .icon {
     display: grid;
@@ -80,7 +75,7 @@ const t = MESSAGES[Astro.props.lang]
     width: 44px;
     height: 44px;
     border-radius: 10px;
-    background: color-mix(in srgb, var(--primary) 14%, transparent);
+    background: var(--primary-soft);
     color: var(--primary);
   }
   h2 {

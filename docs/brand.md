@@ -44,5 +44,24 @@ tables carry the meaning, so colour is never the only signal.
 | `--chart-rejected` | `#6B7280` | `#9AA3B0` |
 Tokens live in `src/renderer/styles/global.css`.
 
+### Website (spec 020)
+
+The website uses the same palette. Its tokens live in `website/src/styles/global.css`;
+components use only these tokens (a unit test fails on a raw colour in a component).
+
+| Token | Light | Dark | Use |
+|-------|-------|------|-----|
+| `--primary` | `#0A66C2` | `#4A9DE8` | Links, icons, focus rings, outlines |
+| `--button` / `--on-button` | `#0A66C2` / `#FFFFFF` | same | Filled buttons and badges: the brand primary in both themes (5.8:1) |
+| `--bg`, `--surface`, `--fg`, `--fg-muted`, `--border` | as the app | as the app | Page, cards, text, lines |
+| `--chart-<stage>` | as above | as above | Stage dots in the stage flow |
+| `--primary-soft` | primary 14 % | primary 14 % | Icon tiles, glow behind a main block |
+| `--primary-faint` | primary 30 % | primary 30 % | Slider dots that are not active |
+| `--primary-line` | primary 45 % | primary 45 % | Borders of secondary buttons and controls |
+| `--primary-hover` | primary 12 % on `--surface` | same | Hover of controls and rows |
+| `--terminal-*` | dark | dark | Command boxes: the same dark colours in both themes; the accent is the dark `--primary`, the prompt is the dark `--chart-offered` |
+
+Do not add a colour in a component. Add a token here and in `global.css` first.
+
 Findy is not affiliated with any job platform. Do not use other companies' logos or
 names in the Findy brand.
