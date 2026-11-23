@@ -185,3 +185,37 @@ test.describe('theme button (NFR-003)', () => {
     expect(await background()).toBe(light)
   })
 })
+
+test.describe('menu on a phone (NFR-004)', () => {
+  test.use({ viewport: { width: 360, height: 740 } })
+
+  test('opens and closes the menu, and keeps the download button visible', async ({ page }) => {
+    await page.goto('')
+    const toggle = page.getByRole('button', { name: 'Open the menu' })
+    const features = page.locator('header').getByRole('link', { name: 'Features' })
+    await expect(page.locator('header').getByRole('link', { name: 'Download' })).toBeVisible()
+    await expect(features).toBeHidden()
+    await toggle.click()
+    await expect(features).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Close the menu' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+    await page.keyboard.press('Escape')
+    await expect(features).toBeHidden()
+    await expect(toggle).toBeFocused()
+    await toggle.click()
+    await features.click()
+    await expect(features).toBeHidden()
+    await expect(page).toHaveURL(/#features$/)
+  })
+
+  test.describe('no scripts', () => {
+    test.use({ javaScriptEnabled: false })
+    test('shows the links under the bar', async ({ page }) => {
+      await page.goto('')
+      await expect(page.locator('header').getByRole('link', { name: 'Features' })).toBeVisible()
+      await expect(page.locator('header .toggle')).toBeHidden()
+    })
+  })
+})

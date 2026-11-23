@@ -184,6 +184,9 @@ As a user who likes Findy, I want a link to support the project, so that I can h
   brand colours of `docs/brand.md`. A button in the header switches between light and
   dark. The browser keeps that choice for the next visit.
 - **NFR-004** The website MUST work on a phone (360 px wide) with no horizontal scroll.
+  On a narrow screen the header shows the logo, the download button and a menu button;
+  the links, the languages and the theme are in the menu. Without scripts the menu stays
+  open.
 - **NFR-005** The home page MUST load fast: the first view loads less than 1 MB without
   the screenshots below it, and the screenshots load only when the visitor scrolls to them.
 - **NFR-006** The website MUST be static: no server code and no database.

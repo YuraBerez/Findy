@@ -10,7 +10,9 @@ interface Props {
   page: PageKey
 }
 
-// FR-022: the home sections and two guides here; every guide is in the footer
+// FR-022: the home sections and two guides here; every guide is in the footer.
+// NFR-004: on a narrow screen the links, the languages and the theme go into a menu;
+// without scripts they stay open under the bar.
 const { lang, page } = Astro.props
 const t = MESSAGES[lang]
 const base = import.meta.env.BASE_URL
@@ -25,41 +27,104 @@ const links = [
 ]
 ---
 
-<header class="header">
+<header class="header" data-header>
   <div class="container bar">
     <a class="brand" href={href('')}>
       <img src={logo.src} alt="" width="32" height="32" />
       <span>Findy</span>
     </a>
-    <nav aria-label={t.nav.label}>
-      <ul>
-        {links.map((link) => (
-          <li>
-            <a href={link.href} aria-current={link.current ? 'page' : undefined}>
-              {link.text}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-    <div class="actions">
-      <LanguageSwitch lang={lang} page={page} />
-      <ThemeToggle lang={lang} />
-      <a class="button download" href={`${href('')}#download`}>
-        {t.nav.download}
-      </a>
+    <div class="panel" id="site-menu">
+      <nav aria-label={t.nav.label}>
+        <ul>
+          {links.map((link) => (
+            <li>
+              <a href={link.href} aria-current={link.current ? 'page' : undefined}>
+                {link.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <div class="settings">
+        <LanguageSwitch lang={lang} page={page} />
+        <ThemeToggle lang={lang} />
+      </div>
     </div>
+    <a class="button download" href={`${href('')}#download`}>
+      {t.nav.download}
+    </a>
+    <button
+      type="button"
+      class="control toggle"
+      aria-controls="site-menu"
+      aria-expanded="false"
+      aria-label={t.nav.openMenu}
+      data-open-label={t.nav.openMenu}
+      data-close-label={t.nav.closeMenu}
+    >
+      <svg
+        class="burger"
+        aria-hidden="true"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+      <svg
+        class="close"
+        aria-hidden="true"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+      >
+        <path d="M6 6l12 12M18 6 6 18"></path>
+      </svg>
+    </button>
   </div>
 </header>
 
+<script>
+  for (const header of document.querySelectorAll<HTMLElement>('[data-header]')) {
+    const toggle = header.querySelector<HTMLButtonElement>('.toggle')!
+    const setOpen = (open: boolean) => {
+      header.toggleAttribute('data-open', open)
+      toggle.setAttribute('aria-expanded', String(open))
+      toggle.setAttribute(
+        'aria-label',
+        (open ? toggle.dataset.closeLabel : toggle.dataset.openLabel)!,
+      )
+    }
+    toggle.addEventListener('click', () => setOpen(!header.hasAttribute('data-open')))
+    header.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && header.hasAttribute('data-open')) {
+        setOpen(false)
+        toggle.focus()
+      }
+    })
+    // A link to a section of this page: close the menu, the page scrolls
+    for (const link of header.querySelectorAll('.panel nav a')) {
+      link.addEventListener('click', () => setOpen(false))
+    }
+  }
+</script>
+
 <style>
   .header {
+    position: relative;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
   }
   .bar {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2) var(--space-6);
     padding-block: var(--space-2);
@@ -72,6 +137,12 @@ const links = [
     font-weight: 700;
     font-size: 1.25rem;
     text-decoration: none;
+  }
+  .panel {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--space-2) var(--space-6);
   }
   nav {
     flex: 1;
@@ -94,12 +165,63 @@ const links = [
     color: var(--primary);
     text-decoration: underline;
   }
-  .actions {
+  .settings {
     display: flex;
     align-items: center;
     gap: var(--space-2);
   }
   .download {
     padding: 7px 16px;
+    white-space: nowrap;
+  }
+  .toggle {
+    display: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+  }
+  .close,
+  [data-open] .burger {
+    display: none;
+  }
+  [data-open] .close {
+    display: block;
+  }
+
+  @media (max-width: 760px) {
+    .bar {
+      flex-wrap: wrap;
+    }
+    .brand {
+      margin-right: auto;
+    }
+    /* Without a script: the panel stays open under the bar */
+    .panel {
+      flex-basis: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      order: 3;
+      padding-block: var(--space-2);
+    }
+    ul {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+    }
+    nav a {
+      display: block;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings {
+      padding-top: var(--space-2);
+    }
+    /* With scripts (set in <head>, so no flash): a button opens the panel */
+    :global(html[data-js]) .toggle {
+      display: grid;
+    }
+    :global(html[data-js]) .header:not([data-open]) .panel {
+      display: none;
+    }
   }
 </style>

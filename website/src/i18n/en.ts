@@ -8,6 +8,8 @@ export const en = {
   },
   nav: {
     label: 'Main',
+    openMenu: 'Open the menu',
+    closeMenu: 'Close the menu',
     skip: 'Skip to content',
     home: 'Home',
     download: 'Download',
@@ -26,7 +28,7 @@ export const en = {
   },
   hero: {
     title: 'Track your job search on one board',
-    lead: 'Sending dozens of applications and losing track of which company is at which stage? Findy keeps every application on a kanban board, from the moment you apply until you get an offer.',
+    lead: 'Dozens of applications, interviews and test tasks are easy to mix up. Findy keeps every application on a kanban board, from the moment you apply to the offer, and shows you what to do next.',
     facts:
       'Free and open source · Windows, macOS, Linux · No account · Your data stays on your computer',
   },
