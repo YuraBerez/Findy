@@ -1,0 +1,211 @@
+/* Spec 020: brand tokens from docs/brand.md (NFR-003). The theme follows the system until
+   the visitor picks one with the theme button; then <html data-theme> is set. */
+:root {
+  color-scheme: light;
+  --primary: #0a66c2;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --fg: #1c1f24;
+  --fg-muted: #5b6370;
+  --border: #d9dee5;
+  /* Filled buttons: the brand primary in both themes, white text (5.8:1) */
+  --button: #0a66c2;
+  --on-button: #ffffff;
+  /* Tints of the primary: they follow --primary in each theme */
+  --primary-soft: color-mix(in srgb, var(--primary) 14%, transparent);
+  --primary-faint: color-mix(in srgb, var(--primary) 30%, transparent);
+  --primary-line: color-mix(in srgb, var(--primary) 45%, transparent);
+  --primary-hover: color-mix(in srgb, var(--primary) 12%, var(--surface));
+  --header-bg: color-mix(in srgb, var(--surface) 88%, transparent);
+  --shadow: 0 6px 20px rgb(0 0 0 / 0.15);
+  /* Command boxes: dark in both themes; accent and prompt are the dark-theme brand colours */
+  --terminal-bg: #0f141b;
+  --terminal-bar: #161c25;
+  --terminal-border: #2b3340;
+  --terminal-line: #3a4452;
+  --terminal-fg: #e6e8eb;
+  --terminal-muted: #a3abb7;
+  --terminal-accent: #4a9de8;
+  --terminal-prompt: #66bb6a;
+  --chart-applied: #0a66c2;
+  --chart-hr_interview: #7b3fbf;
+  --chart-test_task: #b35c00;
+  --chart-technical_interview: #00796b;
+  --chart-c_level_interview: #c2185b;
+  --chart-offered: #2e7d32;
+  --chart-rejected: #6b7280;
+  --radius: 8px;
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-10: 40px;
+  --width: 1080px;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  line-height: 1.55;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --primary: #4a9de8;
+    --bg: #16181c;
+    --surface: #1f2228;
+    --fg: #e6e8eb;
+    --fg-muted: #a3abb7;
+    --border: #343a44;
+    --chart-applied: #4a9de8;
+    --chart-hr_interview: #b28af0;
+    --chart-test_task: #f0a14a;
+    --chart-technical_interview: #4db6ac;
+    --chart-c_level_interview: #f06292;
+    --chart-offered: #66bb6a;
+    --chart-rejected: #9aa3b0;
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --primary: #4a9de8;
+  --bg: #16181c;
+  --surface: #1f2228;
+  --fg: #e6e8eb;
+  --fg-muted: #a3abb7;
+  --border: #343a44;
+  --chart-applied: #4a9de8;
+  --chart-hr_interview: #b28af0;
+  --chart-test_task: #f0a14a;
+  --chart-technical_interview: #4db6ac;
+  --chart-c_level_interview: #f06292;
+  --chart-offered: #66bb6a;
+  --chart-rejected: #9aa3b0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Smooth scroll to a section from a link, unless the system asks for less motion */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Room for the sticky header above a section that a link opens */
+[id] {
+  scroll-margin-top: 80px;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  overflow-wrap: break-word;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--primary);
+}
+
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+
+code,
+pre {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+
+/* Wrap long commands: a scrolling block needs a keyboard focus stop (axe) */
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--width);
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.button {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: var(--radius);
+  background: var(--button);
+  color: var(--on-button);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.button:hover {
+  filter: brightness(1.08);
+}
+
+/* A second action next to a filled button */
+.button.secondary {
+  border: 1px solid var(--primary-line);
+  background: transparent;
+  color: var(--primary);
+}
+
+.button.secondary:hover {
+  filter: none;
+  background: var(--primary-soft);
+}
+
+/* Small controls (menus, slider, theme): primary icon and border, a tint on hover */
+.control {
+  border: 1px solid var(--primary-line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.control:hover {
+  border-color: var(--primary);
+  background: var(--primary-hover);
+}
+
+.muted {
+  color: var(--fg-muted);
+}
+
+.skip {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+}
+
+.skip:focus {
+  top: var(--space-2);
+  z-index: 10;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface);
+}

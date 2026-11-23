@@ -1,0 +1,111 @@
+---
+import Icon from './Icon.astro'
+
+interface Props {
+  title: string
+  platform: string
+  /** One command per item; the page shows a prompt before each, the copy has none */
+  commands: string[]
+  copy: string
+  copied: string
+}
+
+// FR-014: commands to type, in a terminal-like box, with a copy button (only with scripts)
+const { title, platform, commands, copy, copied } = Astro.props
+---
+
+<div class="terminal" data-code={commands.join('\n')}>
+  <div class="bar">
+    <span class="title">{title}</span>
+    <span class="platform">{platform}</span>
+    <button type="button" class="copy" data-copy={copy} data-copied={copied} hidden>
+      <Icon name="copy" size={14} />
+      <span>{copy}</span>
+    </button>
+  </div>
+  <pre>{commands.map((command) => <code class="line" set:text={command} />)}</pre>
+</div>
+
+<script>
+  for (const block of document.querySelectorAll<HTMLElement>('[data-code]')) {
+    const button = block.querySelector<HTMLButtonElement>('.copy')!
+    const label = button.querySelector('span')!
+    // Some browsers give no clipboard (an insecure page): then no button
+    if (!navigator.clipboard) continue
+    button.hidden = false
+    button.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(block.dataset.code ?? '')
+      label.textContent = button.dataset.copied!
+      setTimeout(() => (label.textContent = button.dataset.copy!), 2000)
+    })
+  }
+</script>
+
+<style>
+  /* The same dark box in both themes, like a terminal */
+  .terminal {
+    overflow: hidden;
+    border: 1px solid var(--terminal-border);
+    border-radius: 12px;
+    background: var(--terminal-bg);
+    color: var(--terminal-fg);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 8px 8px 8px 16px;
+    border-bottom: 1px solid var(--terminal-border);
+    background: var(--terminal-bar);
+  }
+  .title {
+    font-weight: 600;
+  }
+  .platform {
+    padding: 0 8px;
+    border: 1px solid var(--terminal-line);
+    border-radius: 999px;
+    color: var(--terminal-muted);
+    font-size: 0.8rem;
+  }
+  .copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    padding: 4px 10px;
+    border: 1px solid var(--terminal-line);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--terminal-fg);
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .copy:hover {
+    border-color: var(--terminal-accent);
+    color: var(--terminal-accent);
+  }
+  .copy[hidden] {
+    display: none;
+  }
+  pre {
+    margin: 0;
+    padding: 14px 16px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: inherit;
+  }
+  /* One command per line; a long one wraps with an indent under the prompt */
+  .line {
+    display: block;
+    padding-left: 2ch;
+    text-indent: -2ch;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .line::before {
+    color: var(--terminal-prompt);
+    content: '$ ';
+  }
+</style>

@@ -165,7 +165,12 @@ e2e/                     # Playwright + playwright-e2e-kit (D-6)
 └── data/                # back door: seed and read through window.findy
 skills/findy/SKILL.md    # spec 016: the skill for AI assistants (bundled into main)
 build/                   # icons, entitlements for electron-builder
-.github/workflows/       # ci.yml, release.yml
+website/                 # spec 020: the website, a separate npm package (D-19)
+├── src/lib/             # pure logic: system detection, release files, guide links
+├── src/i18n/            # en.ts, uk.ts (site text, not in locales/)
+├── src/components/, src/layouts/, src/pages/, src/styles/
+└── tests/               # unit/, built/ (HTML in dist/), browser/ (axe, keyboard)
+.github/workflows/       # ci.yml, release.yml, site.yml (website → GitHub Pages)
 ```
 
 ## Key decisions
@@ -406,6 +411,23 @@ build/                   # icons, entitlements for electron-builder
   (files on macOS and Linux, `HKCU` keys on Windows), only when the content changes. The
   manifest accepts only the ids in `shared/extension.ts`: one Chromium build from the
   Chrome Web Store, one Firefox build from addons.mozilla.org.
+
+### D-19 — The website is a separate package in `website/` (spec 020)
+
+- A static Astro site, published to GitHub Pages at `SITE_URL`
+  (`src/shared/project.ts`) by `.github/workflows/site.yml`. It has its own
+  `package.json`, lockfile, ESLint, Vitest (80 % gate on `website/src/lib` and
+  `website/src/i18n`) and Playwright checks. The root ESLint, Prettier and Vitest ignore
+  `website/`, and the app's dependencies do not change.
+- The website shares only files: `src/shared/project.ts` (every URL), `docs/guide/*.md`
+  (the guide pages, no copy), `docs/screenshots/` and `assets/logo.svg`.
+- The build reads the latest release from the GitHub API once and writes the download
+  links into the HTML. The visitor's browser loads nothing from other sites; Astro writes a
+  CSP with the hashes of the inline script and styles.
+- Site text is in `website/src/i18n/`, not in `locales/`, because the app bundles
+  `locales/*.json`.
+- CI runs the website checks only when a PR changes `website/` or a file that the site
+  shows ([release.md](release.md) → CI).
 
 ## Cross-cutting docs
 

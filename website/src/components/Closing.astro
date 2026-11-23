@@ -1,0 +1,118 @@
+---
+import { PROJECT_URL, SOURCE_URL, SUPPORT_URL } from '../../../src/shared/project'
+import { MESSAGES } from '../i18n'
+import type { Lang } from '../lib/paths'
+import Icon from './Icon.astro'
+
+interface Props {
+  lang: Lang
+}
+
+// FR-004: the data stays local; US-5: support the project
+const t = MESSAGES[Astro.props.lang]
+---
+
+<div class="closing">
+  <section class="card" aria-labelledby="privacy-title">
+    <span class="icon">
+      <Icon name="shield" />
+    </span>
+    <h2 id="privacy-title">{t.privacy.title}</h2>
+    <ul class="points">
+      {t.privacy.points.map((point) => (
+        <li>
+          <Icon name="check" size={18} />
+          {point}
+        </li>
+      ))}
+    </ul>
+    <p class="muted small">{t.privacy.online}</p>
+    <p class="small">
+      <a href={`${SOURCE_URL}PRIVACY.md`}>{t.privacy.policy}</a>
+    </p>
+  </section>
+
+  <section class="card support" aria-labelledby="support-title">
+    <span class="icon">
+      <Icon name="heart" />
+    </span>
+    <h2 id="support-title">{t.support.title}</h2>
+    <p>{t.support.text}</p>
+    <p class="actions">
+      <a class="button" href={SUPPORT_URL}>
+        {t.support.button}
+      </a>
+      <a class="button secondary" href={PROJECT_URL}>
+        {t.support.star}
+      </a>
+    </p>
+  </section>
+</div>
+
+<style>
+  .closing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-10);
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+  }
+  .support {
+    border-color: var(--primary-line);
+    background:
+      radial-gradient(ellipse at top right, var(--primary-soft), transparent 70%), var(--surface);
+  }
+  .icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--primary-soft);
+    color: var(--primary);
+  }
+  h2 {
+    margin: var(--space-4) 0 var(--space-2);
+    font-size: 1.35rem;
+  }
+  p {
+    margin: 0 0 var(--space-4);
+  }
+  .points {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: var(--space-2) 0 var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+  .points li {
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+  .points :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--chart-offered);
+  }
+  .small {
+    font-size: 0.9rem;
+  }
+  .small:last-child {
+    margin-bottom: 0;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: auto 0 0;
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content'
+import { MESSAGES, format } from '../i18n'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { missingGuides, parseGuideId, type GuideSlug } from '../lib/guides'
+import { LANGS, guidePage, type Lang } from '../lib/paths'
+
+interface Props {
+  lang: Lang
+  slug: GuideSlug
+}
+
+const { lang, slug } = Astro.props
+const t = MESSAGES[lang]
+const entries = await getCollection('guides')
+// Edge case: a guide with no translation fails the build
+const missing = missingGuides(
+  entries.map((entry) => entry.id),
+  LANGS,
+)
+if (missing.length > 0) throw new Error(`Guides with no file: ${missing.join(', ')}`)
+const entry = entries.find((e) => {
+  const guide = parseGuideId(e.id)
+  return guide?.slug === slug && guide.lang === lang
+})
+if (!entry) throw new Error(`No guide ${slug}.${lang}`)
+const { Content, headings } = await render(entry)
+const title = headings.find((h) => h.depth === 1)?.text ?? t.guides[slug]
+---
+
+<BaseLayout
+  lang={lang}
+  page={guidePage(slug)}
+  title={format(t.meta.guideTitle, { title })}
+  description={t.meta.guideDescriptions[slug]}
+>
+  <article class="container guide">
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  .guide {
+    max-width: 800px;
+    padding-top: var(--space-6);
+  }
+  .guide :global(table) {
+    display: block;
+    overflow-x: auto;
+    border-collapse: collapse;
+  }
+  .guide :global(th),
+  .guide :global(td) {
+    padding: var(--space-2);
+    border: 1px solid var(--border);
+  }
+</style>

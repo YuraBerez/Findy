@@ -64,6 +64,7 @@ npm run test:coverage  # unit tests + 80 % coverage gate (same as CI)
 npm run test:e2e   # e2e (Playwright + Electron, playwright-e2e-kit layers in e2e/)
 npm run lint       # eslint + tsc
 npm run dist       # installer for current OS
+npm --prefix website run dev   # the website (spec 020); its own gate: lint, test:coverage, build, test:built, test:browser
 ```
 
 Before finishing a task: `npm run lint && npm run test:coverage` must pass

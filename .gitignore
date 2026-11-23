@@ -11,3 +11,4 @@ e2e-traces/
 playwright-report/
 .claude/settings.local.json
 *.tsbuildinfo
+.astro/

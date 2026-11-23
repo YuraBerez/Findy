@@ -1,0 +1,87 @@
+---
+interface Props {
+  href: string
+  title: string
+  detail: string
+  size: string
+  /** A short label next to the title, for the build that most people need */
+  badge?: string | undefined
+}
+
+// One file to download: the whole row is the link
+const { href, title, detail, size, badge } = Astro.props
+---
+
+<a class:list={['row', { recommended: badge }]} href={href}>
+  <span class="text">
+    <span class="title">
+      {title}
+      {badge && <span class="badge">{badge}</span>}
+    </span>
+    <span class="detail">
+      {detail} · {size}
+    </span>
+  </span>
+  <svg
+    aria-hidden="true"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"></path>
+  </svg>
+</a>
+
+<style>
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .row:hover {
+    border-color: var(--primary);
+    background: var(--primary-hover);
+  }
+  .row svg {
+    flex: none;
+    color: var(--primary);
+  }
+  .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .title {
+    font-weight: 600;
+  }
+  .detail {
+    color: var(--fg-muted);
+    font-size: 0.9rem;
+  }
+  /* The build that most people need: a primary border and a quiet label */
+  .recommended {
+    border-color: var(--primary-line);
+  }
+  .badge {
+    margin-left: var(--space-2);
+    padding: 1px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--primary-line);
+    background: var(--primary-soft);
+    color: var(--fg);
+    font-size: 0.75rem;
+    font-weight: 600;
+    vertical-align: 2px;
+  }
+</style>

@@ -1,0 +1,49 @@
+---
+import { MESSAGES } from '../i18n'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { LANGS, pagePath, withBase } from '../lib/paths'
+
+// GitHub Pages shows this page for an address that does not exist. It is not indexed,
+// and it speaks both languages, because the address does not tell which one.
+const base = import.meta.env.BASE_URL
+const t = MESSAGES.en
+---
+
+<BaseLayout lang="en" page="" title={t.meta.notFoundTitle} description={t.notFound.text} notFound>
+  <section class="container not-found">
+    <p class="code">404</p>
+    {LANGS.map((lang) => (
+      <div lang={lang}>
+        <h1>{MESSAGES[lang].notFound.title}</h1>
+        <p class="muted">{MESSAGES[lang].notFound.text}</p>
+        <p>
+          <a class="button" href={withBase(base, pagePath(lang))}>
+            {MESSAGES[lang].notFound.home}
+          </a>
+        </p>
+      </div>
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: var(--space-10);
+    text-align: center;
+  }
+  .code {
+    margin: 0;
+    color: var(--primary);
+    font-size: 4rem;
+    font-weight: 800;
+  }
+  h1 {
+    margin-bottom: var(--space-2);
+    font-size: 1.6rem;
+  }
+  div + div {
+    margin-top: var(--space-10);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+</style>

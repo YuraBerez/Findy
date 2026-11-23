@@ -34,7 +34,15 @@ function restrictImports(...layer) {
 
 export default tseslint.config(
   {
-    ignores: ['out/', 'dist/', 'coverage/', 'test-results/', 'playwright-report/'],
+    ignores: [
+      'out/',
+      'dist/',
+      'coverage/',
+      'test-results/',
+      'playwright-report/',
+      // Spec 020: a separate package with its own lint (website/eslint.config.mjs)
+      'website/',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
