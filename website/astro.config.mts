@@ -14,6 +14,22 @@ export default defineConfig({
   trailingSlash: 'always',
   output: 'static',
   build: { format: 'directory', inlineStylesheets: 'always' },
-  markdown: { remarkPlugins: [[remarkGuideLinks, { base: site.pathname }]] },
+  // No syntax colours: Shiki writes inline styles that the CSP blocks
+  markdown: {
+    syntaxHighlight: false,
+    remarkPlugins: [[remarkGuideLinks, { base: site.pathname }]],
+  },
+  // NFR-001: only the website's own files; Astro adds the hashes of inline scripts and styles
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'none'",
+      ],
+    },
+  },
   vite: { server: { fs: { allow: [repo] } } },
 })

@@ -1,0 +1,48 @@
+---
+import { NEW_ISSUE_URL, PROJECT_URL, SOURCE_URL, SUPPORT_URL } from '../../../src/shared/project'
+import { MESSAGES } from '../i18n'
+import type { Lang } from '../lib/paths'
+
+interface Props {
+  lang: Lang
+}
+
+const t = MESSAGES[Astro.props.lang].footer
+// FR-023, US-5
+const links = [
+  { href: SUPPORT_URL, text: t.support },
+  { href: PROJECT_URL, text: t.source },
+  { href: NEW_ISSUE_URL, text: t.issues },
+  { href: `${SOURCE_URL}LICENSE`, text: t.licence },
+]
+---
+
+<footer class="footer">
+  <div class="container">
+    <ul>
+      {links.map((link) => (
+        <li>
+          <a href={link.href}>{link.text}</a>
+        </li>
+      ))}
+    </ul>
+    <p class="muted">{t.notAffiliated}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: var(--space-10);
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

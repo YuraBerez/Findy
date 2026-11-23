@@ -49,3 +49,7 @@ export const SOURCE_URL = `${PROJECT_URL}/blob/main/`
  * case; the path keeps the repository case, because Pages paths are case-sensitive.
  */
 export const SITE_URL = `https://${OWNER.toLowerCase()}.github.io/${NAME}/`
+
+/** Spec 012: the Homebrew tap (the repository `homebrew-findy`) and the Scoop bucket */
+export const HOMEBREW_TAP = `${OWNER.toLowerCase()}/findy`
+export const SCOOP_BUCKET_URL = `https://github.com/${OWNER}/scoop-findy`

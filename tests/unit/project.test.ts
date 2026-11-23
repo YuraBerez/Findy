@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { PROJECT_URL, SITE_URL, SOURCE_URL, releaseFileUrl } from '../../src/shared/project'
+import {
+  HOMEBREW_TAP,
+  PROJECT_URL,
+  SCOOP_BUCKET_URL,
+  SITE_URL,
+  SOURCE_URL,
+  releaseFileUrl,
+} from '../../src/shared/project'
 
 describe('project URLs for the website (spec 020)', () => {
   it('gives the GitHub Pages address of the repository (FR-030)', () => {
@@ -18,5 +25,11 @@ describe('project URLs for the website (spec 020)', () => {
     expect(releaseFileUrl('v1', 'a b#.zip')).toBe(
       `${PROJECT_URL}/releases/download/v1/a%20b%23.zip`,
     )
+  })
+
+  it('names the Homebrew tap and the Scoop bucket of the owner (spec 012)', () => {
+    const owner = new URL(PROJECT_URL).pathname.split('/')[1] ?? ''
+    expect(HOMEBREW_TAP).toBe(`${owner.toLowerCase()}/findy`)
+    expect(SCOOP_BUCKET_URL).toBe(`https://github.com/${owner}/scoop-findy`)
   })
 })

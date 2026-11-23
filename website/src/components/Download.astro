@@ -1,0 +1,181 @@
+---
+import { HOMEBREW_TAP, SCOOP_BUCKET_URL } from '../../../src/shared/project'
+import { MESSAGES, format, formatSize } from '../i18n'
+import { guidePage, pagePath, withBase, type Lang } from '../lib/paths'
+import type { Os } from '../lib/os'
+import { MAIN_KINDS, filesForOs, filesOf, type Release } from '../lib/release'
+
+interface Props {
+  lang: Lang
+  release: Release
+}
+
+const { lang, release } = Astro.props
+const t = MESSAGES[lang].download
+const base = import.meta.env.BASE_URL
+const guide = (slug: string, anchor = '') =>
+  withBase(base, pagePath(lang, guidePage(slug))) + anchor
+const systems: Os[] = ['windows', 'mac', 'linux']
+const sizeOf = (bytes: number) => formatSize(bytes, lang)
+const extension = filesOf(release, ['extensionChromium', 'extensionFirefox'])
+const checksums = filesOf(release, ['checksums'])
+const brew = `brew tap ${HOMEBREW_TAP}\nbrew trust ${HOMEBREW_TAP}\nbrew install --cask findy`
+const scoop = `scoop bucket add findy ${SCOOP_BUCKET_URL}\nscoop install findy`
+---
+
+<section id="download" class="download" aria-labelledby="download-title">
+  <h2 id="download-title">{t.title}</h2>
+  <p class="muted">{format(t.version, { version: release.version })}</p>
+
+  {/* FR-011: one of these shows when the script finds the system of the visitor */}
+  {systems.map((os) => {
+    const files = filesOf(release, MAIN_KINDS[os])
+    return (
+      files.length > 0 && (
+        <div class="main" data-for={os}>
+          <p class="main-title">{format(t.mainFor, { os: t.os[os] })}</p>
+          <div class="main-buttons">
+            {files.map((file) => (
+              <a class="button" href={file.url}>
+                {t.kinds[file.kind]}
+                <span class="size"> · {sizeOf(file.size)}</span>
+              </a>
+            ))}
+          </div>
+          {os === 'mac' && <p class="muted">{t.whichMac}</p>}
+        </div>
+      )
+    )
+  })}
+
+  {/* FR-013, FR-014, FR-015: every build, with or without scripts */}
+  <h3>{t.all}</h3>
+  <div class="grid">
+    {systems.map((os) => {
+      const files = filesForOs(release, os)
+      return (
+        files.length > 0 && (
+          <div class="card">
+            <h4>{t.os[os]}</h4>
+            <ul>
+              {files.map((file) => (
+                <li>
+                  <a href={file.url}>{t.kinds[file.kind]}</a>
+                  <span class="muted"> · {sizeOf(file.size)}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      )
+    })}
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h4>{t.packageManagers}</h4>
+      <p>{t.homebrew}</p>
+      <pre><code>{brew}</code></pre>
+      <p>{t.scoop}</p>
+      <pre><code>{scoop}</code></pre>
+    </div>
+    {extension.length > 0 && (
+      <div class="card">
+        <h4>{t.extension}</h4>
+        <p>{t.extensionHint}</p>
+        <ul>
+          {extension.map((file) => (
+            <li>
+              <a href={file.url}>{t.kinds[file.kind]}</a>
+            </li>
+          ))}
+        </ul>
+        <p>
+          <a href={guide('browser-extension')}>{t.howToInstall}</a>
+        </p>
+      </div>
+    )}
+  </div>
+
+  <p class="note">
+    {t.unsigned} <a href={guide('install', `#${t.unsignedAnchor}`)}>{t.unsignedLink}</a>
+  </p>
+  <p>
+    <a href={release.pageUrl}>{t.releasePage}</a>
+    {checksums.map((file) => (
+      <>
+        {' · '}
+        <a href={file.url}>{t.kinds.checksums}</a>
+      </>
+    ))}
+  </p>
+</section>
+
+<script>
+  import { detectOs } from '../lib/os'
+
+  // FR-011: mark the system of the visitor; CSS then shows its main button
+  const nav = navigator as Navigator & { userAgentData?: { platform: string } }
+  const os = detectOs({
+    userAgent: nav.userAgent,
+    platform: nav.userAgentData?.platform || nav.platform,
+    maxTouchPoints: nav.maxTouchPoints,
+  })
+  if (os) document.documentElement.dataset.os = os
+</script>
+
+<style>
+  .download {
+    padding-block: var(--space-6);
+  }
+  .main {
+    display: none;
+    margin-bottom: var(--space-6);
+    padding: var(--space-6);
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  :global(html[data-os='windows']) .main[data-for='windows'],
+  :global(html[data-os='mac']) .main[data-for='mac'],
+  :global(html[data-os='linux']) .main[data-for='linux'] {
+    display: block;
+  }
+  .main-title {
+    margin-top: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .main-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .size {
+    font-weight: 400;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  .card {
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .card h4 {
+    margin-top: 0;
+  }
+  .card ul {
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .note {
+    padding: var(--space-4);
+    border-left: 4px solid var(--primary);
+    background: var(--surface);
+  }
+</style>

@@ -89,7 +89,7 @@ website/
 ├── astro.config.mts        # site/base from SITE_URL, vite fs.allow for ../docs, ../assets, ../src/shared
 ├── tsconfig.json           # extends astro/tsconfigs/strict
 ├── eslint.config.mjs
-├── vitest.config.mts       # tests/unit (coverage ≥ 80 % on src/lib) and tests/dist
+├── vitest.config.mts       # tests/unit (coverage ≥ 80 % on src/lib, src/i18n) and tests/built
 ├── playwright.config.ts    # astro preview as webServer; Chromium only
 ├── src/
 │   ├── content.config.ts   # guides collection: glob loader over ../docs/guide
@@ -110,13 +110,13 @@ website/
 │       └── sitemap.xml.ts, robots.txt.ts
 └── tests/
     ├── unit/               # lib/, i18n key parity
-    ├── dist/               # built HTML: links, lang, hreflang, privacy, downloads
+    ├── built/              # built HTML: links, lang, hreflang, privacy, downloads
     └── browser/            # Playwright: axe, keyboard, system detection, 360 px
 .github/workflows/site.yml  # build + deploy to Pages
 ```
 
 `website/package.json` scripts: `dev`, `build`, `preview`, `lint` (ESLint + `astro
-check`), `test`, `test:coverage`, `test:dist` (after `build`), `test:browser`.
+check`), `test`, `test:coverage`, `test:built` (after `build`), `test:browser`.
 
 ## Key decisions
 
