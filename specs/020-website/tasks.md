@@ -83,5 +83,5 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 8 — After merge (owner approves each step)
 
-- [ ] T070 Turn on Pages with the source "GitHub Actions"; run the site workflow; set
+- [x] T070 Turn on Pages with the source "GitHub Actions"; run the site workflow; set
   the repository homepage to the website (FR-030, FR-034, SC-001, SC-003)
