@@ -1,0 +1,64 @@
+name: Website
+
+# Spec 020: build the website and publish it to GitHub Pages.
+# FR-031: a change of the website or of the files it shows in main.
+# FR-032: a published release (new version and download links).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - 'docs/guide/**'
+      - 'docs/screenshots/**'
+      - 'assets/logo.svg'
+      - 'src/shared/project.ts'
+      - '.github/workflows/site.yml'
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One publication at a time; a running one finishes
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci
+      # A failed request to the release API fails the build; the old website stays
+      - run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: website/dist
+
+  deploy:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

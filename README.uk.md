@@ -4,6 +4,8 @@
 
 **Безкоштовний десктопний застосунок з відкритим кодом для відстеження пошуку роботи.**
 
+**Сайт:** [yuraberez.github.io/Findy/uk](https://yuraberez.github.io/Findy/uk/)
+
 [English](README.md)
 
 [![Підтримати Findy на Ko-fi](https://img.shields.io/badge/%D0%9F%D1%96%D0%B4%D1%82%D1%80%D0%B8%D0%BC%D0%B0%D1%82%D0%B8%20Findy%20%D0%BD%D0%B0-Ko--fi-0A66C2?logo=ko-fi&logoColor=white)](https://ko-fi.com/findyapp)

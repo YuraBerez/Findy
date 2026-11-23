@@ -67,14 +67,14 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 7 — Publication
 
-- [ ] T060 `ci.yml`: job `Changes` (outputs `desktop`, `website`); desktop jobs run only
+- [x] T060 `ci.yml`: job `Changes` (outputs `desktop`, `website`); desktop jobs run only
   if `desktop`; job `Website` runs the website gate (`lint`, `test:coverage`, `build`,
   `test:built`, `test:browser`) only if `website`; job `CI result` fails if a needed job
   failed or was cancelled (FR-033, plan D-5)
-- [ ] T061 `.github/workflows/site.yml`: build and deploy to Pages on push to `main`
+- [x] T061 `.github/workflows/site.yml`: build and deploy to Pages on push to `main`
   (`website/`, guides, screenshots, logo, `project.ts`), on `release: published`, and
   by hand (FR-031, FR-032)
-- [ ] T062 Docs: `docs/architecture.md` (project tree, D-8 website), `docs/release.md`
+- [x] T062 Docs: `docs/architecture.md` (project tree, D-19 website), `docs/release.md`
   (CI by changed part, the one required check `CI result`, site workflow, one-time Pages
   and homepage setup), `CLAUDE.md` commands, README links to the website (FR-034)
 - [ ] T063 Before merge (owner approves): branch protection requires `CI result`

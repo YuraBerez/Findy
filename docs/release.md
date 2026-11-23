@@ -26,12 +26,26 @@ runner, and `npm run smoke:packaged` launches the unpacked build with
 On every pull request (opened, or a new push to it). Not after a merge to `main`:
 branch protection lets only PRs that passed these checks in.
 
+The first job, **Changes**, lists the files of the PR (spec 020, plan D-5). The other jobs
+run only for the part that changed. A skipped job counts as a pass.
+
+| Part | Runs when the PR changes | Jobs |
+|------|--------------------------|------|
+| Desktop app | any file outside `website/`, except `.github/workflows/site.yml` | 1, 2 |
+| Website | `website/`, `docs/guide/`, `docs/screenshots/`, `assets/logo.svg`, `src/shared/project.ts`, `ci.yml` or `site.yml` | 3 |
+
+If GitHub cannot list the files, every job runs.
+
 1. **Quality gate** (Ubuntu): `format:check` → `lint` (ESLint + tsc) →
    `test:coverage`. Coverage thresholds are **80 %** for lines, branches,
    functions and statements (`vitest.config.ts`); below that the job fails.
    A coverage table is published in the job summary.
 2. **E2E + package** (Windows, macOS, Linux; runs after the gate):
    `test:e2e:ci` (Linux: one Xvfb display started and checked before the tests) → `dist:dir` → `smoke:packaged`.
+3. **Website** (Ubuntu, in `website/`): `format:check` → `lint` (ESLint + `astro check`) →
+   `test:coverage` (80 %) → `build` → `test:built` (the HTML in `dist/`) →
+   `test:browser` (axe, keyboard, system detection in Chromium).
+4. **CI result**: always runs last. It fails if a job above failed or was cancelled.
 
 **Flaky policy** (`scripts/e2e-ci.mjs`): the run has no retries. At the end, only
 the failed tests run once more (`playwright test --last-failed`).
@@ -49,17 +63,17 @@ Coverage scope: `src/domain`, `src/main` (except the entry points
 `src/main/index.ts`, `src/main/mcp/cli.ts` and `src/main/connector/cli.ts`, the Electron glue in `src/main/app/` and
 `src/main/menu.ts`) and `src/shared`. UI and preload are covered by e2e tests.
 
-Branch protection on `main` requires all four checks (`Quality gate …` and
-`E2E + package` on Ubuntu, Windows and macOS), linear history, and forbids force
-pushes and deletion. Pull requests are merged with squash.
+Branch protection on `main` requires one check, **CI result**, linear history, and
+forbids force pushes and deletion. Do not require the other jobs: a skipped job never
+reports, and the PR then waits for it. Pull requests are merged with squash.
 
 Performance (NFR-002, NFR-003) is an e2e spec with 1 000 applications and 10 000
 notes (`e2e/specs/performance.spec.ts`, tag `@perf`); limits are 3× on CI runners.
 
 ## Repository rules
 
-- `main` is protected: every change comes through a pull request (no direct push), the four
-  CI checks above must pass, every review thread must be resolved, and the history stays
+- `main` is protected: every change comes through a pull request (no direct push), the
+  check **CI result** must pass, every review thread must be resolved, and the history stays
   linear. Force push and deletion are blocked. The rules apply to admins too: no merge
   around CI.
 - Pull requests merge only with **squash**; GitHub deletes the branch after the merge.
@@ -144,3 +158,21 @@ anyway". The Homebrew cask shows the same steps and does not remove the quaranti
    upload the signed files to the release instead of the unsigned ones.
 4. Check that the files show the publisher in their properties. SmartScreen warnings
    go away as the signed files gain reputation.
+
+## Website — `.github/workflows/site.yml`
+
+The website (spec 020, `website/`) is published to GitHub Pages at `SITE_URL`
+(`src/shared/project.ts`). The workflow builds it and publishes it:
+
+- after a push to `main` that changes `website/`, `docs/guide/`, `docs/screenshots/`,
+  `assets/logo.svg`, `src/shared/project.ts` or the workflow;
+- after a release is published, so the version and the download links change;
+- when a maintainer starts it by hand (**Actions → Website → Run workflow**).
+
+If the build cannot read the latest release, it fails and the published website stays.
+
+One-time setup (done once for the repository):
+
+1. **Settings → Pages → Source:** GitHub Actions.
+2. **About → Website:** the `SITE_URL`.
+

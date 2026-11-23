@@ -13,8 +13,42 @@ permissions:
   contents: read
 
 jobs:
+  # Spec 020 plan D-5: run only the checks of the part that the PR changes. A skipped job
+  # passes; branch protection requires only "CI result".
+  changes:
+    name: Changes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      desktop: ${{ steps.files.outputs.desktop }}
+      website: ${{ steps.files.outputs.website }}
+    steps:
+      - id: files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          # If GitHub cannot list the files (a very large PR), run every check
+          if ! files=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only); then
+            printf 'desktop=true\nwebsite=true\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          printf '%s\n' "$files"
+          has() { printf '%s\n' "$files" | grep -qE "$1" && echo true || echo false; }
+          # The app: any file outside website/, except the deploy workflow of the website
+          desktop=$(printf '%s\n' "$files" | grep -vE '^(website/|\.github/workflows/site\.yml$)' | grep -q . && echo true || echo false)
+          # The website: its package and the repository files that it shows
+          website=$(has '^(website/|docs/guide/|docs/screenshots/|assets/logo\.svg$|src/shared/project\.ts$|\.github/workflows/(ci|site)\.yml$)')
+          echo "desktop=$desktop" >> "$GITHUB_OUTPUT"
+          echo "website=$website" >> "$GITHUB_OUTPUT"
+          echo "desktop=$desktop website=$website"
+
   quality-gate:
     name: Quality gate (lint, types, unit tests, coverage ≥ 80 %)
+    needs: changes
+    if: needs.changes.outputs.desktop == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -83,3 +117,46 @@ jobs:
           CSC_FOR_PULL_REQUEST: true
       - name: Smoke test packaged app
         run: npm run smoke:packaged
+
+  website:
+    name: Website (lint, coverage ≥ 80 %, build, page tests)
+    needs: changes
+    if: needs.changes.outputs.website == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: website
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run test:coverage
+      - name: Build (reads the latest release, spec 020 FR-010)
+        run: npm run build
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Tests of the built pages
+        run: npm run test:built
+      - name: Browser tests (axe, keyboard, system detection)
+        run: |
+          npx playwright install --with-deps chromium
+          npm run test:browser
+
+  result:
+    name: CI result
+    if: always()
+    needs: [changes, quality-gate, e2e-and-package, website]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail if a needed job failed or was cancelled (a skipped job passes)
+        env:
+          RESULTS: ${{ toJSON(needs.*.result) }}
+        run: |
+          echo "$RESULTS"
+          if echo "$RESULTS" | grep -qE '"(failure|cancelled)"'; then exit 1; fi
