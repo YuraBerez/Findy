@@ -82,7 +82,24 @@ const commands = [
       return (
         files.length > 0 && (
           <div class="card">
-            <h4>{t.os[os]}</h4>
+            <div class="os">
+              <span class="tile">
+                <Icon name="monitor" size={20} />
+              </span>
+              <div>
+                <h4>{t.os[os]}</h4>
+                <p class="muted note-os">{t.osNote[os]}</p>
+              </div>
+              {os === 'mac' && (
+                <details class="which">
+                  <summary>
+                    <Icon name="help" size={16} />
+                    {t.whichMacShort}
+                  </summary>
+                  <p>{t.whichMacAnswer}</p>
+                </details>
+              )}
+            </div>
             <ul class="rows">
               {files.map((file, i) => (
                 <li>
@@ -96,12 +113,6 @@ const commands = [
                 </li>
               ))}
             </ul>
-            {os === 'mac' && (
-              <details class="which">
-                <summary>{t.whichMac}</summary>
-                <p class="muted">{t.whichMacAnswer}</p>
-              </details>
-            )}
           </div>
         )
       )
@@ -292,14 +303,47 @@ const commands = [
     padding: 0;
     list-style: none;
   }
+  .os {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .note-os {
+    margin: 2px 0 0;
+    font-size: 0.85rem;
+  }
+  /* "Which Mac?": a small popover, so every card keeps the same height */
+  .which {
+    position: relative;
+    align-self: flex-start;
+    margin-left: auto;
+  }
   .which summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     color: var(--primary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
     cursor: pointer;
+    list-style: none;
+  }
+  .which summary::-webkit-details-marker {
+    display: none;
   }
   .which p {
-    margin: var(--space-2) 0 0;
-    font-size: 0.9rem;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 5;
+    width: min(280px, 80vw);
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    font-size: 0.85rem;
   }
   .commands {
     display: grid;

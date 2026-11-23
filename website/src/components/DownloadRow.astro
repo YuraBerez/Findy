@@ -12,7 +12,7 @@ interface Props {
 const { href, title, detail, size, badge } = Astro.props
 ---
 
-<a class="row" href={href}>
+<a class:list={['row', { recommended: badge }]} href={href}>
   <span class="text">
     <span class="title">
       {title}
@@ -69,12 +69,17 @@ const { href, title, detail, size, badge } = Astro.props
     color: var(--fg-muted);
     font-size: 0.9rem;
   }
+  /* The build that most people need: a primary border and a quiet label */
+  .recommended {
+    border-color: var(--primary-line);
+  }
   .badge {
     margin-left: var(--space-2);
     padding: 1px 8px;
     border-radius: 999px;
-    background: var(--button);
-    color: var(--on-button);
+    border: 1px solid var(--primary-line);
+    background: var(--primary-soft);
+    color: var(--fg);
     font-size: 0.75rem;
     font-weight: 600;
     vertical-align: 2px;

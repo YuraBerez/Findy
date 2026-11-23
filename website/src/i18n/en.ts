@@ -37,11 +37,17 @@ export const en = {
     version: 'Version {version}',
     mainFor: 'Download for {os}',
     os: { windows: 'Windows', mac: 'macOS', linux: 'Linux' },
+    osNote: {
+      windows: 'Windows 10 and 11, 64-bit',
+      mac: 'macOS 13 Ventura or later',
+      linux: '64-bit (x64)',
+    },
+    whichMacShort: 'Which Mac?',
     kinds: {
       windowsInstaller: { title: 'Installer', detail: 'Windows 10/11 · .exe' },
       windowsPortable: { title: 'Portable', detail: 'No install · .zip' },
-      macAppleSilicon: { title: 'Apple Silicon', detail: 'M1, M2, M3, M4… · .dmg' },
-      macIntel: { title: 'Intel', detail: 'Intel processor · .dmg' },
+      macAppleSilicon: { title: 'Apple Silicon', detail: 'M1 and newer · .dmg' },
+      macIntel: { title: 'Intel', detail: 'Older Macs · .dmg' },
       linuxAppImage: { title: 'AppImage', detail: 'Any distribution' },
       linuxDeb: { title: 'Debian, Ubuntu', detail: '.deb package' },
       extensionChromium: {

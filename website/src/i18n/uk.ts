@@ -39,11 +39,17 @@ export const uk: Messages = {
     version: 'Версія {version}',
     mainFor: 'Завантажити для {os}',
     os: { windows: 'Windows', mac: 'macOS', linux: 'Linux' },
+    osNote: {
+      windows: 'Windows 10 і 11, 64-біт',
+      mac: 'macOS 13 Ventura або новіша',
+      linux: '64-біт (x64)',
+    },
+    whichMacShort: 'Який Mac?',
     kinds: {
       windowsInstaller: { title: 'Інсталятор', detail: 'Windows 10/11 · .exe' },
       windowsPortable: { title: 'Портативна версія', detail: 'Без встановлення · .zip' },
-      macAppleSilicon: { title: 'Apple Silicon', detail: 'M1, M2, M3, M4… · .dmg' },
-      macIntel: { title: 'Intel', detail: 'Процесор Intel · .dmg' },
+      macAppleSilicon: { title: 'Apple Silicon', detail: 'M1 і новіші · .dmg' },
+      macIntel: { title: 'Intel', detail: 'Старіші Mac · .dmg' },
       linuxAppImage: { title: 'AppImage', detail: 'Будь-який дистрибутив' },
       linuxDeb: { title: 'Debian, Ubuntu', detail: 'Пакет .deb' },
       extensionChromium: {
