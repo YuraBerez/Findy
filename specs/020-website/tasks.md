@@ -78,7 +78,7 @@ Each task references the requirement(s) it satisfies.
 - [x] T062 Docs: `docs/architecture.md` (project tree, D-19 website), `docs/release.md`
   (CI by changed part, the one required check `CI result`, site workflow, one-time Pages
   and homepage setup), `CLAUDE.md` commands, README links to the website (FR-034)
-- [ ] T063 Before merge (owner approves): branch protection requires `CI result`
+- [x] T063 Before merge (owner approves): branch protection requires `CI result`
   instead of the four checks (plan D-5)
 
 ## Phase 8 — After merge (owner approves each step)
