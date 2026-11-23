@@ -3,10 +3,20 @@ import type { Messages } from './en'
 /** Spec 020: the Ukrainian text of the website */
 export const uk: Messages = {
   meta: {
-    homeTitle: 'Findy — пошук роботи на канбан-дошці',
+    homeTitle: 'Findy — безкоштовний трекер пошуку роботи на канбан-дошці',
     homeDescription:
-      'Безкоштовний застосунок з відкритим кодом для Windows, macOS і Linux. Усі заявки на одній дошці: від першого відгуку до оферу. Дані лишаються на вашому компʼютері.',
+      'Findy — безкоштовний трекер заявок на вакансії з відкритим кодом для Windows, macOS і Linux. Усі заявки на канбан-дошці: від першого відгуку до оферу. Дані лишаються на вашому компʼютері.',
     guideTitle: '{title} — Findy',
+    guideDescriptions: {
+      install:
+        'Як встановити трекер пошуку роботи Findy на Windows, macOS і Linux: Homebrew, Scoop, перевірка завантаження й перший запуск.',
+      'browser-extension':
+        'Як встановити розширення Findy в Chrome, Edge, Brave, Opera, Vivaldi чи Firefox і додавати вакансію на дошку в один клік.',
+      'ai-assistant':
+        'Як підключити Findy до Claude чи іншого AI-асистента через MCP і встановити скіл Findy для підготовки до співбесід.',
+    },
+    category: 'Трекер пошуку роботи',
+    notFoundTitle: 'Сторінку не знайдено — Findy',
   },
   nav: {
     label: 'Головне меню',
@@ -176,6 +186,11 @@ export const uk: Messages = {
     text: 'Findy безкоштовний і створюється у вільний час. Якщо він допоміг вам знайти роботу, ви можете його підтримати.',
     button: 'Підтримати на Ko-fi',
     star: 'Поставити зірку на GitHub',
+  },
+  notFound: {
+    title: 'Сторінку не знайдено',
+    text: 'Такої сторінки немає або її перенесено.',
+    home: 'На головну',
   },
   footer: {
     support: 'Підтримати',

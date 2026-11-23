@@ -197,6 +197,36 @@ describe('guides (FR-006 – FR-008)', () => {
   })
 })
 
+describe('search engines (FR-040)', () => {
+  it('gives every page its own description', () => {
+    const descriptions = PAGES.map(({ path }) =>
+      read(path).querySelector('meta[name=description]')?.getAttribute('content'),
+    )
+    expect(new Set(descriptions).size).toBe(PAGES.length)
+  })
+
+  it.each(LANGS)('describes the app with schema.org data on the home page (%s)', (lang) => {
+    const json = read(pagePath(lang)).querySelector('script[type="application/ld+json"]')?.text
+    const data = JSON.parse(json ?? '{}')
+    expect(data).toMatchObject({
+      '@type': 'SoftwareApplication',
+      name: 'Findy',
+      inLanguage: lang,
+      url: `${SITE_URL}${pagePath(lang)}`,
+      offers: { price: '0' },
+    })
+    expect(data.softwareVersion).toMatch(/^\d+\.\d+\.\d+/)
+  })
+
+  it('has a 404 page in both languages that is not indexed', () => {
+    const doc = parse(readFileSync(join(DIST, '404.html'), 'utf8'))
+    expect(doc.querySelector('meta[name=robots]')?.getAttribute('content')).toBe('noindex')
+    expect(doc.querySelector('link[rel=canonical]')).toBeNull()
+    const hrefs = attrs(doc, 'main a', 'href')
+    for (const lang of LANGS) expect(hrefs).toContain(`${BASE}${pagePath(lang)}`)
+  })
+})
+
 describe('sitemap and robots.txt (FR-042)', () => {
   it('lists every page with its other language', () => {
     const xml = readFileSync(join(DIST, 'sitemap.xml'), 'utf8')

@@ -32,7 +32,7 @@ const title = headings.find((h) => h.depth === 1)?.text ?? t.guides[slug]
   lang={lang}
   page={guidePage(slug)}
   title={format(t.meta.guideTitle, { title })}
-  description={`${title}. ${t.meta.homeDescription}`}
+  description={t.meta.guideDescriptions[slug]}
 >
   <article class="container guide">
     <Content />

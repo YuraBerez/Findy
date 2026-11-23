@@ -1,10 +1,20 @@
 /** Spec 020: the English text of the website, the source for every other language */
 export const en = {
   meta: {
-    homeTitle: 'Findy — track your job search on a kanban board',
+    homeTitle: 'Findy — free job application tracker on a kanban board',
     homeDescription:
-      'Free, open-source desktop app for Windows, macOS and Linux. Keep every job application on one board, from the first response to the offer. Your data stays on your computer.',
+      'Findy is a free, open-source job application tracker for Windows, macOS and Linux. Keep every application on a kanban board, from the first response to the offer. Your data stays on your computer.',
     guideTitle: '{title} — Findy',
+    guideDescriptions: {
+      install:
+        'How to install the Findy job application tracker on Windows, macOS and Linux: Homebrew, Scoop, checking a download, and the first start.',
+      'browser-extension':
+        'How to install the Findy browser extension in Chrome, Edge, Brave, Opera, Vivaldi or Firefox and add a vacancy to your board in one click.',
+      'ai-assistant':
+        'How to connect Findy to Claude or another AI assistant through MCP, and install the Findy skill to prepare for interviews.',
+    },
+    category: 'Job application tracker',
+    notFoundTitle: 'Page not found — Findy',
   },
   nav: {
     label: 'Main',
@@ -174,6 +184,11 @@ export const en = {
     text: 'Findy is free and made in spare time. If it helps you find a job, you can support it.',
     button: 'Support on Ko-fi',
     star: 'Star on GitHub',
+  },
+  notFound: {
+    title: 'Page not found',
+    text: 'This page does not exist or has moved.',
+    home: 'Go to the home page',
   },
   footer: {
     support: 'Support',

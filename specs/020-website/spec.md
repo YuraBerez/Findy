@@ -171,6 +171,12 @@ As a user who likes Findy, I want a link to support the project, so that I can h
   to the same page in the other language.
 - **FR-041** Every page MUST have a preview image and a short text for social networks.
 - **FR-042** The website MUST give search engines a list of its pages.
+- **FR-043** The titles and descriptions MUST name what Findy is in the words people
+  search for ("job application tracker", «трекер пошуку роботи»). Every page has its own
+  description. The home page gives search engines structured data about the app: a free
+  desktop app, its systems, version and download page.
+- **FR-044** An address that does not exist MUST show a page in both languages with a
+  link to each home page. Search engines do not index it.
 
 ## Non-functional requirements
 
