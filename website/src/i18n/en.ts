@@ -28,7 +28,7 @@ export const en = {
   },
   hero: {
     title: 'Track your job search on one board',
-    lead: 'Dozens of applications, interviews and test tasks are easy to mix up. Findy keeps every application on a kanban board, from the moment you apply to the offer, and shows you what to do next.',
+    lead: 'Dozens of applications are easy to mix up. Findy keeps them all on one kanban board, from the first response to the offer.',
     facts: 'Open source project',
     repository: 'View on GitHub',
   },
