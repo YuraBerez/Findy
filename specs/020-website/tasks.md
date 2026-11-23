@@ -67,7 +67,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 7 — Publication
 
-- [x] T060 `ci.yml`: job `Changes` (outputs `desktop`, `website`); desktop jobs run only
+- [x] T060 `ci.yml`: job `Changes` (outputs `desktop`, `website` from the tested
+  `scripts/ci-changes.mjs`); desktop jobs run only
   if `desktop`; job `Website` runs the website gate (`lint`, `test:coverage`, `build`,
   `test:built`, `test:browser`) only if `website`; job `CI result` fails if a needed job
   failed or was cancelled (FR-033, plan D-5)

@@ -162,18 +162,22 @@ check`), `test`, `test:coverage`, `test:built` (after `build`), `test:browser`.
      required check.
 - **Chosen:** 3.
 - **How:**
-  - Job `Changes` (first): `git diff --name-only` between the PR base and head. It sets
-    two outputs:
-    - `desktop` — a file outside `website/` changed;
+  - Job `Changes` (first): lists the files of the PR and gives them to
+    `scripts/ci-changes.mjs` (unit-tested). It sets two outputs:
+    - `desktop` — app code or config changed (`src/`, `e2e/`, `tests/`, `scripts/`,
+      `build/`, `locales/`, `skills/`, `assets/`, package, TypeScript, build, test, lint
+      and format configs);
     - `website` — a file in `website/`, `docs/guide/`, `docs/screenshots/`,
-      `assets/logo.svg` or `src/shared/project.ts` changed.
-    A change of `.github/workflows/ci.yml` sets both.
+      `assets/logo.svg`, `src/shared/project.ts` or `site.yml` changed.
+    A change of `ci.yml` or of the script sets both. Docs, specs and templates set
+    neither, so they run no checks.
   - `Quality gate` and `E2E + package` run if `desktop`; `Website` runs if `website`.
   - `CI result` runs `if: always()`, needs all jobs, and fails if one of them failed or
     was cancelled. A skipped job is a pass.
   - Branch protection requires only `CI result` (owner changes the ruleset once, T063).
 - **Result:** a website PR runs `Changes`, `Website` and `CI result`. A desktop PR runs
-  the same checks as today. A PR that changes `project.ts` runs both.
+  the same checks as today. A PR that changes `project.ts` or the logo runs both. A
+  PR with only docs or specs runs `Changes` and `CI result`.
 
 ## Risks
 

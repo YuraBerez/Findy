@@ -25,6 +25,10 @@ jobs:
       desktop: ${{ steps.files.outputs.desktop }}
       website: ${{ steps.files.outputs.website }}
     steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: scripts/ci-changes.mjs
+          sparse-checkout-cone-mode: false
       - id: files
         env:
           GH_TOKEN: ${{ github.token }}
@@ -32,18 +36,11 @@ jobs:
         run: |
           # If GitHub cannot list the files (a very large PR), run every check
           if ! files=$(gh pr diff "$PR" --repo "$GITHUB_REPOSITORY" --name-only); then
-            printf 'desktop=true\nwebsite=true\n' >> "$GITHUB_OUTPUT"
+            printf 'desktop=true\nwebsite=true\n' | tee -a "$GITHUB_OUTPUT"
             exit 0
           fi
           printf '%s\n' "$files"
-          has() { printf '%s\n' "$files" | grep -qE "$1" && echo true || echo false; }
-          # The app: any file outside website/, except the deploy workflow of the website
-          desktop=$(printf '%s\n' "$files" | grep -vE '^(website/|\.github/workflows/site\.yml$)' | grep -q . && echo true || echo false)
-          # The website: its package and the repository files that it shows
-          website=$(has '^(website/|docs/guide/|docs/screenshots/|assets/logo\.svg$|src/shared/project\.ts$|\.github/workflows/(ci|site)\.yml$)')
-          echo "desktop=$desktop" >> "$GITHUB_OUTPUT"
-          echo "website=$website" >> "$GITHUB_OUTPUT"
-          echo "desktop=$desktop website=$website"
+          printf '%s\n' "$files" | node scripts/ci-changes.mjs | tee -a "$GITHUB_OUTPUT"
 
   quality-gate:
     name: Quality gate (lint, types, unit tests, coverage ≥ 80 %)

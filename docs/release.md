@@ -26,15 +26,19 @@ runner, and `npm run smoke:packaged` launches the unpacked build with
 On every pull request (opened, or a new push to it). Not after a merge to `main`:
 branch protection lets only PRs that passed these checks in.
 
-The first job, **Changes**, lists the files of the PR (spec 020, plan D-5). The other jobs
-run only for the part that changed. A skipped job counts as a pass.
+The first job, **Changes**, lists the files of the PR and gives them to
+`scripts/ci-changes.mjs` (spec 020, plan D-5). The other jobs run only for the part that
+changed. A skipped job counts as a pass.
 
 | Part | Runs when the PR changes | Jobs |
 |------|--------------------------|------|
-| Desktop app | any file outside `website/`, except `.github/workflows/site.yml` | 1, 2 |
-| Website | `website/`, `docs/guide/`, `docs/screenshots/`, `assets/logo.svg`, `src/shared/project.ts`, `ci.yml` or `site.yml` | 3 |
+| Desktop app | app code and config: `src/`, `e2e/`, `tests/`, `scripts/`, `build/`, `locales/`, `skills/`, `assets/`, `package*.json`, `tsconfig*.json`, the build, test, lint and format configs | 1, 2 |
+| Website | `website/`, `docs/guide/`, `docs/screenshots/`, `assets/logo.svg`, `src/shared/project.ts`, `site.yml` | 3 |
+| Both | `ci.yml`, `scripts/ci-changes.mjs` | 1, 2, 3 |
+| None | other files: `docs/` (except the two folders above), `specs/`, Markdown in the root, `.claude/`, issue and PR templates, `release.yml` | — |
 
-If GitHub cannot list the files, every job runs.
+If GitHub cannot list the files, every job runs. When you add a new root config file
+that the app build or tests read, add it to `scripts/ci-changes.mjs` and its test.
 
 1. **Quality gate** (Ubuntu): `format:check` → `lint` (ESLint + tsc) →
    `test:coverage`. Coverage thresholds are **80 %** for lines, branches,
