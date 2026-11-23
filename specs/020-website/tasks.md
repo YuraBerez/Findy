@@ -78,10 +78,10 @@ Each task references the requirement(s) it satisfies.
 - [x] T062 Docs: `docs/architecture.md` (project tree, D-19 website), `docs/release.md`
   (CI by changed part, the one required check `CI result`, site workflow, one-time Pages
   and homepage setup), `CLAUDE.md` commands, README links to the website (FR-034)
-- [ ] T063 Before merge (owner approves): branch protection requires `CI result`
+- [x] T063 Before merge (owner approves): branch protection requires `CI result`
   instead of the four checks (plan D-5)
 
 ## Phase 8 — After merge (owner approves each step)
 
-- [ ] T070 Turn on Pages with the source "GitHub Actions"; run the site workflow; set
+- [x] T070 Turn on Pages with the source "GitHub Actions"; run the site workflow; set
   the repository homepage to the website (FR-030, FR-034, SC-001, SC-003)

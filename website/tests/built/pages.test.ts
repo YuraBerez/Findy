@@ -4,6 +4,7 @@ import { parse, type HTMLElement } from 'node-html-parser'
 import { describe, expect, it } from 'vitest'
 import { PROJECT_URL, SITE_URL, SOURCE_URL, SUPPORT_URL } from '../../../src/shared/project'
 import { MESSAGES } from '../../src/i18n'
+import { GOOGLE_SITE_VERIFICATION } from '../../src/lib/site'
 import { GUIDES } from '../../src/lib/guides'
 import { LANGS, LANG_NAMES, guidePage, otherLang, pagePath, type Lang } from '../../src/lib/paths'
 
@@ -198,6 +199,12 @@ describe('guides (FR-006 – FR-008)', () => {
 })
 
 describe('search engines (FR-040)', () => {
+  it('proves the site owner to Google Search Console', () => {
+    const doc = read(pagePath('en'))
+    const tag = doc.querySelector('meta[name="google-site-verification"]')
+    expect(tag?.getAttribute('content')).toBe(GOOGLE_SITE_VERIFICATION)
+  })
+
   it('gives every page its own description', () => {
     const descriptions = PAGES.map(({ path }) =>
       read(path).querySelector('meta[name=description]')?.getAttribute('content'),

@@ -1,7 +1,7 @@
 # Feature Spec: Project website
 
 - **ID:** 020-website
-- **Status:** Approved
+- **Status:** Implemented (#59)
 - **Approved:** 2026-11-23 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-23

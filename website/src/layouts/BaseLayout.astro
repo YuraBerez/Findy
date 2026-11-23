@@ -6,6 +6,7 @@ import boardUk from '../../../docs/screenshots/board-uk.png'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
 import { MESSAGES } from '../i18n'
+import { GOOGLE_SITE_VERIFICATION } from '../lib/site'
 import { THEME_KEY } from '../lib/theme'
 import { DEFAULT_LANG, LANGS, pagePath, withBase, type Lang, type PageKey } from '../lib/paths'
 import '../styles/global.css'
@@ -42,6 +43,7 @@ const preview = await getImage({
     <meta name="referrer" content="no-referrer" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION} />
     {notFound && <meta name="robots" content="noindex" />}
     {!notFound && <link rel="canonical" href={urlOf(lang)} />}
     {!notFound && LANGS.map((l) => <link rel="alternate" hreflang={l} href={urlOf(l)} />)}
