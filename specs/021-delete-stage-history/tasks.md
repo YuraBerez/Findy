@@ -22,4 +22,4 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 4 — Polish
 
-- [ ] T090 Full gate: format, lint, coverage ≥ 80 %, e2e
+- [x] T090 Full gate: format, lint, coverage ≥ 80 %, e2e
