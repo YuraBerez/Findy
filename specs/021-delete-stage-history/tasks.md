@@ -7,13 +7,13 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Setup
 
-- [ ] T001 Plan, tasks; `docs/contracts/ipc.md` and `docs/data-model.md` describe the new call and rule
+- [x] T001 Plan, tasks; `docs/contracts/ipc.md` and `docs/data-model.md` describe the new call and rule
 
 ## Phase 2 — Foundations
 
-- [ ] T010 Tests + pure `removeStageChange(history, index)`: removes the entry, merges equal neighbours into the earlier one, keeps the only entry (FR-002, FR-004)
-- [ ] T011 Tests + `Repository.deleteStageChange(id, entry)`: one transaction; `NOT_FOUND` for a changed or missing entry; `VALIDATION` for the only entry; a change of the last stage moves the card to the top of the new column; else the card keeps its column and position; bumps `updatedAt` only; no new entry (FR-005…FR-008, FR-010)
-- [ ] T012 Tests + IPC `deleteStageChange` with zod validation, preload method list and `FindyApi` type (FR-010)
+- [x] T010 Tests + pure `removeStageChange(history, index)`: removes the entry, merges equal neighbours into the earlier one, keeps the only entry (FR-002, FR-004)
+- [x] T011 Tests + `Repository.deleteStageChange(id, entry)`: one transaction; `NOT_FOUND` for a changed or missing entry; `VALIDATION` for the only entry; a change of the last stage moves the card to the top of the new column; else the card keeps its column and position; bumps `updatedAt` only; no new entry (FR-005…FR-008, FR-010)
+- [x] T012 Tests + IPC `deleteStageChange` with zod validation, preload method list and `FindyApi` type (FR-010)
 
 ## Phase 3 — User stories 1–5 (P1, P2)
 

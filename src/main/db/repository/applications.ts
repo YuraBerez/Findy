@@ -6,11 +6,17 @@ import {
   type ApplicationFields,
 } from '../../../domain/fields'
 import type { NextStep, StepRef } from '../../../domain/nextStep'
-import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
+import { removeStageChange } from '../../../domain/history'
+import type {
+  ApplicationInput,
+  ApplicationPatch,
+  MoveTarget,
+  StageChangeRef,
+} from '../../../domain/schema'
 import { DEFAULT_STAGE, isStageId, STAGES, type StageId } from '../../../domain/stages'
 import type { ImportedApplication } from '../../../domain/transfer'
 import type { Application } from '../../../domain/types'
-import { NotFoundError } from './errors'
+import { NotFoundError, OnlyStageChangeError } from './errors'
 import {
   fieldValues,
   FIELD_COLUMNS,
@@ -218,6 +224,44 @@ export class ApplicationStore {
         this.renumber(this.idsInStage(current.stage))
         this.addStageChange(id, target.stage, at)
       }
+    })()
+    return this.get(id)
+  }
+
+  /**
+   * Spec 021 FR-004…FR-008: deletes the entry if it still has this stage and time (plan
+   * D-1); equal neighbours merge. A change of the last stage moves the card to the top
+   * of that column, also a hidden one (D-3). Adds no history entry.
+   */
+  deleteStageChange(id: string, entry: StageChangeRef): Application {
+    const { db } = this.ctx
+    db.transaction(() => {
+      const current = this.require(id)
+      const rows = db
+        .prepare('SELECT id, stage, at FROM stage_changes WHERE application_id = ? ORDER BY at, id')
+        .all(id) as { id: number; stage: StageId; at: string }[]
+      const target = rows[entry.index]
+      if (target?.stage !== entry.stage || target.at !== entry.at)
+        throw new NotFoundError('Stage history entry of application', id)
+      const kept = removeStageChange(rows, entry.index)
+      if (!kept) throw new OnlyStageChangeError(id)
+
+      const keptIds = new Set(kept.map((row) => row.id))
+      const remove = db.prepare('DELETE FROM stage_changes WHERE id = ?')
+      for (const row of rows) if (!keptIds.has(row.id)) remove.run(row.id)
+
+      const stage = kept.at(-1)?.stage ?? current.stage
+      const at = this.ctx.now()
+      if (stage === current.stage) {
+        this.touch(id, at)
+        return
+      }
+      // FR-005 and 001 FR-023: the top of the new column
+      db.prepare('UPDATE applications SET position = position + 1 WHERE stage = ?').run(stage)
+      db.prepare(
+        'UPDATE applications SET stage = ?, position = 0, updated_at = ? WHERE id = ?',
+      ).run(stage, at, id)
+      this.renumber(this.idsInStage(current.stage))
     })()
     return this.get(id)
   }

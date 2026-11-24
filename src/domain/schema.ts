@@ -142,6 +142,14 @@ export const MoveTargetSchema = z.object({
 
 export const NoteTextSchema = requiredText(LIMITS.note)
 
+/** Spec 021 (plan D-1): the entry at `index` of the history, with its stage and time */
+export const StageChangeRefSchema = z.object({
+  index: z.int().min(0),
+  stage: StageSchema,
+  at: z.string().min(1).max(64),
+})
+
 export type ApplicationInput = z.output<typeof ApplicationInputSchema>
 export type ApplicationPatch = z.output<typeof ApplicationPatchSchema>
 export type MoveTarget = z.output<typeof MoveTargetSchema>
+export type StageChangeRef = z.output<typeof StageChangeRefSchema>

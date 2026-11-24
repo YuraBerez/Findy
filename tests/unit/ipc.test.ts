@@ -183,6 +183,29 @@ describe('IPC handlers', () => {
     expect(bad).toMatchObject({ ok: false, error: { code: 'VALIDATION' } })
   })
 
+  it('deletes a stage history entry; the card follows the last entry (spec 021)', async () => {
+    const h = ctx.handlers
+    let s = await state(h.createApplication({ title: 'Dev', company: 'Acme', url: '' }))
+    const id = s.applications[0]!.id
+    s = await state(h.moveApplication(id, { stage: 'offered', index: 0 }))
+    const last = s.applications[0]!.stageHistory[1]!
+
+    expect(
+      await h.deleteStageChange(id, { index: 1, stage: 'applied', at: last.at }),
+    ).toMatchObject({ ok: false, error: { code: 'NOT_FOUND' } })
+    expect(
+      await h.deleteStageChange(id, { index: -1, stage: 'offered', at: last.at }),
+    ).toMatchObject({ ok: false, error: { code: 'VALIDATION' } })
+
+    s = await state(h.deleteStageChange(id, { index: 1, ...last }))
+    expect(s.applications[0]).toMatchObject({ stage: 'applied' })
+    const only = { index: 0, ...s.applications[0]!.stageHistory[0]! }
+    expect(await h.deleteStageChange(id, only)).toMatchObject({
+      ok: false,
+      error: { code: 'VALIDATION' },
+    })
+  })
+
   it('maps unknown ids to NOT_FOUND', async () => {
     const result = await ctx.handlers.deleteApplication('00000000-0000-4000-8000-000000000099')
     expect(result).toMatchObject({ ok: false, error: { code: 'NOT_FOUND' } })
