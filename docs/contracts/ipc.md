@@ -39,6 +39,9 @@ interface FindyApi {
     color: CardColor | null): Promise<AppState>;         // so the MCP update tool cannot set it
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>;
   deleteApplication(id: string): Promise<AppState>;
+  deleteStageChange(id: string,                         // spec 021: the entry at `index` of stageHistory,
+    entry: { index: number; stage: StageId; at: string }  // only if its stage and time match; NOT_FOUND if not,
+  ): Promise<AppState>;                                  // VALIDATION for the only entry
   resetBoard(): Promise<AppState>;                    // backup first, then delete all applications (FR-090…093)
 
   // CSV (spec 008): the paths stay in main; the system dialogs pick them
