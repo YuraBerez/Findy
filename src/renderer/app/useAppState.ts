@@ -8,6 +8,7 @@ import type { NextStep } from '@domain/nextStep'
 import {
   errorKind,
   type AnalyticsView,
+  type Application,
   type AppState,
   type CardColor,
   type ExportResult,
@@ -208,6 +209,13 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       /** FR-090…093: main saves a backup, then deletes every application */
       resetBoard: () => run(() => window.findy.resetBoard()),
       moveApplication,
+
+      /** Spec 021 (plan D-1): main checks that the entry is still the same */
+      deleteStageChange: (application: Application, index: number) => {
+        const change = application.stageHistory[index]
+        if (!change) return Promise.resolve(false)
+        return run(() => window.findy.deleteStageChange(application.id, { index, ...change }))
+      },
 
       addNote: (id: string, text: string) => run(() => window.findy.addNote(id, text)),
       updateNote: (id: string, noteId: string, text: string) =>

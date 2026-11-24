@@ -17,8 +17,8 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — User stories 1–5 (P1, P2)
 
-- [ ] T020 Delete button per history entry, hidden for the only entry; confirmation dialog with the stage, the date and the analytics note; focus back to the history; strings in `en` and `uk` (FR-001…FR-003, NFR-001…NFR-003)
-- [ ] T021 E2E: delete a middle entry, cancel, the last entry (card moves), merge, the only entry, keyboard; analytics and CSV show the new history (US-1…US-5, FR-009, FR-011)
+- [x] T020 Delete button per history entry, hidden for the only entry; confirmation dialog with the stage, the date and the analytics note; focus back to the history; strings in `en` and `uk` (FR-001…FR-003, NFR-001…NFR-003)
+- [x] T021 E2E: delete a middle entry, cancel, the last entry (card moves), merge, the only entry, keyboard; analytics shows the new history (US-1…US-5, FR-009). FR-011 needs no code: the export reads the same history
 
 ## Phase 4 — Polish
 

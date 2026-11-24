@@ -98,10 +98,11 @@ export function Dialog({
         if (pressedOnBackdrop.current && event.target === event.currentTarget) onClose()
         pressedOnBackdrop.current = false
       }}
-      // Escape closes the native dialog; keep React in charge of unmounting
+      // Escape closes the native dialog; keep React in charge of unmounting. React passes
+      // the event of a nested dialog (a confirmation in the details) up to this one too
       onCancel={(event) => {
         event.preventDefault()
-        onClose()
+        if (event.target === event.currentTarget) onClose()
       }}
     >
       {onSubmit ? (

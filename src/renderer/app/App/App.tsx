@@ -233,6 +233,7 @@ export function App({ initialState }: { initialState: AppState }) {
           }}
           onOpenLink={actions.openLink}
           onColorChange={(color) => actions.setApplicationColor(opened.id, color)}
+          onDeleteStageChange={(index) => actions.deleteStageChange(opened, index)}
           hiddenStages={hiddenStages}
           sites={state.sites}
           defaultCurrency={lastCurrency(state.applications)}

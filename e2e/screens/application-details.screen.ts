@@ -226,6 +226,65 @@ export class ApplicationDetailsScreen extends BaseComponent {
       .click()
   }
 
+  // ── Stage history (spec 021) ───────────────────────────────────────────
+
+  /** `nth` counts the rows newest first, for a stage that shows more than once */
+  private historyDelete(stage: string, nth = 0): Locator {
+    return this.panel
+      .getByRole('region', { name: 'Stage history' })
+      .getByRole('button', { name: new RegExp(`^Delete entry: ${stage}, `) })
+      .nth(nth)
+  }
+
+  async deleteHistoryEntry(
+    stage: string,
+    answer: 'confirm' | 'cancel' | 'escape',
+    nth = 0,
+  ): Promise<void> {
+    await this.historyDelete(stage, nth).click()
+    await expect(this.confirm).toBeVisible()
+    if (answer === 'escape') await this.confirm.press('Escape')
+    else
+      await this.confirm
+        .getByRole('button', { name: answer === 'confirm' ? 'Delete' : 'Cancel' })
+        .click()
+    await expect(this.confirm).toBeHidden()
+  }
+
+  /**
+   * US-5: Tab from the colour reaches the delete button of the newest entry, Enter opens
+   * the dialog with the focus on Cancel; Tab and Enter delete
+   */
+  async deleteNewestHistoryEntryWithKeyboard(stage: string): Promise<void> {
+    await this.colors.getByRole('radio', { checked: true }).press('Tab')
+    const button = this.historyDelete(stage)
+    await expect(button).toBeFocused()
+    await button.press('Enter')
+    const cancel = this.confirm.getByRole('button', { name: 'Cancel' })
+    await expect(cancel).toBeFocused()
+    await cancel.press('Tab')
+    await this.confirm.getByRole('button', { name: 'Delete' }).press('Enter')
+    await expect(this.confirm).toBeHidden()
+  }
+
+  async verifyHistoryDeleteMessage(stage: string, text: string | RegExp): Promise<void> {
+    await this.historyDelete(stage).click()
+    await expect(this.confirm).toContainText(text)
+    await this.confirm.getByRole('button', { name: 'Cancel' }).click()
+  }
+
+  async verifyNoHistoryDelete(): Promise<void> {
+    await expect(
+      this.panel.getByRole('region', { name: 'Stage history' }).getByRole('button', {
+        name: /^Delete entry/,
+      }),
+    ).toHaveCount(0)
+  }
+
+  async verifyHistoryFocused(): Promise<void> {
+    await expect(this.panel.getByRole('list', { name: 'Stage history' })).toBeFocused()
+  }
+
   // ── Checks ─────────────────────────────────────────────────────────────
 
   async verifyOpen(title: string): Promise<void> {

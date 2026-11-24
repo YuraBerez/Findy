@@ -95,6 +95,15 @@ colour on hover and keyboard focus. Its name is "Delete entry: <stage>, <date>".
 the dialog closes, the focus goes to the history list (US-5.2), because the row of the
 button can be gone.
 
+### D-5 — Found during the work
+
+- The details form kept its own copy of the stage. After a delete of the last entry,
+  "Save changes" moved the card back and added an entry. The form now takes the new
+  stage when the application's stage changes.
+- Escape in a confirmation inside the details also closed the details: React passes the
+  `cancel` event of the nested dialog up to its parent. The shared dialog now closes
+  only on its own `cancel`. This also fixes the note confirmation.
+
 ## Risks
 
 - **Index is out of date** because the history changed in another process. Mitigation:
