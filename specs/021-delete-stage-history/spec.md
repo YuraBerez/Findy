@@ -1,7 +1,7 @@
 # Feature Spec: Delete stage history entries
 
 - **ID:** 021-delete-stage-history
-- **Status:** Implemented (#61)
+- **Status:** Implemented (0.7.1)
 - **Approved:** 2026-11-24 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-24
