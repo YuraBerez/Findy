@@ -3,6 +3,19 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.7.1] - 2026-11-25
+
+### Delete a wrong stage change
+- If you moved a card to the wrong column by mistake, you can now delete that entry from **Stage history** in the application details. Analytics then does not count it.
+- If you delete the last entry, the application goes back to the previous stage.
+- If two equal stages are next to each other after a delete, Findy keeps only the earlier one.
+
+### Fixes
+- Escape in a confirmation inside the application details, for example **Delete this note?**, now closes only the confirmation, not the details too.
+
+### Project website
+- Findy has a website in English and Ukrainian: https://yuraberez.github.io/Findy/
+
 ## [0.7.0] - 2026-11-22
 
 ### Add a vacancy from the browser
