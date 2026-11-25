@@ -115,6 +115,8 @@ download, with no way to open it. `smoke:packaged` runs
    version: their daily workflow checks the files against `SHA256SUMS.txt` and commits
    the new version and sums. Run their "Follow Findy releases" workflow by hand to do
    it at once. They never read a draft or a pre-release.
+7. Check that the **Website** workflow of the release passed and that the home page shows
+   the new version. If it failed, see *Website* below and run it again.
 
 `smoke:packaged` also starts the browser connector from `app.asar` through a launcher, as
 a browser does, on all three systems (spec 019).
@@ -179,4 +181,8 @@ One-time setup (done once for the repository):
 
 1. **Settings → Pages → Source:** GitHub Actions.
 2. **About → Website:** the `SITE_URL`.
+3. **Settings → Environments → github-pages → Deployment branches and tags:** the branch
+   `main` and the tag rule `v*`. A published release runs the workflow on its tag. Without
+   the tag rule, GitHub refuses the deploy ("Tag … is not allowed to deploy to
+   github-pages") and the website keeps the old version (0.7.1).
 
