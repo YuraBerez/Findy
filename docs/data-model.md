@@ -96,6 +96,10 @@ never stored. "Done" removes the step and adds a note "Done: <text> (<date>[, <t
 A new entry is appended only when `stage` actually changes. Reordering within a
 column does not add history.
 
+Spec 021: the user can delete an entry, but not the only one. After a delete, equal
+neighbours merge into the earlier entry. If the last entry changes, `stage` follows it
+and the card goes to the top of that column. A delete bumps `updatedAt` and adds no entry.
+
 ## Note
 
 | Field | Type | Required | Rules |

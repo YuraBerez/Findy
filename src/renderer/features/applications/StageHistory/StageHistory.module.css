@@ -59,3 +59,24 @@
 .toggle {
   margin-left: 14px;
 }
+
+.stage {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Spec 021 NFR-003: the 26px button keeps the 20px row; faint until it is wanted */
+.delete {
+  flex-shrink: 0;
+  margin: -3px -4px -3px 0;
+  opacity: 0.45;
+}
+
+.item:hover .delete,
+.delete:focus-visible {
+  opacity: 1;
+}
+
+.timeline:focus {
+  outline: none;
+}

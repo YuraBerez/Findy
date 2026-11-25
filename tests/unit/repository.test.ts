@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { EMPTY_FIELDS } from '../../src/domain/fields'
+import type { StageId } from '../../src/domain/stages'
+import type { Application } from '../../src/domain/types'
 import {
   HiddenStageError,
   NotFoundError,
+  OnlyStageChangeError,
   SiteLimitError,
   type Repository,
 } from '../../src/main/db/repository'
@@ -321,6 +324,98 @@ describe('deleteApplication (FR-013)', () => {
 
   it('throws NotFoundError for an unknown id', () => {
     expect(() => repo.deleteApplication('missing')).toThrow(NotFoundError)
+  })
+})
+
+describe('deleteStageChange (spec 021)', () => {
+  /** An application that went through `stages` after "Applied" */
+  const withHistory = (title: string, ...stages: StageId[]) => {
+    const { id } = repo.createApplication(input(title))
+    for (const stage of stages) repo.moveApplication(id, { stage, index: 0 })
+    return repo.getApplication(id)
+  }
+  const entry = (app: Application, index: number) => ({ index, ...app.stageHistory[index]! })
+  const stagesOf = (app: Application) => app.stageHistory.map((change) => change.stage)
+
+  it('deletes a middle entry; the card keeps its column and position (FR-006, US-1.1)', () => {
+    repo.createApplication(input('Other'))
+    repo.moveApplication(repo.listApplications()[0]!.id, { stage: 'hr_interview', index: 0 })
+    const app = withHistory('Dev', 'technical_interview', 'hr_interview')
+    repo.moveApplication(app.id, { stage: 'hr_interview', index: 1 })
+    const before = repo.getApplication(app.id)
+
+    const after = repo.deleteStageChange(app.id, entry(before, 1))
+
+    expect(stagesOf(after)).toEqual(['applied', 'hr_interview'])
+    expect(after.stageHistory[1]).toEqual(before.stageHistory[2])
+    expect(column('hr_interview')).toEqual(['Other', 'Dev'])
+    expect(after.updatedAt > before.updatedAt).toBe(true)
+  })
+
+  it('deletes the last entry; the card goes to the top of the previous stage (FR-005, US-2.1)', () => {
+    withHistory('Top', 'hr_interview')
+    const app = withHistory('Dev', 'hr_interview', 'offered')
+    withHistory('Next offer', 'offered')
+
+    const after = repo.deleteStageChange(app.id, entry(app, 2))
+
+    expect(after.stage).toBe('hr_interview')
+    expect(stagesOf(after)).toEqual(['applied', 'hr_interview'])
+    expect(column('hr_interview')).toEqual(['Dev', 'Top'])
+    expect(
+      repo
+        .listApplications()
+        .filter((a) => a.stage === 'offered')
+        .map((a) => a.order),
+    ).toEqual([0])
+  })
+
+  it('merges equal neighbours into the earlier entry (FR-004, US-3)', () => {
+    const app = withHistory('Dev', 'hr_interview', 'applied')
+    const after = repo.deleteStageChange(app.id, entry(app, 1))
+    expect(after.stageHistory).toEqual([app.stageHistory[0]])
+    expect(after.stage).toBe('applied')
+  })
+
+  it('may move the card into a hidden stage (D-3)', () => {
+    const app = withHistory('Dev', 'test_task', 'offered')
+    repo.setHiddenStages(['test_task'])
+    expect(repo.deleteStageChange(app.id, entry(app, 2)).stage).toBe('test_task')
+  })
+
+  it('changes nothing but the history and updatedAt; adds no entry (FR-007, FR-008)', () => {
+    const app = withHistory('Dev', 'hr_interview', 'test_task')
+    repo.addNote(app.id, 'kept')
+    repo.setApplicationColor(app.id, 'blue')
+    const before = repo.getApplication(app.id)
+    const after = repo.deleteStageChange(app.id, entry(before, 1))
+    expect({ ...after, stageHistory: [], updatedAt: '' }).toEqual({
+      ...before,
+      stageHistory: [],
+      updatedAt: '',
+    })
+    expect(after.stageHistory).toHaveLength(2)
+  })
+
+  it('rejects the only entry with OnlyStageChangeError (FR-002)', () => {
+    const app = withHistory('Dev')
+    expect(() => repo.deleteStageChange(app.id, entry(app, 0))).toThrow(OnlyStageChangeError)
+    expect(repo.getApplication(app.id).stageHistory).toHaveLength(1)
+  })
+
+  it('rejects an entry that changed, is gone, or an unknown application (plan D-1)', () => {
+    const app = withHistory('Dev', 'hr_interview')
+    const wrong = [
+      { ...entry(app, 1), stage: 'offered' as const },
+      { ...entry(app, 1), at: '2020-01-01T00:00:00.000Z' },
+      { ...entry(app, 1), index: 2 },
+    ]
+    for (const ref of wrong)
+      expect(() => repo.deleteStageChange(app.id, ref)).toThrow(NotFoundError)
+    expect(() =>
+      repo.deleteStageChange('00000000-0000-4000-8000-999999999999', entry(app, 1)),
+    ).toThrow(NotFoundError)
+    expect(repo.getApplication(app.id).stageHistory).toEqual(app.stageHistory)
   })
 })
 

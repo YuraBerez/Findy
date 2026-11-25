@@ -15,6 +15,14 @@ export class NotFoundError extends Error {
   }
 }
 
+/** Spec 021 FR-002: an application keeps at least one stage history entry */
+export class OnlyStageChangeError extends Error {
+  constructor(id: string) {
+    super(`The only stage history entry of application ${id} cannot be deleted`)
+    this.name = 'OnlyStageChangeError'
+  }
+}
+
 /** Spec 011 FR-013: the user has the most sites allowed */
 export class SiteLimitError extends Error {
   constructor(readonly max: number) {

@@ -3,6 +3,7 @@ import type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView } from '../domai
 import type { CardColor } from '../domain/colors'
 import type { ApplicationFields } from '../domain/fields'
 import type { NextStep } from '../domain/nextStep'
+import type { StageChangeRef } from '../domain/schema'
 import type { StageId } from '../domain/stages'
 import type { ImportFatal, ImportRowError } from '../domain/transfer'
 import type { VacancyData } from '../domain/vacancy'
@@ -12,7 +13,7 @@ import type { Application, Language, Note, Settings, StageChange, Theme } from '
 export type { AnalyticsGrouping, AnalyticsPeriod, AnalyticsView, CardColor }
 export type { ImportFatal, ImportRowError }
 export type { VacancyData }
-export type { NextStep }
+export type { NextStep, StageChangeRef }
 export type { CustomSite, KnownSiteId }
 export type { Application, Language, Note, Settings, StageChange, StageId, Theme }
 
@@ -28,6 +29,7 @@ export const IPC_METHODS = [
   'setRemindersEnabled',
   'moveApplication',
   'deleteApplication',
+  'deleteStageChange',
   'resetBoard',
   'exportCsv',
   'previewImport',
@@ -221,6 +223,11 @@ export interface FindyApi {
   setRemindersEnabled(enabled: boolean): Promise<AppState>
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>
   deleteApplication(id: string): Promise<AppState>
+  /**
+   * Spec 021: deletes the entry at `index` of the stage history if it has this stage and
+   * time; NOT_FOUND if not, VALIDATION for the only entry
+   */
+  deleteStageChange(id: string, entry: StageChangeRef): Promise<AppState>
   /** FR-090…093: backup, then delete all applications */
   resetBoard(): Promise<AppState>
   /** Spec 008: save dialog, then the whole board as CSV in this language */

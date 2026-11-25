@@ -14,6 +14,7 @@ import {
   LIMITS,
   MoveTargetSchema,
   NoteTextSchema,
+  StageChangeRefSchema,
   StaleAfterDaysSchema,
   HiddenSitesSchema,
   SiteInputSchema,
@@ -37,7 +38,13 @@ import type {
 } from '../shared/ipc'
 import { KNOWN_SITES, siteHost } from '../domain/sites'
 import type { CalendarSaver } from './calendar'
-import { HiddenStageError, NotFoundError, SiteLimitError, type Repository } from './db/repository'
+import {
+  HiddenStageError,
+  NotFoundError,
+  OnlyStageChangeError,
+  SiteLimitError,
+  type Repository,
+} from './db/repository'
 import { createMainTranslator } from './i18n'
 import { isSafeExternalUrl } from './security'
 import type { Transfer } from './transfer'
@@ -167,6 +174,10 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
       repo().deleteApplication(id)
       return state()
     }),
+    deleteStageChange: handle(z.tuple([IdSchema, StageChangeRefSchema]), (id, entry) => {
+      repo().deleteStageChange(id, entry)
+      return state()
+    }),
     resetBoard: handle(none, () => {
       const repository = repo()
       deps.backup('reset') // a failed backup throws, and nothing is deleted
@@ -283,7 +294,11 @@ function toPayload(error: unknown): IpcErrorPayload {
   if (error instanceof z.ZodError) {
     return { code: 'VALIDATION', message: z.prettifyError(error) }
   }
-  if (error instanceof HiddenStageError || error instanceof SiteLimitError) {
+  if (
+    error instanceof HiddenStageError ||
+    error instanceof SiteLimitError ||
+    error instanceof OnlyStageChangeError
+  ) {
     return { code: 'VALIDATION', message: error.message }
   }
   if (error instanceof UpdateCheckError) {

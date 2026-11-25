@@ -264,6 +264,18 @@ export class FindyBackdoor {
     await this.page.evaluate((value) => window.findy.setHiddenStages(value), stages)
   }
 
+  /** Moves the card through these stages, one move each, to the top of the column */
+  async move(title: string, ...stages: StageId[]): Promise<void> {
+    await this.page.evaluate(
+      async ({ title, stages }) => {
+        const state = await window.findy.getState()
+        const id = state.applications.find((item) => item.title === title)!.id
+        for (const stage of stages) await window.findy.moveApplication(id, { stage, index: 0 })
+      },
+      { title, stages },
+    )
+  }
+
   /** Message of the rejected move, or "saved" */
   tryMove(title: string, stage: StageId): Promise<string> {
     return this.page.evaluate(

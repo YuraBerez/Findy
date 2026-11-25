@@ -4,7 +4,12 @@ import type { AnalyticsView } from '../../../domain/analytics'
 import type { CardColor } from '../../../domain/colors'
 import type { NextStep, StepRef } from '../../../domain/nextStep'
 import type { CustomSite, KnownSiteId, SiteFormValues } from '../../../domain/sites'
-import type { ApplicationInput, ApplicationPatch, MoveTarget } from '../../../domain/schema'
+import type {
+  ApplicationInput,
+  ApplicationPatch,
+  MoveTarget,
+  StageChangeRef,
+} from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
 import type { ImportedApplication } from '../../../domain/transfer'
 import type { Application, Language, Note, Settings, Theme } from '../../../domain/types'
@@ -13,7 +18,7 @@ import { NoteStore } from './notes'
 import { SettingsStore } from './settings'
 import { SitesStore, type SiteIcon } from './sites'
 
-export { HiddenStageError, NotFoundError, SiteLimitError } from './errors'
+export { HiddenStageError, NotFoundError, OnlyStageChangeError, SiteLimitError } from './errors'
 export type { SiteIcon } from './sites'
 
 export interface RepositoryOptions {
@@ -70,6 +75,11 @@ export class Repository {
 
   moveApplication(id: string, target: MoveTarget): Application {
     return this.applications.move(id, target)
+  }
+
+  /** Spec 021: deletes one stage history entry; the card follows the last one */
+  deleteStageChange(id: string, entry: StageChangeRef): Application {
+    return this.applications.deleteStageChange(id, entry)
   }
 
   /** Spec 015 FR-012: the step becomes the note `noteText(step)` */

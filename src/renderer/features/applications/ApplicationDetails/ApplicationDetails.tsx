@@ -28,6 +28,8 @@ interface Props {
   onOpenLink(url: string): void
   /** Spec 007 FR-007: saved at once, not with "Save changes" */
   onColorChange(color: CardColor | null): void
+  /** Spec 021: deletes the stage history entry at this index (oldest first) */
+  onDeleteStageChange(index: number): Promise<boolean>
   notes: NoteActions
   hiddenStages: StageId[]
   /** Spec 014: the user's job sites, offered as sources */
@@ -54,6 +56,7 @@ export function ApplicationDetails({
   onDelete,
   onOpenLink,
   onColorChange,
+  onDeleteStageChange,
   notes,
   hiddenStages,
   sites,
@@ -66,7 +69,14 @@ export function ApplicationDetails({
   const fields = useFieldsForm(fieldsFormValuesOf(application, defaultCurrency))
   const [saved, setSaved] = useState(false)
   const [confirming, setConfirming] = useState(false)
-  const { url } = application
+  const { url, stage } = application
+  // Spec 021 FR-005: a deleted history entry can change the stage while the panel is
+  // open; "Save changes" must not move the card back
+  const [formStage, setFormStage] = useState(stage)
+  if (formStage !== stage) {
+    setFormStage(stage)
+    form.set('stage', stage)
+  }
   const date = (iso: string) => formatDateTime(iso, i18n.language)
 
   const save = async (event: FormEvent<HTMLFormElement>) => {
@@ -142,7 +152,7 @@ export function ApplicationDetails({
       </Section>
 
       <Section title={t('details.history')}>
-        <StageHistory history={application.stageHistory} />
+        <StageHistory history={application.stageHistory} onDelete={onDeleteStageChange} />
         <p className={styles.dates}>
           {t('details.created', { date: date(application.createdAt) })} ·{' '}
           {t('details.updated', { date: date(application.updatedAt) })}
