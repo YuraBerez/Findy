@@ -80,7 +80,7 @@ src/
 │   ├── transfer/        # spec 008: applications ↔ CSV rows (export table, import plan)
 │   ├── vacancy/         # spec 009: job title and company from a page, as text
 │   ├── sites/           # spec 011: known job sites, search addresses, icon rules
-│   ├── analytics.ts     # spec 005: periods, buckets, stage entries, funnel, totals
+│   ├── analytics.ts     # spec 005: periods, buckets, stage entries, funnel, totals; spec 022: days of search
 │   └── updates.ts       # spec 006: SemVer compare, the 24-hour check rule
 ├── shared/
 │   ├── ipc.ts           # FindyApi, AppState, channel names, IpcError

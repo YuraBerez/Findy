@@ -105,11 +105,19 @@ export class AnalyticsScreen extends BaseComponent {
 
   /** US-5: applications, interviews, offers, rejections */
   async verifyTotals(totals: Totals): Promise<void> {
-    await expect(this.totals).toHaveText(
-      [totals.applications, totals.interviews, totals.offers, totals.rejections].map((n) =>
+    // The first tile is the days of search (spec 022), see verifySearchDays
+    await expect(this.totals).toHaveText([
+      /^\d[\d,]*$/,
+      ...[totals.applications, totals.interviews, totals.offers, totals.rejections].map((n) =>
         n.toLocaleString('en-US'),
       ),
-    )
+    ])
+  }
+
+  /** Spec 022: the first tile of the summary */
+  async verifySearchDays(days: number): Promise<void> {
+    await expect(this.panel.getByRole('term').first()).toHaveText(/^(Days of search|Днів пошуку)$/)
+    await expect(this.totals.first()).toHaveText(days.toLocaleString('en-US'))
   }
 
   /** FR-026: the numbers behind a chart, row by row */

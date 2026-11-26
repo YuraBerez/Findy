@@ -96,6 +96,26 @@ export function periodRange(
   return { start: startOfDay(new Date(oldest)), end }
 }
 
+/**
+ * Spec 022 FR-002: calendar days from the creation day of the oldest application to
+ * today, both days included; at least 1. 0 when there are no applications (FR-006).
+ */
+export function searchDays(applications: readonly Application[], now: Date): number {
+  if (applications.length === 0) return 0
+  const oldest = startOfDay(
+    new Date(
+      applications.reduce<number>(
+        (min, application) => Math.min(min, Date.parse(application.createdAt)),
+        Infinity,
+      ),
+    ),
+  )
+  const today = startOfDay(now)
+  // UTC dates, so a daylight saving change does not give a part of a day
+  const day = (date: Date) => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  return Math.max(1, Math.round((day(today) - day(oldest)) / 86_400_000) + 1)
+}
+
 export interface Bucket {
   key: string
   start: Date
@@ -149,6 +169,8 @@ export interface AnalyticsData {
   totals: AnalyticsTotals
   /** FR-041: nothing happened in the period */
   noActivity: boolean
+  /** Spec 022: days since the first application, not limited by the period */
+  searchDays: number
 }
 
 export interface AnalyticsInput {
@@ -226,5 +248,6 @@ export function analytics({
     rejected,
     totals,
     noActivity: totals.applications === 0 && entries === 0,
+    searchDays: searchDays(applications, now),
   }
 }
