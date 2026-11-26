@@ -244,6 +244,7 @@
     },
     "totals": {
       "label": "Підсумок",
+      "searchDays": "Днів пошуку",
       "applications": "Надіслано заявок",
       "interviews": "Співбесіди",
       "offers": "Офери",

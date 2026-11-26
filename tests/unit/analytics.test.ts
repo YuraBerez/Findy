@@ -9,6 +9,7 @@ import {
   isAnalyticsGrouping,
   isAnalyticsPeriod,
   periodRange,
+  searchDays,
   type AnalyticsView,
 } from '../../src/domain/analytics'
 import type { StageId } from '../../src/domain/stages'
@@ -267,6 +268,28 @@ describe('no activity (FR-041)', () => {
     expect(run([app(at(2025, 1, 1))], { period: '7d' }).noActivity).toBe(true)
     expect(run([], { period: 'all' }).noActivity).toBe(true)
     expect(run([app(at(2026, 11, 18))], { period: '7d' }).noActivity).toBe(false)
+  })
+})
+
+describe('days of search (spec 022)', () => {
+  it('FR-002: counts from the creation day of the oldest application to today, both included', () => {
+    expect(searchDays([app(at(2026, 11, 10)), app(at(2026, 11, 1, 23))], NOW)).toBe(18)
+    expect(searchDays([app(at(2026, 11, 18, 0))], NOW)).toBe(1)
+  })
+
+  it('FR-002: a daylight saving change gives whole days', () => {
+    expect(searchDays([app(at(2026, 1, 1, 0))], new Date(2026, 11, 31, 23))).toBe(365)
+  })
+
+  it('a date after today gives 1; no applications give 0 (FR-006)', () => {
+    expect(searchDays([app(at(2026, 12, 5))], NOW)).toBe(1)
+    expect(searchDays([], NOW)).toBe(0)
+  })
+
+  it('FR-003, FR-005: the period and an offer do not change it', () => {
+    const apps = [history(at(2026, 9, 1), ['offered', at(2026, 9, 20)])]
+    expect(run(apps, { period: '7d' }).searchDays).toBe(79)
+    expect(run(apps, { period: 'all' }).searchDays).toBe(79)
   })
 })
 

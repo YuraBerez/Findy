@@ -54,7 +54,7 @@ export function Analytics({ applications, hiddenStages, view, onViewChange, onSh
           {t('analytics.noActivity')}
         </p>
       )}
-      <Totals totals={data.totals} />
+      <Totals totals={data.totals} searchDays={data.searchDays} />
       <div className={styles.grid}>
         <ActivityChart labels={labels} values={data.activity} />
         <StagesChart labels={labels} series={data.stages} />

@@ -99,6 +99,12 @@ test.describe('analytics (spec 005)', () => {
         await test.step('US-5: totals of the 7 days', async () => {
           await analytics.verifyTotals({ applications: 5, interviews: 3, offers: 1, rejections: 1 })
         })
+        await test.step('spec 022 FR-001…FR-003: days since "Old", in each period', async () => {
+          await analytics.verifySearchDays(201)
+          await analytics.selectPeriod('All time')
+          await analytics.verifySearchDays(201)
+          await analytics.selectPeriod('Last 7 days')
+        })
         await test.step('4.1…4.3: reached a stage or a later one; rejected apart', async () => {
           await analytics.verifyFunnel(
             [
@@ -218,6 +224,8 @@ test.describe('analytics (spec 005)', () => {
       await expect(async () =>
         analytics.verifyTotals({ applications: 1, interviews: 0, offers: 0, rejections: 0 }),
       ).toPass({ timeout: 2_500 })
+      // Spec 022 US-1.2: an application of today gives day 1
+      await analytics.verifySearchDays(1)
     })
   })
 })

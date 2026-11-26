@@ -236,6 +236,7 @@
     },
     "totals": {
       "label": "Summary",
+      "searchDays": "Days of search",
       "applications": "Applications sent",
       "interviews": "Interviews",
       "offers": "Offers",
