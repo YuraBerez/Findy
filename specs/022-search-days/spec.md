@@ -1,7 +1,7 @@
 # Feature Spec: Days of job search
 
 - **ID:** 022-search-days
-- **Status:** Approved
+- **Status:** Implemented (0.7.2)
 - **Approved:** 2026-11-26 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-26

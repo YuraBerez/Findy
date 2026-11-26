@@ -3,6 +3,11 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.7.2] - 2026-11-26
+
+### Days of job search
+- **Analytics** has a new first tile, **Days of search**. It shows how many days passed since the day of your first application, that day and today included. The period that you select does not change it.
+
 ## [0.7.1] - 2026-11-25
 
 ### Delete a wrong stage change
