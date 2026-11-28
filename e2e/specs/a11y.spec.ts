@@ -104,6 +104,17 @@ test.describe('accessibility', () => {
       })
     }
 
+    // Spec 023 NFR-002: the image preview in both themes
+    for (const theme of ['light', 'dark'] as const) {
+      test(`image preview has no violations (${theme})`, { tag: '@a11y' }, async ({ findy }) => {
+        await findy.api.setTheme(theme)
+        await findy.refresh()
+        await findy.pages.analytics.openTab('Analytics')
+        await findy.pages.shareImage.open()
+        await findy.pages.a11y.expectNoViolations()
+      })
+    }
+
     test('analytics in Ukrainian has no violations', { tag: '@a11y' }, async ({ findy }) => {
       await findy.api.setLanguage('uk')
       await findy.refresh()

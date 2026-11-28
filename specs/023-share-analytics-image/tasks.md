@@ -26,15 +26,15 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 3 — User stories 1–3 (P1, P2)
 
-- [ ] T020 e2e screen and spec for US-1…US-3 (all acceptance scenarios, SC-002)
+- [x] T020 e2e screen and spec for US-1…US-3 (all acceptance scenarios, SC-002)
 - [x] T021 `ImageIcon` in `@ui`; button in the filter row of `Analytics`, hidden in the
       empty state (FR-001…FR-003)
 - [x] T022 `ShareImageDialog`: preview with a text alternative, Copy, Save as PNG, Close;
       `useAppState` actions; confirmation and errors (FR-020…FR-025, plan D-5)
-- [ ] T023 e2e axe audit of the preview in both themes (NFR-002)
+- [x] T023 e2e axe audit of the preview in both themes (NFR-002)
 
 ## Phase 4 — Polish
 
-- [ ] T090 `docs/architecture.md`: project structure and decision D-20; user guide and
-      CHANGELOG entry
+- [x] T090 `docs/architecture.md`: project structure and decision D-20 (the CHANGELOG entry
+      comes with the release; there is no user guide page for analytics)
 - [ ] T091 Full gate: format, lint, coverage ≥ 80 %, e2e
