@@ -43,6 +43,18 @@ test.describe('browser extension in the settings (spec 024)', () => {
       ])
   })
 
+  test('spec 027 FR-006: the guide in Polish', async ({ findy }) => {
+    const { settings } = findy.pages
+    await findy.api.setLanguage('pl')
+    await findy.refresh()
+    await findy.api.captureExternalLinks()
+    await settings.open('Rozszerzenie przeglądarki')
+    await settings.openExtensionGuide()
+    await expect
+      .poll(() => findy.api.openedLinks())
+      .toEqual([`${SITE_URL}pl/guide/browser-extension/`])
+  })
+
   for (const theme of ['light', 'dark'] as const) {
     test(`NFR-002: the page has no violations (${theme})`, { tag: '@a11y' }, async ({ findy }) => {
       await findy.api.setTheme(theme)

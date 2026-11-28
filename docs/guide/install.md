@@ -1,6 +1,6 @@
 # Install Findy
 
-[Українською](install.uk.md)
+[Українською](install.uk.md) · [Po polsku](install.pl.md)
 
 How to install Findy with a package manager, check a download, and open the app the
 first time.

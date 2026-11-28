@@ -1,8 +1,9 @@
 import type { Lang } from '../lib/paths'
 import { en, type Messages } from './en'
+import { pl } from './pl'
 import { uk } from './uk'
 
-export const MESSAGES: Record<Lang, Messages> = { en, uk }
+export const MESSAGES: Record<Lang, Messages> = { en, uk, pl }
 
 /** One message with its `{name}` placeholders filled in */
 export const format = (text: string, values: Record<string, string>): string =>

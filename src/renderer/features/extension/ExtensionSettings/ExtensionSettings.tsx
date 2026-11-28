@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { extensionFileUrl, extensionGuideUrl, type ExtensionBuild } from '@shared/extension'
+import type { Language } from '@shared/ipc'
 import { Button, ExternalLinkIcon } from '@ui'
 import styles from './ExtensionSettings.module.css'
 
@@ -41,7 +42,7 @@ export function ExtensionSettings({ loadVersion, onOpenLink }: Props) {
         ))}
         <Button
           variant="ghost"
-          onClick={() => onOpenLink(extensionGuideUrl(i18n.language === 'uk' ? 'uk' : 'en'))}
+          onClick={() => onOpenLink(extensionGuideUrl(i18n.language as Language))}
         >
           <ExternalLinkIcon size={14} />
           {t('extensionSettings.guide')}

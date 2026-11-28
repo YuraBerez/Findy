@@ -11,6 +11,7 @@ describe('guide files (spec 020 FR-006)', () => {
   it('reads the slug and the language from the file name', () => {
     expect(parseGuideId('install')).toEqual({ slug: 'install', lang: 'en' })
     expect(parseGuideId('ai-assistant.uk')).toEqual({ slug: 'ai-assistant', lang: 'uk' })
+    expect(parseGuideId('install.pl')).toEqual({ slug: 'install', lang: 'pl' })
     expect(parseGuideId('install.de')).toBeNull()
     expect(parseGuideId('other')).toBeNull()
     expect(parseGuideId('install.uk.old')).toBeNull()

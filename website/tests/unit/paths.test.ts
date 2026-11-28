@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { guidePage, isLang, otherLang, pagePath, withBase } from '../../src/lib/paths'
+import { guidePage, isLang, pagePath, withBase } from '../../src/lib/paths'
 
 describe('page paths (spec 020 FR-020, FR-021)', () => {
   it('puts English at the root and Ukrainian under uk/', () => {
@@ -9,10 +9,13 @@ describe('page paths (spec 020 FR-020, FR-021)', () => {
     expect(pagePath('uk', guidePage('install'))).toBe('uk/guide/install/')
   })
 
-  it('gives the other language', () => {
-    expect(otherLang('en')).toBe('uk')
-    expect(otherLang('uk')).toBe('en')
+  it('puts Polish under pl/ (spec 027)', () => {
+    expect(pagePath('pl', guidePage('install'))).toBe('pl/guide/install/')
+  })
+
+  it('knows the languages of the website', () => {
     expect(isLang('uk')).toBe(true)
+    expect(isLang('pl')).toBe(true)
     expect(isLang('de')).toBe(false)
   })
 

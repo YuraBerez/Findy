@@ -6,7 +6,7 @@
 
 **Website:** [yuraberez.github.io/Findy](https://yuraberez.github.io/Findy/)
 
-[Українською](README.uk.md)
+[Українською](README.uk.md) · [Po polsku](README.pl.md)
 
 [![Support Findy on Ko-fi](https://img.shields.io/badge/Support%20Findy%20on-Ko--fi-0A66C2?logo=ko-fi&logoColor=white)](https://ko-fi.com/findyapp)
 

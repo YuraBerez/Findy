@@ -23,7 +23,7 @@ type Demo = {
 }
 
 // Made-up companies only: screenshots go to the README and social posts
-const DATA: Record<'en' | 'uk', Demo[]> = {
+const DATA: Record<'en' | 'uk' | 'pl', Demo[]> = {
   en: [
     {
       title: 'Frontend Developer',
@@ -130,9 +130,69 @@ const DATA: Record<'en' | 'uk', Demo[]> = {
     },
     { title: 'JavaScript-розробник', company: 'Компанія-приклад 8', stage: 'rejected', days: 20 },
   ],
+  pl: [
+    {
+      title: 'Frontend Developer',
+      company: 'Przykładowa firma 1',
+      stage: 'applied',
+      days: 1,
+      url: 'https://example.com/jobs/1',
+    },
+    { title: 'Inżynier React', company: 'Przykładowa firma 2', stage: 'applied', days: 2 },
+    {
+      title: 'Full-stack Developer',
+      company: 'Przykładowa firma 3',
+      stage: 'hr_interview',
+      days: 4,
+      color: 'green',
+      url: 'https://example.com/jobs/2',
+      notes: [
+        'Rozmowa z Oleną (rekruterka). Omówiłyśmy widełki: 4–5k.',
+        'Następny krok: zadanie testowe do piątku.',
+      ],
+    },
+    {
+      title: 'Senior TypeScript Developer',
+      company: 'Przykładowa firma 4',
+      stage: 'test_task',
+      days: 6,
+      color: 'orange',
+      url: 'https://example.com/jobs/3',
+      notes: ['Zadanie domowe: mała aplikacja kanban, 3 dni.'],
+    },
+    {
+      title: 'Frontend Lead',
+      company: 'Przykładowa firma 5',
+      stage: 'technical_interview',
+      days: 18,
+    },
+    {
+      title: 'Software Engineer',
+      company: 'Przykładowa firma 6',
+      stage: 'c_level_interview',
+      days: 12,
+      notes: ['Rozmowa z CTO o zespole i planach.'],
+    },
+    {
+      title: 'Inżynier UI',
+      company: 'Przykładowa firma 7',
+      stage: 'offered',
+      days: 15,
+      color: 'purple',
+      url: 'https://example.com/jobs/4',
+    },
+    { title: 'JavaScript Developer', company: 'Przykładowa firma 8', stage: 'rejected', days: 20 },
+  ],
 }
 
-for (const lang of ['en', 'uk'] as const) {
+/** The tab names of each language */
+const TABS = {
+  en: { sites: 'Sites', analytics: 'Analytics' },
+  uk: { sites: 'Сайти', analytics: 'Аналітика' },
+  pl: { sites: 'Strony', analytics: 'Analityka' },
+}
+
+for (const lang of ['en', 'uk', 'pl'] as const) {
   test(`README screenshots (${lang})`, async ({ findy, page, electronApp, userDataDir }) => {
     await electronApp.evaluate(({ BrowserWindow }) =>
       BrowserWindow.getAllWindows()[0]!.setSize(1440, 860),
@@ -178,7 +238,7 @@ for (const lang of ['en', 'uk'] as const) {
 
     // Spec 011: the Sites tab with a query (icons need the network: letters here)
     await page.keyboard.press('Escape')
-    await page.getByRole('tab', { name: lang === 'en' ? 'Sites' : 'Сайти' }).click()
+    await page.getByRole('tab', { name: TABS[lang].sites }).click()
     await page.getByRole('searchbox').last().fill('Frontend Developer')
     await page.screenshot({ path: join(OUT, `sites-${lang}.png`) })
   })
@@ -212,7 +272,7 @@ function demoHistory(): HistoryApplication[] {
 test.describe('analytics', () => {
   test.use({ history: { applications: demoHistory() } })
 
-  for (const lang of ['en', 'uk'] as const) {
+  for (const lang of ['en', 'uk', 'pl'] as const) {
     test(`README analytics screenshot (${lang})`, async ({ findy, page }) => {
       // An emulated viewport at Retina density, like the other screenshots: the screen
       // limits the height of a real window
@@ -227,7 +287,7 @@ test.describe('analytics', () => {
       await findy.api.setLanguage(lang)
       await findy.api.setAnalyticsView({ period: '90d', grouping: 'week' })
       await findy.refresh()
-      await page.getByRole('tab', { name: lang === 'en' ? 'Analytics' : 'Аналітика' }).click()
+      await page.getByRole('tab', { name: TABS[lang].analytics }).click()
       await page
         .getByTestId('app')
         .getByRole('tabpanel')

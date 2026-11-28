@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { MESSAGES, format, formatSize } from '../../src/i18n'
+import { LANGS } from '../../src/lib/paths'
 
 /** Every key path of a messages object, with array items by index */
 function keys(value: unknown, prefix = ''): string[] {
@@ -12,18 +13,21 @@ function keys(value: unknown, prefix = ''): string[] {
 const placeholders = (text: string) => [...text.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort()
 
 describe('website text (spec 020 US-3, plan D-3)', () => {
-  it('has the same keys in English and Ukrainian', () => {
-    expect(keys(MESSAGES.uk)).toEqual(keys(MESSAGES.en))
+  // Spec 027 FR-007: every language against English
+  const others = LANGS.filter((lang) => lang !== 'en')
+
+  it.each(others)('has the same keys in English and %s', (lang) => {
+    expect(keys(MESSAGES[lang])).toEqual(keys(MESSAGES.en))
   })
 
-  it('has the same placeholders and no empty text', () => {
+  it.each(others)('%s has the same placeholders and no empty text', (lang) => {
     const get = (obj: unknown, path: string) =>
       path.split('.').reduce<unknown>((o, k) => (o as Record<string, unknown>)[k], obj) as string
     for (const path of keys(MESSAGES.en)) {
       const en = get(MESSAGES.en, path)
-      const uk = get(MESSAGES.uk, path)
-      expect(uk.trim(), path).not.toBe('')
-      expect(placeholders(uk), path).toEqual(placeholders(en))
+      const text = get(MESSAGES[lang], path)
+      expect(text.trim(), path).not.toBe('')
+      expect(placeholders(text), path).toEqual(placeholders(en))
     }
   })
 

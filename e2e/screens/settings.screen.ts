@@ -128,7 +128,7 @@ export class SettingsScreen extends BaseComponent {
   }
 
   async openExtensionGuide(): Promise<void> {
-    await this.extensionButton(/^(How to install|Як встановити)$/).click()
+    await this.extensionButton(/^(How to install|Як встановити|Jak zainstalować)$/).click()
   }
 
   /** US-3.2: Tab from the selected category reaches the first download, Enter opens it */

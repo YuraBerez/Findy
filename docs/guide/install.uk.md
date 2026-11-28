@@ -1,6 +1,6 @@
 # Встановлення Findy
 
-[English](install.md)
+[English](install.md) · [Po polsku](install.pl.md)
 
 Як встановити Findy через менеджер пакетів, перевірити завантаження й відкрити
 застосунок уперше.
