@@ -24,6 +24,7 @@ import { AnalyticsScreen } from '../screens/analytics.screen'
 import { ImportDialogScreen } from '../screens/import-dialog.screen'
 import { OfferDialogScreen } from '../screens/offer-dialog.screen'
 import { SettingsScreen } from '../screens/settings.screen'
+import { ShareImageScreen } from '../screens/share-image.screen'
 import { SitesScreen } from '../screens/sites.screen'
 import { UpdatesScreen } from '../screens/updates.screen'
 import { BoardScreen } from '../screens/board.screen'
@@ -42,6 +43,7 @@ export interface FindyPages {
   settings: SettingsScreen
   offerDialog: OfferDialogScreen
   sites: SitesScreen
+  shareImage: ShareImageScreen
   dialog: ApplicationDialogScreen
   details: ApplicationDetailsScreen
   applications: ApplicationSteps
@@ -171,6 +173,7 @@ function pagesFor(page: Page): FindyPages {
     settings: new SettingsScreen(page),
     offerDialog: new OfferDialogScreen(page),
     sites: new SitesScreen(page),
+    shareImage: new ShareImageScreen(page),
     dialog,
     details: new ApplicationDetailsScreen(page),
     applications: new ApplicationSteps({ board, dialog }),

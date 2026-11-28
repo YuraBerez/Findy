@@ -56,6 +56,40 @@ export class FindyBackdoor {
     })
   }
 
+  /**
+   * Spec 023 FR-021: runs `copy` on an empty clipboard and gives the size of the PNG that
+   * it put there (null: no image). The clipboard gets its old text back.
+   */
+  async copiedImage(copy: () => Promise<void>): Promise<{ width: number; height: number } | null> {
+    return withClipboardLock(async () => {
+      const previous = await this.app.evaluate(({ clipboard }) => clipboard.readText())
+      await this.app.evaluate(({ clipboard }) => clipboard.clear())
+      try {
+        await copy()
+        return await this.app.evaluate(async ({ clipboard, nativeImage }) => {
+          for (const item of await clipboard.read()) {
+            if (!item.types.includes('image/png')) continue
+            const blob = await item.getType('image/png')
+            const image = nativeImage.createFromBuffer(Buffer.from(await blob.arrayBuffer()))
+            return image.isEmpty() ? null : image.getSize()
+          }
+          return null
+        })
+      } finally {
+        await this.app.evaluate(({ clipboard }, value) => clipboard.writeText(value), previous)
+      }
+    })
+  }
+
+  /** Spec 023 FR-023: every clipboard write fails until the app restarts */
+  async breakClipboard(): Promise<void> {
+    await this.app.evaluate(({ clipboard }) => {
+      clipboard.write = async () => {
+        throw new Error('Clipboard is not available')
+      }
+    })
+  }
+
   /** The system clipboard text; read it inside `withClipboard` (spec 017) */
   clipboardText(): Promise<string> {
     return this.app.evaluate(({ clipboard }) => clipboard.readText())

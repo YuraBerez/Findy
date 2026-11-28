@@ -84,6 +84,10 @@ interface FindyApi {
   setMcpEnabled(enabled: boolean): Promise<AppState>;    // spec 004
   getMcpConnection(): Promise<{ command: string; args: string[] }>;  // spec 004 FR-009
   saveSkill(): Promise<{ status: 'saved' } | { status: 'cancelled' }>;  // spec 016; STORAGE: write failed; no database needed  // spec 002; rejects all-hidden and duplicates
+  copyImage(png: Uint8Array): Promise<void>;           // spec 023: the analytics image on the clipboard
+  saveImage(png: Uint8Array): Promise<                 // spec 023: through the save dialog,
+    { status: 'saved' } | { status: 'cancelled' }>;      // findy-analytics-YYYY-MM-DD.png; STORAGE: write failed
+                                                       // both: VALIDATION unless a PNG of at most 5 MB
   on(event: 'languageChanged' | 'storageError', handler: (payload: unknown) => void): () => void;
   getSystemLocale(): Promise<string>;
   openExternal(url: string): Promise<void>;            // http/https only, else rejects

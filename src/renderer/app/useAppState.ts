@@ -225,6 +225,16 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       /** Spec 016 FR-021: null when it failed (already notified) */
       saveSkill: (): Promise<SaveSkillResult | null> => attempt(() => window.findy.saveSkill()),
 
+      /** Spec 023 FR-021: false when it failed (already notified) */
+      copyImage: async (png: Uint8Array): Promise<boolean> =>
+        (await attempt(async () => {
+          await window.findy.copyImage(png)
+          return true
+        })) ?? false,
+      /** Spec 023 FR-022: null when it failed (already notified) */
+      saveImage: (png: Uint8Array): Promise<SaveFileResult | null> =>
+        attempt(() => window.findy.saveImage(png)),
+
       /** FR-015: main opens http(s) links in the system browser only */
       openLink: async (url: string) => {
         try {

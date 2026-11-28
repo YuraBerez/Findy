@@ -9,6 +9,8 @@ export default defineConfig({
   test: {
     include: ['tests/unit/**/*.test.ts'],
     environment: 'node',
+    // Spec 023: tests/unit/renderer reads the light tokens of global.css as text (?raw)
+    css: { include: [/global\.css/] },
     coverage: {
       provider: 'v8',
       // Unit-testable code. Electron bootstrap, preload and React UI are covered by e2e.

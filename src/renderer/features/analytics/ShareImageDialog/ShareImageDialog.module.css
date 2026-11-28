@@ -1,0 +1,18 @@
+.image {
+  display: block;
+  width: min(100%, 520px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* Plan D-5: the numbers of the image for screen readers, not shown */
+.text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

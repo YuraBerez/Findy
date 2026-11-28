@@ -14,6 +14,7 @@ import {
   LIMITS,
   MoveTargetSchema,
   NoteTextSchema,
+  PngSchema,
   StageChangeRefSchema,
   StaleAfterDaysSchema,
   HiddenSitesSchema,
@@ -38,6 +39,7 @@ import type {
 } from '../shared/ipc'
 import { KNOWN_SITES, siteHost } from '../domain/sites'
 import type { CalendarSaver } from './calendar'
+import type { ImageSharer } from './image'
 import {
   HiddenStageError,
   NotFoundError,
@@ -76,6 +78,8 @@ export interface IpcDeps {
   saveSkill(): Promise<SaveSkillResult>
   /** Spec 015: main/calendar.ts#createCalendarSaver */
   calendar: Pick<CalendarSaver, 'save'>
+  /** Spec 023: main/image.ts#createImageSharer; needs no database */
+  image: ImageSharer
 }
 
 type Handler = (...args: unknown[]) => Promise<IpcResult<unknown>>
@@ -271,6 +275,8 @@ export function createHandlers(deps: IpcDeps): Record<IpcMethod, Handler> {
     }),
     getMcpConnection: handle(none, () => deps.mcpConnection()),
     saveSkill: handle(none, () => deps.saveSkill()),
+    copyImage: handle(z.tuple([PngSchema]), (png) => deps.image.copy(png)),
+    saveImage: handle(z.tuple([PngSchema]), (png) => deps.image.save(png)),
     setTheme: handle(z.tuple([ThemeSchema]), (theme) => {
       repo().setTheme(theme)
       deps.applyTheme(theme)

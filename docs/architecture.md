@@ -113,6 +113,7 @@ src/
 │   ├── siteIcons.ts     # spec 011: download and keep the job site icons
 │   ├── reminders.ts     # spec 015: the reminder scheduler (15 minutes and 1 minute before)
 │   ├── calendar.ts      # spec 015: the .ics file through the save dialog
+│   ├── image.ts         # spec 023: the analytics image to the clipboard or a file
 │   ├── skill/           # spec 016: the skill archive (zip writer, save through the dialog)
 │   ├── menu.ts          # installs the localised native menu
 │   ├── menuTemplate.ts  # the menu items (unit-tested)
@@ -133,7 +134,8 @@ src/
     │   ├── notes/       # NotesPanel/, NoteItem/, useNoteDraft
     │   ├── search/      # SearchBox/
     │   ├── analytics/   # Analytics/, AnalyticsFilters/, Totals/, ActivityChart/,
-    │   │                # StagesChart/, Funnel/, ChartCard/ (spec 005)
+    │   │                # StagesChart/, Funnel/, ChartCard/ (spec 005); ShareImageButton/,
+    │   │                # ShareImageDialog/, shareImage/ (canvas card, spec 023)
     │   ├── updates/     # UpdateDialog/, useUpdateCheck, useUpdatesMenu (spec 006)
     │   ├── colors/      # useColorOptions: card colour names and tokens (spec 007)
     │   ├── transfer/    # ImportDialog/, useTransferMenu: CSV export and import (spec 008)
@@ -428,6 +430,21 @@ website/                 # spec 020: the website, a separate npm package (D-19)
   `locales/*.json`.
 - CI runs the website checks only when a PR changes `website/` or a file that the site
   shows ([release.md](release.md) → CI).
+
+### D-20 — The analytics image is drawn in the renderer, shared by main (spec 023)
+
+- The renderer draws the card on a 1080 × 1080 canvas (`features/analytics/shareImage/`)
+  from the same `analytics()` data and translations as the screen. No image or chart
+  library and no hidden window.
+- The image is always light: `shareImage/palette.ts` keeps the light token values, and a
+  unit test compares them with `styles/global.css`, so the colours have one source.
+- Text fits by measure on the real canvas (`fitFontSize`, `fitLines`), because the system
+  font differs by platform.
+- `copyImage` and `saveImage` send only PNG bytes to main (zod: a `Uint8Array` of at most
+  5 MB with the PNG signature). Main writes the clipboard with Electron's `clipboard.write`
+  and saves only to the path of the system save dialog (`main/image.ts`).
+- The preview is a `data:` image with a hidden text alternative of every number; e2e
+  checks the numbers there and reads the copied PNG back from the clipboard.
 
 ## Cross-cutting docs
 
