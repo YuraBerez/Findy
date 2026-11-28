@@ -1,7 +1,7 @@
 # Feature Spec: Browser extension in the settings
 
 - **ID:** 024-extension-settings
-- **Status:** Approved
+- **Status:** Implemented (0.9.0)
 - **Approved:** 2026-11-28 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-28

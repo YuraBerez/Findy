@@ -1,7 +1,7 @@
 # Feature Spec: Card colours through the AI assistant
 
 - **ID:** 025-mcp-card-colors
-- **Status:** Approved
+- **Status:** Implemented (0.9.0)
 - **Approved:** 2026-11-28 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-28
