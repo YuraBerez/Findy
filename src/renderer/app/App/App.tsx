@@ -209,6 +209,8 @@ export function App({ initialState }: { initialState: AppState }) {
               if (result?.status === 'saved') notify(t('mcp.skillSaved'))
             },
             openSkillInstall: () => void actions.openLink(SKILL_INSTALL_URL),
+            getAppVersion: actions.getAppVersion,
+            openLink: (url) => void actions.openLink(url),
           }}
           onClose={() => setEditingSettings(false)}
         />

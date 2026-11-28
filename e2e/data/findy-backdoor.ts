@@ -225,6 +225,11 @@ export class FindyBackdoor {
     )
   }
 
+  /** The version of the running app (spec 024) */
+  appVersion(): Promise<string> {
+    return this.app.evaluate(({ app }) => app.getVersion())
+  }
+
   openedLinks(): Promise<string[]> {
     return this.app.evaluate(() => (globalThis as { openedLinks?: string[] }).openedLinks ?? [])
   }

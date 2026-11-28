@@ -113,6 +113,36 @@ export class SettingsScreen extends BaseComponent {
     await this.dialog.getByRole('button', { name: 'How to install' }).click()
   }
 
+  // ── Browser extension (spec 024) ───────────────────────────────────────
+
+  private extensionButton(name: RegExp): Locator {
+    return this.dialog.getByRole('tabpanel').getByRole('button', { name })
+  }
+
+  async downloadExtension(browser: 'chromium' | 'firefox'): Promise<void> {
+    await this.extensionButton(
+      browser === 'firefox'
+        ? /^(Download for Firefox|Завантажити для Firefox)$/
+        : /^(Download for Chrome, Edge and others|Завантажити для Chrome, Edge та інших)$/,
+    ).click()
+  }
+
+  async openExtensionGuide(): Promise<void> {
+    await this.extensionButton(/^(How to install|Як встановити)$/).click()
+  }
+
+  /** US-3.2: Tab from the selected category reaches the first download, Enter opens it */
+  async downloadExtensionWithKeyboard(): Promise<void> {
+    const first = this.extensionButton(/^(Download for Chrome|Завантажити для Chrome)/)
+    await expect(first).toBeEnabled()
+    await first.focus()
+    await first.press('Enter')
+  }
+
+  async verifyExtensionText(text: RegExp): Promise<void> {
+    await expect(this.dialog.getByRole('tabpanel')).toContainText(text)
+  }
+
   // ── Checks ─────────────────────────────────────────────────────────────
 
   async verifyOpen(category: string): Promise<void> {

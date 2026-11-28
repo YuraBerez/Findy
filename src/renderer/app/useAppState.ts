@@ -97,6 +97,16 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
     }
   }, [onError])
 
+  /** Spec 024 FR-003: stable, because the settings page loads it in an effect */
+  const getAppVersion = useCallback(async (): Promise<string | null> => {
+    try {
+      return (await window.findy.getAppInfo()).version
+    } catch (error) {
+      onError(error)
+      return null
+    }
+  }, [onError])
+
   /** A call that does not return the state; a failure is notified and gives null */
   const attempt = async <T>(call: () => Promise<T>): Promise<T | null> => {
     try {
@@ -253,6 +263,7 @@ export function useAppState(initial: AppState, onError: (error: unknown) => void
       /** Spec 004 FR-005 */
       setMcpEnabled: (enabled: boolean) => run(() => window.findy.setMcpEnabled(enabled)),
       getMcpConnection,
+      getAppVersion,
 
       /** Spec 002: optimistic, so the column disappears at once */
       setHiddenStages: (stages: StageId[]) => {

@@ -1,0 +1,11 @@
+.hint {
+  color: var(--fg-muted);
+  font-size: 13px;
+}
+
+/* The two downloads and the guide in one row; they wrap in a narrow window */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

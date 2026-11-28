@@ -5,6 +5,7 @@ import type { StageId } from '@domain/stages'
 import type { Application, Language, McpConnection, Settings, Theme } from '@shared/ipc'
 import { Dialog, Field, panelId, Select, Switch, tabId, Tabs } from '@ui'
 import { McpSettings } from '../../assistant'
+import { ExtensionSettings } from '../../extension'
 import { StaleAfterField } from '../../stale'
 import { ColumnSwitches } from '../ColumnSwitches'
 import styles from './SettingsDialog.module.css'
@@ -14,7 +15,8 @@ const NAMES: Record<Language, string> = { en: 'English', uk: 'Українськ
 const THEMES: readonly Theme[] = ['system', 'light', 'dark']
 
 /** Spec 018 FR-001: the categories in the side list, in order */
-const CATEGORIES = ['general', 'board', 'reminders', 'updates', 'assistant'] as const
+// Spec 024 FR-001: the browser extension is the last category
+const CATEGORIES = ['general', 'board', 'reminders', 'updates', 'assistant', 'extension'] as const
 type Category = (typeof CATEGORIES)[number]
 
 const ID_PREFIX = 'settings'
@@ -34,6 +36,10 @@ export interface SettingsActions {
   saveSkill(): void
   /** Spec 016 FR-023 */
   openSkillInstall(): void
+  /** Spec 024 FR-003: null when it failed (already notified) */
+  getAppVersion(): Promise<string | null>
+  /** Spec 024 FR-003, FR-004: an http(s) link in the system browser */
+  openLink(url: string): void
 }
 
 interface Props {
@@ -125,6 +131,9 @@ export function SettingsDialog({ settings, applications, actions, onClose }: Pro
         onSaveSkill={actions.saveSkill}
         onOpenInstall={actions.openSkillInstall}
       />
+    ),
+    extension: (
+      <ExtensionSettings loadVersion={actions.getAppVersion} onOpenLink={actions.openLink} />
     ),
   }
 

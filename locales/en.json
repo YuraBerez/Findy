@@ -515,7 +515,8 @@
       "dark": "Dark"
     },
     "assistant": "AI assistant",
-    "categories": "Settings categories"
+    "categories": "Settings categories",
+    "extension": "Browser extension"
   },
   "extension": {
     "storeName": "Findy — add a vacancy",
@@ -532,5 +533,12 @@
     "adding": "Adding…",
     "added": "Added to Findy, stage “{{stage}}”.",
     "failed": "Findy could not add the vacancy: {{reason}}"
+  },
+  "extensionSettings": {
+    "text": "The Findy browser extension adds the vacancy that you see to Applied in one click: the job title, the company and the link. It talks only to the Findy app on this computer.",
+    "hint": "The extension is not in the browser stores yet. Download the file for your browser and load it as the guide shows.",
+    "chromium": "Download for Chrome, Edge and others",
+    "firefox": "Download for Firefox",
+    "guide": "How to install"
   }
 }
