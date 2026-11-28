@@ -1,7 +1,7 @@
 # Feature Spec: Share analytics as an image
 
 - **ID:** 023-share-analytics-image
-- **Status:** Approved
+- **Status:** Implemented (0.8.0)
 - **Approved:** 2026-11-28 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-28
