@@ -4,7 +4,7 @@ The non-negotiable principles of the project. Every spec, plan, task and pull
 request must comply. Changing this document requires its own PR with the
 `constitution` label and a short rationale.
 
-**Version:** 1.5.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6), 2026-11-19 (§II.7, §II.8), 2026-11-22 (§II.9)
+**Version:** 1.6.0 · **Ratified:** 2026-11-17 · **Amended:** 2026-11-17 (§II.5), 2026-11-18 (§II.6), 2026-11-19 (§II.7, §II.8), 2026-11-22 (§II.9), 2026-11-28 (§V.2)
 
 ---
 
@@ -82,8 +82,9 @@ No production code is written without an approved spec.
 
 1. No user-visible string is hard-coded in components. All strings go through
    the i18n layer.
-2. Supported languages: English (`en`, default/fallback) and Ukrainian (`uk`).
-3. A PR that adds a string must add it to **both** locales. CI fails on missing
+2. Supported languages: English (`en`, default/fallback), Ukrainian (`uk`) and Polish
+   (`pl`, spec 026).
+3. A PR that adds a string must add it to **every** locale. CI fails on missing
    keys.
 4. Dates and numbers are formatted with the active locale.
 
