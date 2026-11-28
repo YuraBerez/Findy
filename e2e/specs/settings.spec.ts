@@ -1,7 +1,7 @@
 // Spec 018: one settings window
 import { expect, test } from '../fixtures/app'
 
-const CATEGORIES = ['General', 'Board', 'Reminders', 'Updates', 'AI assistant']
+const CATEGORIES = ['General', 'Board', 'Reminders', 'Updates', 'AI assistant', 'Browser extension']
 
 test.describe('settings window (spec 018)', () => {
   test(
@@ -108,6 +108,7 @@ test.describe('settings window (spec 018)', () => {
         'Нагадування',
         'Оновлення',
         'AI-асистент',
+        'Браузерне розширення',
       ])
       await settings.verifyFitsWindow()
       expect(await findy.api.hasHorizontalScroll()).toBe(false)
