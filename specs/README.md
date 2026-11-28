@@ -64,3 +64,4 @@ Rules:
 | 023 | [Share analytics as an image](023-share-analytics-image/spec.md) | Implemented (0.8.0) |
 | 024 | [Browser extension in the settings](024-extension-settings/spec.md) | Approved |
 | 025 | [Card colours through the AI assistant](025-mcp-card-colors/spec.md) | Approved |
+| 026 | [Polish language](026-polish/spec.md) | Draft |
