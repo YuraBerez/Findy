@@ -18,6 +18,6 @@
 
 ## Phase 3 — Docs
 
-- [ ] T090 `docs/architecture.md` project structure; the browser extension guide mentions the
+- [x] T090 `docs/architecture.md` project structure; the browser extension guide mentions the
       settings page
 - [ ] T091 Full gate: format, lint, coverage ≥ 80 %, e2e

@@ -86,7 +86,8 @@ src/
 │   ├── ipc.ts           # FindyApi, AppState, channel names, IpcError
 │   ├── i18n.ts          # one i18next setup for main and renderer
 │   ├── skill.ts         # spec 017: the skill install command
-│   ├── extension.ts     # spec 019: native host name, extension ids, store links
+│   ├── extension.ts     # spec 019: native host name, extension ids, store links;
+│   │                    # spec 024: release file and guide links
 │   └── project.ts       # every GitHub URL of the project (home, issues, releases, API)
 ├── main/
 │   ├── index.ts         # entry: lifecycle, single instance, IPC registration, --mcp forward
@@ -146,6 +147,7 @@ src/
     │   ├── nextStep/    # NextStepSection/, NextStepMark/, form and label hooks (spec 015)
     │   ├── assistant/   # McpSettings/ (specs 004, 016, 017)
     │   ├── settings/    # SettingsDialog/ (spec 018), ColumnSwitches/
+    │   ├── extension/   # ExtensionSettings/: the browser extension page (spec 024)
     │   ├── feedback/    # ReportIssueButton/
     │   └── storage/     # StorageError/
     ├── hooks/           # hooks for more than one feature: useNow, useFieldErrorText

@@ -19,6 +19,8 @@ The extension is not in the browser stores yet. Install it from the release:
 2. Download `Findy-<version>-browser-extension.zip` from the
    [latest release](https://github.com/YuraBerez/findy/releases/latest) and unpack it
    into a folder that you keep (the browser loads the extension from this folder).
+   In new versions of Findy, **⋯ → Settings… → Browser extension** opens the file of your
+   version.
 3. Load it in your browser:
 
 **Chrome, Edge, Brave, Opera, Vivaldi**
