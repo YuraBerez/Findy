@@ -10,9 +10,11 @@ import {
   type ApplicationSource,
   type SourceChannel,
 } from '../../domain/fields'
+import { CARD_COLORS } from '../../domain/colors'
 import {
   ApplicationFieldsShape,
   ApplicationPatchSchema,
+  CardColorSchema,
   IdSchema,
   LIMITS,
   NextStepSchema,
@@ -91,6 +93,10 @@ const fieldsInput = {
         'date: "YYYY-MM-DD"; time: "HH:MM" (24 h), both in the user\'s local time; no time ' +
         'means all day. It replaces the current step; null clears it.',
     ),
+  // Spec 025 FR-001, FR-002
+  color: CardColorSchema.optional().describe(
+    `The colour of the card on the board: one of ${CARD_COLORS.join(', ')}; null removes it`,
+  ),
 }
 
 export class McpAccessDisabledError extends Error {
@@ -139,6 +145,8 @@ function summary(application: Application) {
     contactName: application.contactName,
     contactDetails: application.contactDetails,
     nextStep: application.nextStep,
+    // Spec 025 FR-003
+    color: application.color,
     notes: application.notes.length,
     createdAt: application.createdAt,
     updatedAt: application.updatedAt,
@@ -261,7 +269,8 @@ export function createTools(repository: Repository): ToolDefinition[] {
       title: 'Update a job application',
       description:
         'Changes the title, the company, the vacancy link, the salary, the work format, the location, ' +
-        'the source, the contact or the next step. Only the given fields change; null clears a field. ' +
+        'the source, the contact, the next step or the card colour. Only the given fields change; ' +
+        'null clears a field. ' +
         'Use move_application to change the stage.',
       inputSchema: { id: IdSchema, ...ApplicationPatchSchema.shape, ...fieldsInput },
       annotations: { idempotentHint: true },

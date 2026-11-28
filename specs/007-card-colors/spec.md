@@ -103,7 +103,8 @@ lose my mark.
 - "Reset board" (001 US-10) deletes the applications together with their colours.
 - The details panel is open and the colour changes from the card menu: the panel
   shows the new colour.
-- The MCP server (spec 004) changes a card's fields: the colour does not change.
+- The MCP server (spec 004) changes a card's fields: the colour does not change, unless the
+  call gives a colour (spec 025).
 - A card is dragged: the drag overlay shows the same colour as the card.
 
 ## Out of scope
@@ -111,7 +112,7 @@ lose my mark.
 - Custom colours, a colour picker, or more than 7 colours.
 - Names or meanings for colours set by the user.
 - Filtering or sorting the board by colour.
-- Reading or setting the colour through the MCP server (spec 004).
+- Reading or setting the colour through the MCP server (spec 004); added by spec 025.
 - Colour in analytics (spec 005).
 
 ## Success criteria
@@ -129,6 +130,8 @@ lose my mark.
 - **D-3** Palette: red, orange, yellow, green, blue, purple, grey, plus "None".
   Each colour has a translated name.
 - **D-4** No MCP support, no filter and no user names for colours in this spec.
+  *Changed by [spec 025](../025-mcp-card-colors/spec.md): the MCP tools read and set the
+  colour.*
   A later spec can add them.
 
 ## Open questions

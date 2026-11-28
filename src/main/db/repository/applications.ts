@@ -111,14 +111,15 @@ export class ApplicationStore {
       // FR-023: new cards go to the top of the column
       db.prepare('UPDATE applications SET position = position + 1 WHERE stage = ?').run(stage)
       db.prepare(
-        `INSERT INTO applications (id, title, company, url, stage, position, created_at, updated_at, ${FIELD_LIST})
-         VALUES (?, ?, ?, ?, ?, 0, ?, ?, ${FIELD_PARAMS})`,
+        `INSERT INTO applications (id, title, company, url, stage, position, color, created_at, updated_at, ${FIELD_LIST})
+         VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?, ${FIELD_PARAMS})`,
       ).run(
         id,
         input.title,
         input.company,
         input.url,
         stage,
+        input.color ?? null,
         at,
         at,
         ...optionalValues(fields, input.nextStep ?? null),
@@ -139,12 +140,14 @@ export class ApplicationStore {
       // Spec 015 FR-003: a whole value; `null` clears it, a missing key keeps it
       const step = patch.nextStep === undefined ? toNextStep(current) : patch.nextStep
       db.prepare(
-        `UPDATE applications SET title = ?, company = ?, url = ?, updated_at = ?, ${FIELD_SET}
+        `UPDATE applications SET title = ?, company = ?, url = ?, color = ?, updated_at = ?, ${FIELD_SET}
          WHERE id = ?`,
       ).run(
         patch.title ?? current.title,
         patch.company ?? current.company,
         url,
+        // Spec 025 FR-002: a missing key keeps the colour
+        patch.color === undefined ? current.color : patch.color,
         this.ctx.now(),
         ...optionalValues(fields, step),
         id,

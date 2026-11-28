@@ -71,6 +71,32 @@ test.describe('MCP server (spec 004)', () => {
     },
   )
 
+  test('spec 025: the assistant colours cards; the open board shows it (FR-001…FR-006)', async ({
+    findy,
+  }) => {
+    await findy.api.setMcpEnabled(true)
+    const mcp = await findy.connectMcp()
+    const { board } = findy.pages
+
+    const added = await mcp.call('add_application', {
+      title: 'Dev',
+      company: 'Acme',
+      color: 'green',
+    })
+    const id = (added.data!.application as { id: string }).id
+    await expect(async () => board.verifyCardColor('Dev', 'green')).toPass({ timeout: 2_500 })
+
+    await mcp.call('update_application', { id, color: 'red' })
+    await expect(async () => board.verifyCardColor('Dev', 'red')).toPass({ timeout: 2_500 })
+    expect((await mcp.call('list_applications')).data).toMatchObject({
+      applications: [{ id, color: 'red' }],
+    })
+
+    expect((await mcp.call('update_application', { id, color: 'pink' })).isError).toBe(true)
+    await mcp.call('update_application', { id, color: null })
+    await expect(async () => board.verifyCardColor('Dev', null)).toPass({ timeout: 2_500 })
+  })
+
   test('US-2.4: the same rules as the app; US-5: delete is marked destructive', async ({
     findy,
   }) => {
