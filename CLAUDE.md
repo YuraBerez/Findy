@@ -46,8 +46,9 @@ with notes per application, en/uk UI, builds for Windows/macOS/Linux.
   dialog, menu, icon or style: reuse or extend `@ui` first. All IPC goes through `useAppState.run()`, which shows failures (spec 003); never catch and ignore an error.
 - Renderer never imports Node/Electron; it uses only `window.findy`
   (see docs/contracts/ipc.md). Validate all IPC input with zod in main.
-- Every user-visible string goes into **both** `locales/en.json` and
-  `locales/uk.json` (Ukrainian plurals: `_one`, `_few`, `_many`, `_other`).
+- Every user-visible string goes into **every** locale: `locales/en.json`,
+  `locales/uk.json` and `locales/pl.json` (Ukrainian and Polish plurals: `_one`, `_few`,
+  `_many`, `_other`).
 - Database: SQLite (`better-sqlite3`) only in `src/main/db`. Schema change →
   new migration file + test; never edit a released migration
   (docs/contracts/database.md). Each IPC mutation runs in one transaction.

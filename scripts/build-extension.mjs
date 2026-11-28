@@ -18,12 +18,18 @@ const { chromium, firefox, ...base } = JSON.parse(
 // The ids live in src/shared/extension.ts; read them as text, so this script needs no TS loader
 const shared = readFileSync(join(root, 'src/shared/extension.ts'), 'utf8')
 const FIREFOX_EXTENSION_ID = /FIREFOX_EXTENSION_ID = '([^']+)'/.exec(shared)[1]
+// Spec 026 FR-008: the app languages, from src/domain/language.ts (one list, plan D-1)
+const LANGUAGES = [
+  .../SUPPORTED_LANGUAGES = \[([^\]]+)\]/
+    .exec(readFileSync(join(root, 'src/domain/language.ts'), 'utf8'))[1]
+    .matchAll(/'(\w+)'/g),
+].map((match) => match[1])
 
 /** Chrome Web Store limits */
 const LIMITS = { storeName: 75, storeDescription: 132, title: 75 }
 
 function writeLocales(target) {
-  for (const language of ['en', 'uk']) {
+  for (const language of LANGUAGES) {
     const { extension } = JSON.parse(
       readFileSync(join(root, 'locales', `${language}.json`), 'utf8'),
     )

@@ -30,9 +30,15 @@ export class BoardScreen extends BaseComponent {
     super(page)
     this.appRoot = page.getByTestId('app')
     this.toolbar = page.getByRole('banner')
-    this.addButton = this.toolbar.getByRole('button', { name: /^(Add application|Додати заявку)$/ })
-    this.appMenuButton = this.toolbar.getByRole('button', { name: /^(App menu|Меню застосунку)$/ })
-    this.board = page.getByRole('list', { name: /^(Job applications board|Дошка заявок)$/ })
+    this.addButton = this.toolbar.getByRole('button', {
+      name: /^(Add application|Додати заявку|Dodaj aplikację)$/,
+    })
+    this.appMenuButton = this.toolbar.getByRole('button', {
+      name: /^(App menu|Меню застосунку|Menu aplikacji)$/,
+    })
+    this.board = page.getByRole('list', {
+      name: /^(Job applications board|Дошка заявок|Tablica aplikacji o pracę)$/,
+    })
     this.emptyState = page.getByTestId('empty-board')
     this.storageError = page.getByTestId('storage-error')
     this.menu = page.getByRole('menu')
@@ -76,14 +82,14 @@ export class BoardScreen extends BaseComponent {
 
   /** Spec 018: General → Theme in Settings, then close the window */
   async chooseTheme(name: string): Promise<void> {
-    await this.settings.open(/^(General|Загальні)$/)
+    await this.settings.open(/^(General|Загальні|Ogólne)$/)
     await this.settings.chooseTheme(name)
     await this.settings.close()
   }
 
   /** US-5, spec 018: General → Language in Settings, then close the window */
-  async chooseLanguage(name: 'English' | 'Українська'): Promise<void> {
-    await this.settings.open(/^(General|Загальні)$/)
+  async chooseLanguage(name: 'English' | 'Українська' | 'Polski'): Promise<void> {
+    await this.settings.open(/^(General|Загальні|Ogólne)$/)
     await this.settings.chooseLanguage(name)
     await this.settings.close()
   }
@@ -540,8 +546,11 @@ export class BoardScreen extends BaseComponent {
     await expect(this.appRoot).toHaveCSS('background-color', BACKGROUND[theme])
   }
 
-  async verifyLanguage(name: 'English' | 'Українська', addButtonText: string): Promise<void> {
-    await this.settings.open(/^(General|Загальні)$/)
+  async verifyLanguage(
+    name: 'English' | 'Українська' | 'Polski',
+    addButtonText: string,
+  ): Promise<void> {
+    await this.settings.open(/^(General|Загальні|Ogólne)$/)
     await this.settings.verifyLanguage(name)
     await this.settings.close()
     await expect(this.addButton).toHaveText(addButtonText)

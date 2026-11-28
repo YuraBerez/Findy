@@ -70,7 +70,7 @@ src/
 │   ├── forms.ts         # field errors of the application form
 │   ├── search.ts        # board search (spec 001, spec 014)
 │   ├── time.ts          # elapsed time, stage entry
-│   ├── language.ts      # saved language or the OS locale
+│   ├── language.ts      # SUPPORTED_LANGUAGES (en, uk, pl); saved language or the OS locale
 │   ├── colors.ts        # spec 007: CARD_COLORS, CardColor
 │   ├── stale.ts         # spec 010: stale applications
 │   ├── offer.ts         # spec 013: moves to Offer, the one-time question

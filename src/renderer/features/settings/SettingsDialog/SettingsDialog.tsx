@@ -11,7 +11,7 @@ import { ColumnSwitches } from '../ColumnSwitches'
 import styles from './SettingsDialog.module.css'
 
 // Each language is named in itself, so a user can find their own (spec 001 FR-040)
-const NAMES: Record<Language, string> = { en: 'English', uk: 'Українська' }
+const NAMES: Record<Language, string> = { en: 'English', uk: 'Українська', pl: 'Polski' }
 const THEMES: readonly Theme[] = ['system', 'light', 'dark']
 
 /** Spec 018 FR-001: the categories in the side list, in order */

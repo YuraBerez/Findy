@@ -51,6 +51,24 @@ describe('export (US-1)', () => {
   })
 })
 
+describe('Polish (spec 026 FR-007)', () => {
+  it('exports Polish headers and stage names', async () => {
+    const app = repo.createApplication({ title: 'Dev', company: 'Acme', url: null })
+    repo.moveApplication(app.id, { stage: 'offered', index: 0 })
+    await transfer.exportCsv('pl')
+    expect(files.files[PATH]).toMatch(/^\uFEFFStanowisko,Firma,Link,Etap/)
+    expect(files.files[PATH]).toContain('Dev,Acme,,Oferta')
+  })
+
+  it('imports a Polish file with Polish stage names', async () => {
+    files.files[PATH] = 'Stanowisko,Firma,Etap\r\nDev,Acme,Rozmowa techniczna'
+    const preview = await transfer.previewImport()
+    expect(preview).toMatchObject({ toAdd: 1, fatal: null, errors: [] })
+    transfer.confirmImport(preview!.token!)
+    expect(repo.listApplications()[0]).toMatchObject({ title: 'Dev', stage: 'technical_interview' })
+  })
+})
+
 describe('import (US-2)', () => {
   it('US-2.1, 2.3: previews without changes; nothing changes until confirm', async () => {
     files.files[PATH] = 'Title,Company,Stage\r\nDev,Acme,Rejected\r\n,x,\r\nQA,Acme,'

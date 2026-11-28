@@ -1,8 +1,10 @@
+import { readdirSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import en from '../../locales/en.json'
-import uk from '../../locales/uk.json'
+import { SUPPORTED_LANGUAGES } from '../../src/domain/language'
 import { createMainTranslator } from '../../src/main/i18n'
 import { STAGES } from '../../src/domain/stages'
+import { resources } from '../../src/shared/i18n'
 
 // Locale parity (constitution §V, SC-003; docs/i18n.md)
 type Tree = { [key: string]: string | Tree }
@@ -21,7 +23,11 @@ const PLURAL = /_(zero|one|two|few|many|other)$/
 const baseKey = (key: string) => key.replace(PLURAL, '')
 const vars = (text: string) => [...text.matchAll(/{{\s*(\w+)\s*}}/g)].map((m) => m[1]).sort()
 
-const locales = { en: flatten(en), uk: flatten(uk) }
+// Spec 026 NFR-001: every language of the app, each compared with English
+const locales = Object.fromEntries(
+  Object.entries(resources).map(([lang, { translation }]) => [lang, flatten(translation)]),
+) as Record<string, Map<string, string>>
+const others = Object.keys(locales).filter((lang) => lang !== 'en')
 
 function groups(messages: Map<string, string>): Map<string, string[]> {
   const result = new Map<string, string[]>()
@@ -34,16 +40,26 @@ function groups(messages: Map<string, string>): Map<string, string[]> {
 }
 
 describe('locales', () => {
-  it('have the same keys (plural forms compared by base key)', () => {
-    expect([...groups(locales.uk).keys()].sort()).toEqual([...groups(locales.en).keys()].sort())
+  it('exist for every supported language, and only for those', () => {
+    const files = readdirSync(join(__dirname, '../../locales')).map((file) =>
+      file.replace('.json', ''),
+    )
+    expect(files.sort()).toEqual([...SUPPORTED_LANGUAGES].sort())
+    expect(Object.keys(locales).sort()).toEqual([...SUPPORTED_LANGUAGES].sort())
   })
 
-  it('use the same placeholders', () => {
-    const ukGroups = groups(locales.uk)
-    for (const [key, texts] of groups(locales.en)) {
+  it.each(others)('%s has the keys of English (plural forms compared by base key)', (lang) => {
+    expect([...groups(locales[lang]!).keys()].sort()).toEqual(
+      [...groups(locales.en!).keys()].sort(),
+    )
+  })
+
+  it.each(others)('%s uses the placeholders of English', (lang) => {
+    const langGroups = groups(locales[lang]!)
+    for (const [key, texts] of groups(locales.en!)) {
       const expected = [...new Set(texts.flatMap(vars))].sort()
-      const actual = [...new Set((ukGroups.get(key) ?? []).flatMap(vars))].sort()
-      expect(actual, key).toEqual(expected)
+      const actual = [...new Set((langGroups.get(key) ?? []).flatMap(vars))].sort()
+      expect(actual, `${lang}: ${key}`).toEqual(expected)
     }
   })
 
@@ -67,7 +83,7 @@ describe('locales', () => {
 
   it('name every stage (FR-002)', () => {
     for (const stage of STAGES) {
-      expect(locales.en.has(`stages.${stage}`)).toBe(true)
+      expect(locales.en!.has(`stages.${stage}`)).toBe(true)
     }
   })
 })
@@ -75,6 +91,7 @@ describe('locales', () => {
 describe('main-process translator', () => {
   it('translates in the chosen language with interpolation', () => {
     expect(createMainTranslator('uk')('stages.offered')).toBe('Офер')
+    expect(createMainTranslator('pl')('stages.offered')).toBe('Oferta')
     expect(createMainTranslator('en')('storage.location', { dataFilePath: '/x' })).toBe(
       'Database file: /x',
     )

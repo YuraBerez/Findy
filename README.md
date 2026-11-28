@@ -67,7 +67,7 @@ apply until you get an offer.
 - **Job sites.** A **Sites** tab with 14 job sites (Djinni, DOU, Work.ua, LinkedIn,
   Indeed and more): type your search once and open it on any site in one click. Add
   your own sites and hide the ones you do not use.
-- **English and Ukrainian** interface, **light and dark** theme.
+- **English, Ukrainian and Polish** interface, **light and dark** theme.
 - **Start over.** Reset the board in one step; Findy keeps a backup first.
 - **One settings window.** **⋯ → Settings…** or Cmd/Ctrl+, opens the language, the theme,
   the columns, reminders, the update check and AI assistant access in one place.

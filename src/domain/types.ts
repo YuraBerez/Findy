@@ -6,7 +6,7 @@ import type { NextStep } from './nextStep'
 import type { StageId } from './stages'
 import type { KnownSiteId } from './sites'
 
-export type Language = 'en' | 'uk'
+export type Language = 'en' | 'uk' | 'pl'
 export type Theme = 'system' | 'light' | 'dark'
 
 export interface StageChange {

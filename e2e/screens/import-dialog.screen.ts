@@ -27,7 +27,7 @@ export class ImportDialogScreen extends BaseComponent {
   }
 
   async close(): Promise<void> {
-    await this.button(/^(Close|Закрити)$/)
+    await this.button(/^(Close|Закрити|Zamknij)$/)
       .last()
       .click()
     await expect(this.dialog).toBeHidden()
@@ -56,6 +56,6 @@ export class ImportDialogScreen extends BaseComponent {
   /** FR-020: with nothing to add, only "Close" */
   async verifyOnlyClose(): Promise<void> {
     await expect(this.button(/^(Import|Імпортувати)/)).toHaveCount(0)
-    await expect(this.button(/^(Close|Закрити)$/).last()).toBeVisible()
+    await expect(this.button(/^(Close|Закрити|Zamknij)$/).last()).toBeVisible()
   }
 }

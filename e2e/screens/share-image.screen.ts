@@ -19,7 +19,7 @@ export class ShareImageScreen extends BaseComponent {
 
   constructor(page: Page) {
     super(page)
-    this.panel = page.getByRole('tabpanel', { name: /^(Analytics|Аналітика)$/ })
+    this.panel = page.getByRole('tabpanel', { name: /^(Analytics|Аналітика|Analityka)$/ })
     this.button = this.panel.getByRole('button', {
       name: /^(Share image|Поділитися зображенням)$/,
     })
@@ -61,7 +61,7 @@ export class ShareImageScreen extends BaseComponent {
   /** The "Close" button of the footer (the × in the header has the same name) */
   async close(): Promise<void> {
     await this.dialog
-      .getByRole('button', { name: /^(Close|Закрити)$/ })
+      .getByRole('button', { name: /^(Close|Закрити|Zamknij)$/ })
       .last()
       .click()
   }
@@ -90,7 +90,7 @@ export class ShareImageScreen extends BaseComponent {
 
   /** US-3.2: focus starts on Copy; Shift+Tab moves to Save as PNG, then to Close */
   async verifyFocusInDialog(): Promise<void> {
-    const close = this.dialog.getByRole('button', { name: /^(Close|Закрити)$/ }).last()
+    const close = this.dialog.getByRole('button', { name: /^(Close|Закрити|Zamknij)$/ }).last()
     await expect(this.copyButton).toBeFocused()
     await this.copyButton.press('Shift+Tab')
     await expect(this.saveButton).toBeFocused()
