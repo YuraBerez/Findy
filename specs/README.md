@@ -61,3 +61,4 @@ Rules:
 | 020 | [Project website](020-website/spec.md) | Implemented (#59) |
 | 021 | [Delete stage history entries](021-delete-stage-history/spec.md) | Implemented (0.7.1) |
 | 022 | [Days of job search](022-search-days/spec.md) | Implemented (0.7.2) |
+| 023 | [Share analytics as an image](023-share-analytics-image/spec.md) | Approved |
