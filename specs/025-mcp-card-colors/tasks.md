@@ -18,4 +18,4 @@
 ## Phase 3 — Docs
 
 - [x] T090 `docs/contracts/ipc.md`, spec 007 notes (D-4, edge case, out of scope)
-- [ ] T091 Full gate: format, lint, coverage ≥ 80 %, e2e
+- [x] T091 Full gate: format, lint, coverage ≥ 80 %, e2e
