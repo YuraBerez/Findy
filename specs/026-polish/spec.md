@@ -1,7 +1,8 @@
 # Feature Spec: Polish language
 
 - **ID:** 026-polish
-- **Status:** Draft
+- **Status:** Approved
+- **Approved:** 2026-11-28 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-28
 - **Builds on:** [001-mvp-board](../001-mvp-board/spec.md) (FR-040…FR-044),
