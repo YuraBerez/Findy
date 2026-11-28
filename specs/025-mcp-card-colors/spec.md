@@ -1,7 +1,8 @@
 # Feature Spec: Card colours through the AI assistant
 
 - **ID:** 025-mcp-card-colors
-- **Status:** Draft
+- **Status:** Approved
+- **Approved:** 2026-11-28 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-28
 - **Builds on:** [004-mcp-server](../004-mcp-server/spec.md) (FR-002, FR-003, FR-006, FR-008),
