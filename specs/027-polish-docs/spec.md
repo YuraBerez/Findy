@@ -1,7 +1,8 @@
 # Feature Spec: Polish documentation and website
 
 - **ID:** 027-polish-docs
-- **Status:** Draft
+- **Status:** Approved
+- **Approved:** 2026-11-28 (owner)
 - **Author(s):** owner
 - **Created:** 2026-11-28
 - **Builds on:** [026-polish](../026-polish/spec.md) (D-1),
