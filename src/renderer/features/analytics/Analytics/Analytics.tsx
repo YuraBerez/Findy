@@ -7,6 +7,7 @@ import { Button } from '@ui'
 import { ActivityChart } from '../ActivityChart'
 import { AnalyticsFilters } from '../AnalyticsFilters'
 import { Funnel } from '../Funnel'
+import { ShareImageButton } from '../ShareImageButton'
 import { StagesChart } from '../StagesChart'
 import { Totals } from '../Totals'
 import { useBucketLabels } from '../useBucketLabels'
@@ -19,10 +20,22 @@ interface Props {
   onViewChange(view: AnalyticsView): void
   /** FR-040: the empty state opens the board */
   onShowBoard(): void
+  /** Spec 023 FR-021 */
+  onCopyImage(png: Uint8Array): Promise<void>
+  /** Spec 023 FR-022 */
+  onSaveImage(png: Uint8Array): Promise<void>
 }
 
 /** Spec 005: the analytics screen. Numbers follow every new state (FR-033). */
-export function Analytics({ applications, hiddenStages, view, onViewChange, onShowBoard }: Props) {
+export function Analytics({
+  applications,
+  hiddenStages,
+  view,
+  onViewChange,
+  onShowBoard,
+  onCopyImage,
+  onSaveImage,
+}: Props) {
   const { t } = useTranslation()
   // A new "now" with every change of data or view, so midnight moves "today"
   const data = useMemo(
@@ -47,7 +60,16 @@ export function Analytics({ applications, hiddenStages, view, onViewChange, onSh
     <div className={styles.analytics}>
       <div className={styles.header}>
         <h2 className={styles.title}>{t('views.analytics')}</h2>
-        <AnalyticsFilters view={view} onChange={onViewChange} />
+        {/* Spec 023 FR-001: the share button on the right side of the filters */}
+        <div className={styles.tools}>
+          <AnalyticsFilters view={view} onChange={onViewChange} />
+          <ShareImageButton
+            data={data}
+            period={view.period}
+            onCopy={onCopyImage}
+            onSave={onSaveImage}
+          />
+        </div>
       </div>
       {data.noActivity && (
         <p className={styles.note} role="status">

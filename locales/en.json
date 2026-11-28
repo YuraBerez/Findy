@@ -265,6 +265,17 @@
       "title": "No data yet",
       "text": "Add applications on the board, and your statistics show here.",
       "action": "Open the board"
+    },
+    "share": {
+      "button": "Share image",
+      "title": "Analytics image",
+      "subtitle": "My job search",
+      "alt": "Analytics image: Findy, {{period}}",
+      "copy": "Copy",
+      "save": "Save as PNG",
+      "close": "Close",
+      "copied": "Image copied",
+      "saved": "Image saved"
     }
   },
   "updates": {

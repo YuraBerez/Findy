@@ -16,20 +16,20 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 2 — The image
 
-- [ ] T010 [P] Tests, then `shareImage/palette.ts`: light colours equal to `global.css`,
+- [x] T010 [P] Tests, then `shareImage/palette.ts`: light colours equal to `global.css`,
       text contrast ≥ 4.5 : 1 (FR-014, NFR-002, plan D-3)
-- [ ] T011 [P] Tests, then `shareImage/content.ts`: title, subtitle, period, tiles, funnel
+- [x] T011 [P] Tests, then `shareImage/content.ts`: title, subtitle, period, tiles, funnel
       rows in the active language and locale formats (FR-011…FR-013, FR-015)
-- [ ] T012 Tests for `fitFontSize`, then `shareImage/draw.ts`: 1080 × 1080 PNG, logo,
+- [x] T012 Tests for `fitFontSize`, then `shareImage/draw.ts`: 1080 × 1080 PNG, logo,
       tiles, funnel, website address (FR-010, FR-011, FR-016, plan D-4)
-- [ ] T013 Strings `analytics.share.*` in `en.json` and `uk.json` (NFR-001)
+- [x] T013 Strings `analytics.share.*` in `en.json` and `uk.json` (NFR-001)
 
 ## Phase 3 — User stories 1–3 (P1, P2)
 
 - [ ] T020 e2e screen and spec for US-1…US-3 (all acceptance scenarios, SC-002)
-- [ ] T021 `ImageIcon` in `@ui`; button in the filter row of `Analytics`, hidden in the
+- [x] T021 `ImageIcon` in `@ui`; button in the filter row of `Analytics`, hidden in the
       empty state (FR-001…FR-003)
-- [ ] T022 `ShareImageDialog`: preview with a text alternative, Copy, Save as PNG, Close;
+- [x] T022 `ShareImageDialog`: preview with a text alternative, Copy, Save as PNG, Close;
       `useAppState` actions; confirmation and errors (FR-020…FR-025, plan D-5)
 - [ ] T023 e2e axe audit of the preview in both themes (NFR-002)
 

@@ -150,6 +150,13 @@ export function App({ initialState }: { initialState: AppState }) {
                   view={state.settings.analytics}
                   onViewChange={actions.setAnalyticsView}
                   onShowBoard={showBoard}
+                  onCopyImage={async (png) => {
+                    if (await actions.copyImage(png)) notify(t('analytics.share.copied'))
+                  }}
+                  onSaveImage={async (png) => {
+                    const result = await actions.saveImage(png)
+                    if (result?.status === 'saved') notify(t('analytics.share.saved'))
+                  }}
                 />
               )}
             </div>

@@ -171,6 +171,22 @@ export const CalendarIcon = (props: IconProps) => (
   </Icon>
 )
 
+/** Spec 023: an image for a post */
+export const ImageIcon = (props: IconProps) => (
+  <Icon
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+    <circle cx="9" cy="10" r="1.5" />
+    <path d="M20.5 16l-5-5-9 8.5" />
+  </Icon>
+)
+
 /** Spec 015 FR-021: an overdue step, not only by colour */
 export const AlertIcon = (props: IconProps) => (
   <Icon
