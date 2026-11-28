@@ -5,6 +5,7 @@ import {
   ellipsize,
   fitFontSize,
   fitLines,
+  pngDataUrl,
   wrapWords,
   type Measure,
 } from '../../../src/renderer/features/analytics/shareImage/draw'
@@ -113,6 +114,14 @@ describe('analytics image (spec 023)', () => {
         [],
       )
     })
+  })
+
+  it('makes the preview URL from the PNG bytes, also a large image', () => {
+    const png = new Uint8Array(100_000).map((_, index) => index % 256)
+    const url = pngDataUrl(png)
+    expect(url.startsWith('data:image/png;base64,')).toBe(true)
+    const bytes = Uint8Array.from(atob(url.split(',')[1]!), (char) => char.charCodeAt(0))
+    expect(bytes).toEqual(png)
   })
 
   describe('text fit (FR-016, plan D-4)', () => {

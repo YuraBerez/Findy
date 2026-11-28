@@ -224,14 +224,41 @@ export function drawShareCard(
   context.letterSpacing = '0px'
 }
 
+/** The logo, loaded once. `onload` and not `decode()`: Chromium can refuse to decode an SVG
+ * without width and height (the logo has only a viewBox), seen on Windows CI. */
+const logos = new Map<string, Promise<HTMLImageElement>>()
+
+function loadLogo(url: string): Promise<HTMLImageElement> {
+  let logo = logos.get(url)
+  if (!logo) {
+    logo = new Promise((resolve, reject) => {
+      const image = new Image(96, 96)
+      image.onload = () => resolve(image)
+      image.onerror = () => reject(new Error('The logo cannot be loaded'))
+      image.src = url
+    })
+    // A failed load is tried again on the next click
+    logo.catch(() => logos.delete(url))
+    logos.set(url, logo)
+  }
+  return logo
+}
+
+/** A `data:` URL of the PNG bytes, without a second encoding of the canvas */
+export function pngDataUrl(png: Uint8Array): string {
+  let binary = ''
+  for (let start = 0; start < png.length; start += 0x8000) {
+    binary += String.fromCharCode(...png.subarray(start, start + 0x8000))
+  }
+  return `data:image/png;base64,${btoa(binary)}`
+}
+
 /** The image of `card` as PNG bytes for main, and as a `data:` URL for the preview (CSP) */
 export async function renderShareImage(
   card: ShareCard,
   logoUrl: string,
 ): Promise<{ png: Uint8Array; url: string }> {
-  const logo = new Image()
-  logo.src = logoUrl
-  await logo.decode()
+  const logo = await loadLogo(logoUrl)
   const canvas = document.createElement('canvas')
   canvas.width = IMAGE_SIZE
   canvas.height = IMAGE_SIZE
@@ -241,5 +268,6 @@ export async function renderShareImage(
   const blob = await new Promise<Blob>((resolve, reject) =>
     canvas.toBlob((value) => (value ? resolve(value) : reject(new Error('No PNG'))), 'image/png'),
   )
-  return { png: new Uint8Array(await blob.arrayBuffer()), url: canvas.toDataURL('image/png') }
+  const png = new Uint8Array(await blob.arrayBuffer())
+  return { png, url: pngDataUrl(png) }
 }
