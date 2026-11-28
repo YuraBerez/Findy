@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { STAGES } from '@domain/stages'
 import { SITE_URL } from '@shared/project'
 import { buildShareCard } from '../../../src/renderer/features/analytics/shareImage/content'
 import {
@@ -9,11 +8,7 @@ import {
   wrapWords,
   type Measure,
 } from '../../../src/renderer/features/analytics/shareImage/draw'
-import {
-  FONT_FAMILY,
-  LIGHT,
-  LIGHT_CHART,
-} from '../../../src/renderer/features/analytics/shareImage/palette'
+import { FONT_FAMILY, LIGHT } from '../../../src/renderer/features/analytics/shareImage/palette'
 import css from '../../../src/renderer/styles/global.css?raw'
 import en from '../../../locales/en.json'
 import uk from '../../../locales/uk.json'
@@ -69,9 +64,6 @@ describe('analytics image (spec 023)', () => {
   describe('light palette (FR-014, plan D-3)', () => {
     it('is the light theme of styles/global.css', () => {
       for (const [name, value] of Object.entries(LIGHT)) expect(value, name).toBe(lightTokens[name])
-      for (const stage of STAGES) {
-        expect(LIGHT_CHART[stage], stage).toBe(lightTokens[`chart-${stage}`])
-      }
       expect(css.replace(/\s+/g, ' ')).toContain(`font-family: ${FONT_FAMILY}`)
     })
 
@@ -98,7 +90,6 @@ describe('analytics image (spec 023)', () => {
         { label: 'Applications sent', value: '40' },
         { label: 'Interviews', value: '12' },
         { label: 'Offers', value: '1' },
-        { label: 'Rejections', value: '9' },
       ])
       expect(card.funnel[1]).toEqual({
         stage: 'hr_interview',

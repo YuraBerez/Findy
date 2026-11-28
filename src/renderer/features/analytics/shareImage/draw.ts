@@ -1,11 +1,13 @@
 import type { ShareCard } from './content'
-import { FONT_FAMILY, LIGHT, LIGHT_CHART } from './palette'
+import { FONT_FAMILY, LIGHT } from './palette'
 
 /** FR-010: a square for a post */
 export const IMAGE_SIZE = 1080
 
-const PAD = 72
+const PAD = 80
 const GAP = 16
+const RIGHT = IMAGE_SIZE - PAD
+const INNER = IMAGE_SIZE - 2 * PAD
 
 /** Width of `text` at a font size, in pixels */
 export type Measure = (text: string, size: number) => number
@@ -79,7 +81,14 @@ export function fitLines(
   return { size: min, lines: kept }
 }
 
-const font = (size: number, bold = false) => `${bold ? 700 : 400} ${size}px ${FONT_FAMILY}`
+type Weight = 400 | 600
+
+/** A text style: size, weight and letter spacing in pixels */
+interface Style {
+  size: number
+  weight: Weight
+  spacing?: number
+}
 
 /** FR-010, FR-011, FR-014: the card on a light 1080 × 1080 canvas */
 export function drawShareCard(
@@ -87,130 +96,132 @@ export function drawShareCard(
   card: ShareCard,
   logo: CanvasImageSource,
 ): void {
+  const setStyle = ({ size, weight, spacing = 0 }: Style) => {
+    context.font = `${weight} ${size}px ${FONT_FAMILY}`
+    context.letterSpacing = `${spacing}px`
+  }
   const measureWith =
-    (bold: boolean): Measure =>
-    (text, size) => {
-      context.font = font(size, bold)
-      return context.measureText(text).width
+    (weight: Weight, spacing = 0): Measure =>
+    (value, size) => {
+      setStyle({ size, weight, spacing })
+      return context.measureText(value).width
     }
-  const regular = measureWith(false)
-  const bold = measureWith(true)
   const text = (
     value: string,
     x: number,
     y: number,
-    size: number,
+    style: Style,
     color: string,
-    isBold = false,
+    align: CanvasTextAlign = 'left',
   ) => {
-    context.font = font(size, isBold)
+    setStyle(style)
+    context.textAlign = align
     context.fillStyle = color
     context.fillText(value, x, y)
   }
-  const box = (
+  /** A line of text that fits `width`: smaller first, then cut with "…" */
+  const fitted = (
+    value: string,
     x: number,
     y: number,
     width: number,
-    height: number,
-    radius: number,
+    { size, weight, spacing }: Style,
+    min: number,
     color: string,
+    align: CanvasTextAlign = 'left',
   ) => {
-    context.fillStyle = color
-    context.beginPath()
-    context.roundRect(x, y, width, height, radius)
-    context.fill()
+    const measure = measureWith(weight, spacing)
+    const fitSize = fitFontSize(value, width, size, min, measure)
+    const style = { size: fitSize, weight, spacing }
+    text(ellipsize(value, width, fitSize, measure), x, y, style, color, align)
   }
-  const right = IMAGE_SIZE - PAD
-  const inner = IMAGE_SIZE - 2 * PAD
+  const rule = (y: number) => {
+    context.fillStyle = LIGHT.border
+    context.fillRect(PAD, y, INNER, 2)
+  }
+  /** Small capitals for the section and tile names */
+  const caption: Style = { size: 18, weight: 600, spacing: 1.5 }
+  const upper = (value: string) => value.toLocaleUpperCase()
 
   context.textBaseline = 'alphabetic'
-  context.textAlign = 'left'
   context.fillStyle = LIGHT.surface
   context.fillRect(0, 0, IMAGE_SIZE, IMAGE_SIZE)
-  context.fillStyle = LIGHT.primary
-  context.fillRect(0, 0, IMAGE_SIZE, 12)
 
-  // Header: logo, "Findy", the subtitle; the period on the right
-  context.drawImage(logo, PAD, 84, 96, 96)
-  text(card.title, PAD + 120, 138, 64, LIGHT.fg, true)
-  const subtitleSize = fitFontSize(card.subtitle, 380, 30, 20, regular)
-  text(
-    ellipsize(card.subtitle, 380, subtitleSize, regular),
-    PAD + 120,
-    178,
-    subtitleSize,
-    LIGHT['fg-muted'],
-  )
+  // Header: logo, "Findy" and the subtitle; the period on the right
+  context.drawImage(logo, PAD, 80, 72, 72)
+  text(card.title, PAD + 96, 112, { size: 40, weight: 600, spacing: -0.5 }, LIGHT.fg)
+  fitted(card.subtitle, PAD + 96, 146, 420, { size: 24, weight: 400 }, 18, LIGHT['fg-muted'])
+  fitted(upper(card.period), RIGHT, 112, 340, caption, 14, LIGHT['fg-muted'], 'right')
+  rule(192)
 
-  const periodSize = fitFontSize(card.period, 320, 28, 18, regular)
-  const period = ellipsize(card.period, 320, periodSize, regular)
-  const periodWidth = regular(period, periodSize) + 48
-  box(right - periodWidth, 106, periodWidth, 56, 28, LIGHT.bg)
-  text(period, right - periodWidth + 24, 134 + periodSize * 0.36, periodSize, LIGHT.fg)
-
-  // Summary tiles, in the order of the screen
-  const tileWidth = (inner - GAP * (card.tiles.length - 1)) / card.tiles.length
-  const tileTop = 236
+  // Summary tiles, in the order of the screen: the name above, the number below
+  const tileWidth = (INNER - GAP * (card.tiles.length - 1)) / card.tiles.length
+  const tileTop = 232
+  const labelMeasure = measureWith(caption.weight, caption.spacing)
   card.tiles.forEach((tile, index) => {
     const x = PAD + index * (tileWidth + GAP)
-    const width = tileWidth - 32
-    box(x, tileTop, tileWidth, 180, 20, LIGHT.bg)
-    const valueSize = fitFontSize(tile.value, width, 64, 28, bold)
-    text(
-      ellipsize(tile.value, width, valueSize, bold),
-      x + 16,
-      tileTop + 84,
-      valueSize,
-      LIGHT.fg,
-      true,
-    )
-    const label = fitLines(tile.label, width, 2, 24, 16, regular)
+    const width = tileWidth - 40
+    context.strokeStyle = LIGHT.border
+    context.lineWidth = 2
+    context.beginPath()
+    context.roundRect(x + 1, tileTop + 1, tileWidth - 2, 168, 12)
+    context.stroke()
+    const label = fitLines(upper(tile.label), width, 2, caption.size, 13, labelMeasure)
     label.lines.forEach((line, row) => {
-      text(line, x + 16, tileTop + 124 + row * label.size * 1.25, label.size, LIGHT['fg-muted'])
+      const style = { ...caption, size: label.size }
+      text(line, x + 20, tileTop + 44 + row * label.size * 1.3, style, LIGHT['fg-muted'])
     })
+    fitted(
+      tile.value,
+      x + 20,
+      tileTop + 144,
+      width,
+      { size: 56, weight: 600, spacing: -1 },
+      28,
+      LIGHT.fg,
+    )
   })
 
-  // Funnel: stage, bar, "count (share)"
-  text(card.funnelTitle, PAD, 500, 36, LIGHT.fg, true)
+  // Funnel: stage, bar, number and share
+  text(upper(card.funnelTitle), PAD, 476, caption, LIGHT['fg-muted'])
   const labelWidth = 300
-  const valueWidth = 190
-  const trackX = PAD + labelWidth + 20
-  const trackWidth = right - valueWidth - 20 - trackX
-  const rowHeight = Math.min(72, (936 - 548) / Math.max(card.funnel.length, 1))
+  const shareX = RIGHT
+  const countX = RIGHT - 110
+  const trackX = PAD + labelWidth + 24
+  const trackWidth = countX - 90 - trackX
+  const rowHeight = Math.min(64, (936 - 500) / Math.max(card.funnel.length, 1))
   card.funnel.forEach((row, index) => {
-    const middle = 548 + index * rowHeight + rowHeight / 2
-    const labelSize = fitFontSize(row.label, labelWidth, 28, 18, regular)
-    text(
-      ellipsize(row.label, labelWidth, labelSize, regular),
-      PAD,
-      middle + labelSize * 0.36,
-      labelSize,
-      LIGHT.fg,
-    )
-    box(trackX, middle - 14, trackWidth, 28, 14, LIGHT.bg)
+    const middle = 500 + index * rowHeight + rowHeight / 2
+    const baseline = middle + 9
+    fitted(row.label, PAD, baseline, labelWidth, { size: 26, weight: 400 }, 18, LIGHT.fg)
+    context.fillStyle = LIGHT.bg
+    context.beginPath()
+    context.roundRect(trackX, middle - 6, trackWidth, 12, 6)
+    context.fill()
     if (row.ratio > 0) {
-      box(trackX, middle - 14, Math.max(row.ratio * trackWidth, 28), 28, 14, LIGHT_CHART[row.stage])
+      context.fillStyle = LIGHT.primary
+      context.beginPath()
+      context.roundRect(trackX, middle - 6, Math.max(row.ratio * trackWidth, 12), 12, 6)
+      context.fill()
     }
-    const value = `${row.count} (${row.share})`
-    const valueSize = fitFontSize(value, valueWidth, 28, 18, bold)
-    context.textAlign = 'right'
-    text(
-      ellipsize(value, valueWidth, valueSize, bold),
-      right,
-      middle + valueSize * 0.36,
-      valueSize,
-      LIGHT.fg,
-      true,
+    fitted(row.count, countX, baseline, 80, { size: 26, weight: 600 }, 18, LIGHT.fg, 'right')
+    fitted(
+      row.share,
+      shareX,
+      baseline,
+      96,
+      { size: 22, weight: 400 },
+      16,
+      LIGHT['fg-muted'],
+      'right',
     )
-    context.textAlign = 'left'
   })
 
   // Footer: the website address
-  context.fillStyle = LIGHT.border
-  context.fillRect(PAD, 964, inner, 2)
-  context.textAlign = 'center'
-  text(card.site, IMAGE_SIZE / 2, 1026, 28, LIGHT['fg-muted'])
+  rule(960)
+  text(card.site, PAD, 1016, { size: 22, weight: 400 }, LIGHT['fg-muted'])
   context.textAlign = 'left'
+  context.letterSpacing = '0px'
 }
 
 /** The image of `card` as PNG bytes for main, and as a `data:` URL for the preview (CSP) */

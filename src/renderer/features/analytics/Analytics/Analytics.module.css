@@ -21,6 +21,16 @@
   gap: var(--space-4);
 }
 
+/* Spec 023 FR-001: the share button lines up with the selects; each Field has this margin */
+.share {
+  margin-bottom: var(--space-4);
+}
+
+/* The height of a select (ui/styles/control.module.css) */
+.share > button {
+  min-height: 34px;
+}
+
 .title {
   margin: 0;
   font-size: 20px;

@@ -32,7 +32,7 @@ a post about my job search.
    the right side of the period and grouping filters.
 2. **When** I click it, **Then** a preview dialog opens with a square image that shows:
    the Findy logo and the title "Findy", the selected period, the summary tiles (days of
-   search, applications sent, interviews, offers, rejections) and the funnel with numbers
+   search, applications sent, interviews, offers) and the funnel with numbers
    and percentages.
 3. **Given** the period "Last 90 days", **Then** the image shows "Last 90 days" and the
    numbers of that period, the same as the screen.
@@ -84,7 +84,8 @@ As a keyboard user, I want to make, copy and save the image without a mouse.
 - **FR-010** The image MUST be a square of 1080 × 1080 pixels in PNG format.
 - **FR-011** The image MUST show, from top to bottom: the Findy logo and the title
   "Findy" with the subtitle "My job search"; the selected period (005 FR-030); the
-  summary tiles in the order of the screen (022 FR-001, 005 FR-024); the funnel
+  summary tiles in the order of the screen (022 FR-001, 005 FR-024) without
+  "Rejections"; the funnel
   (005 FR-022); the address of the Findy website.
 - **FR-012** All numbers on the image MUST be the same as on the analytics screen at the
   moment of the click: the same period, the same rules for hidden columns (005 FR-015).
@@ -162,6 +163,7 @@ As a keyboard user, I want to make, copy and save the image without a mouse.
 - **D-5** The button is on the right side of the filters (owner, 2026-11-28).
 - **D-6** The image is always light (owner, 2026-11-28).
 - **D-7** The image uses the active app language (constitution §V).
+- **D-8** The image has no "Rejections" tile; the screen keeps it (owner, 2026-11-28).
 
 ## Open questions
 

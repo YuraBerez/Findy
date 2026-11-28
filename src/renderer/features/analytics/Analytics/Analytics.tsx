@@ -63,12 +63,14 @@ export function Analytics({
         {/* Spec 023 FR-001: the share button on the right side of the filters */}
         <div className={styles.tools}>
           <AnalyticsFilters view={view} onChange={onViewChange} />
-          <ShareImageButton
-            data={data}
-            period={view.period}
-            onCopy={onCopyImage}
-            onSave={onSaveImage}
-          />
+          <div className={styles.share}>
+            <ShareImageButton
+              data={data}
+              period={view.period}
+              onCopy={onCopyImage}
+              onSave={onSaveImage}
+            />
+          </div>
         </div>
       </div>
       {data.noActivity && (

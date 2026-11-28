@@ -33,7 +33,8 @@ export interface ShareCard {
 
 type Translate = (key: string) => string
 
-const TILE_KEYS = ['applications', 'interviews', 'offers', 'rejections'] as const
+/** Spec D-8: no "Rejections" tile on the image */
+const TILE_KEYS = ['applications', 'interviews', 'offers'] as const
 
 /**
  * FR-011…FR-013, FR-015: the same numbers as the screen, in the order of the screen.
