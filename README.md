@@ -10,7 +10,7 @@
 
 [![Support Findy on Ko-fi](https://img.shields.io/badge/Support%20Findy%20on-Ko--fi-0A66C2?logo=ko-fi&logoColor=white)](https://ko-fi.com/findyapp)
 
-> **Status: 0.7.2.** Download it from
+> **Status: 0.8.0.** Download it from
 > [Releases](https://github.com/YuraBerez/findy/releases). Feedback is welcome: use the
 > *Found an issue?* button in the app.
 

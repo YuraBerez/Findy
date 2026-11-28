@@ -3,6 +3,13 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.8.0] - 2026-11-28
+
+### Share your analytics as an image
+- **Analytics** has a new **Share image** button next to the filters. It makes a square image of your job search: the period, days of search, applications sent, interviews, offers and the funnel.
+- In the preview, click **Copy** and paste the image into a post, or click **Save as PNG**.
+- The image is always light and uses the language of the app. It shows only numbers: no company, vacancy or note names. Findy sends it nowhere; you decide where it goes.
+
 ## [0.7.2] - 2026-11-26
 
 ### Days of job search
