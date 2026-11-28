@@ -1,6 +1,6 @@
 # Add a vacancy from the browser
 
-[Українською](browser-extension.uk.md)
+[Українською](browser-extension.uk.md) · [Po polsku](browser-extension.pl.md)
 
 The Findy browser extension adds the vacancy that you see to your board in one click. On
 a vacancy page, click the Findy button in the toolbar (or press **Alt+Shift+F**). The

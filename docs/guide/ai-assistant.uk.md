@@ -1,6 +1,6 @@
 # Findy з AI-асистентом
 
-[English](ai-assistant.md)
+[English](ai-assistant.md) · [Po polsku](ai-assistant.pl.md)
 
 Як підключити Claude чи іншого асистента до дошки й навчити його працювати з Findy.
 

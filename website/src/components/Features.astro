@@ -1,6 +1,7 @@
 ---
 import en from '../../../locales/en.json'
 import uk from '../../../locales/uk.json'
+import pl from '../../../locales/pl.json'
 import { STAGES } from '../../../src/domain/stages'
 import { MESSAGES } from '../i18n'
 import type { Lang } from '../lib/paths'
@@ -13,7 +14,7 @@ interface Props {
 const { lang } = Astro.props
 const t = MESSAGES[lang].features
 // FR-002: the stage names and order are the app's own. The last two are the results.
-const stageNames = { en, uk }[lang].stages
+const stageNames = { en, uk, pl }[lang].stages
 const flow = STAGES.slice(0, -2)
 const outcomes = STAGES.slice(-2)
 ---

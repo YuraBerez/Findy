@@ -1,6 +1,6 @@
 # Додати вакансію з браузера
 
-[English](browser-extension.md)
+[English](browser-extension.md) · [Po polsku](browser-extension.pl.md)
 
 Розширення Findy для браузера додає вакансію, яку ви бачите, на дошку в один клік. На
 сторінці вакансії натисніть кнопку Findy на панелі браузера (або **Alt+Shift+F**).

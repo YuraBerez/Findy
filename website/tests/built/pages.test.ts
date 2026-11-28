@@ -6,7 +6,7 @@ import { PROJECT_URL, SITE_URL, SOURCE_URL, SUPPORT_URL } from '../../../src/sha
 import { MESSAGES } from '../../src/i18n'
 import { GOOGLE_SITE_VERIFICATION } from '../../src/lib/site'
 import { GUIDES } from '../../src/lib/guides'
-import { LANGS, LANG_NAMES, guidePage, otherLang, pagePath, type Lang } from '../../src/lib/paths'
+import { LANGS, LANG_NAMES, guidePage, pagePath, type Lang } from '../../src/lib/paths'
 
 // Spec 020: checks of the built website in dist/ (run `npm run build` first)
 const DIST = new URL('../../dist/', import.meta.url).pathname
@@ -40,13 +40,16 @@ describe.each(PAGES)('page /$path', ({ lang, page, path }) => {
     expect(doc.querySelector('link[rel=canonical]')?.getAttribute('href')).toBe(url(lang))
   })
 
-  it('links the same page in both languages (FR-040)', () => {
+  it('links the same page in every language (FR-040)', () => {
     const alternates = Object.fromEntries(
       doc
         .querySelectorAll('link[rel=alternate]')
         .map((el) => [el.getAttribute('hreflang'), el.getAttribute('href')]),
     )
-    expect(alternates).toEqual({ en: url('en'), uk: url('uk'), 'x-default': url('en') })
+    expect(alternates).toEqual({
+      ...Object.fromEntries(LANGS.map((l) => [l, url(l)])),
+      'x-default': url('en'),
+    })
   })
 
   it('has a preview for social networks (FR-041)', () => {
@@ -68,7 +71,6 @@ describe.each(PAGES)('page /$path', ({ lang, page, path }) => {
       expect(link?.getAttribute('href')).toBe(`${BASE}${pagePath(l, page)}`)
       expect(link?.getAttribute('aria-current') ?? null).toBe(l === lang ? 'page' : null)
     }
-    expect(otherLang(lang)).not.toBe(lang)
   })
 
   it('has a navigation to the home page and every guide (FR-022)', () => {

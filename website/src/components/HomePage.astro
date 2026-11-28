@@ -9,6 +9,10 @@ import detailsEn from '../../../docs/screenshots/details-en.png'
 import detailsUk from '../../../docs/screenshots/details-uk.png'
 import sitesEn from '../../../docs/screenshots/sites-en.png'
 import sitesUk from '../../../docs/screenshots/sites-uk.png'
+import analyticsPl from '../../../docs/screenshots/analytics-pl.png'
+import boardPl from '../../../docs/screenshots/board-pl.png'
+import detailsPl from '../../../docs/screenshots/details-pl.png'
+import sitesPl from '../../../docs/screenshots/sites-pl.png'
 import { latestRelease } from '../data/release'
 import { MESSAGES } from '../i18n'
 import { getImage } from 'astro:assets'
@@ -32,6 +36,7 @@ const release = await latestRelease()
 const shots = {
   en: { board: boardEn, details: detailsEn, analytics: analyticsEn, sites: sitesEn },
   uk: { board: boardUk, details: detailsUk, analytics: analyticsUk, sites: sitesUk },
+  pl: { board: boardPl, details: detailsPl, analytics: analyticsPl, sites: sitesPl },
 }[lang]
 const slides = (['board', 'details', 'analytics', 'sites'] as const).map((key) => ({
   src: shots[key],

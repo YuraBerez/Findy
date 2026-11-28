@@ -28,7 +28,12 @@ describe('browser extension links (spec 024)', () => {
   it('links the guide in the app language, and the guide exists in both (FR-004, plan D-2)', () => {
     expect(extensionGuideUrl('en')).toBe(`${SITE_URL}guide/browser-extension/`)
     expect(extensionGuideUrl('uk')).toBe(`${SITE_URL}uk/guide/browser-extension/`)
-    for (const file of ['browser-extension.md', 'browser-extension.uk.md']) {
+    expect(extensionGuideUrl('pl')).toBe(`${SITE_URL}pl/guide/browser-extension/`)
+    for (const file of [
+      'browser-extension.md',
+      'browser-extension.uk.md',
+      'browser-extension.pl.md',
+    ]) {
       expect(existsSync(join(root, 'docs/guide', file)), file).toBe(true)
     }
   })

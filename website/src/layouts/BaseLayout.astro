@@ -3,6 +3,7 @@ import { getImage } from 'astro:assets'
 import logo from '../../../assets/logo.svg'
 import boardEn from '../../../docs/screenshots/board-en.png'
 import boardUk from '../../../docs/screenshots/board-uk.png'
+import boardPl from '../../../docs/screenshots/board-pl.png'
 import Footer from '../components/Footer.astro'
 import Header from '../components/Header.astro'
 import { MESSAGES } from '../i18n'
@@ -22,6 +23,8 @@ interface Props {
   notFound?: boolean
 }
 
+/** FR-040, spec 027 FR-005: the locale of each language for social networks */
+const OG_LOCALES: Record<Lang, string> = { en: 'en_US', uk: 'uk_UA', pl: 'pl_PL' }
 const { lang, page, title, description, structuredData, notFound = false } = Astro.props
 const t = MESSAGES[lang]
 const base = import.meta.env.BASE_URL
@@ -29,7 +32,7 @@ const absolute = (path: string) => new URL(path, Astro.site).href
 const urlOf = (l: Lang) => absolute(withBase(base, pagePath(l, page)))
 // FR-041: the preview is the board in the language of the page
 const preview = await getImage({
-  src: lang === 'uk' ? boardUk : boardEn,
+  src: { en: boardEn, uk: boardUk, pl: boardPl }[lang],
   width: 1200,
   format: 'png',
 })
@@ -55,7 +58,7 @@ const preview = await getImage({
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={urlOf(lang)} />
-    <meta property="og:locale" content={lang === 'uk' ? 'uk_UA' : 'en_US'} />
+    <meta property="og:locale" content={OG_LOCALES[lang]} />
     <meta property="og:image" content={absolute(preview.src)} />
     <meta property="og:image:width" content={String(preview.attributes.width)} />
     <meta property="og:image:height" content={String(preview.attributes.height)} />

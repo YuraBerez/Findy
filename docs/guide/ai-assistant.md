@@ -1,6 +1,6 @@
 # Use Findy from an AI assistant
 
-[Українською](ai-assistant.uk.md)
+[Українською](ai-assistant.uk.md) · [Po polsku](ai-assistant.pl.md)
 
 Connect Claude or another assistant to your board, and teach it how to use Findy.
 

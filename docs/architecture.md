@@ -171,7 +171,7 @@ skills/findy/SKILL.md    # spec 016: the skill for AI assistants (bundled into m
 build/                   # icons, entitlements for electron-builder
 website/                 # spec 020: the website, a separate npm package (D-19)
 ├── src/lib/             # pure logic: system detection, release files, guide links
-├── src/i18n/            # en.ts, uk.ts (site text, not in locales/)
+├── src/i18n/            # en.ts, uk.ts, pl.ts (site text, not in locales/)
 ├── src/components/, src/layouts/, src/pages/, src/styles/
 └── tests/               # unit/, built/ (HTML in dist/), browser/ (axe, keyboard)
 .github/workflows/       # ci.yml, release.yml, site.yml (website → GitHub Pages)

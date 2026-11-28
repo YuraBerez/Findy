@@ -65,3 +65,4 @@ Rules:
 | 024 | [Browser extension in the settings](024-extension-settings/spec.md) | Approved |
 | 025 | [Card colours through the AI assistant](025-mcp-card-colors/spec.md) | Approved |
 | 026 | [Polish language](026-polish/spec.md) | Approved |
+| 027 | [Polish documentation and website](027-polish-docs/spec.md) | Approved |
