@@ -3,6 +3,24 @@
 All notable changes to Findy. Versions follow [SemVer](https://semver.org/);
 pre-1.0 releases can change behaviour between minor versions.
 
+## [0.9.0] - 2026-11-28
+
+### Polish
+- Findy is now in Polish too. Select **Polski** in **⋯ → Settings… → General → Language**. On a computer with a Polish system language, Findy starts in Polish.
+- The menu, notifications, reminders and the analytics image are in Polish, with Polish dates, numbers and plural forms.
+- CSV export in Polish writes Polish column and stage names. Import reads Polish files in any app language.
+- The browser extension shows its texts in Polish in a Polish browser.
+- The website, the README and the guides are in Polish too: https://yuraberez.github.io/Findy/pl/
+
+### Browser extension in the settings
+- A new **Browser extension** page in **⋯ → Settings…** says what the extension does. It has buttons to download the extension of your Findy version (for Chrome, Edge and other Chromium browsers, and for Firefox) and to open the install guide.
+
+### Card colours through your AI assistant
+- Your AI assistant can now see and change the colour of cards, for example "mark in red every application with an interview this week". The Findy skill describes how. Update the skill to use it.
+
+### Fixes
+- The **Share image** preview of analytics now opens reliably on Windows.
+
 ## [0.8.0] - 2026-11-28
 
 ### Share your analytics as an image

@@ -10,7 +10,7 @@
 
 [![Wesprzyj Findy na Ko-fi](https://img.shields.io/badge/Wesprzyj%20Findy%20na-Ko--fi-0A66C2?logo=ko-fi&logoColor=white)](https://ko-fi.com/findyapp)
 
-> **Status: 0.8.0.** Pobierz Findy ze strony
+> **Status: 0.9.0.** Pobierz Findy ze strony
 > [Releases](https://github.com/YuraBerez/findy/releases). Chętnie poznamy Twoją opinię:
 > użyj przycisku *Znalazłeś problem?* w aplikacji.
 
