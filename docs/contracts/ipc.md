@@ -27,16 +27,18 @@ interface FindyApi {
   // Applications
   createApplication(input: {
     title: string; company: string; url?: string | null; stage?: StageId;
+    color?: CardColor | null;                          // spec 025 (MCP); the app does not send it
   } & ApplicationFields): Promise<AppState>;           // no source → from the link (spec 014 FR-020)
   updateApplication(id: string, patch: {
     title?: string; company?: string; url?: string | null;
+    color?: CardColor | null;                          // spec 025: missing keeps, null clears
   } & ApplicationFields): Promise<AppState>;
   completeNextStep(id: string,                          // spec 015 FR-012: clears the step and adds
     language: 'en' | 'uk'): Promise<AppState>;           // the "Done" note; NOT_FOUND: no step
   saveNextStepCalendar(id: string): Promise<           // spec 015: .ics through the save dialog
     { status: 'saved' } | { status: 'cancelled' }>;      // STORAGE: write failed
-  setApplicationColor(id: string,                       // spec 007; not in updateApplication,
-    color: CardColor | null): Promise<AppState>;         // so the MCP update tool cannot set it
+  setApplicationColor(id: string,                       // spec 007: the card menu; only the colour
+    color: CardColor | null): Promise<AppState>;
   moveApplication(id: string, to: { stage: StageId; index: number }): Promise<AppState>;
   deleteApplication(id: string): Promise<AppState>;
   deleteStageChange(id: string,                         // spec 021: the entry at `index` of stageHistory,

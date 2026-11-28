@@ -117,6 +117,8 @@ export const NextStepSchema = z.object({
 })
 
 const nextStepField = { nextStep: NextStepSchema.nullable().optional() }
+/** Spec 025 FR-001, FR-002: one of the colours of spec 007; `null` clears it, a missing key keeps it */
+const colorField = { color: CardColorSchema.optional() }
 
 export const ApplicationInputSchema = z.object({
   title: requiredText(LIMITS.title),
@@ -125,6 +127,7 @@ export const ApplicationInputSchema = z.object({
   stage: StageSchema.optional(),
   ...ApplicationFieldsShape,
   ...nextStepField,
+  ...colorField,
 })
 
 export const ApplicationPatchSchema = z.object({
@@ -133,6 +136,7 @@ export const ApplicationPatchSchema = z.object({
   url: UrlSchema.optional(),
   ...ApplicationFieldsShape,
   ...nextStepField,
+  ...colorField,
 })
 
 export const MoveTargetSchema = z.object({

@@ -55,6 +55,9 @@ fails; tell the user and ask which stage to use.
   characters), `date` is `YYYY-MM-DD`, and `time` is `HH:MM` (24 h) or left out for all
   day. Both are the user's local time. Findy shows it on the card and reminds the user.
   A new value replaces the old one; `null` clears it.
+- `color`: the colour of the card on the board, one of `red`, `orange`, `yellow`, `green`,
+  `blue`, `purple` or `grey`; `null` removes it. Colours have no fixed meaning: the user
+  decides what each one marks. Set a colour only when the user asks.
 - Read only: `stage`, `stageName`, `inStageSince` (when it entered its stage), notes,
   stage history, `createdAt`, `updatedAt`.
 
@@ -169,3 +172,11 @@ The user asks "Prepare me for the Globex interview".
    (questions asked before, agreements, next steps).
 3. If the user asks, add a list of questions to prepare. Do not save the brief as a note
    unless the user asks.
+
+### Colour cards
+
+The user asks, for example, "Mark in red every application with an interview this week".
+
+1. Call `list_applications` and choose the applications that match the request.
+2. Call `update_application` with `id` and `color` for each one. Leave the other fields out.
+3. Say which cards changed, for example "Coloured 3 cards red: Acme, Globex, Initech."

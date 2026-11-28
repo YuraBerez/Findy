@@ -90,6 +90,20 @@ describe('setApplicationColor (spec 007)', () => {
     expect(repo.setApplicationColor(app.id, null).color).toBeNull()
   })
 
+  it('spec 025: create and update set, clear or keep the colour', () => {
+    const app = repo.createApplication({ ...input('Dev'), color: 'green' })
+    expect(app.color).toBe('green')
+    expect(repo.updateApplication(app.id, { title: 'Lead' })).toMatchObject({
+      title: 'Lead',
+      color: 'green',
+    })
+    expect(repo.updateApplication(app.id, { color: 'red', company: 'Globex' })).toMatchObject({
+      company: 'Globex',
+      color: 'red',
+    })
+    expect(repo.updateApplication(app.id, { color: null }).color).toBeNull()
+  })
+
   it('adds no history and keeps the position (FR-008)', () => {
     repo.createApplication(input('A'))
     const b = repo.createApplication(input('B'))

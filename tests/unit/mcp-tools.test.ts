@@ -166,15 +166,29 @@ describe('MCP tools (spec 004)', () => {
       )
     })
 
-    it('neither shows nor changes the card colour (spec 007 D-4)', () => {
+    it('spec 025: adds, changes, keeps, clears and reads the card colour (FR-001…FR-004)', () => {
+      const added = call('add_application', { title: 'Dev', company: 'Acme', color: 'green' }) as {
+        application: { id: string; color: string | null }
+      }
+      const { id } = added.application
+      expect(added.application.color).toBe('green')
+      expect(call('update_application', { id, title: 'Lead' })).toMatchObject({
+        application: { title: 'Lead', color: 'green' },
+      })
+      call('update_application', { id, color: 'red' })
+      expect(call('list_applications')).toMatchObject({ applications: [{ id, color: 'red' }] })
+      call('update_application', { id, color: null })
+      expect(call('get_application', { id })).toMatchObject({ application: { color: null } })
+    })
+
+    it('spec 025: an unknown colour names the allowed ones and changes nothing (FR-004, FR-005)', () => {
       const { id } = repo.createApplication({ title: 'Dev', company: 'Acme', url: null })
-      repo.setApplicationColor(id, 'red')
-      expect(z.object(tools.get('update_application')!.inputSchema).shape).not.toHaveProperty(
-        'color',
+      expect(() => call('update_application', { id, title: 'Lead', color: 'pink' })).toThrow(
+        /red.*orange.*yellow.*green.*blue.*purple.*grey/s,
       )
-      call('update_application', { id, color: null, title: 'Lead' })
-      expect(repo.getApplication(id)).toMatchObject({ title: 'Lead', color: 'red' })
-      expect(call('get_application', { id })).not.toHaveProperty('application.color')
+      expect(repo.getApplication(id)).toMatchObject({ title: 'Dev', color: null })
+      const color = z.object(tools.get('update_application')!.inputSchema).shape.color as z.ZodType
+      expect(color.description).toContain('red, orange, yellow, green, blue, purple, grey')
     })
 
     it('reports unknown ids', () => {
