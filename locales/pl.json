@@ -543,6 +543,7 @@
       "dark": "Ciemny"
     },
     "assistant": "Asystent AI",
+    "extension": "Rozszerzenie przeglądarki",
     "categories": "Kategorie ustawień"
   },
   "extension": {
@@ -560,5 +561,12 @@
     "adding": "Dodawanie…",
     "added": "Dodano do Findy, etap „{{stage}}”.",
     "failed": "Findy nie może dodać oferty: {{reason}}"
+  },
+  "extensionSettings": {
+    "text": "Rozszerzenie Findy jednym kliknięciem dodaje ofertę, którą widzisz, do etapu „Wysłano”: stanowisko, firmę i link. Łączy się tylko z aplikacją Findy na tym komputerze.",
+    "hint": "Rozszerzenia nie ma jeszcze w sklepach przeglądarek. Pobierz plik dla swojej przeglądarki i dodaj go zgodnie z instrukcją.",
+    "chromium": "Pobierz dla Chrome, Edge i innych",
+    "firefox": "Pobierz dla Firefoksa",
+    "guide": "Jak zainstalować"
   }
 }
