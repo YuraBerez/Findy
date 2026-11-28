@@ -63,3 +63,7 @@ webPreferences: {
       the file name, counts and a random token. Import checks the size (10 MB) before
       it reads the file. Export puts an apostrophe before a cell that starts with `=`,
       `+`, `-`, `@`, a tab or a CR, so a spreadsheet does not run it as a formula.
+- [ ] Analytics image (spec 023): the renderer sends only PNG bytes. Main accepts a
+      `Uint8Array` of at most 5 MB that starts with the PNG signature, and `nativeImage` must
+      decode it before it goes to the clipboard. A file is written only to the path of the
+      system save dialog. No network.

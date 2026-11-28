@@ -1,9 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import { readFile, stat, writeFile } from 'node:fs/promises'
-import { app, nativeTheme, net, shell } from 'electron'
+import { app, clipboard, ClipboardItem, nativeImage, nativeTheme, net, shell } from 'electron'
 import { resolveLanguage } from '../../domain/language'
 import skillText from '../../../skills/findy/SKILL.md?raw'
 import { createCalendarSaver } from '../calendar'
+import { createImageSharer } from '../image'
 import { backupDatabase, type OpenResult } from '../db/connection'
 import type { Repository } from '../db/repository'
 import { createMainTranslator } from '../i18n'
@@ -84,6 +85,20 @@ export function createServices(
     now: () => new Date(),
   })
 
+  // Spec 023 plan D-2: the analytics image; no database and no network
+  const image = createImageSharer({
+    writeClipboard: async (png) => {
+      if (nativeImage.createFromBuffer(Buffer.from(png)).isEmpty()) {
+        throw new Error('The image cannot be decoded')
+      }
+      const blob = new Blob([png], { type: 'image/png' })
+      await clipboard.write([new ClipboardItem({ 'image/png': blob })])
+    },
+    pickSavePath: (defaultPath) => pickSavePath(defaultPath, { name: 'PNG', extensions: ['png'] }),
+    writeBytes: (path, data) => writeFile(path, data),
+    now: () => new Date(),
+  })
+
   // Spec 015 FR-031…FR-037: only the app process shows notifications, never the MCP server
   const reminders =
     repository &&
@@ -105,6 +120,7 @@ export function createServices(
     appVersion: app.getVersion(),
     saveSkill: () => skill.save(),
     calendar,
+    image,
     getSystemLocale: () => app.getLocale(),
     openExternal: (url) => shell.openExternal(url),
     applyTheme: (theme) => {

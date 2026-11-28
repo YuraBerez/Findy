@@ -37,6 +37,7 @@ function setup(overrides: Partial<IpcDeps> = {}) {
     readVacancy: vi.fn(async () => ({ title: 'Frontend Developer', company: 'Acme' })),
     saveSkill: vi.fn(async () => ({ status: 'saved' as const })),
     calendar: { save: vi.fn(async () => ({ status: 'saved' as const })) },
+    image: { copy: vi.fn(async () => {}), save: vi.fn(async () => ({ status: 'saved' as const })) },
     siteIcons: {
       icons: vi.fn(() => ({ 'djinni.co': 'data:image/png;base64,AA==' })),
       refresh: vi.fn(async () => {}),
@@ -439,6 +440,56 @@ describe('saveSkill (spec 016)', () => {
       ok: false,
       error: { code: 'VALIDATION' },
     })
+  })
+})
+
+describe('copyImage and saveImage (spec 023)', () => {
+  const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0])
+
+  it('copies and saves a PNG without a database (FR-021, FR-022)', async () => {
+    const { deps, handlers } = setup({ repository: null, transfer: null })
+    expect(await handlers.copyImage(png)).toEqual({ ok: true, data: undefined })
+    expect(deps.image.copy).toHaveBeenCalledWith(png)
+    expect(unwrap(await handlers.saveImage(png))).toEqual({ status: 'saved' })
+    expect(deps.image.save).toHaveBeenCalledWith(png)
+  })
+
+  it('refuses bytes that are not a PNG, and a PNG over 5 MB (plan D-2)', async () => {
+    const { deps, handlers } = setup()
+    const large = new Uint8Array(5 * 1024 * 1024 + 1)
+    large.set(png)
+    for (const bad of [
+      'text',
+      new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
+      png.slice(0, 8),
+      large,
+    ]) {
+      expect(await handlers.copyImage(bad)).toMatchObject({
+        ok: false,
+        error: { code: 'VALIDATION' },
+      })
+      expect(await handlers.saveImage(bad)).toMatchObject({
+        ok: false,
+        error: { code: 'VALIDATION' },
+      })
+    }
+    expect(deps.image.copy).not.toHaveBeenCalled()
+    expect(deps.image.save).not.toHaveBeenCalled()
+  })
+
+  it('reports a failed copy or write as STORAGE (FR-023)', async () => {
+    const { handlers } = setup({
+      image: {
+        copy: vi.fn(async () => {
+          throw new Error('The image cannot be decoded')
+        }),
+        save: vi.fn(async () => {
+          throw new Error('EACCES')
+        }),
+      },
+    })
+    expect(await handlers.copyImage(png)).toMatchObject({ ok: false, error: { code: 'STORAGE' } })
+    expect(await handlers.saveImage(png)).toMatchObject({ ok: false, error: { code: 'STORAGE' } })
   })
 })
 

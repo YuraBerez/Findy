@@ -149,6 +149,19 @@ export const StageChangeRefSchema = z.object({
   at: z.string().min(1).max(64),
 })
 
+/** Spec 023 plan D-2: the analytics image, a PNG of at most 5 MB */
+export const PNG_MAX_BYTES = 5 * 1024 * 1024
+const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+
+export const PngSchema = z
+  .instanceof(Uint8Array)
+  .refine((bytes) => bytes.length > PNG_SIGNATURE.length && bytes.length <= PNG_MAX_BYTES, {
+    message: `A PNG of at most ${PNG_MAX_BYTES} bytes`,
+  })
+  .refine((bytes) => PNG_SIGNATURE.every((byte, index) => bytes[index] === byte), {
+    message: 'Not a PNG',
+  })
+
 export type ApplicationInput = z.output<typeof ApplicationInputSchema>
 export type ApplicationPatch = z.output<typeof ApplicationPatchSchema>
 export type MoveTarget = z.output<typeof MoveTargetSchema>

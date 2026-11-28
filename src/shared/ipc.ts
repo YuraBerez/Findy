@@ -56,6 +56,8 @@ export const IPC_METHODS = [
   'setMcpEnabled',
   'getMcpConnection',
   'saveSkill',
+  'copyImage',
+  'saveImage',
   'getSystemLocale',
   'openExternal',
   'getAppInfo',
@@ -157,7 +159,7 @@ export type UpdateCheckResult =
   | { status: 'available'; version: string; currentVersion: string; url: string }
   | { status: 'latest'; currentVersion: string }
 
-/** A file saved through the system save dialog (specs 015, 016) */
+/** A file saved through the system save dialog (specs 015, 016, 023) */
 export type SaveFileResult = { status: 'saved' } | { status: 'cancelled' }
 /** Spec 016 FR-021 */
 export type SaveSkillResult = SaveFileResult
@@ -280,6 +282,10 @@ export interface FindyApi {
   getMcpConnection(): Promise<McpConnection>
   /** Spec 016: the skill archive through the system save dialog; STORAGE when the write fails */
   saveSkill(): Promise<SaveSkillResult>
+  /** Spec 023 FR-021: a PNG on the system clipboard; VALIDATION when it is not a PNG */
+  copyImage(png: Uint8Array): Promise<void>
+  /** Spec 023 FR-022: a PNG through the system save dialog; STORAGE when the write fails */
+  saveImage(png: Uint8Array): Promise<SaveFileResult>
   getSystemLocale(): Promise<string>
   openExternal(url: string): Promise<void>
   getAppInfo(): Promise<AppInfo>

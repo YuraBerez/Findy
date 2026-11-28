@@ -7,10 +7,10 @@ Each task references the requirement(s) it satisfies.
 
 ## Phase 1 — Main and IPC
 
-- [ ] T001 Tests, then `main/image.ts#createImageSharer`: copy decodes and writes the
+- [x] T001 Tests, then `main/image.ts#createImageSharer`: copy decodes and writes the
       clipboard; save picks the path with `findy-analytics-YYYY-MM-DD.png`, writes the bytes,
       cancel gives `cancelled`, a failed write rejects (FR-021, FR-022, FR-023, plan D-6)
-- [ ] T002 Tests, then `PngSchema` and the handlers `copyImage`, `saveImage` in
+- [x] T002 Tests, then `PngSchema` and the handlers `copyImage`, `saveImage` in
       `main/ipc.ts`; channels and types in `shared/ipc.ts`; wiring in `main/app/services.ts`;
       `docs/contracts/ipc.md`, `docs/security.md` (FR-021…FR-023, NFR-004, plan D-2)
 
