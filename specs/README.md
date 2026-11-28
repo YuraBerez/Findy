@@ -62,5 +62,5 @@ Rules:
 | 021 | [Delete stage history entries](021-delete-stage-history/spec.md) | Implemented (0.7.1) |
 | 022 | [Days of job search](022-search-days/spec.md) | Implemented (0.7.2) |
 | 023 | [Share analytics as an image](023-share-analytics-image/spec.md) | Implemented (0.8.0) |
-| 025 | [Card colours through the AI assistant](025-mcp-card-colors/spec.md) | Approved |
 | 024 | [Browser extension in the settings](024-extension-settings/spec.md) | Approved |
+| 025 | [Card colours through the AI assistant](025-mcp-card-colors/spec.md) | Approved |
