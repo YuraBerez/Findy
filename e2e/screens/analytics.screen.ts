@@ -25,8 +25,8 @@ export class AnalyticsScreen extends BaseComponent {
     super(page)
     this.toolbar = page.getByRole('banner')
     this.tabs = this.toolbar.getByRole('tablist')
-    this.panel = page.getByRole('tabpanel', { name: /^(Analytics|Аналітика)$/ })
-    this.boardPanel = page.getByRole('tabpanel', { name: /^(Board|Дошка)$/ })
+    this.panel = page.getByRole('tabpanel', { name: /^(Analytics|Аналітика|Analityka)$/ })
+    this.boardPanel = page.getByRole('tabpanel', { name: /^(Board|Дошка|Tablica)$/ })
     this.period = this.panel.getByLabel(/^(Period|Період)$/)
     this.grouping = this.panel.getByLabel(/^(Group by|Групувати)$/)
     this.totals = this.panel.getByRole('definition')
@@ -182,7 +182,11 @@ export class AnalyticsScreen extends BaseComponent {
       (element) => element.scrollWidth - element.clientWidth,
     )
     expect(overflow).toBe(0)
-    for (const name of ['Applications sent', 'Stages over time', 'Funnel']) {
+    for (const name of [
+      /^(Applications sent|Надіслані заявки|Wysłane aplikacje)$/,
+      /^(Stages over time|Етапи в часі|Etapy w czasie)$/,
+      /^(Funnel|Воронка|Lejek)$/,
+    ]) {
       await this.card(name).scrollIntoViewIfNeeded()
       await expect(this.card(name)).toBeInViewport()
     }

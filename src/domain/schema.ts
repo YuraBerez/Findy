@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { ANALYTICS_GROUPINGS, ANALYTICS_PERIODS } from './analytics'
 import { CARD_COLORS } from './colors'
 import { CURRENCIES, SALARY_PERIODS, salaryProblem, SOURCE_CHANNELS, WORK_FORMATS } from './fields'
+import { SUPPORTED_LANGUAGES } from './language'
 import { isHttpUrl, LIMITS } from './limits'
 import { isStepDate, isStepTime, stepTextProblem } from './nextStep'
 import { STAGES } from './stages'
@@ -24,7 +25,7 @@ export const UrlSchema = z
 
 export const IdSchema = z.uuid()
 export const StageSchema = z.enum(STAGES)
-export const LanguageSchema = z.enum(['en', 'uk'])
+export const LanguageSchema = z.enum(SUPPORTED_LANGUAGES)
 /** Spec 007 FR-009: a palette colour, or null for no colour */
 export const CardColorSchema = z.enum(CARD_COLORS).nullable()
 export const ThemeSchema = z.enum(['system', 'light', 'dark'])

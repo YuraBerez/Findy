@@ -1,8 +1,8 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import { BaseComponent } from 'playwright-e2e-kit'
 
-const SETTINGS_NAME = /^(Settings|Налаштування)$/
-const SETTINGS_ITEM = /^(Settings…|Налаштування…)$/
+const SETTINGS_NAME = /^(Settings|Налаштування|Ustawienia)$/
+const SETTINGS_ITEM = /^(Settings…|Налаштування…|Ustawienia…)$/
 
 /** Spec 018: the settings window with its side list of categories. */
 export class SettingsScreen extends BaseComponent {
@@ -17,7 +17,7 @@ export class SettingsScreen extends BaseComponent {
     this.dialog = page.getByRole('dialog', { name: SETTINGS_NAME })
     this.appMenuButton = page
       .getByRole('banner')
-      .getByRole('button', { name: /^(App menu|Меню застосунку)$/ })
+      .getByRole('button', { name: /^(App menu|Меню застосунку|Menu aplikacji)$/ })
     this.menu = page.getByRole('menu')
     this.categories = this.dialog.getByRole('tablist')
     this.days = this.dialog.getByLabel(/^(Days in a stage without movement|Днів на етапі без руху)/)
@@ -44,7 +44,7 @@ export class SettingsScreen extends BaseComponent {
   }
 
   async close(): Promise<void> {
-    await this.dialog.getByRole('button', { name: /^(Close|Закрити)$/ }).click()
+    await this.dialog.getByRole('button', { name: /^(Close|Закрити|Zamknij)$/ }).click()
     await expect(this.dialog).toBeHidden()
   }
 
@@ -64,8 +64,8 @@ export class SettingsScreen extends BaseComponent {
 
   // ── General ────────────────────────────────────────────────────────────
 
-  async chooseLanguage(name: 'English' | 'Українська'): Promise<void> {
-    await this.dialog.getByLabel(/^(Language|Мова)$/).selectOption({ label: name })
+  async chooseLanguage(name: 'English' | 'Українська' | 'Polski'): Promise<void> {
+    await this.dialog.getByLabel(/^(Language|Мова|Język)$/).selectOption({ label: name })
   }
 
   async chooseTheme(name: string): Promise<void> {
@@ -167,7 +167,7 @@ export class SettingsScreen extends BaseComponent {
 
   async verifyLanguage(name: string): Promise<void> {
     await expect(
-      this.dialog.getByLabel(/^(Language|Мова)$/).getByRole('option', { selected: true }),
+      this.dialog.getByLabel(/^(Language|Мова|Język)$/).getByRole('option', { selected: true }),
     ).toHaveText(name)
   }
 

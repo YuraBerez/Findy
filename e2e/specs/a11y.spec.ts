@@ -124,6 +124,14 @@ test.describe('accessibility', () => {
     })
   })
 
+  // Spec 026: lang="pl" and Polish names
+  test('board in Polish has no violations', { tag: '@a11y' }, async ({ findy }) => {
+    await findy.api.seed([{ title: 'Dev' }])
+    await findy.api.setLanguage('pl')
+    await findy.refresh()
+    await findy.pages.a11y.expectNoViolations()
+  })
+
   test('empty analytics has no violations', { tag: '@a11y' }, async ({ findy }) => {
     await findy.pages.analytics.openTab('Analytics')
     await findy.pages.analytics.verifyEmpty()

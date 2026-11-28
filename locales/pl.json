@@ -1,0 +1,564 @@
+{
+  "app": {
+    "name": "Findy",
+    "loading": "Ładowanie…"
+  },
+  "toolbar": {
+    "label": "Główny pasek narzędzi",
+    "addApplication": "Dodaj aplikację",
+    "menu": "Menu aplikacji"
+  },
+  "theme": {
+    "label": "Motyw",
+    "dark": "Ciemny motyw"
+  },
+  "stages": {
+    "applied": "Wysłano",
+    "hr_interview": "Rozmowa z HR",
+    "test_task": "Zadanie testowe",
+    "technical_interview": "Rozmowa techniczna",
+    "c_level_interview": "Rozmowa z C-level",
+    "offered": "Oferta",
+    "rejected": "Odmowa"
+  },
+  "storage": {
+    "errorTitle": "Nie udało się otworzyć Twoich danych",
+    "corrupt": "Plik bazy danych jest uszkodzony albo nie jest bazą Findy. Findy go nie zmienił i zapisał kopię w {{backupPath}}.",
+    "newer_version": "Bazę danych utworzyła nowsza wersja Findy. Zaktualizuj aplikację, aby ją otworzyć. Findy nie zmienił pliku i zapisał kopię w {{backupPath}}.",
+    "open_failed": "Findy nie może otworzyć ani utworzyć swojej bazy danych.",
+    "location": "Plik bazy danych: {{dataFilePath}}"
+  },
+  "board": {
+    "label": "Tablica aplikacji o pracę",
+    "emptyTitle": "Nie ma jeszcze aplikacji",
+    "emptyHint": "Dodaj pierwszą pracę, na którą aplikujesz, i śledź ją stąd aż do oferty."
+  },
+  "column": {
+    "count_one": "{{count}} aplikacja",
+    "count_few": "{{count}} aplikacje",
+    "count_many": "{{count}} aplikacji",
+    "count_other": "{{count}} aplikacji",
+    "hide": "Ukryj kolumnę {{stage}}"
+  },
+  "card": {
+    "notes_one": "{{count}} notatka",
+    "notes_few": "{{count}} notatki",
+    "notes_many": "{{count}} notatek",
+    "notes_other": "{{count}} notatki",
+    "inStage": "Na tym etapie od {{date}}",
+    "actions": "Działania dla {{title}}",
+    "moveTo": "Przenieś do",
+    "openVacancy": "Otwórz ofertę pracy {{title}}"
+  },
+  "form": {
+    "createTitle": "Nowa aplikacja",
+    "title": "Stanowisko",
+    "company": "Firma",
+    "url": "Link do oferty",
+    "urlHint": "Opcjonalnie",
+    "stage": "Etap",
+    "create": "Dodaj",
+    "cancel": "Anuluj",
+    "errors": {
+      "required": "Wypełnij to pole.",
+      "tooLong": "Użyj najwyżej {{max}} znaków.",
+      "invalidUrl": "Wpisz link, który zaczyna się od http:// lub https://.",
+      "queryPlacement": "Wstaw {query} jeden raz, po adresie strony (na przykład …?q={query}).",
+      "invalidAmount": "Wpisz liczbę całkowitą, na przykład 3000.",
+      "salaryOrder": "„Wynagrodzenie od” nie może być większe niż „Wynagrodzenie do”.",
+      "invalidDate": "Wpisz datę.",
+      "invalidTime": "Wpisz godzinę, na przykład 15:00."
+    },
+    "vacancy": {
+      "hint": "Wklej link do oferty: Findy wpisze stanowisko i firmę.",
+      "fill": "Wypełnij z linku",
+      "reading": "Czytanie strony oferty…",
+      "filled": "Wypełniono ze strony. Sprawdź wartości.",
+      "notFound": "Nie udało się odczytać stanowiska ani firmy z tej strony. Wpisz je samodzielnie."
+    }
+  },
+  "dnd": {
+    "instructions": "Naciśnij Enter, aby otworzyć kartę. Aby ją przenieść, naciśnij Spację, użyj strzałek, a potem naciśnij Spację, aby ją upuścić, albo Escape, aby anulować.",
+    "picked": "Podniesiono {{title}}.",
+    "over": "{{title}} jest nad {{stage}}.",
+    "dropped": "{{title}} przeniesiono do {{stage}}.",
+    "cancelled": "Przenoszenie {{title}} anulowano."
+  },
+  "language": {
+    "label": "Język"
+  },
+  "details": {
+    "openVacancy": "Otwórz ofertę",
+    "save": "Zapisz zmiany",
+    "saved": "Zapisano",
+    "history": "Historia etapów",
+    "historyDelete": "Usuń wpis: {{stage}}, {{date}}",
+    "historyDeleteTitle": "Usunąć ten wpis?",
+    "historyDeleteMessage": "„{{stage}}” z {{date}} zostanie usunięty z historii etapów, a analityka nie będzie go liczyć. Tego nie można cofnąć.",
+    "historyDeleteMessageLast": "„{{stage}}” z {{date}} zostanie usunięty z historii etapów, a analityka nie będzie go liczyć. Aplikacja wróci do etapu „{{previous}}”. Tego nie można cofnąć.",
+    "historyDeleteConfirm": "Usuń",
+    "created": "Utworzono {{date}}",
+    "updated": "Zaktualizowano {{date}}",
+    "delete": "Usuń aplikację",
+    "deleteTitle": "Usunąć tę aplikację?",
+    "deleteMessage": "„{{title}}” i wszystkie jej notatki zostaną usunięte. Tego nie można cofnąć.",
+    "fields": "Szczegóły",
+    "showAll": "Pokaż wszystko ({{count}})",
+    "showLess": "Pokaż mniej"
+  },
+  "notes": {
+    "title": "Notatki",
+    "new": "Nowa notatka",
+    "add": "Dodaj notatkę",
+    "empty": "Nie ma jeszcze notatek. Napisz pierwszą: z kim rozmawiasz, wynagrodzenie, kolejne kroki…",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "edited": "edytowano",
+    "editLabel": "Tekst notatki",
+    "deleteTitle": "Usunąć tę notatkę?",
+    "deleteMessage": "Tego nie można cofnąć.",
+    "placeholder": "Napisz notatkę…"
+  },
+  "common": {
+    "close": "Zamknij",
+    "back": "Wstecz",
+    "ok": "OK"
+  },
+  "reset": {
+    "menuItem": "Wyczyść tablicę…",
+    "title": "Wyczyścić tablicę?",
+    "confirm": "Wyczyść tablicę",
+    "message_one": "{{count}} aplikacja zostanie usunięta razem z notatkami i historią etapów. Findy najpierw zapisze kopię zapasową Twoich danych.",
+    "message_few": "{{count}} aplikacje zostaną usunięte razem z notatkami i historią etapów. Findy najpierw zapisze kopię zapasową Twoich danych.",
+    "message_many": "{{count}} aplikacji zostanie usuniętych razem z notatkami i historią etapów. Findy najpierw zapisze kopię zapasową Twoich danych.",
+    "message_other": "{{count}} aplikacji zostanie usuniętych razem z notatkami i historią etapów. Findy najpierw zapisze kopię zapasową Twoich danych."
+  },
+  "columns": {
+    "menuItem": "Kolumny…",
+    "title": "Kolumny",
+    "show": "Pokaż {{stage}}",
+    "lastVisible": "Co najmniej jedna kolumna pozostaje widoczna",
+    "hint": "Ukryte kolumny nie są widoczne na tablicy i nie można do nich przenieść żadnej aplikacji. Ich aplikacje zostają zachowane."
+  },
+  "errors": {
+    "validation": "Tego nie zapisano: sprawdź wpisane dane.",
+    "notFound": "Ten element już nie istnieje. Tablica pokazuje teraz zapisane dane.",
+    "storage": "Findy nie może zapisać tej zmiany. Twoje zapisane dane się nie zmieniły.",
+    "network": "Nie udało się sprawdzić aktualizacji. Sprawdź połączenie z internetem i spróbuj ponownie.",
+    "unknown": "Coś poszło nie tak. Tablica pokazuje teraz zapisane dane.",
+    "crashTitle": "Coś poszło nie tak",
+    "crashText": "Okno nie może pokazać tego ekranu. Twoje dane są bezpieczne w bazie danych.",
+    "reload": "Odśwież"
+  },
+  "menu": {
+    "file": "Plik",
+    "edit": "Edycja",
+    "view": "Widok",
+    "window": "Okno",
+    "help": "Pomoc",
+    "about": "O Findy",
+    "hide": "Ukryj Findy",
+    "hideOthers": "Ukryj pozostałe",
+    "showAll": "Pokaż wszystko",
+    "quit": "Zakończ Findy",
+    "undo": "Cofnij",
+    "redo": "Ponów",
+    "cut": "Wytnij",
+    "copy": "Kopiuj",
+    "paste": "Wklej",
+    "selectAll": "Zaznacz wszystko",
+    "reload": "Odśwież",
+    "devTools": "Narzędzia deweloperskie",
+    "resetZoom": "Rzeczywisty rozmiar",
+    "zoomIn": "Powiększ",
+    "zoomOut": "Pomniejsz",
+    "fullScreen": "Pełny ekran",
+    "minimize": "Minimalizuj",
+    "zoom": "Zmień rozmiar",
+    "close": "Zamknij",
+    "projectPage": "Findy na GitHubie",
+    "support": "Wesprzyj Findy…",
+    "copyright": "Otwarte oprogramowanie, licencja MIT",
+    "settings": "Ustawienia…"
+  },
+  "search": {
+    "label": "Szukaj aplikacji",
+    "placeholder": "Stanowisko lub firma",
+    "noResults": "Brak aplikacji pasujących do „{{query}}”."
+  },
+  "feedback": {
+    "reportIssue": "Znalazłeś problem?"
+  },
+  "mcp": {
+    "menuItem": "Dostęp asystenta AI (MCP)…",
+    "title": "Dostęp asystenta AI",
+    "allow": "Pozwól asystentom AI korzystać z mojej tablicy",
+    "privacy": "Gdy to jest włączone, podłączony asystent (Claude Desktop, Cowork, Claude Code) może czytać i zmieniać Twoje aplikacje, gdy go o to poprosisz. Findy sam niczego nigdzie nie wysyła; Twój asystent wysyła to, co przeczyta, do swojego dostawcy AI.",
+    "desktopTitle": "Claude Desktop i Cowork",
+    "desktopHint": "Dodaj to do claude_desktop_config.json (Settings → Developer → Edit Config), a potem uruchom Claude ponownie.",
+    "codeTitle": "Claude Code",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano",
+    "otherTitle": "Inne klienty MCP",
+    "otherHint": "Gemini CLI (~/.gemini/settings.json, \"mcpServers\"), Cursor, VS Code, Windsurf, Zed, Codex CLI i inne aplikacje, które uruchamiają lokalne (stdio) serwery MCP, używają tego polecenia.",
+    "skillTitle": "Umiejętność dla Twojego asystenta",
+    "skillHint": "Umiejętność (skill) uczy Claude i innych asystentów, jak korzystać z Findy: narzędzia, bezpieczne kroki i typowe zadania. Zapisz ją i dodaj do swojego asystenta.",
+    "saveSkill": "Zapisz umiejętność…",
+    "skillInstall": "Jak zainstalować",
+    "skillSaved": "Umiejętność zapisana. Dodaj ją do swojego asystenta.",
+    "skillCodeHint": "Claude Code: uruchom to w terminalu. Uruchom ponownie później, aby zaktualizować umiejętność.",
+    "skillDesktopHint": "Claude Desktop i claude.ai: zapisz umiejętność i prześlij ją w Settings → Capabilities.",
+    "skillCodeTitle": "Zainstaluj umiejętność w Claude Code"
+  },
+  "views": {
+    "label": "Widoki",
+    "board": "Tablica",
+    "analytics": "Analityka",
+    "sites": "Strony"
+  },
+  "analytics": {
+    "showTable": "Pokaż jako tabelę",
+    "showChart": "Pokaż jako wykres",
+    "chartHint": "Wskaż słupek albo użyj strzałek, aby zobaczyć wartości.",
+    "noActivity": "Brak aktywności w tym okresie",
+    "activity": {
+      "title": "Wysłane aplikacje",
+      "value_one": "{{date}}: {{count}} aplikacja",
+      "value_few": "{{date}}: {{count}} aplikacje",
+      "value_many": "{{date}}: {{count}} aplikacji",
+      "value_other": "{{date}}: {{count}} aplikacji"
+    },
+    "stages": {
+      "title": "Etapy w czasie",
+      "legend": "Pokazane etapy",
+      "item": "{{stage}}: {{count}}",
+      "value": "{{date}}: {{list}}",
+      "none": "{{date}}: brak zmian etapów"
+    },
+    "funnel": {
+      "title": "Lejek",
+      "hint": "Aplikacje z okresu, które doszły do danego etapu lub dalej.",
+      "rejected": "Odmowy: {{count}}"
+    },
+    "totals": {
+      "label": "Podsumowanie",
+      "searchDays": "Dni szukania",
+      "applications": "Wysłane aplikacje",
+      "interviews": "Rozmowy",
+      "offers": "Oferty",
+      "rejections": "Odmowy"
+    },
+    "table": {
+      "period": "Okres",
+      "applications": "Aplikacje",
+      "stage": "Etap",
+      "share": "Udział"
+    },
+    "period": {
+      "label": "Okres",
+      "7d": "Ostatnie 7 dni",
+      "30d": "Ostatnie 30 dni",
+      "90d": "Ostatnie 90 dni",
+      "all": "Cały czas"
+    },
+    "grouping": {
+      "label": "Grupuj według",
+      "day": "Dnia",
+      "week": "Tygodnia",
+      "month": "Miesiąca"
+    },
+    "empty": {
+      "title": "Brak danych",
+      "text": "Dodaj aplikacje na tablicy, a tutaj pojawią się Twoje statystyki.",
+      "action": "Otwórz tablicę"
+    },
+    "share": {
+      "button": "Udostępnij obraz",
+      "title": "Obraz analityki",
+      "subtitle": "Moje szukanie pracy",
+      "alt": "Obraz analityki: Findy, {{period}}",
+      "copy": "Kopiuj",
+      "save": "Zapisz jako PNG",
+      "close": "Zamknij",
+      "copied": "Obraz skopiowany",
+      "saved": "Obraz zapisany"
+    }
+  },
+  "updates": {
+    "menuCheck": "Sprawdź aktualizacje…",
+    "menuAuto": "Sprawdzaj aktualizacje automatycznie",
+    "availableTitle": "Dostępna aktualizacja",
+    "availableText": "Dostępna jest wersja {{version}}. Masz {{current}}.",
+    "download": "Pobierz",
+    "later": "Później",
+    "latestTitle": "Brak aktualizacji",
+    "latestText": "Masz najnowszą wersję ({{current}})."
+  },
+  "colors": {
+    "title": "Kolor",
+    "none": "Brak",
+    "cardLabel": "Kolor: {{color}}",
+    "red": "Czerwony",
+    "orange": "Pomarańczowy",
+    "yellow": "Żółty",
+    "green": "Zielony",
+    "blue": "Niebieski",
+    "purple": "Fioletowy",
+    "grey": "Szary"
+  },
+  "transfer": {
+    "columns": {
+      "title": "Stanowisko",
+      "company": "Firma",
+      "url": "Link",
+      "stage": "Etap",
+      "color": "Kolor",
+      "createdAt": "Utworzono",
+      "inStageSince": "Na etapie od",
+      "history": "Historia etapów",
+      "notes": "Notatki",
+      "salaryMin": "Wynagrodzenie od",
+      "salaryMax": "Wynagrodzenie do",
+      "currency": "Waluta",
+      "salaryPeriod": "Okres wynagrodzenia",
+      "workFormat": "Tryb pracy",
+      "location": "Lokalizacja",
+      "source": "Źródło",
+      "contactName": "Osoba kontaktowa",
+      "contactDetails": "Dane kontaktowe",
+      "nextStep": "Następny krok",
+      "nextStepDate": "Data następnego kroku"
+    },
+    "menuExport": "Eksportuj do CSV…",
+    "menuImport": "Importuj z CSV…",
+    "exported_one": "Wyeksportowano {{count}} aplikację.",
+    "exported_few": "Wyeksportowano {{count}} aplikacje.",
+    "exported_many": "Wyeksportowano {{count}} aplikacji.",
+    "exported_other": "Wyeksportowano {{count}} aplikacji.",
+    "imported_one": "Dodano {{count}} aplikację.",
+    "imported_few": "Dodano {{count}} aplikacje.",
+    "imported_many": "Dodano {{count}} aplikacji.",
+    "imported_other": "Dodano {{count}} aplikacji.",
+    "importTitle": "Import z CSV",
+    "toAdd_one": "Zostanie dodana {{count}} aplikacja.",
+    "toAdd_few": "Zostaną dodane {{count}} aplikacje.",
+    "toAdd_many": "Zostanie dodanych {{count}} aplikacji.",
+    "toAdd_other": "Zostanie dodanych {{count}} aplikacji.",
+    "duplicates_one": "{{count}} duplikat zostanie pominięty.",
+    "duplicates_few": "{{count}} duplikaty zostaną pominięte.",
+    "duplicates_many": "{{count}} duplikatów zostanie pominiętych.",
+    "duplicates_other": "{{count}} duplikatu zostanie pominięte.",
+    "errors_one": "{{count}} wiersz ma błędy i zostanie pominięty:",
+    "errors_few": "{{count}} wiersze mają błędy i zostaną pominięte:",
+    "errors_many": "{{count}} wierszy ma błędy i zostanie pominiętych:",
+    "errors_other": "{{count}} wiersza ma błędy i zostanie pominięte:",
+    "hidden_one": "{{count}} aplikacja trafi do ukrytej kolumny.",
+    "hidden_few": "{{count}} aplikacje trafią do ukrytych kolumn.",
+    "hidden_many": "{{count}} aplikacji trafi do ukrytych kolumn.",
+    "hidden_other": "{{count}} aplikacji trafi do ukrytych kolumn.",
+    "nothingToAdd": "Nie ma nic nowego do dodania.",
+    "confirm_one": "Importuj {{count}} aplikację",
+    "confirm_few": "Importuj {{count}} aplikacje",
+    "confirm_many": "Importuj {{count}} aplikacji",
+    "confirm_other": "Importuj {{count}} aplikacji",
+    "rowError": "Wiersz {{row}}, {{field}}: {{problem}}",
+    "moreErrors": "…i jeszcze {{count}}",
+    "problems": {
+      "required": "brak wartości",
+      "tooLong": "za długa wartość",
+      "invalid": "nieprawidłowa wartość"
+    },
+    "fatal": {
+      "notCsv": "Ten plik nie jest tabelą CSV.",
+      "tooLarge": "Plik jest większy niż {{size}}.",
+      "tooManyRows": "Plik ma więcej niż {{rows}} wierszy.",
+      "noRows": "Plik nie ma wierszy do importu.",
+      "missingColumns": "Brakuje wymaganych kolumn: {{columns}}."
+    }
+  },
+  "stale": {
+    "mark_one": "Bez zmian od {{count}} dnia",
+    "mark_few": "Bez zmian od {{count}} dni",
+    "mark_many": "Bez zmian od {{count}} dni",
+    "mark_other": "Bez zmian od {{count}} dnia",
+    "menuItem": "Bez zmian po…",
+    "dialog": {
+      "title": "Aplikacje bez zmian",
+      "label": "Dni na etapie bez zmian",
+      "hint": "{{min}}–{{max}}",
+      "save": "Zapisz",
+      "error": "Wpisz liczbę całkowitą od {{min}} do {{max}}."
+    }
+  },
+  "sites": {
+    "query": {
+      "label": "Wyszukiwane hasło",
+      "hint": "Dla każdej strony",
+      "placeholder": "Na przykład QA Engineer"
+    },
+    "groups": {
+      "ukraine": "Ukraina",
+      "international": "Międzynarodowe",
+      "remote": "Zdalnie",
+      "europe": "Europa",
+      "mine": "Moje strony"
+    },
+    "actions": "Działania dla {{name}}",
+    "hide": "Ukryj",
+    "show": "Pokaż",
+    "showSite": "Pokaż {{name}}",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "add": "Dodaj stronę",
+    "limit": "Najwyżej {{max}} własnych stron",
+    "hidden_one": "Pokaż ukryte strony ({{count}})",
+    "hidden_few": "Pokaż ukryte strony ({{count}})",
+    "hidden_many": "Pokaż ukryte strony ({{count}})",
+    "hidden_other": "Pokaż ukryte strony ({{count}})",
+    "dialog": {
+      "addTitle": "Nowa strona",
+      "editTitle": "Edytuj stronę",
+      "name": "Nazwa",
+      "url": "Adres",
+      "urlHint": "Wstaw {query} tam, gdzie ma się znaleźć wyszukiwane hasło",
+      "save": "Zapisz"
+    },
+    "deleteConfirm": {
+      "title": "Usunąć tę stronę?",
+      "message": "„{{name}}” zostanie usunięta z Moich stron.",
+      "confirm": "Usuń"
+    }
+  },
+  "support": {
+    "menuItem": "Wesprzyj Findy…",
+    "offerTitle": "Gratulacje z okazji oferty!",
+    "offerQuestion": "Czy Findy pomógł Ci w szukaniu pracy?",
+    "yes": "Tak",
+    "notReally": "Nie bardzo",
+    "dontAsk": "Nie pytaj więcej",
+    "thanksTitle": "Dziękujemy!",
+    "thanksText": "Findy jest darmowy i otwarty, a powstaje w wolnym czasie. Jeśli Ci pomógł, możesz wesprzeć jego rozwój albo dać mu gwiazdkę na GitHubie, aby więcej osób go znalazło.",
+    "kofi": "Wesprzyj na Ko-fi",
+    "star": "Gwiazdka na GitHubie",
+    "feedbackTitle": "Dziękujemy za odpowiedź",
+    "feedbackText": "Co sprawiłoby, że Findy byłby bardziej przydatny? Napisz nam na GitHubie: czytamy każdy pomysł.",
+    "feedback": "Napisz, co poprawić"
+  },
+  "fields": {
+    "salary": "Wynagrodzenie",
+    "salaryFrom": "Wynagrodzenie od",
+    "salaryTo": "Wynagrodzenie do",
+    "currency": "Waluta",
+    "period": "Okres",
+    "periods": {
+      "month": "Miesięcznie",
+      "year": "Rocznie"
+    },
+    "periodShort": {
+      "month": "/mies.",
+      "year": "/rok"
+    },
+    "salaryFromOnly": "od {{amount}}",
+    "salaryToOnly": "do {{amount}}",
+    "workFormat": "Tryb pracy",
+    "workFormats": {
+      "remote": "Zdalnie",
+      "office": "Biuro",
+      "hybrid": "Hybrydowo"
+    },
+    "notSet": "Nie podano",
+    "location": "Lokalizacja",
+    "locationHint": "Miasto, kraj albo strefa czasowa",
+    "source": "Źródło",
+    "sourceGroups": {
+      "sites": "Portale z ofertami",
+      "mySites": "Moje strony",
+      "channels": "Inne źródła"
+    },
+    "channels": {
+      "referral": "Polecenie",
+      "company_site": "Strona firmy",
+      "recruiter": "Rekruter napisał do mnie",
+      "other": "Inne"
+    },
+    "contactName": "Osoba kontaktowa",
+    "contactDetails": "Dane kontaktowe",
+    "contactDetailsHint": "E-mail, telefon, Telegram albo link",
+    "openContact": "Otwórz link kontaktowy"
+  },
+  "nextStep": {
+    "title": "Następny krok",
+    "add": "Dodaj następny krok",
+    "text": "Krok",
+    "textHint": "Na przykład rozmowa techniczna z Olehiem",
+    "date": "Data",
+    "time": "Godzina",
+    "timeHint": "Opcjonalnie",
+    "save": "Zapisz krok",
+    "cancel": "Anuluj",
+    "edit": "Edytuj",
+    "done": "Gotowe",
+    "remove": "Usuń krok",
+    "calendar": "Dodaj do kalendarza",
+    "calendarSaved": "Plik kalendarza został zapisany.",
+    "menuItem": "Następny krok…",
+    "doneNote": "Wykonano: {{text}} ({{when}})",
+    "mark": {
+      "overdue": "Zaległe · {{day}}",
+      "today": "Dzisiaj",
+      "todayAt": "Dzisiaj, {{time}}",
+      "tomorrow": "Jutro",
+      "tomorrowAt": "Jutro, {{time}}",
+      "later": "{{day}}",
+      "laterAt": "{{day}}, {{time}}"
+    },
+    "cardLabel": "Następny krok: {{text}}, {{when}} ({{mark}})",
+    "status": {
+      "overdue": "Zaległe",
+      "today": "Dzisiaj",
+      "tomorrow": "Jutro"
+    }
+  },
+  "reminders": {
+    "menuItem": "Przypomnienia",
+    "step": "{{title}} · {{company}}, o {{time}}",
+    "stepTitle_one": "Za {{count}} min: {{text}}",
+    "stepTitle_few": "Za {{count}} min: {{text}}",
+    "stepTitle_many": "Za {{count}} min: {{text}}",
+    "stepTitle_other": "Za {{count}} min: {{text}}"
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "menuItem": "Ustawienia…",
+    "general": "Ogólne",
+    "board": "Tablica",
+    "reminders": "Przypomnienia",
+    "updates": "Aktualizacje",
+    "remindersHint": "Powiadomienia systemowe 15 minut i 1 minutę przed następnym krokiem, który ma godzinę, gdy Findy jest uruchomiony.",
+    "themes": {
+      "system": "Systemowy",
+      "light": "Jasny",
+      "dark": "Ciemny"
+    },
+    "assistant": "Asystent AI",
+    "categories": "Kategorie ustawień"
+  },
+  "extension": {
+    "storeName": "Findy — dodaj ofertę pracy",
+    "storeDescription": "Dodaj ofertę, którą widzisz, do Findy, swojej tablicy szukania pracy, jednym kliknięciem. Wymaga aplikacji Findy.",
+    "title": "Dodaj do Findy",
+    "reading": "Czytanie strony…",
+    "unsupported": "Findy może dodać tylko stronę internetową (http lub https).",
+    "noFindy": "Nie znaleziono Findy na tym komputerze albo jego wersja jest za stara. Zainstaluj lub zaktualizuj Findy, a potem otwórz go raz.",
+    "download": "Pobierz Findy",
+    "already": "Już jest w Findy: {{stage}}",
+    "fillIn": "Wpisz stanowisko i firmę.",
+    "add": "Dodaj do Findy",
+    "addAnyway": "Dodaj mimo to",
+    "adding": "Dodawanie…",
+    "added": "Dodano do Findy, etap „{{stage}}”.",
+    "failed": "Findy nie może dodać oferty: {{reason}}"
+  }
+}

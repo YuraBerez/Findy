@@ -3,6 +3,7 @@
 import { basename } from 'node:path'
 import { CARD_COLORS } from '../domain/colors'
 import { CsvError, readCsv, writeCsv } from '../domain/csv'
+import { SUPPORTED_LANGUAGES } from '../domain/language'
 import { STAGES } from '../domain/stages'
 import {
   COLUMNS,
@@ -21,7 +22,8 @@ import { SALARY_PERIODS, SOURCE_CHANNELS, WORK_FORMATS } from '../domain/fields'
 import { NotFoundError, type Repository } from './db/repository'
 import { createMainTranslator } from './i18n'
 
-export const LANGUAGES: readonly Language[] = ['en', 'uk']
+/** Spec 008 plan D-3, spec 026 FR-007: export in any language, import of every language */
+export const LANGUAGES: readonly Language[] = SUPPORTED_LANGUAGES
 
 /** Headers, stage and colour names of one language, from the locale files (plan D-3). */
 export function transferLabels(language: Language): TransferLabels {

@@ -1,4 +1,5 @@
 import { DEFAULT_ANALYTICS_VIEW, type AnalyticsView } from '../../../domain/analytics'
+import { isLanguage } from '../../../domain/language'
 import { AnalyticsViewSchema, HiddenStagesSchema } from '../../../domain/schema'
 import type { StageId } from '../../../domain/stages'
 import { isKnownSiteId, SITE_LIMITS, type KnownSiteId } from '../../../domain/sites'
@@ -20,7 +21,7 @@ export class SettingsStore {
     const language = map.get('language')
     const theme = map.get('theme')
     return {
-      language: language === 'en' || language === 'uk' ? language : null,
+      language: isLanguage(language) ? language : null,
       theme: theme === 'light' || theme === 'dark' ? theme : 'system',
       hiddenStages: parseHiddenStages(map.get('hiddenStages')),
       mcpEnabled: map.get('mcpEnabled') === 'true',

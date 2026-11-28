@@ -106,7 +106,9 @@ describe('resolveLanguage (FR-041)', () => {
     [null, 'uk', 'uk'],
     [null, 'uk-UA', 'uk'],
     [null, 'en-US', 'en'],
-    [null, 'pl', 'en'],
+    [null, 'pl', 'pl'],
+    [null, 'pl_PL', 'pl'],
+    [null, 'de-DE', 'en'],
     ['en', 'uk-UA', 'en'],
     ['uk', 'en-US', 'uk'],
   ] as const)('saved=%s, system=%s → %s', (saved, system, expected) => {

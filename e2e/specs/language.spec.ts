@@ -32,6 +32,59 @@ test.describe('language (US-5)', () => {
     },
   )
 
+  test('spec 026 US-1: Polish at once, with plurals, dates and the menu', async ({ findy }) => {
+    const { board } = findy.pages
+    await findy.api.seed([{ title: 'Dev' }, { title: 'QA' }])
+    for (const text of ['a', 'b']) await findy.api.addNote('Dev', text)
+    for (const text of ['a', 'b', 'c', 'd', 'e']) await findy.api.addNote('QA', text)
+    await findy.refresh()
+    await test.step('1.1: the board and the native menu in Polish', async () => {
+      await board.chooseLanguage('Polski')
+      await board.verifyLanguage('Polski', 'Dodaj aplikację')
+      await board.verifyStageNames([
+        'Wysłano',
+        'Rozmowa z HR',
+        'Zadanie testowe',
+        'Rozmowa techniczna',
+        'Rozmowa z C-level',
+        'Oferta',
+        'Odmowa',
+      ])
+      await expect.poll(() => findy.api.menuLabels()).toContain('Edycja')
+    })
+    await test.step('1.3: Polish plural forms', async () => {
+      await board.verifyCardShows('Dev', ['2 notatki'])
+      await board.verifyCardShows('QA', ['5 notatek'])
+    })
+    await test.step('1.4: kept after a restart', async () => {
+      const { board: restarted } = await findy.restart()
+      await restarted.verifyLanguage('Polski', 'Dodaj aplikację')
+    })
+  })
+
+  test('spec 026 NFR-002: Polish fits 800 × 600 on every view', async ({ findy }) => {
+    const { analytics, settings } = findy.pages
+    await findy.api.seed([{ title: 'Dev' }])
+    await findy.api.setLanguage('pl')
+    await findy.refresh()
+    await findy.api.setWindowSize(800, 600)
+    expect(await findy.api.hasHorizontalScroll()).toBe(false)
+    await analytics.openTab('Analityka')
+    await analytics.verifyFitsWindow()
+    expect(await findy.api.hasHorizontalScroll()).toBe(false)
+    await settings.open()
+    await settings.verifyFitsWindow()
+  })
+
+  test.describe('spec 026 US-2: first launch on a Polish system', () => {
+    test.use({ systemLocale: 'pl-PL' })
+
+    test('shows the UI in Polish', async ({ findy }) => {
+      await findy.pages.board.verifyLanguage('Polski', 'Dodaj aplikację')
+      await findy.pages.board.verifyEmptyState('Nie ma jeszcze aplikacji')
+    })
+  })
+
   test.describe('US-5.1: first launch on a Ukrainian system', () => {
     test.use({ systemLocale: 'uk-UA' })
 

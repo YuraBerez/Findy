@@ -15,7 +15,7 @@ export class UpdatesScreen extends BaseComponent {
     super(page)
     this.appMenuButton = page
       .getByRole('banner')
-      .getByRole('button', { name: /^(App menu|Меню застосунку)$/ })
+      .getByRole('button', { name: /^(App menu|Меню застосунку|Menu aplikacji)$/ })
     this.menu = page.getByRole('menu')
     this.dialog = page.getByTestId('update-dialog')
     this.settings = new SettingsScreen(page)

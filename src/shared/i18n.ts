@@ -2,12 +2,14 @@
 import i18next, { type i18n } from 'i18next'
 import en from '../../locales/en.json'
 import uk from '../../locales/uk.json'
+import pl from '../../locales/pl.json'
 import { FALLBACK_LANGUAGE } from '../domain/language'
 import type { Language } from '../domain/types'
 
 export const resources = {
   en: { translation: en },
   uk: { translation: uk },
+  pl: { translation: pl },
 } as const
 
 export function createI18n(language: Language, plugins: Parameters<i18n['use']>[0][] = []): i18n {
